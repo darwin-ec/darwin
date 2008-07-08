@@ -33,7 +33,7 @@ class ModifyDatabaseWindow
 				int DBCurEntry,
 				MainWindow *m,			//***004CL
 				DatabaseFin<ColorImage> *Fin,
-				Database<ColorImage> *db,
+				Database *db,
 				Options *o);             //***054
 				
 
@@ -106,7 +106,7 @@ class ModifyDatabaseWindow
 			*mNonZoomedImage,
 		        *mImage;
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 		DatabaseFin<ColorImage> *mFin;
                 MainWindow *mMainWin;				//***004CL
 		

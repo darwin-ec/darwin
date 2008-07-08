@@ -15,6 +15,7 @@
 
 #include "../Options.h"
 #include "MainWindow.h" // ***1.85
+#include "../DatabaseSupport.h"
 
 int getNumCreateDatabaseDialogReferences();
 

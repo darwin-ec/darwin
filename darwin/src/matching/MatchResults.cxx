@@ -288,7 +288,7 @@ void MatchResults::save(std::string fileName)
 //*******************************************************************
 //
 //
-DatabaseFin<ColorImage> *MatchResults::load(Database<ColorImage> *db, std::string fileName)
+DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 {
 	try {
 

@@ -51,7 +51,7 @@ using namespace std;
 MatchResultsWindow::MatchResultsWindow(
 		const DatabaseFin<ColorImage> *unknownFin,
 		const MatchResults *results,
-		Database<ColorImage> *database,
+		Database *database,
 		MainWindow *m,	                          //*** 004CL
 		MatchingDialog *matchingDialog,
 		MatchingQueueDialog *matchingQueueDialog, //***1.3

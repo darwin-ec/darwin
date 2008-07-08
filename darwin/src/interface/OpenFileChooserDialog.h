@@ -16,9 +16,10 @@
 #include <gtk/gtktext.h>
 
 #include "../image_processing/ColorImage.h"
-#include "../Database.h"
+//#include "../Database.h"
 #include "MainWindow.h"
 #include "../Options.h"
+#include "../DatabaseSupport.h"
 
 // getNumOpenFileChooserDialogReferences
 // 	Returns the number of dialogs open.
@@ -47,7 +48,7 @@ class OpenFileChooserDialog
 		// 	
 		// 	Does a pointer copy of db and o
 		OpenFileChooserDialog(
-				Database<ColorImage> *db,
+				Database *db,
 				MainWindow *m,
 				Options *o,
 				int openMode);
@@ -102,7 +103,7 @@ class OpenFileChooserDialog
 			*mText,
 			*mPreview; //***1.95
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 
 		ColorImage *mImage;
 

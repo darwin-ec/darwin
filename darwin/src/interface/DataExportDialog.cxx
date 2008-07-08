@@ -30,7 +30,7 @@ int getNumDataExportDialogReferences()
 //*******************************************************************
 
 DataExportDialog::DataExportDialog(
-	Database<ColorImage> *db,
+	Database *db,
 	MainWindow *m,
 	Options *o,
 	DataExportDialog::operationType opType)

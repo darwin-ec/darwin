@@ -29,7 +29,7 @@ typedef struct {
 class MatchingQueue
 {
 	public:
-		MatchingQueue(Database<ColorImage> *d, Options *o);
+		MatchingQueue(Database *d, Options *o);
 		~MatchingQueue();
 
 		void add(std::string fileName);
@@ -63,7 +63,7 @@ class MatchingQueue
 
 	private:
 		std::list<std::string> mFileNames;
-		Database<ColorImage> *mFinDatabase;
+		Database *mFinDatabase;
 
 		Options *mOptions; //***054
 

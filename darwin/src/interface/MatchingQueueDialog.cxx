@@ -83,7 +83,7 @@ int getNumMatchingQueueDialogReferences()
 //
 MatchingQueueDialog::MatchingQueueDialog(
 		MainWindow *mainWin,
-		Database<ColorImage> *db, 
+		Database *db, 
 		Options *o)
 	:
 		mDialog(NULL),

@@ -64,7 +64,7 @@ ModifyDatabaseWindow::ModifyDatabaseWindow(
 		int DBCurEntry,
 		MainWindow *m,				//***004CL
 		DatabaseFin<ColorImage> *Fin,
-		Database<ColorImage> *db,
+		Database *db,
 		Options *o                  //***054
 )
   : mNonZoomedImage(new ColorImage(Fin->mImageFilename)),

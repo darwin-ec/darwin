@@ -32,7 +32,7 @@ class MainWindow
 		//
 		// 	Note: db must not be deleted until this
 		// 	MainWindow object is deleted.
-		MainWindow(Database<ColorImage> *db, Options *o);
+		MainWindow(Database *db, Options *o);
 		
 		// Destructor
 		// 	Destroys the window if it's open and frees
@@ -63,7 +63,7 @@ class MainWindow
 
 		GtkWidget *getWindow(); //***1.3
 
-		void setDatabasePtr(Database<ColorImage> *db); //***1.85 - used when opening new DB
+		void setDatabasePtr(Database *db); //***1.85 - used when opening new DB
 
 		void resetTitleButtonsAndBackupOnDBLoad(); //***1.85 - called after load or import of DB
 
@@ -307,7 +307,7 @@ class MainWindow
 
 		DatabaseFin<ColorImage> *mSelectedFin;
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 
 		ColorImage *mImage;
 		int

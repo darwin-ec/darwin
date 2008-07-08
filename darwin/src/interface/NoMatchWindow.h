@@ -34,7 +34,7 @@ class NoMatchWindow
 
 		NoMatchWindow(                
 			      DatabaseFin<ColorImage> *Fin,
-			      Database<ColorImage> *db,
+			      Database *db,
 			      MainWindow *m,			//***004CL
 				  Options *o);              //***054
 				
@@ -109,7 +109,7 @@ class NoMatchWindow
 			*mNonZoomedImage,
 			*mImage;
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 		DatabaseFin<ColorImage> *mFin;
 		MainWindow *mMainWin;			//***004CL
 		

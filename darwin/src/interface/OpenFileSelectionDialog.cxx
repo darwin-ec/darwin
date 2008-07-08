@@ -54,7 +54,7 @@ int getNumOpenFileSelectionDialogReferences()
 //*******************************************************************
 //
 OpenFileSelectionDialog::OpenFileSelectionDialog(
-		Database<ColorImage> *db,
+		Database *db,
 		MainWindow *m,
 		Options *o
 )

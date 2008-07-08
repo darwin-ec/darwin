@@ -34,7 +34,7 @@ public :
 	} operationType;
 
 	DataExportDialog(
-		Database<ColorImage> *db,
+		Database *db,
 		MainWindow *mainWin,
 		Options *o,
 		operationType opType);
@@ -91,7 +91,7 @@ private :
 	MainWindow
 		*mMainWin;           // the MainWindow (our parent)
 
-	Database<ColorImage>
+	Database
 		*mDatabase;          // link to the CURRENTLY OPEN database
 
 	Options

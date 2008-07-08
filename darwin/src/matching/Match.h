@@ -114,7 +114,7 @@ class Match
 		// but ONLY MAKES A POINTER COPY OF THE DATABASE.
 		Match(
 			DatabaseFin<ColorImage> *unknownFin,
-			Database<ColorImage> *db,
+			Database *db,
 			Options *o);      //***054
 
 		~Match();
@@ -144,7 +144,7 @@ class Match
 
 	private:
 		DatabaseFin<ColorImage> *mUnknownFin;
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 		int mCurrentFin;
 		MatchResults *mMatchResults;
 

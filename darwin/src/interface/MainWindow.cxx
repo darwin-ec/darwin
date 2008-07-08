@@ -70,7 +70,7 @@ static const int POINT_SIZE = 1;
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
 //*******************************************************************
-MainWindow::MainWindow(Database<ColorImage> *db, Options *o)
+MainWindow::MainWindow(Database *db, Options *o)
 	: mDBCurEntry(0),
 	  mSelectedFin(NULL),
 	  mDatabase(db),
@@ -94,7 +94,7 @@ MainWindow::MainWindow(Database<ColorImage> *db, Options *o)
 	mWindow = createMainWindow(o->mToolbarDisplay); //***1.85
 
 	// create an emergency backup of DB file, as long as it was successfully loaded
-	if (mDatabase->status() == Database<ColorImage>::loaded)
+	if (mDatabase->status() == Database::loaded)
 	{
 		string area = mOptions->mCurrentSurveyArea;
 		area = area.substr(area.rfind(PATH_SLASH) + 1);
@@ -129,7 +129,7 @@ MainWindow::~MainWindow()
 
 //*******************************************************************
 
-void MainWindow::setDatabasePtr(Database<ColorImage> *db) //***1.85 - used when opening new DB
+void MainWindow::setDatabasePtr(Database *db) //***1.85 - used when opening new DB
 {
 	mDatabase = db; // assume existing database was deleted by caller
 }
@@ -194,19 +194,19 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 	string MainWinTitle = "DARWIN - ";
 	switch (mDatabase->status())
 	{
-	case Database<ColorImage>::loaded :
+	case Database::loaded :
 		MainWinTitle += mOptions->mDatabaseFileName;
 		break;
-	case Database<ColorImage>::fileNotFound :
+	case Database::fileNotFound :
 		MainWinTitle += "Database file not found";
 		break;
-	case Database<ColorImage>::errorCreating :
+	case Database::errorCreating :
 		MainWinTitle += "Database file could not be created";
 		break;
-	case Database<ColorImage>::errorLoading :
+	case Database::errorLoading :
 		MainWinTitle += "Error loading database file";
 		break;
-	case Database<ColorImage>::oldDBVersion :
+	case Database::oldDBVersion :
 		MainWinTitle += "OLD database file version - not supported";
 		break;
 	default :
@@ -216,7 +216,7 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 	gtk_window_set_title(GTK_WINDOW (mWindow), _(MainWinTitle.c_str()));
 
 	// set sensitivity of menu items and buttons depending on success
-	if (mDatabase->status() == Database<ColorImage>::loaded)
+	if (mDatabase->status() == Database::loaded)
 	{
 		gtk_widget_set_sensitive(mOpenImageMenuItem, TRUE);
 		gtk_widget_set_sensitive(mOpenFinMenuItem, TRUE);
@@ -240,7 +240,7 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 	}
 	
 	// create an emergency backup of DB file, as long as it was successfully loaded
-	if (mDatabase->status() == Database<ColorImage>::loaded)
+	if (mDatabase->status() == Database::loaded)
 	{
 		string area = mOptions->mCurrentSurveyArea;
 		area = area.substr(area.rfind(PATH_SLASH) + 1);
@@ -1042,19 +1042,19 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	//***1.85 - set the database filename / message for the window
 	switch (mDatabase->status())
 	{
-	case Database<ColorImage>::loaded :
+	case Database::loaded :
 		MainWinTitle += mOptions->mDatabaseFileName;
 		break;
-	case Database<ColorImage>::fileNotFound :
+	case Database::fileNotFound :
 		MainWinTitle += "Database file not found";
 		break;
-	case Database<ColorImage>::errorCreating :
+	case Database::errorCreating :
 		MainWinTitle += "Database file could not be created";
 		break;
-	case Database<ColorImage>::errorLoading :
+	case Database::errorLoading :
 		MainWinTitle += "Error loading database file";
 		break;
-	case Database<ColorImage>::oldDBVersion :
+	case Database::oldDBVersion :
 		MainWinTitle += "OLD database file version - not supported";
 		break;
 	default :
@@ -1152,7 +1152,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GTK_ACCEL_VISIBLE);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(open, FALSE);
 	mOpenImageMenuItem = open;
 
@@ -1180,7 +1180,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GTK_ACCEL_VISIBLE);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(openTFin, FALSE);
 	mOpenFinMenuItem = openTFin;
 
@@ -1236,7 +1236,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GTK_ACCEL_VISIBLE);
 
 		//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(matching_queue, FALSE);
 	mQueueMenuItem = matching_queue;
 
@@ -1268,7 +1268,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GTK_ACCEL_VISIBLE);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(backup, FALSE);
 	mBackupMenuItem = backup;
 
@@ -1337,7 +1337,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 		"(to a user specified *.zip file)"), NULL);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(exportDB, FALSE);
 	mExportDBMenuItem = exportDB;
 
@@ -1629,7 +1629,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainButtonOpen);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonOpen, FALSE);
 	mOpenImageButton = mainButtonOpen;
 
@@ -1646,7 +1646,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainButtonOpenTrace);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonOpenTrace, FALSE);
   	mOpenFinButton = mainButtonOpenTrace;
 
@@ -1663,7 +1663,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainButtonMatchingQueue);
 
 	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database<ColorImage>::loaded)
+	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonMatchingQueue, FALSE);
 	mQueueButton = mainButtonMatchingQueue;
 

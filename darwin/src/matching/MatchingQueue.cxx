@@ -29,7 +29,7 @@
 
 using namespace std;
 
-MatchingQueue::MatchingQueue(Database<ColorImage> *d, Options *o)
+MatchingQueue::MatchingQueue(Database *d, Options *o)
 	:
 		mFinDatabase(d),
 		mOptions(o),

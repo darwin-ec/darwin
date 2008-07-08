@@ -55,10 +55,9 @@
 #include "ConfigFile.h"
 #include "support.h"
 #include "interface/MainWindow.h"
-#include "Database.h"
+#include "DatabaseSupport.h"
 #include "Options.h"
 #include "interface/SplashWindow.h"
-#include "testReg.h"
 #include "waveletUtil.h"
 
 // trying to find memory leaks - next 3 lines
@@ -601,7 +600,8 @@ int main(int argc, char *argv[])
 	splash->show();
 
 	splash->updateStatus(_("Loading fin database..."));
-	Database<ColorImage> *db = new Database<ColorImage>(gOptions, false);
+	//Database *db = new Database(gOptions, false); //***1.99
+	Database *db = openDatabase(gOptions, false); //***1.99
 
 	//splash->updateStatus(_("Initializing interface..."));
 	splash->startTimeout();

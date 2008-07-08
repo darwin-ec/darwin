@@ -58,7 +58,7 @@ int getNumNoMatchWindowReferences()
 //
 NoMatchWindow::NoMatchWindow(
 		DatabaseFin<ColorImage> *Fin,			   
-		Database<ColorImage> *db,
+		Database *db,
 		MainWindow *m,					//***004CL
 		Options *o                    //***054
 )

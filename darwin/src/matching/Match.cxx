@@ -45,7 +45,7 @@ using namespace std;
 //
 Match::Match(
 		DatabaseFin<ColorImage> *unknownFin,
-		Database<ColorImage> *db,
+		Database *db,
 		Options *o                 //***054
 		)
 	: mUnknownFin(new DatabaseFin<ColorImage>(unknownFin)),

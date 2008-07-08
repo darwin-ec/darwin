@@ -33,7 +33,7 @@ class MatchingQueueDialog
 		// Constructor
 		// 	Sets up all the gtk widgets and such, but doesn't show
 		// 	the dialog.  show() must later be called to do that.
-		MatchingQueueDialog(MainWindow *mainWin, Database<ColorImage> *db, Options *o);
+		MatchingQueueDialog(MainWindow *mainWin, Database *db, Options *o);
 	
 		// Destructor
 		// 	Destroys the dialog if it's open and frees resources.
@@ -166,7 +166,7 @@ class MatchingQueueDialog
 
 		MatchingQueue *mMatchingQueue;
 
-		Database<ColorImage> *mFinDatabase;
+		Database *mFinDatabase;
 
 		MainWindow *mMainWin;			//***1.1
 

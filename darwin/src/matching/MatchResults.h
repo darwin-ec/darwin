@@ -348,7 +348,7 @@ class MatchResults {
 		void setDatabaseFilename(std::string fname) //***1.1
 		{	mDatabaseFile = fname; }
 
-		DatabaseFin<ColorImage> *load(Database<ColorImage> *db, std::string fileName);
+		DatabaseFin<ColorImage> *load(Database *db, std::string fileName);
 
 
 	private:

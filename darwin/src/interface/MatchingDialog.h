@@ -37,7 +37,7 @@ class MatchingDialog
 		// 	Only makes pointer copies of dbFin, db, and o
 		MatchingDialog(
 				DatabaseFin<ColorImage> *dbFin,
-				Database<ColorImage> *db,
+				Database *db,
 				MainWindow *m,			//***004CL
 				Options *o);
 		
@@ -168,7 +168,7 @@ class MatchingDialog
 		Options *mOptions;
 
 		DatabaseFin<ColorImage> *mFin;
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 		MainWindow *mMainWin;			//***004CL
 
 		bool

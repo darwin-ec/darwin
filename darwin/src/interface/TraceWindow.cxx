@@ -123,7 +123,7 @@ TraceWindow::TraceWindow(
 		MainWindow *m,
 		const string &fileName,
 		const ColorImage *image,
-		Database<ColorImage> *db,
+		Database *db,
 		Options *o
 )
 	: mMainWin(m),
@@ -193,7 +193,7 @@ TraceWindow::TraceWindow(
 		MainWindow *m,
 		const string &fileName,
 		DatabaseFin<ColorImage> *fin,
-		Database<ColorImage> *db,
+		Database *db,
 		Options *o
 )
 	: mMainWin(m),

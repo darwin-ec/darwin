@@ -58,7 +58,7 @@ class TraceWindow
 				MainWindow *m,
 				const std::string &fileName,
 				const ColorImage *image,
-				Database<ColorImage> *db,
+				Database *db,
 				Options *o);
 
 		//***1.4 - new version for loading single previously traced fin file into TraceWindow
@@ -66,7 +66,7 @@ class TraceWindow
 				MainWindow *m,
 				const string &fileName,
 				DatabaseFin<ColorImage> *unkFin,
-				Database<ColorImage> *db,
+				Database *db,
 				Options *o);
 
 		// Destructor
@@ -303,7 +303,7 @@ class TraceWindow
 
 		std::string mSavedFinFilename; //***1.6
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 
 		DatabaseFin<ColorImage> *mFin;  //***1.4 - pointer to loaded or saved fin trace
 

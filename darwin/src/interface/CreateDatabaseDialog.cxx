@@ -576,7 +576,8 @@ void on_createDbButtonOK_clicked(
 			// create new one
 
 			dlg->mOptions->mDatabaseFileName = fullDatabaseName;
-			dlg->mMainWin->mDatabase = new Database<ColorImage>(dlg->mOptions, true);
+			//dlg->mMainWin->mDatabase = new Database(dlg->mOptions, true); //***1.99
+			dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true); //***1.99
 
 			// restore GLOBAL currentDefaultScheme
 
@@ -647,7 +648,8 @@ void on_createDbButtonOK_clicked(
 			// now, recreate the main window database from the newly imported database file
 
 			dlg->mOptions->mDatabaseFileName = importPath + shortDatabaseName;
-			dlg->mMainWin->mDatabase = new Database<ColorImage>(dlg->mOptions, false);
+			//dlg->mMainWin->mDatabase = new Database(dlg->mOptions, false); //***1.99
+			dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, false); //***1.99
 
 			// update rest of options to reflect new database, and current survey area
 
@@ -750,7 +752,8 @@ void on_createDbButtonOK_clicked(
 		// create new one
 
 		dlg->mOptions->mDatabaseFileName = fullDatabaseName;
-		dlg->mMainWin->mDatabase = new Database<ColorImage>(dlg->mOptions, true);
+		//dlg->mMainWin->mDatabase = new Database(dlg->mOptions, true); //***1.99
+		dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true); //***1.99
 
 		// restore GLOBAL currentDefaultScheme
 

@@ -53,7 +53,7 @@ int getNumOpenFileChooserDialogReferences()
 //*******************************************************************
 //
 OpenFileChooserDialog::OpenFileChooserDialog(
-		Database<ColorImage> *db,
+		Database *db,
 		MainWindow *m,
 		Options *o,
 		int openMode
@@ -1255,7 +1255,8 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 				delete dlg->mDatabase; // this closes the current database file
 
 				// open the new database
-				dlg->mDatabase = new Database<ColorImage>(dlg->mOptions, false);
+				//dlg->mDatabase = new Database(dlg->mOptions, false);
+				dlg->mDatabase = openDatabase(dlg->mOptions, false);
 
 				// make sure main window has correct pointer to it -- THIS IS IMPORTANT
 				dlg->mMainWin->mDatabase = dlg->mDatabase;

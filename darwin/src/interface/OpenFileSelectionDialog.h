@@ -35,7 +35,7 @@ class OpenFileSelectionDialog
 		// 	
 		// 	Does a pointer copy of db and o
 		OpenFileSelectionDialog(
-				Database<ColorImage> *db,
+				Database *db,
 				MainWindow *m,
 				Options *o);
 		
@@ -90,7 +90,7 @@ class OpenFileSelectionDialog
 			*mDrawingArea,
 			*mText;
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 
 		ColorImage *mImage;
 

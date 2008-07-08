@@ -68,7 +68,7 @@ int getNumMatchingDialogReferences()
 //
 MatchingDialog::MatchingDialog(
 		DatabaseFin<ColorImage> *dbFin,
-		Database<ColorImage> *db,
+		Database *db,
 		MainWindow *m,				//***004CL
 		Options *o
 )

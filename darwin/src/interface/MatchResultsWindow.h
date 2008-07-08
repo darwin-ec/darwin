@@ -50,7 +50,7 @@ class MatchResultsWindow
 		MatchResultsWindow(
 				const DatabaseFin<ColorImage> *unknownFin,
 				const MatchResults *results,
-				Database<ColorImage> *database,
+				Database *database,
 				MainWindow *mainwin,	        //*** 004CL
 				MatchingDialog *matchingDialog, //***043MA
 				//GtkWidget *parentWindow,        //***1.3
@@ -248,7 +248,7 @@ class MatchResultsWindow
 		MatchResults *mResults;
 		int mCurEntry;
 
-		Database<ColorImage> *mDatabase;
+		Database *mDatabase;
 		MainWindow *mMainWin;	//*** 004CL
 
 		MatchingDialog *mMatchingDialog; //***043MA so we can return to the Matching Dialog

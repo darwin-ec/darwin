@@ -137,6 +137,14 @@ SOURCE=..\src\interface\CreateDatabaseDialog.cxx
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\Database.cxx
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\DatabaseSupport.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\interface\DataExportDialog.cxx
 # End Source File
 # Begin Source File
@@ -250,6 +258,10 @@ SOURCE=..\src\interface\NoMatchWindow.cxx
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\OldDatabase.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\interface\OpenFileChooserDialog.cxx
 # End Source File
 # Begin Source File
@@ -290,11 +302,11 @@ SOURCE=..\src\sqlite3.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\support.cxx
+SOURCE=..\src\SQLiteDatabase.cxx
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\testReg.cxx
+SOURCE=..\src\support.cxx
 # End Source File
 # Begin Source File
 
@@ -407,6 +419,10 @@ SOURCE=..\Src\Database.h
 # Begin Source File
 
 SOURCE=..\Src\DatabaseFin.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\DatabaseSupport.h
 # End Source File
 # Begin Source File
 
@@ -595,10 +611,6 @@ SOURCE=..\src\SQLiteDatabase.h
 # Begin Source File
 
 SOURCE=..\Src\Support.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\testReg.h
 # End Source File
 # Begin Source File
 
