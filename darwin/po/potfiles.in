@@ -1,0 +1,18 @@
+# List of source files containing translatable strings.
+
+src/main.cxx
+src/support.cxx
+src/interface/MainWindow.cxx
+src/interface/MatchResultsWindow.cxx
+src/interface/MatchingQueueDialog.cxx
+src/interface/AboutDialog.cxx
+src/interface/ErrorDialog.cxx
+src/interface/TraceWindow.cxx
+src/interface/ContourInfoDialog.cxx
+src/interface/OpenFileSelectionDialog.cxx
+src/interface/SaveFileSelectionDialog.cxx
+src/interface/ImageViewDialog.cxx
+src/interface/OptionsDialog.cxx
+src/interface/MatchingDialog.cxx
+src/interface/AlterBrightnessDialog.cxx
+src/interface/ResizeDialog.cxx

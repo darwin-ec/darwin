@@ -1,0 +1,1126 @@
+----------------------------------------------------------
+DARWIN 1.95 Beta Software (README FILE) -- 2/1/2008 - JHS
+----------------------------------------------------------
+This is a freely distributable version of the DARWIN-1.95 software.
+
+DARWIN (Digital Analysis and Recognition of Whales Images on a Network) has
+been under development at Eckerd College, St. Petersburg, FL, since 1993.
+Several research versions have been presented at conferences and workshops
+over the intervening years.
+
+The software was first demonstrated at the 11th Biennial Conference on the
+Biology of Marine Mammals, held in Orlando, FL, in 1995.
+
+This software is provided for your use and evaluation.  Copies may be made
+and the software may be in installed on any machine, free of charge.
+
+CAUTION: THIS SOFTWARE IS UNDER DEVELOPMENT.  ALTHOUGH WE WILL MAKE EVERY
+EFFORT TO MAINTAIN UPWARD PORTABILITY, FUTURE VERSIONS ARE NOT GUARANTEED TO
+BE COMPATIBLE WITH VERSION 1.95 (beta). NO WARRANTEES OR GUARANTEES OF ANY
+KIND ARE GIVEN OR IMPLIED.
+
+Please feel free to send comments, critiques and suggestions to the DARWIN
+Development Group at darwin@eckerd.edu
+
+SYSTEM REQUIREMENTS
+-------------------
+This software has been designed and tested on both Windows XP and Windows
+2000 platforms.  Future versions will be available for use under Linux.
+
+    16 Megabytes of hard drive space is required for installation from CD.
+
+    27 megabytes of hard drive space is required if downloading and 
+    installing from the zipped archive.
+
+Minimum System
+    CPU: 1.0 Gigahertz or faster
+    RAM: 64 Megabytes
+    Hard Drive: 10 Gigabytes
+    Display: 1024 x 768 with 24-bit color graphics card
+    Operating System: Windows XP or Windows 2000 (earlier Windows versions 
+        may also work but have not been tested)
+        Windows VISTA status is unknown.
+
+INSTALLATION
+------------
+From the Web site http://darwin.eckerd.edu 
+
+    Download the file "darwin-1.95-beta.zip"
+
+    Unzip the file in a convenient location. NOTE: You will need to have 
+    "Administrator" or "Power User" level privileges on your Windows 2000
+    or Windows XP computer if you want to unzip the folder in 
+    "C:\Program Files" or in "C:\" 
+
+    Unzipping the file will create the folder "darwin-1.95-beta" 
+
+From the CD.
+
+    Copy the folder "darwin-1.95-beta" to a convenient location. NOTE: You will need 
+    to have "Administrator" or "Power User" level privileges on your Windows 2000 
+    or Windows XP computer if you want to copy the folder to "C:\Program Files" 
+    or "C:\" 
+
+The folder "darwin-1.95-beta" contains the following ....
+
+    backups        - used in backing up database
+    docs           - online user help and other documentation
+    licenses-etc   - copies of license and right to use information
+    system         - all runtime system files
+        bin            - contains executable ("darwin.exe") and GTK+ dlls
+        etc            - GTK+ and other
+        lib            - GTK+ and other runtime library files
+    surveyAreas    - contains all sighting and catalog related data
+        sample         - sample survey area (catalog, images, etc)
+            catalog       - folder for catalogs
+            fin-images    - sample dorsal fin images
+            matchQueues   - folder for queued matches 
+            matchQResults - folder for saved results of fin matches
+            sightings     - folder for sighting information (future use)
+            tracedFins    - folder for saved fin tracings
+        default        - default survey area (catalogs, sightings, data)
+            catalog       - folder for catalogs
+            matchQueues   - folder for queued matches 
+            matchQResults - folder for saved results of fin matches
+            sightings     - folder for sighting information (future use)
+            tracedFins    - folder for saved fin tracings
+    darwin-1.95-readme.txt - this file
+    runDarwin.bat  - sets up runtime environment and starts executable
+
+RUNNING Darwin
+--------------
+
+    To run the software, double-click on the "runDarwin.bat" file.
+
+    It creates an essential runtime environment variable (DARWINHOME)
+    and then runs the executable (bin\darwin.exe).
+
+    The program will create an initial configuration file "darwin.cfg" 
+    in the system folder.  It contains various configurable color values, 
+    active contour constants, etc.  Most importantly for the user, it 
+    saves the name and location of all survey areas, catalogs, and catalog
+    category naming schemes. YOU MAY LOSE ACCESS TO CATALOGS OR DATA IF 
+    YOU MODIFIED THIS FILE MANUALLY.  The only catalog category scheme
+    included with the software is the Eckerd College scheme.  However, you
+    may create, save and use additional schemes to create your own databases.
+
+    The program will open the first time without a database.  We recommend 
+    that you use the menu option "File/Open Database" to locate and open
+    the "surveyAreas/sample/catalog/darwin.db" database.  There are also 
+    "surveyAreas/sample/fin-images" which you may use to familiarize
+    yourself with the software and its usage.
+
+    When you are ready, you may use the menu option "File/New Database" to
+    create a database of your own. You may create this database in the 
+    "surveyAreas/default" folder or you may create a totally different survey
+    area and database of your own.  The catalog category naming scheme you
+    desire to use may be selected from a pull-down menu.  If you want to
+    create your own scheme, do so by using the main window menu option 
+    "Settings/Catalog Scheme/Define New Scheme" before you create the new
+    database.  Once a new database is created, its category names are fixed
+    and cannot be changed.
+    
+    NOTE: All catalogs (databases) created within a given survey area will
+    share the same "catalog" folder.  This means that their database files
+    and cataloged images will be mixed within the same folder.
+
+    Whenever the program runs, several AUTOMATIC backups are created.  If you
+    have a program crash and lose your configuration or a database, these 
+    files may be useful in restoring your system.
+
+    system/darwin.cfg.bak
+        a copy of the last successfully loaded configuration file.  If the
+        program cannot find "system/darwin.cfg" or if it is corrupted, the
+        program will automatically restore "system/darwin.cfg" from 
+        "system/darwin.cfg.bak" -- If this fails a new initial distribution
+        "system/darwin.cfg" file is created.  You may rebuild the list of
+        KNOWN databases, by opening each in turn the next time you run the
+        program.  Category naming schemes will have to be manually rebuilt
+        and saved.
+
+    system/lastLoadOf_xxx_yyy.db
+        a copy of the "surveyAreas/xxx/catalog/yyy.db" database file made
+        as it was last loaded.  This copy does not contain any changes made 
+        to the database while the program was running.
+
+        If the "surveyAreas/xxx/catalog/yyy.db" file is lost or becomes
+        corrupted, you may manually restore the catalog (database) to the
+        same state it was in when last loaded by manually replacing the 
+        "surveyAreas/xxx/catalog/yyy.db" file with a COPY of the
+        "system/lastLoadOf_xxx_yyy.db" file.
+
+        If you have a more recent FULL BACKUP, you can accomplish the same
+        thing by using the menu option "File/Restore" in the main window.
+        FULL BACKUPS include all associated catalog images as well as the 
+        *.db file.
+
+Help / Documentation
+--------------------
+The "docs" folder contains an HTML User's Guide ("usersguide.htm").  You can
+open it by double-clicking it, or you can access it from the menu option
+"Help/Documentation" in the Main Window of the program.
+
+Sample Catalog
+--------------
+
+There is a sample catalog included in the "surveyAreas/samples" folder. You
+may find it useful to open this sample the first time you use the software.
+All sample dolphin images have been provided courtesy of the Eckerd College
+Dolphin Project.
+
+Supported Image File Formats
+----------------------------
+The program currently reads JPEG, BMP, PNG, PNM, PGM(ASCII & Raw formats)
+and PPM (Raw format) image files.  Other image formats will be supported
+in future versions of the software as needs are identified.
+
+EXIF data from JPEG files are automatically extracted and used to fill
+sighting data entries wherever possible.  Currently the image creation
+date/time is extracted and displayed when a new image is loaded into the
+Trace Window for processing.
+
+Backup & Restore
+----------------
+These processes are provided in the software beginning with version 1.85.
+From the main window the user may make a backup of the CURRENTLY LOADED
+database using the menu option "File/Backup."  The backup is created in
+a standard location and is named automatically.  
+
+Given the currently loaded database ...
+
+    surveyAreas/default/catalog/darwin.db
+
+a backup created today (5/15/2007) would be created as a zipped archive
+containing the database file "darwin.db" and all associated images, and this
+archive would be saved in the "backups" folder as ...
+
+    backups/default_darwin_MAY_15_2007.zip
+
+any subsequent backups created the same day would be stored with numeric 
+suffixes as follows ...
+
+    backups/default_darwin_MAY_15_2007[2].zip
+    backups/default_darwin_MAY_15_2007[3].zip
+
+Backups must be manually removed when or if space becomes an issue.
+
+If the user needs to restore a database from an existing backup, the menu 
+option "File/Restore" from the main window allows selection of a backup 
+file.  The catalog file and all associated images will be extracted from
+the backup file (zipped archive) into exactly the same survey area from
+which it came.
+
+Given the selected backup archive ...
+
+    backups/default_darwin_MAY_15_2007[2].zip
+
+The database file itself ...
+
+    surveyAreas/default/catalog/darwin.db 
+
+would be replaced with the copy from the archive.  Any missing images
+associated with the database in the folder ...
+
+   surveyAreas/default/catalog/
+
+would also be replaced from the archive.  However, existing images
+in the catalog folder will NOT be overwritten.
+
+Export & Import
+----------------
+These processes are provided in the software beginning with version 1.85.
+They are similar to Backup and Restore.  However, the user is allowed 
+wider control over the location and naming of the zipped archive when
+exporting, and a completely new survey area is required when importing.
+Export and import are intended to allow movement of a catalog (database)
+from one machine to another or one installation to another.
+
+From the main window the user may export the CURRENTLY LOADED database
+using the menu option "File/Export."  A zipped archive containing the
+database file and all associated images is created in a location and with
+a name selected by the user.
+
+From the main window the user may import an exported archive by using the
+"File/Import" menu option.  The user must then select the archive file to
+be imported AND enter a name for a new survey area within which to import
+the catalog.  Imports into existing survey areas are not allowed in this
+version of the software because of the difficulties associated with 
+maintaining existing database associations with existing images while 
+extracting large numbers of additional images into the catalog folder.
+
+Security & Sharing Issues
+------------------------
+Windows XP (in particular) has tightened file sharing and security settings.
+A "normal" User is likely to have problems running the Darwin software, even
+if he succeeded in installing it.  This problem has to do with default 
+"write"and "delete" privileges for normal users being denied in certain 
+locations.
+
+The main issues relate to the following ....
+
+    All catalogs ("catalog/*.db") and the configuration file ("darwin.cfg")
+    must be opened in read  and write modes since changes are made to it as
+    the program runs.  A normal User may not have write privileges if the
+    software was installed by a different user.
+
+    If file write permissions are the problem the program will most likely
+    terminate with an error message "Error opening or creating database 
+    file!"
+
+If you have "Administrator" or "Power User" privileges on your Windows XP 
+machine you should not encounter these problems.
+
+If not, you will need to use the Windows XP File Sharing and Security 
+settings to permit "write" and "delete" access to the problem files.
+
+SOFTWARE Features and User Interface
+====================================
+
+-----------
+Main Window
+-----------
+Title
+    "DARWIN - " <plus path and name of loaded database file>
+
+Menu Options
+    File
+        New Database
+        Open Image
+        Open Traced Fin
+        Open Database
+        Matching Queue
+        Backup
+        Restore
+        Import
+        Export
+        Exit
+    Settings
+        Options
+        Catalog Schemes
+            New Scheme
+            View/Edit Schemes
+            Set Default Scheme
+    Data
+        Export Selected Data
+    Help
+        Documentation
+        About
+
+Buttons
+    Open (Image)
+    Open (Fin)
+    Queue
+    Goto
+        <find dolphin by ID>
+    Previous
+    Next
+    Modify
+
+Displays
+    List of known dolphins
+    Image of selected dolphin
+    Fin Outline of selected dolphin
+    Data fields for selected dolphin
+        ID
+        Name
+        Date of Sighting
+        Roll and Frame
+        Location Code
+        Damage Category
+        Short Description
+
+Popups from Main Window
+    Image Viewer
+    Outline Viewer
+
+-----------------------------------------
+Trace Window (opened with UNTRACED image)
+-----------------------------------------
+Enter from <Open Image> button or <File - Open Image> menu option on Main Window
+
+Title
+    <Path and Name of loaded fin image>
+
+Tracing Sequence Buttons
+    Undo
+    Redo
+    Modify Image
+        <active initially>
+    Trace Outline
+    Locate Features
+
+Tool Buttons
+    <for Modifying Images>
+        Magnify
+        Flip Horizontally
+        Enhance Contrast 
+        Adjust Brightness
+        Crop
+    <for Manual Outline Tracing>
+        Magnify
+        Manually trace outline
+        Insert outline points
+        Adjust outline point location
+        Remove outline points
+        Trim outline ends
+    <for Feature Adjustment>
+        Magnify
+        Drag and Drop feature
+
+Message area
+
+Numerical Display
+    Image Scale
+    Selected Image Coordinates
+
+Image Area
+    <adjustable and scrollable>
+
+Data Fields
+    ID Code
+    Name
+    Date of Sighting
+    Roll and Frame
+    Location Code
+    Damage Category
+    Short Description
+
+Main Action Buttons
+    Match
+    Save
+    Add to Database
+    Close
+
+------------------------------------------------
+Trace Window (opened with previously traced fin)
+------------------------------------------------
+Enter from <Open Traced Fin> button or <File - Open Fin> menu option on Main Window
+
+Title
+    <Name of loaded/traced fin file>
+
+Tracing Sequence Buttons
+    Undo
+    Redo
+    Modify Image
+        <locked initially>
+    Trace Outline
+        <locked initially>
+    Locate Features
+        <locked initially>
+    Unlock Traced Fin
+        <not available in version 1.95>
+
+Tool Buttons
+    <for Feature Adjustment>
+        Magnify
+        Flip Horizontally
+        Outline vs. Image Scale Adjustment 
+            Numerical display
+            Slider for adjustment
+    Unlock Traced Fin
+        <not available in version 1.95>
+
+Message area
+
+Numerical Display
+    Image Scale
+    Selected Image Coordinates
+
+Image Area
+    <adjustable and scrollable>
+
+Data Fields
+    ID Code
+    Name
+    Date of Sighting
+    Roll and Frame
+    Location Code
+    Damage Category
+    Short Description
+
+Main Action Buttons
+    Match
+    Save
+    Add to Database
+    Close
+
+---------------------
+Matching Queue Window
+---------------------
+Enter from <Queue> button or <Matching Queue> menu option on Main Window
+
+Title
+    "Matching Queue"
+
+Traced Fin List
+
+Image Area
+
+Status bars
+    Percent of Queue Processed
+    Percent of Database Matched against current unknown fin
+
+Buttons
+    Add
+    Remove
+    Run Match
+    View Results
+    Save Queue
+    Load Queue
+    Cancel
+
+---------------------------------------
+Catalog Scheme Window (New Scheme Mode)
+---------------------------------------
+Enter from <Catalog Scheme - Define New Scheme> menu option on Main Window
+
+Title
+    "Catalog Schemes ..."
+
+Data Entry Areas
+    Scheme Name
+    Scheme Category Name List
+
+Buttons
+    Cancel
+    OK
+
+---------------------------------------------
+Catalog Scheme Window (ViewEdit Schemes Mode)
+---------------------------------------------
+Enter from <Catalog Scheme - View/Edit> menu option on Main Window
+
+Title
+    "Catalog Schemes ..."
+
+Data Lists
+    Scheme Names
+    Category Names
+
+Pop-Up Menus (right mouse button)
+    Scheme Name List Options
+        Rename Scheme
+        Remove Scheme
+    Category Name List Options
+        Rename Category
+        Insert New Category
+        Remove Category
+
+Buttons
+    Allow Editing
+    Cancel
+    OK
+
+-------------------------------------------------
+Catalog Scheme Window (Select Active Scheme Mode)
+-------------------------------------------------
+Enter from <Catalog Scheme - Select Active> menu option on Main Window
+
+Title
+    "Catalog Schemes ..."
+
+Data Lists
+    Scheme Names
+    Category Names
+
+Buttons
+    Cancel
+    OK
+
+---------------
+Matching Window
+---------------
+Enter from <Match> button on Trace Window
+
+Title
+    "Matching Fin ..."
+
+Category Selection Section
+    Checkboxes
+    Buttons
+        Select All
+        Clear All
+
+Search Method Section
+    Radio Buttons (for each alignment method)
+        Quick & Dirty
+        Iteratively
+    Radio Buttons (for restricting part of outline matched)
+        All Points
+        Trailing Edge Points Only
+
+Outline Registration Section
+    Visual Display Area
+    Check Box to enable/disable display
+
+Progress Meter
+
+Main Buttons 
+    Start/Stop
+    Pause/Continue
+    Cancel
+
+--------------------
+Match Results Window
+--------------------
+Enter from Matching Window (at completion of matching process) or 
+from <View Results> button on Matching Queue Window
+
+Title
+    "Matching Results" <and results file name, if results displayed from file>
+
+Selected Fin Area
+    Image
+    Buttons
+        Show Original / Show Modified
+Unknown Fin Area
+    Image
+    Buttons
+        Show Original / Show Modified
+        Match Selected Fin Orientation / Show Original Orientation
+
+Database Fin Selection Area
+    Scrolling List
+    Buttons
+        Info
+        Hide/Show ID's
+        Previous
+        Next
+        Scroll (on/off)
+
+Registered Outlines Display
+
+Popups from Match Results Window
+    Image Viewer
+    Outline Viewer
+
+Main Buttons
+    Update Selected Fin
+    Add New Fin to Catalog
+    Return to Matching Dialog
+    Save Match Results
+    Done
+
+--------------------------
+Outline Information Window
+--------------------------
+Enter by clicking on <Fin Outline of Selected Dolphin Display> in Main Window or
+from clicking on <matched Outlines display> on Match Results Window
+
+Title
+    "Outline Information"
+
+Fin Outline Area
+    One outline (if entered from Main Window)
+    Two aligned outlines (if entered from Match Results Window
+
+Chain Code Area
+    One chain code plot (if entered from Main Window)
+    Two aligned chain code plots (if entered from Match Results Window
+
+Information Display Area
+    Fin ID's
+    Fin point counts
+    Positions of key outline feature points (Begin, Tip, Notch, End)
+
+Buttons
+    Generate Coefficients (with level selection)
+    Close
+
+-------------------------------------------
+File Selection Dialog (Open Fin Image Mode)
+-------------------------------------------
+Enter from <Open Image> button or <File - Open Image> menu option on Main Window
+
+Title
+    "Select a File"
+
+Buttons
+    New Folder
+    Delete File
+    Rename File
+    Cancel
+    OK
+Lists
+    Folders
+    Files
+Dropdowns
+    Folder Tree
+Check Box
+    Show Preview
+Entry Fields
+    Selected File Name
+Display Areas
+    Image Preview
+    Image Dimensions
+
+-----------------------------------
+File Chooser Dialog (Open Fin Mode)
+-----------------------------------
+Enter from <Open Fin> button or <File - Open Fin> menu option on Main Window
+
+Title
+    "Select a Traced Fin (*.fin)"
+
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\SurveyAreas\*\TracedFins>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.fin>
+
+Buttons
+    Cancel
+    Open
+
+----------------------------------------
+File Chooser Dialog (Open Database Mode)
+----------------------------------------
+Enter from <File - Open Database> menu option on Main Window
+
+Title
+    "Select a Database (*.db)"
+
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\SurveyAreas\*\catalog>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.db>
+
+Buttons
+    Cancel
+    Open
+
+---------------------------------------------
+File Chooser Dialog (Open Match Results Mode)
+---------------------------------------------
+Enter from <View Results> button on Matching Queue Window
+
+Title
+    "Select Results File ..."
+
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\SurveyAreas\*\MatchQResults>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.res>
+
+Buttons
+    Cancel
+    Open
+
+-------------------------------------------
+File Chooser Dialog (Open Match Queue Mode)
+-------------------------------------------
+Enter from <Load Queue> button on Matching Queue Window
+
+Title
+    "Load Matching Queue (*.que)"
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\SurveyAreas\*\MatchQueues>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.que>
+
+Buttons
+    Cancel
+    Open
+
+------------------------------------------
+File Chooser Dialog (Export Database Mode)
+------------------------------------------
+Enter from <File - Export> menu option on Main Window
+
+Title
+    "Enter filename for the EXPORT Database Archive (*.zip)"
+
+Initial (restricted) view
+    Filename Entry Area
+
+    Current Folder Drop Down
+
+    Selector
+        Browse for other Folders (switches between restricted and expanded views)
+
+    Buttons
+        Cancel
+        Save
+
+Expanded View
+    Folder tree
+        Display
+        Buttons
+            Add
+            Remove
+
+    Folder path
+        <default - %DARWINHOME%\Backups>
+
+    Create Folder Button
+
+    File List
+        <scrollable>
+
+    File Type (drop down list)
+        <default - *.zip>
+
+    Buttons
+        Cancel
+        Save
+
+------------------------------------------
+File Chooser Dialog (Import Database Mode)
+------------------------------------------
+Enter from <File - Import> menu option on Main Window
+
+Title
+    "Select a Database Backup Archive (*.zip)"
+
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\Backups>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.zip>
+
+Buttons
+    Cancel
+    Open
+
+-------------------------------------------
+File Chooser Dialog (Restore Database Mode)
+-------------------------------------------
+Enter from <File - Restore> menu option on Main Window
+
+Title
+    "Select a Database Backup Archive (*.zip)"
+
+Folder tree
+    Display
+    Buttons
+        Add
+        Remove
+
+Folder path
+    <default - %DARWINHOME%\Backups>
+
+File List
+    <scrollable>
+
+File Type (drop down list)
+    <default - *.zip>
+
+Buttons
+    Cancel
+    Open
+
+-----------------------------------------------
+File Chooser Dialog (Export Selected Data Mode)
+-----------------------------------------------
+Enter from <OK> button on Export Selected Data Window
+
+Title
+    "Enter filename for the <tab> separated data file (*.txt)"
+
+Initial (restricted) view
+    Filename Entry Area
+
+    Current Folder Drop Down
+
+    Selector
+        Browse for other Folders (switches between restricted and expanded views)
+
+    Buttons
+        Cancel
+        Save
+
+Expanded View
+    Folder tree
+        Display
+        Buttons
+            Add
+            Remove
+
+    Folder path
+        <default - %DARWINHOME%\Backups>
+
+    Create Folder Button
+
+    File List
+        <scrollable>
+
+    File Type (drop down list)
+        <default - *.txt>
+
+    Buttons
+        Cancel
+        Save
+
+-------------------
+New Database Window
+-------------------
+Enter from <File - New Database> menu option on Main Window
+
+Title
+    "Survey Areas and Databases ..."
+
+Darwin Splash Image
+
+Existing Survey Areas List
+    <selectable>
+
+Existing Databases List
+    <list of databases in selected Survey Area>
+
+What to Create Selection
+    New Database (within selected Survey Area)
+    New Survey Area (and new database)
+
+Select Catalog Scheme (drop down list)
+
+Entry Areas
+    New Survey Area Name
+    Name Database name
+
+Buttons
+    Cancel
+    OK
+
+-------------
+Backup Window
+-------------
+Enter from <File - Backup> menu option on Main Window
+
+Title
+    "Information"
+
+Message area
+    <a simple message indicating backup commencement>
+
+Button
+    Ok
+
+-------------------------------------------------------
+Modify Database Entry Window (entered from Main Window)
+-------------------------------------------------------
+Entered from <Modify> button on Main Window
+
+Title
+    <path and filename of MODIFIED fin image>
+
+Fin Image
+
+Known Information entry fields
+    ID
+    Name
+    Date of Sighting
+    Roll & Frame
+    Location Code
+    Damage Category (drop down list)
+    Short Description
+
+Buttons
+    Save
+    Delete
+    Cancel
+
+----------------------------------------------------------------
+Modify Database Entry Window (entered from Match Results Window)
+----------------------------------------------------------------
+Entered from <Update Selected Fin> or <Add New Fin to Catalog> buttons on Match Results Window
+
+Title
+    <path and filename of ORIGINAL fin image>
+
+Fin Image
+
+Known Information entry fields
+    ID
+    Name
+    Date of Sighting
+    Roll & Frame
+    Location Code
+    Damage Category (drop down list)
+    Short Description
+
+Buttons
+    Add to database
+    Cancel
+
+-------------------------
+Export Selected Data Window
+-------------------------
+Enter from <Data - Export Selected Data> menu option on Main Window
+
+Title
+    "Exporting Selected Data ..."
+
+Category Selection Section
+    Checkboxes
+        ID
+        Name
+        Date of Sighting
+        Roll & Frame
+        Location Code
+        Damage Category (drop down list)
+        Short Description
+        Modified Image Name
+        Original Image Name
+    Buttons
+        Select All
+        Clear All
+
+Export Method Selection
+    Tab Separated
+    To Printer (not available in version 1.95)
+
+Buttons
+    Cancel
+    OK
+
+------------------
+Image Popup Window
+------------------
+Enter by clicking on Fin Image in Main Window or Match Results Window
+
+Title
+    <dolphin ID, "Selected Fin" or "Unknown Fin" depending on calling context>
+
+Scrollable Image
+
+Tools
+    Magnifying Glass
+
+Buttons
+    Flip Horizontally
+    Zoom In
+    Zoom Out
+    Close
+
+------------
+About Window
+------------
+Enter from <Help - About> menu option on Main Window
+
+Title
+    "About ..."
+
+Darwin Splash Image
+
+Information Displayed
+    Current Version
+    Web site URL
+    Contributors (Research and Programming)
+    Financial Support
+
+Buttons
+    OK
+
+--------------
+Options Window
+--------------
+Enter from <Settings - Options> menu option on Main Window
+
+Title
+    "Options"
+
+Tabs
+    General
+        Toolbar Settings
+            Text only
+            Pictures Only
+            Text and Pictures
+        Dolphin ID Settings
+            Show ID's in Windows
+            Hide / Use Fake ID's (for blind testing)
+    Tracing
+        Tracing Color Selection
+        Active Contours
+            Max Iterations (50 is default)
+            Continuity Energy (9 is default)
+            Linearity Energy (3 is default)
+            Edge Energy (3 is default)
+    Image Processing
+        Gaussian Standard Deviation (1.5 is default)
+        Low threshold (0.15  is default)
+        High Threshold (0.85 is default)
+    Matching
+        <unused in version 1.95>
+    Fonts
+        Current Font
+        Sample text in current Font
+        Change Font Button
+
+Buttons
+    OK
+    Cancel
+
+---------------------
+Font Selection Dialog
+---------------------
+Enter from <Change Font> button on <Fonts Tab> on Options Window
+
+Title
+    "Select a font ..."
+
+Font family List
+    <selectable>
+
+Style List
+    <selectable>
+
+Size List
+    <selectable>
+
+Preview Window
+    <shows "abcdefghijk ABCDEFGHIJK" in selected font/style/size
+
+Buttons
+    Cancel
+    OK
+
+........... continuing to build this information ............ JHS

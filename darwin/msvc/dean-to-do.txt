@@ -1,0 +1,95 @@
+Talked with Kelly on 10/14/2005
+
+I need to do ...
+
+1 - need a way to allow matching without categories
+    in case user does not have categories
+	OR user does not select category for fin prior to saving into database
+    use a default category in trace window ... "Unspecified"?
+
+    //***055DB DONE - JHS 10/24/2005 ***
+
+2 - production matching dialog
+
+3 - error still does not reflect real degree of misalignment
+    some look great but have high error
+	some look awful but have low error
+	find way to determine how many lead & trail are being ignored and
+	   create penalty for those?
+	OR find way to determine degree of scaling being applied in registration
+	   and penalize for amounts above some threshold (30% or more is bad?)
+
+    //***055ER error now computed using ALL of fin outlines - JHS 10/24/2005
+
+    could continue to work on penalty ......
+
+4 - user changeable category list (new dialog)
+
+5 - 1/10th method and return to rematch causes crash on some fins
+    using order original, 1/10th, JHS tip, JHS notch, JHS all, JHS lead-then-trail, TOTAL
+
+    *** CAN NOT DUPLICATE ***
+
+Kelly will send numbers soon
+
+Scott has fixed part of auto trace problem but not all
+
+Kelly is still working on multi-scale snake
+   Scale up between steps does not work correctly
+
+
+Kelly's e-mail (10/14/2005) ...
+
+Hi Dean,
+   Just checking in.  I cannot remember when we agreed we would
+connect again.  But again it is Friday and I have a minute to breathe.
+Several points of update:
+
+1.  I furnished Scott with a directory of images that locked up the
+auto trace and another group that crashed it. Scott has now taken a 
+look at the images and has not been able to repeat a lock up.  He did
+identify and fix the cause of the crash.  Today I will update your
+last code with his fixes to test and give back to him for more
+investigation if the locking up is still an issue.
+
+2.  With the images that caused no problems, I went ahead and 
+constructed a database of 175 images.  I needed to get started on
+some level of testing and it has been fruitful.  Boy, adding the 
+category is extra work when building the database and it is not an
+option.  If no images have a category assigned, no matching occurs.
+I wonder if we should allow this category to be included in the search 
+all option.  There are currently those using Finscan who don't refine
+the search by category. I used the actual categories since I have
+a list for most, for several I just did my best to pick a likely choice.
+Our largest category is tip-nick with 31 - unfortunately only 6 of the
+50 fins-to-match are tip-nick so I'm not sure how informative an
+in-category search will be but I will try.
+
+So far I have matched only 12 images against the database.  I am still
+working out the best scenario for storing results files.  Results are
+mixed if you look at just the numbers. (I'll update you after I grep and
+group)  What it seems though is that certain methods do a fabulous job
+of registering, but that doesn't always lead to a low numbered ranking.
+There are still a couple of DB images that tend to have unknowns shrinked
+to fit well and they rank well for lots of images.
+
+Also, I have a problem roughly about half of the time, when I return to
+select a new matching algorithm, if I am returning after the 1/10th
+method, it crashes.  Therefore I test this one last so I don't need to
+retrace.
+
+3.  My multiscale is still not working.  It crashes.  There is some
+scaling that is not working as I am expecting it to, so I am still
+digging away at that.
+
+4.  Along with adding Scott's newest changes, I need to make sure to
+include the code for the bigger dots and bigger eraser (before I go
+blind.)  Working on that as well today.
+
+Well, that's the update.  Let me know when we plan to talk on the phone
+next.
+
+Kelly
+
+ps.  I got an email that the poster guidelines have now been posted on
+the website.

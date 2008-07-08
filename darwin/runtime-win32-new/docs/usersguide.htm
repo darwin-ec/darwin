@@ -1,0 +1,1348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>DARWIN User's Guide</title>
+  <link rel="stylesheet" type="text/css" href="usersguide.htg/darwin.css">
+</head>
+
+<body bgcolor="#39597D" text="#000000" link="#C6CFD9" vlink="#C6CFD9" alink="#C6CFD9">
+<a name="toc">&nbsp;</a>
+
+<table border=0 width="100%" cellspacing=0 cellpadding=2 bgcolor="#000000">
+      <tr>
+        <td width="100%" bgcolor="#000000">
+          <table border=0 width="100%" bgcolor="#7E93AA" cellspacing=0 cellpadding=2>
+            <tr>
+              <td class="title" width=1 nowrap bgcolor="#000000">
+                &nbsp;DARWIN:&nbsp;&nbsp;
+              </td>
+              <td class="menu" width="100%" nowrap>
+                &nbsp;
+                <a href="http://darwin.eckerd.edu/?page=home.html" class="nav">Home</a> |
+                <a href="http://darwin.eckerd.edu/?page=project_info.html" class="nav">Project Info</a> |
+                <a href="http://darwin.eckerd.edu/?page=documents.html" class="nav">Documents</a> |
+                <a href="http://darwin.eckerd.edu/?page=photo_identification.html" class="nav">Photo-Identification</a> |
+                <a href="http://darwin.eckerd.edu/?page=screenshots.html" class="nav">Screenshots</a> |
+                <a href="http://darwin.eckerd.edu/?page=download.html" class="nav">Download</a> |
+                <a href="http://darwin.eckerd.edu/?page=links.html" class="nav">Links</a>
+                
+			</td>
+			<td class="menu" width="201" nowrap>
+                <a href="http://www.eckerd.edu/"><img src="usersguide.htg/eckerd.gif" height="40" width="201" border="0" alt="Eckerd College: Department of Computer Science"></a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+    <br/>
+          <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    t<br/>
+                    a<br/>
+                    b<br/>
+                    l<br/>
+                    e<br/>
+                    &nbsp;<br/>
+                    o<br/>
+                    f<br/>
+                    &nbsp;<br/>
+                    c<br/>
+                    o<br/>
+                    n<br/>
+                    t<br/>
+                    e<br/>
+                    n<br/>
+                    t<br/>
+                    s<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+<p><u><strong><img style="width: 200px; height: 367px; float: right;" alt="" src="usersguide.htg/darwin_splash.jpg"></strong></u>
+</p>
+
+<h1 align="center">Digital Analysis and Recognition of
+Whale Images on A Network (DARWIN)</h1>
+<h2 align="center">User's Guide (version 1.95 and later)</h2>
+
+
+
+<!----Table of contents----------------------------------------------------------------------------------->
+
+<h2>Table of Contents</h2>
+</p>
+
+<ul>
+
+  <li><a href="#overview">Overview</a></li>
+
+  <li><a href="#mainwin">Main Window</a>
+    <ul>
+      <li><a href="#mainwin_scheme">Creating a catalog scheme</a></li>
+    </ul>
+
+    <ul>
+      <li><a href="#mainwin_creating">Creating a database</a></li>
+    </ul>
+
+    <ul>
+      <li><a href="#mainwin_viewing">Viewing images or sighting data from the database</a></li>
+    </ul>
+
+    <ul>
+      <li> <a href="#mainwin_exportSighting"> Exporting sighting data from the catalog</a></li>
+    </ul>
+
+  </li>
+
+  <li><a href="#tracewin">The Trace Window</a>
+    <ul>
+
+      <li><a href="#tracewin_adding">Adding a dorsal
+fin image to the database</a></li>
+
+      <li><a href="#tracewin_comparing">Comparing an
+unknown dorsal fin against images in the database</a></li>
+
+      <li><a href="#tracewin_queue">Creating a queue
+or list of images to match against the database</a></li>
+
+      <a href="#tracewin_queue"> </a>
+    </ul>
+
+  </li>
+
+  <li><a href="#matchwin">The Match Results Window</a></li>
+
+  <li><a href="#options">The Options Dialog</a>
+    <ul>
+
+      <li><a href="#options_general">General Settings</a></li>
+
+      <li><a href="#options_trace">Trace Settings</a></li>
+
+      <li><a href="#options_fonts">Font Settings</a></li>
+
+    </ul>
+
+  </li>
+
+</ul>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><a name="overview">&nbsp;</a><br/>
+         <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    o<br/>
+                    v<br/>
+                    e<br/>
+                    r<br/>
+                    v<br/>
+                    i<br/>
+                    e<br/>
+                    w<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+
+<p>
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h2>Overview</h2></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+
+<p>DARWIN is a software system which allows marine scientists to
+maintain information for the
+study of various behavioral and ecological patterns of bottlenose
+dolphins, <em>Tursiops truncatus</em>.
+The software provides a graphical user interface to create and access a
+collection of digital
+dorsal fin images along with textual information which describes
+individual animals as well as
+relevant sighting data. Users may query the system with the name of a
+specific individual or the
+entire collection may be sorted and viewed based upon sighting
+location, sighting date or damage
+category. Alternatively, the researcher may compare the dorsal fin
+image of an unknown
+individual against a database of images of previously identified
+dolphins in order to identify
+those fins which it most closely resembles.
+
+</p>
+
+<p>Darwin currently handles images in JPEG, PNG, BMP, and PNM formats.
+The images may be of any size,
+and will be appropriately scaled for display. Please note that for the
+purposes of automatic
+identification, all dorsal fin photographs must be oriented right side
+up with the leading edge of
+the dorsal fin on the left. (<em>Dolphin swimming toward the left</em>)
+This transformation may be
+performed in DARWIN after the image is opened. DARWIN also provides
+image enhancement options such as contrast enhancement, image brightening
+and cropping.  These enhancements may improve the quality of the outline
+which is extracted from the image.  The modified image is used 
+for the purposes of outline extraction and matching.  Copies of
+both the modified image and the 
+original image are saved when a fin is added to database.
+</p>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><a name="mainwin">&nbsp;</a><br/>
+         <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    m<br/>
+                    a<br/>
+                    i<br/>
+                    n<br/>
+                    &nbsp;<br/>
+                    w<br/>
+                    i<br/>
+                    n<br/>
+                    d<br/>
+                    o<br/>
+                    w<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+<p>
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h2>The Main Window</h2></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+
+<p><img style="width: 405px; height: 315px; float: right;" alt="" src="usersguide.htg/mainwin_thmb.jpg">
+The main window (<em>shown at right</em>) appears when the program is run and
+provides access to the
+database of dorsal fin images and relevant sighting data. The area at
+the top of the window
+provides menus and buttons for opening files, creating catalogs, setting up lists of
+images to be compared against
+the database, and changing some of the options which affect the
+program's appearance and
+functionality. The scrolled area below the menu bar, provides a
+list of all of the dorsal fins
+in the database, including a thumbnail image for each; the buttons above the scrolled list enable reordering
+of the list based upon that column of data.  The small text entry area
+just below the scrolled area allows a user to search for a dorsal fin by ID;
+The text areas located at the bottom left list the
+sighting data for the currently highlighted dorsal fin image in the list. A
+larger scale image of the
+currently highlighted dorsal fin is displayed in the image area to the
+right of the scrolled area. Just below the image, the outline of the
+current dorsal fin is displayed. (<em>Note that if a database is
+currently unavailable, the scrolled area will be empty and no image or
+outline will be displayed</em>.)
+</p>
+
+<table width="100%">
+  <tbody>
+    <tr>
+<h3>Main Window Menus: </h3>
+<br><br>
+<!----fileMenu----------------------------------------------------------------------------------->
+<b>The File Menu: </b>
+<p><img style="width: 177px; height: 279px; float: left;" alt="" src="usersguide.htg/mainwin_fileMenu.jpg" border="0">
+The <b><a href="#mainwin_creating">"New Database"</a> </b>menu item opens 
+a dialog window to help users create a new database.</p>
+
+<p>The <b>"Open Image"</b> menu item opens a fairly standard dialog window that enables  
+import of a dorsal fin image into the program for processing (<em>either addition to or matching 
+against images in the catalog</em>). 
+Once the image has been read into the program, the image is displayed in the 
+<a href="#tracewin">trace window</a> for further processing. 
+Currently jpeg, png, bmp, and pnm files are supported. 
+</p>
+
+<p>The <b>"Open Traced Fin"</b> menu item opens a fairly standard dialog window that enables  
+a previously traced fin image to be loaded. 
+Once the traced fin image has been read into the program, the image along with its trace
+and any sighting information are displayed in the 
+<a href="#tracewin">trace window</a> for further processing. 
+Traced fin image files are created by the Darwin software by pressing the "Save"
+button in the trace window and their filenames end in <b>.fin</b>.  Normally, traced fin
+files are created so that a collection of sighting images can be matched against images
+in the catalog in a batch mode.
+</p>
+
+<p>The <b>"Open Database"</b> menu item opens a fairly standard dialog window that enables  
+loading of a existing database for use by the program. Each time DARWIN runs, it will
+open the database that was in use the last time the program was used, thus if a different
+database is desired the "Open Database" menu item enables this change. 
+Database files are created by the darwin program and their filenames end in <b>.db</b>.
+</p>
+
+<p>The <b>"Matching Queue"</b> menu item opens a dialog window that enables the creation of a 
+queue of saved fin traces to be matched against the database. This capability allows the 
+user to match multiple new fin images against the database in an unattended fashion, and 
+subsequently review the results of each of match at leisure.
+</p>
+
+<p>The <b>"Backup/Restore"</b> menu items initiate the backup/restoration
+of a database and all associated images. Compressed archive files (zip file) used by 
+Backup and Restore are located in the <b>backups</b> folder.  </p>
+
+<p>The <b>"Export/Import"</b> menu item provide similar functions as Backup/Restore but 
+allows the user to specify the filename and location of the database file to export/import.
+</p>
+
+<p>The <b>"Exit"</b> menu item exits the program.
+</p>
+
+<!----settingsMenu----------------------------------------------------------------------------------->
+<b>The Settings Menu: </b>
+<p><img style="width: 330px; height: 122px; float: left;" alt="" src="usersguide.htg/mainwin_settingsMenu.jpg" border="0">
+The <b> <a href="#database_dialog"> "New Database"</a> </b>menu item opens 
+a dialog window to help users create a new database.</p>
+
+<p>The <b>"Options"</b> menu item opens the <a href="#options">options dialog window</a> that enables 
+modifications of
+several characteristics of the user interface (font and font size in the scrolled catalog list, color
+of the trace used in the trace window) as well as modification of some of the parameters that affect
+the performance of the dorsal fin extraction. 
+</p>
+
+<p>The <b>"Catalog Scheme"</b> menu item cascades into additional menu buttons which enable
+the creation, viewing, editing and changing of the current catalog scheme. 
+The Catalog Scheme effectively
+subdivides the catalog into categories and the software allows images to be sorted by these categories
+or for the search to be restricted to one or more categories. The default 
+is the Eckerd College scheme, which employs damage categories with names such as Leading Edge, Upper, 
+Middle, etc. to denote the area of the dorsal fin where the most significant amount of damage is located.
+Click <a href="#mainwin_scheme"> here</a> for additional information on Catalog Schemes. 
+</p>
+
+<!----dataMenu----------------------------------------------------------------------------------->
+<b>The Data Menu: </b>
+<p><img style="width: 162px; height: 57px; float: left;" alt="" src="usersguide.htg/mainwin_dataMenu.jpg" border="0">
+
+<p>The <b>"Data"</b> menu item cascades into another button which allows the user to export textual 
+sighting data from the catalog for use in another program.  
+Selecting this menu item will open a dialog window to specify detail of the export process.  See
+the section on <a href="#mainwin_exportSighting">exporting sighting data</a> for additional information.  
+</p>
+
+    </tr>
+  </tbody>
+</table>
+
+<br/>
+<b>Main Window Buttons: </b>
+
+<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_openimage.jpg" border="0"></a>
+Enables a user to import a dorsal fin image. 
+Once the image has been read into the program, the image is displayed in the 
+<a href="#tracewin">trace window</a> for further processing. 
+Currently jpeg, png, bmp, and pnm files are supported. 
+</p>
+
+<br/>
+<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_opentrace.jpg" border="0"></a>
+Enables a user to import the trace of a dorsal fin image which has been saved. 
+Once the traced image has been read into the program, the image and its outline are displayed in the 
+<a href="#tracewin">trace window</a> for further processing.  
+</p>
+
+<br/>
+<p><a href="#tracewin_queue"><img style="width: 55px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_queue.jpg" border="0"></a>
+Enables the creation of a queue of saved fin traces to
+be matched against the database. This capability allows the
+user to match multiple new fin images against the database in 
+an unattended fashion, and subsequently
+review the results of each of match at leisure.
+</p>
+
+<br/>
+<p><a href="#options"><img style="width: 59px; height: 53px; float: left;" alt="" src="usersguide.htg/mainwin_options.jpg" border="0"></a>
+Enables the user to change the format of the buttons,
+modify parameters
+affecting the way the outline of the fin is identified, 
+change the color in which outlines are displayed,
+and/or change the font used in all lists.  (<a href="#options"><em>See options
+dialog</em></a>)
+</p>
+
+<br/>
+<p><img style="width: 51px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_exit.jpg">
+Exits the program.
+</p>
+
+<br/>
+<br/>
+<p>The buttons just below the list of dorsal fin images allow
+the user to quickly view individual
+images and outlines or to modify or delete entries from the database.
+</p>
+
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_previous.jpg">
+</p>
+
+<p> Display the image outline and sighting info of the
+previous fin in the list
+</p>
+
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_next.jpg">
+</p>
+
+<p> Display the image outline and sighting info of the next
+fin in the list
+
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_modify.jpg">
+</p>
+
+<p> Modify sighting data for the highlighted fin or delete fin
+ from the database.
+</p>
+
+<br><br>
+<!----hidden buttons----------------------------------------------------------------------------------->
+<b>Hidden Tools: </b>
+
+<p>When the cursor is placed over the dorsal fin image on the right, the cursor changes to a
+magnifying glass.  Clicking on the image causes a new window to appear in which the image is
+magnified.  
+</p>
+<br>
+
+<!----Creating a catalog scheme----------------------------------------------------------------------------------->
+<a name="mainwin_scheme"> <h3>Creating a Catalog Scheme:</h3> </a>
+
+<p> &nbsp;
+<table width="100%">
+  <tbody>
+    <tr>
+
+      <td align="right"><a href="#toc">top</a></td><p><img style="width: 290px; height: 281px; float: left;" alt="" src="usersguide.htg/mainwin_newScheme.jpg" border="0">
+
+
+
+<p>Catalog schemes enable a catalog of dorsal fin images to be organized into categories based on areas
+of evident damage or any other organization rationale, for that matter.  The individual category names
+will become selectable when adding images to the database, and the database can be sorted by category
+when desired.   When images from sighting data are matched against the catalog, the match can be limited
+to selected categories when desired. <br> <br>
+
+To create a new catalog scheme, select <b>"Define New Sheme"</b> from the <b>Settings->Catalog Scheme</b> menu. 
+Selecting this menu item will open a dialog window as shown at the left.  Click in the top text entry box, 
+then enter the desired name for the
+new catalog scheme.  Click in the box below that and type a category name.  Hit enter (or carriage return)
+to enter subsequent category names.  Once a catalog has been created, its catalog scheme cannot be
+changed.<br><br>
+
+The <b>View/Edit</b> menu item on the <b>Settings->Catalog Scheme</b> drop down menu opens a similar dialog
+window that allows the categories of any defined scheme to be 
+viewed or edited, with the exception of the Eckerd College Scheme which cannot be changed.  The <b>Select 
+Active</b> menu item allows selection of a different scheme to be used in the creation of a database.
+</p>
+
+    </tr>
+  </tbody>
+</table>
+
+</p>
+
+<!----Creating a databse----------------------------------------------------------------------------------->
+<a name="mainwin_creating"> <h3>Creating a database:</h3></a>
+
+<p> &nbsp; 
+<table width="100%">
+  <tbody>
+    <tr>
+
+      <td align="right"><a href="#toc">top</a></td><p><img style="width: 393px; height: 291px; float: left;" alt="" src="usersguide.htg/mainwin_newDatabase.jpg" border="0">
+
+<p>To create a new database (catalog), select <b>"New Database"</b> from the <b>File</b> menu. 
+Selecting this menu item will open a dialog window as shown at the left.  Enter the desired name for the
+new database (the name must end in .db).  A new database will be created in the default sighting area
+with the catalog scheme indicated on the drop down menu.  If you have created your own catalog scheme,
+it should appear in the drop down menu.  Once a catalog has been created, its catalog scheme cannot be
+changed.<br><br>
+
+When a new database is created, the list of fins in the main window is cleared.  To add fins to the newly
+created database see the section on <a href="#tracewin_adding"><em>adding a dorsal
+fin image to the database.</em></a> 
+</p>
+
+
+    </tr>
+  </tbody>
+</table>
+
+</p>
+
+<!----Exporting Sighting Data----------------------------------------------------------------------------------->
+<a name="mainwin_exportSighting"> <h3>Exporting Sighting Data:</h3></a>
+
+<p> &nbsp; 
+<table width="100%">
+  <tbody>
+    <tr>
+
+      <td align="right"><a href="#toc">top</a></td><p><img style="width: 275px; height: 219px; float: left;" alt="" src="usersguide.htg/mainwin_dataExport.jpg" border="0">
+
+<p>To export the sighting data for each of the individuals in the catalog, select <b>"Export Selected Data"</b>
+ from the <b>Data</b> menu. 
+Selecting this menu item will open a dialog window as shown at the left.  Choose the items to be saved into
+a text file.  These items will be saved in a file called SightingDataLogForArea... as tab separated text 
+that can be imported into Excel or other off the shelf software.  The file is automatically located in the 
+sightings folder for the associated sighting area for tht data.
+</p>
+
+
+    </tr>
+  </tbody>
+</table>
+
+</p>
+
+<!----Viewing Images----------------------------------------------------------------------------------->
+<p><a name="mainwin_viewing">&nbsp;</a>
+<table width="100%">
+
+  <tbody>
+    <tr>
+      <td><h3>Viewing images or sighting data from the database:</h3></td>
+      <td align="right"><a href="#toc">top</a></td>
+    </tr>
+  </tbody>
+</table>
+
+</p>
+
+<p>There are several ways to access a particular dorsal fin in the database.
+<UL>
+	<LI>You may scroll the fin list, and then click on the name or the thumbnail
+image for the desired fin.
+	<LI>You may click the "Previous" or "Next"
+buttons, or use the Alt-P or Alt-N key combinations to move backward
+or forward to the desired fin.
+	<LI>You may enter the dolphin's
+ID Code in the provided data entry area and click the "GoTo" button to move directly
+to the desired fin.
+</UL>
+
+Once the line containing the fin of interest is
+highlighted, the image and its
+outline will be displayed to the right, and all relevant sighting data
+will be displayed in the
+lower left area of the main window.
+
+</p>
+
+<p>To view an enlarged version of the image, click on the image.
+A zoom window will appear. Three buttons on the top left of the zoom
+window provide the ability to zoom in, zoom out and to
+flip the image horizontally.
+</p>
+
+<p> </p>
+
+<p>To view information about the outline of the dorsal fin, click
+on the outline at the bottom right of
+the main window. A window will appear containing The following.
+<UL>
+	<LI>Upper Left: The extracted fin outline and 
+all automatically selected feature points (leading edge start,
+leading edge end, tip, largest notch, trailing edge end).
+	<LI>Upper Right:  The outline's chain code (its orientation at each
+point).
+	<LI>Lower Half: Additional outline
+information (<em>primarily of use to the developers of
+DARWIN for the purpose of testing</em>.)
+</UL>
+
+</p>
+
+<p>The scroll bars to the right of the main window list may be used to reveal
+the names and thumbnail images of
+fins that are farther down the list.
+
+</p>
+
+<p>The list of fins from the database may be sorted by name,
+damage category, sighting date, etc.,
+by simply clicking on the appropriate button above the list of images.
+By default, the fins are displayed in alphanumerical order by ID Code.
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><a name="tracewin">&nbsp;<a/><br/>
+         <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    t<br/>
+                    r<br/>
+                    a<br/>
+                    c<br/>
+                    e<br/>
+                    &nbsp;<br/>
+                    w<br/>
+                    i<br/>
+                    n<br/>
+                    d<br/>
+                    o<br/>
+                    w<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h2>The
+Trace Window</h2></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+
+<p><img style="width: 306px; height: 284px; float: right;" alt="" src="usersguide.htg/tracewin_thmb.jpg">
+The trace window (<em>shown at right</em>) appears when an
+image is opened. This window provides the
+capability to add new images to the database for the creation of an
+initial electronic catalog. It
+allows a user to query the database for a list of dorsal fins which
+most nearly resemble the newly
+opened image or to prepare a query for later submission. It also
+provides access to a number of
+image enhancement operations. The number of rows and columns in the
+image as well as the
+current magnification factor are displayed above the upper right corner
+of the image. The text
+entry boxes to the right of the image provide an opportunity to enter
+descriptive information and
+sighting data for the dorsal fin in the image.
+
+</p>
+
+Tracing is a three step process, with access to each step being given by one of
+the following buttons:
+
+<p><a href="#tracewin_modify"><img style="border: 0px solid ; width: 88px; height: 49px;" alt="" src="usersguide.htg/tracewin_modify.jpg"></a> Once a
+new fin is opened, the program starts with the trace window enabled for a number of
+image enhancement options. If no modifications to the image are desired, the
+user may simply click on the "Trace Outline" button. 
+<a href="#tracewin_modify">(see details on buttons for image modification </a>)</p>
+
+<p><a href="#tracewin_trace"><img style="border: 0px solid ; width: 80px; height: 43px;" alt="" src="usersguide.htg/tracewin_trace.jpg"></a> 
+Once the user clicks this button and then clicks the first point of the
+leading edge and the last point of the trailing edge, the program attempts an
+automatic generation of the fin outline.  If the outline generation is successful, the
+outline is displayed in the trace window.  The user has the option to modify the
+outline (erase, move or delete points) or to provide a new hand sketched trace of
+the outline (<a href="#tracewin_trace">see details on buttons for tracing the outline</a>)</p>
+
+<p><a href="#tracewin_features"><img style="border: 0px solid ; width: 107px; height: 52px;" alt="" src="usersguide.htg/tracewin_locatefeatures.jpg"></a>
+After a fin is traced, the user may click the "Locate Features" button
+to have the program automatically locate the feature points (fin tip, largest
+notch, etc.). The user has the opportunity to view and reposition the
+automatically detected points on this screen. 
+(<a href="#tracewin_features">see details on repositioning feature points</a>)
+If a search of the database is begun without pressing this button, the
+feature points are still generated, but the user loses the opportunity to 
+confirm their location.
+</p>
+
+
+<h1>Buttons for Image Modification: the Trace Window</h1>
+<p>When the "Modify Image" button is clicked, the area at the top of the trace window 
+provides buttons for
+enhancing or manipulating a new image. These enhancements may improve
+the quality of the outline which is generated for query of the
+database. Copies of both original image and modified (<em>enhanced</em>)
+image may be saved along with the fin outline in either an individual 
+fin file (useful for later processing) or may the same may be added to the 
+database at any time.
+
+</p>
+
+<p><a name="tracewin_modify"></a></p>
+
+<p><img src="usersguide.htg/img9.gif" align="left" height="22" width="23">
+</p>
+
+<p>Undo previous action/modification
+</p>
+
+<p><img src="usersguide.htg/img10.gif" align="left" height="22" width="23">
+</p>
+
+<p>Redo previous undo action/modification
+</p>
+
+<p><img src="usersguide.htg/img11.gif" align="left" height="17" width="33">Flip image along
+horizontal axis
+</p>
+
+<p><img src="usersguide.htg/img13.jpg" align="left" height="30" width="30">
+</p>
+
+<p>Alter/increase image contrast
+</p>
+
+<p><img src="usersguide.htg/img14.jpg" align="left" height="30" width="30">
+</p>
+
+<p>Alter/increase image brightness
+</p>
+
+<p><img src="usersguide.htg/img17.jpg" align="left" height="30" width="30">
+</p>
+
+<p>Crop image (<em>image should be cropped to include only the dorsal fin for best performance of the 
+autotrace feature</em>)
+</p>
+
+<h1>Buttons for Outline Tracing: the Trace Window</h1>
+
+
+<p>When the "Trace Outline" button is clicked, the area at the top of the trace window
+provides tools to modify or re-create an outline
+of the dorsal fin (<em>necessary to
+generate a query of the database or to store an image in the database.</em>)
+
+</p>
+
+<p><img src="usersguide.htg/img18.gif" align="left" height="24" width="23">
+</p>
+
+<p>ZOOM - When this tool is selected, the image may be magnified by
+clicking on
+the image (<em>clicking with the shift button depressed will decrease the
+magnification factor</em>)
+</p>
+
+<p><img src="usersguide.htg/img19.gif" align="left" height="23" width="23">
+</p>
+
+<p>AUTOTRACE - This tool is used by the user to designate the beginning of the 
+fin's leading edge and the end of its trailing edge, prior to the beginning
+of the outline autotrace operation. 
+</p>
+
+<p><img src="usersguide.htg/img19.gif" align="left" height="23" width="23">
+</p>
+
+<p>TRACE - When this tool is selected the user may hand trace the
+outline. The mouse button must remain depressed while dragging the
+cursor along the outline.  Upon release, the outline will be repositioned
+using active contours for more precise placement.  (<em>Note: The
+outline should be traced from left to right, and the image should be
+oriented such that the leading edge is on the left</em>)
+</p>
+
+<p><img src="usersguide.htg/img20.gif" align="left" height="21" width="21">
+</p>
+
+<p>ADD POINT - When this tool is selected, the user may insert a
+point into an existing
+outline. Additional points may be desirable to capture small or deep
+notches which are not effectively captured by the automated
+placement of the outline.
+</p>
+
+<p><img src="usersguide.htg/img21.gif" align="left" height="23" width="23">MOVE POINT - When 
+this tool is selected, the user may reposition a point in the
+existing outline.
+</p>
+
+<p><img src="usersguide.htg/img22.gif" align="left" height="23" width="23">
+</p>
+
+<p>ERASE POINT - When this tool is selected the user may erase
+points in the outline. (<em> Note: if the entire outline is to be erased, it is easier to select the
+pencil tool and begin the trace of the new outline.  You will be asked if you wish to discard the
+current outline.</em>)
+
+</p>
+
+<p><img src="usersguide.htg/img24.gif" align="left" height="23" width="23">
+</p>
+
+<p>CHOP TOOL - When this tool is selected the user may chop off either tail of the outline.
+
+</p>
+
+<h1>Buttons for Repositioning the Feature Points: the Trace Window</h1>
+<p>When the "Locate Features" button is clicked, the area at the top of the trace window
+provides tools to view and reposition feature points used in the matching process.
+For example if the point identified as the tip of the dorsal fin is not as desired
+by the user, the point may be dragged to the desired location.
+
+<p><img src="usersguide.htg/img21.gif" align="left" height="23" width="23">
+MOVE POINT - When this tool is selected, the user may reposition a feature point along the existing outline. (<em>Simply drag and drop the errant feature point.</em>)</p>
+
+<p><img src="usersguide.htg/img18.gif" align="left" height="24" width="23">ZOOM - When this tool is
+selected, the image may be magnified by
+clicking on
+the image (<em>clicking with the shift button depressed will decrease the
+magnification factor</em>)</p>
+
+<p></p>
+
+<p>The buttons in the bottom right area of the window provide
+interaction with the database of
+dorsal fin images:
+</p>
+
+<p><img style="width: 140px; height: 34px; float: left;" alt="" src="usersguide.htg/tracewin_export.jpg"> </p>
+<p>Export the sighting data from the trace window and append it to a file located in the sightings folder 
+of the survey area in use.  The name of the file will begin
+with "SightingDataLogForArea".</p>
+
+<p><img style="width: 140px; height: 34px; float: left;" alt="" src="usersguide.htg/tracewin_match.jpg"> </p>
+
+<p>Compare the outline of the fin against dorsal
+fin images contained in the database.
+</p>
+
+<p><img style="width: 136px; height: 33px; float: left;" alt="" src="usersguide.htg/tracewin_save.jpg">
+</p>
+
+<p>Save the dorsal fin image, dorsal fin outline and
+sighting information to a separate file such that the fin may be matched
+against the database at a later time. (<em>Note:  This feature may be used
+to initiate a single match at a later date or to create a queue of fins
+for unattended, queued matching.</em>)
+
+</p>
+
+<p><img style="width: 137px; height: 31px; float: left;" alt="" src="usersguide.htg/tracewin_addtodb.jpg">
+</p>
+
+<p>Add the currently displayed fin to the database. Before
+this can be done, the outline of the dorsal fin must be
+traced and the fin must be assigned an ID code at a
+minimum.
+</p>
+
+<p><img style="width: 137px; height: 33px; float: left;" alt="" src="usersguide.htg/tracewin_cancel.jpg">
+</p>
+
+<p>Cancel the processing of the dorsal fin image and close
+the trace window.
+
+</p>
+
+<p><a name="tracewin_adding">&nbsp;</a>
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h3>Adding
+a dorsal fin image to the database</3></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+
+<p>Click on the "Open" button in the main window to open the
+image file. The trace window will
+automatically be displayed. Orient the dorsal fin such that the leading
+edge of the dorsal fin is on
+the left. <em>(The "Flip Horizontal" button may be used.)</em>
+Click on the "Trace Outline" button to automatically generate an outline 
+of the dorsal fin.
+If the outline cannot be generated, or if the generated outline is
+unacceptable, click on the pencil icon and trace the outline
+from leading edge to trailing edge without releasing the mouse button. Once the mouse
+button is released, the
+program will attempt to accurately position the chain of points along
+the actual edge of the dorsal
+fin. To ensure that important identification features are adequately
+captured by the outline,
+individual points may be added, moved or erased using the buttons to
+the right of the pencil. For
+easier tracing or modification of the outline, the user may zoom in or
+out using the magnifying
+glass. Also, user may resize the trace window by positioning the cursor
+on the edge of the
+window and dragging the edge of the window to the desired position. 
+</p>
+
+<p>Once an acceptable outline of the fin has been created,
+enter relevant sighting data in the text
+entry boxes on the right. Click the "Add to Database" button in the
+trace window. Copies of the original and modified images, the 
+fin outline and feature points, and all sighting data will
+be added to the currently opened database (or catalog).
+</P>
+
+<P>
+The DARWIN folder hierarchy is organized in such a way that multiple
+<EM>Survey Areas</EM> are allowed.  Within each Survey Area multiple
+databases (or catalogs) are allowed.  Each database file has a filename
+of the form <EM>*.db</EM> and resides in a <EM>catalog</EM> folder
+within a particular named Survey Area.  The user has control
+over the creation of Survey Areas and catalogs from the main window.
+</p>
+
+<p><a name="tracewin_comparing">&nbsp;</a>
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+      <td><h3>Comparing
+an unknown dorsal fin against images in the database<h3></td>
+      <td align="right"><a href="#toc">top</a></td>
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+<p><img style="width: 357; height: 204; float: right;" alt="" src="usersguide.htg/matchingFin_thmb.jpg">
+
+<p>Click on the "Open" button in the main window to open the
+image file. Orient the dorsal fin such
+that the leading edge is on the left. <em>(The
+"Flip Horizontal" button may be used.)</em>
+Click on the pencil icon and trace the outline from leading to trailing 
+edge. The
+trace of the outline may be
+refined as described above. Click on the "Match" button to compare the
+outline of the dorsal fin
+against images in the database. 
+</p>
+<p>
+The Matching window (<em>shown at right</em>)
+will appear.  Select the categories to be searched.  Any set of specific
+catalog categories (or all of them) is allowed. The "Select All" and "Clear All"
+buttons allow a quick way to affect multiple category selections.  By default,
+the category that the unknown fin has been assigned will be the only
+category that is pre-checked in the matching window. Select
+a search method.  The "Align
+Iteratively" button currently produces the best results.
+The range of points along the fin outline to be considered while
+computing the quality of the match can also be selected.  Options
+are "All Points" or "Trailing Edge Points Only." 
+Click the "Start" button to begin the matching process.
+When complete, the <a href="#matchwin">match results window</a> will
+automatically be displayed containing a list of fins in the database,
+rank ordered by their similarity to the
+unknown fin. 
+</p>
+
+<a name="tracewin_queue">&nbsp;</a>
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h3>Creating
+a queue or list of images to match against the database</h3></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+
+<p>Click on the "Open" button in the main window to open the
+image file. Orient the dorsal fin such
+that the leading edge of the dorsal fin is on the left. <em>(The
+Flip Horizontal button may be used.)</em>
+Click on the pencil icon and trace the outline from left to right.
+Enter relevant sighting data. Click the "Save" button in the trace
+window. Specify the desired filename and as a result, the fin image, its
+outline and sighting data will be saved to a file. The file name
+will end in the extension ".fin".  Once a number of
+files of this type have been
+created, a matching queue may be created. Click on the "Queue" button
+in the main window. The window shown below will appear. </p>
+
+<p><strong><img style="width: 255px; height: 253px;" alt="" src="usersguide.htg/queue_thmb.jpg"></strong>
+</p>
+
+<p>Click the "Add..." button, select a filename from the list,
+then click "OK". The filename should
+appear in the list on the left side of matching queue window. After the
+desired number of files
+have been added to the matching queue, the list of files may be saved
+or may be matched against
+the database by clicking on the "Save Queue" or "Run Match" button. A
+previously created list of
+files may me loaded by clicking the "Load Queue" button, then matched
+against the database by
+clicking the "Run Match" button. Progress bars indicate the extent to
+which the batch matching process is complete.
+
+The results of each match will be
+written to an appropriately named file in a folder called matchQResults.
+They may be reloaded for viewing by pressing the "View Results" button.
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><a name="matchwin">&nbsp;</a><br/>
+         <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    m<br/>
+                    a<br/>
+                    t<br/>
+                    c<br/>
+                    h<br/>
+                    &nbsp;<br/>
+                    r<br/>
+                    e<br/>
+                    s<br/>
+                    u<br/>
+                    l<br/>
+                    t<br/>
+                    s<br/>
+                    &nbsp;<br/>
+                    w<br/>
+                    i<br/>
+                    n<br/>
+                    d<br/>
+                    o<br/>
+                    w<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+
+<table width="100%">
+
+  <tbody>
+
+    <tr>
+
+      <td><h2>The
+Match Results Window</h2></td>
+
+      <td align="right"><a href="#toc">top</a></td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+
+<p><img style="width: 400px; height: 232px; float: right;" alt="" src="usersguide.htg/matchwin_thmb.jpg">
+
+</p>
+
+<p>When the Match results window appears, the image of the fin from the catalog which matches most closely will
+be displayed on the left and the image of the unknown fin will be displayed on the right.  The outlines of the 
+two dorsal fins, as aligned by the software, will be displayed below the unknown fin.  The outline of the
+fin from the catalog is displayed in blue, the outline of the unknown fin is displayed in red.
+
+Below the image of the fin from the catalog, a list of all of the images in the catalog, rank ordered
+by their similarity to the unknown fin is 
+displayed. The user may view the each catalog image, side by side with the unknown image to facilitate
+comparison by using the next and previous buttons or by clicking on an entry from the list.
+
+<br><br>
+The buttons below each image affect the display of the image. By default the images are displayed
+with any modifications (such as contrast enhancement, cropping, etc.) that were made after loading the 
+image into DARWIN.
+<br><br>
+SHOW ORIGINAL IMAGE - displays the original, uncropped, unenhanced image.
+<br><br>
+MATCH SELECTED FIN ORIENTATION - this button is currently not enabled.
+
+<br><br>
+The buttons above the match results list allow the list to be sorted according 
+to that particular
+feature.  For example, the damage button displays the catalog sorted by damage category.
+Within a single damage category, the images will be sorted according to their similarity to
+the unknown fin.
+
+<br><br>
+The buttons to the left of the outlines modify the display of the match results list.
+<br><br>
+INFO - enables and disables the display of information in the rank ordered list of matches.
+<br><br>
+HIDE ID's - replaces the ID's of the individuals in the catalog with asterisks to enable blind matching.
+<br><br>
+PREVIOUS - displays the image and outline of the previous individual in the rank ordered list of results.
+<br><br>
+NEXT - displays the image and outline of the next individual in the rank ordered list of results.
+</p>
+
+The buttons to the right of the outlines interact with the catalog or the matching session
+as follows:
+
+<p>UPDATE SELECTED FIN - button currently does the same thing as the ADD NEW button below.</p>
+
+<p>ADD NEW FIN TO CATALOG - button pops up a window which allows the fin and its
+sighting data to be added to the database.
+</p>
+
+<p>RETURN TO MATCHING DIALOG - returns to the matching window so that
+additional damage categories or an alternative matching method may be 
+selected for searching using the same fin and traced outline.</p>
+
+<p>SAVE MATCH RESULTS - saves the results of the match for later viewing.  Any
+"results" file can be
+reloaded from the match queue window, accesssed from the "Queue" button on the
+main window.</p>
+
+<p>DONE - Close the match results window.
+
+
+</p>
+
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><a name="options">&nbsp;</a><br/>
+         <table border="0" width="100%" cellpadding=0 cellspacing=0>
+            <tr>
+              <td valign="top" align="right">
+                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+                  <tr>
+                    <td class="title" width="100%" valign=middle align=center>
+                    o<br/>
+                    p<br/>
+                    t<br/>
+                    i<br/>
+                    o<br/>
+                    n<br/>
+                    s<br/>
+                    &nbsp;<br/>
+                    d<br/>
+                    i<br/>
+                    a<br/>
+                    l<br/>
+                    o<br/>
+                    g<br/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="100%" bgcolor="#000000">
+                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+                  <tr>
+                    <td valign="top">
+                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+                        <tr>
+                          <td width="100%" valign=top align=left>
+
+
+<!----Options dialog----------------------------------------------------------------------------------->
+<table width="100%">
+
+  <tbody>
+    <tr>
+      <a name="options_general"> <td><h2>The Options Dialog</h2></td></a>
+      <td align="right"><a href="#toc">top</a></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>A number of settings that affect the program's appearance and
+functionality may be modified
+using the Options Dialog which appears when the "Options" button in the
+main window is
+clicked.
+
+<br><br>
+
+The <b>"General"</b> tab allows the user to select the style of the
+buttons in the main window as text only, pictures only or both. Click
+on the desired setting then click OK.
+
+<br><br>
+The <b>"Image Processing"</b> tab enables access to settings which affect the edge image
+which is used to reposition the outline of the dorsal fin along its
+true edge. It is recommended that these parameters not be changed by the
+user.
+<br><br>
+
+The <b>"Matching"</b> tab is currently unused.
+<br><br>
+
+<table border="0" cellpadding="5" cellspacing="0">
+  <tbody>
+      <td align="left" valign="top"><img style="width: 170px; height: 176px; float: left;" alt="" src="usersguide.htg/options_trace.jpg"></td>
+
+      <td align="left" valign="center"><strong>Trace Settings: <a name="options_trace"> &nbsp;</a></strong>
+The user may select the color in which the outline of
+the dorsal fin will be displayed when it is overlaid on the image,
+click
+on the choose button, select the desired color.
+      <p>Additionally the user may change the settings which
+affect how the
+active contours operate to identify the true edge of the dorsal fin.
+These settings are currently not intuitive to anyone who is not writing
+the software.</p>
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td>&nbsp; </td>
+
+    </tr>
+
+    <tr>
+
+      <td align="left" valign="top"><img style="width: 170px; height: 176px; float: left;" alt="" src="usersguide.htg/options_fonts.jpg"></td>
+
+      <td align="left" valign="center"><strong>Font Settings:<a name="options_fonts">&nbsp;</a></strong>
+These settings affect the font which is used in the main window to display the list of catalog entries.
+Clicking on the "Change Font.." button opens a standard dialog that enables selection of a
+font style and size.  This can be helpful in distinguishing similar characters from one another
+(such as 0 and O, or 1 and l).</td>
+
+    </tr>
+
+  </tbody>
+</table>
+
+</p>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <br/><br/>
+  <p class="cright" align=center>
+        &copy; 2008 DARWIN Research Group
+    </p>
+</body>
+</html>

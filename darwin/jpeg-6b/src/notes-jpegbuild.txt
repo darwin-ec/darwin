@@ -1,0 +1,32 @@
+To run namke with the supplied makefile for the libjpeg.lib build, 
+To build a static library of the JPEG functions needed, a makefile, makefile.vc, is supplied with the
+code.  The command need to invoke the makefile is called "nmake" and must be entered at the Visual
+Studio command prompt, that is a DOS command prompt with Visual studio commands available.  The following
+ArcGIS site helps clarify how to do this:
+
+from http://edndoc.esri.com/arcobjects/9.0/ArcGISDevHelp/DevelopmentEnvs/Cpp/ArcGIS%20Development/Development%20Environments/nmake.htm
+
+Setting up a compiler for use from the command prompt
+From the command prompt you have your choice of supported compilers; your first step will be to select one 
+and prepare it for use. The command-line build tools of Visual Studio are not available by default, so you 
+need to use a provided batch file, vcvars32.bat, to configure one of the Visual Studio compilers for 
+command-line compilation and execution.
+
+Accessing the Visual Studio 6.0 compiler from the command line
+The command-line build tools of Visual Studio are not available by default. However, a batch file, called 
+vcvars32.bat, is provided to make them available. The vcvars32.bat file must be run each time you open a new 
+command prompt. The vcvars32.bat file's default location is \Program Files\Microsoft Visual Studio\VC98\Bin. 
+Alternatively you can create your own batch file that runs vcvars32.bat and opens a command prompt that is 
+ready for development. Each process is described below. 
+
+Run vcvars32.bat from a command prompt 
+- Open a command prompt and use the command "cd" to change to the directory containing vcvars32.bat. 
+- Type "vcvars32.bat" to run the batch file. 
+- For development, use the "cd" command to change to the directory containing your code and begin. The 
+  Visual Studio command-line build tools will be available from your command prompt. 
+- For execution, run your .exe file with any necessary parameters. 
+
+-----------------------------------------------------------------------------------------------------------
+
+Several compilation errors arose with "INLINE" so three functions, two in jcphuff.c and one in jchuff.c,
+were un-inlined.  (better slow than not at all...

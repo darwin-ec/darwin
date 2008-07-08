@@ -1,0 +1,14 @@
+includes for FILE and size_t
+<stdio.h> for ansi compliant systems
+<sys/types.h> on older unix systems
+
+Applications using the JPEG library should include the header file jpeglib.h
+
+If you are
+installing the JPEG header files in a system directory, you will want to
+install all four files: jpeglib.h, jerror.h, jconfig.h, jmorecfg.h.
+
+prepare a library file ("libjpeg.a")
+The supplied makefiles build libjpeg.a automatically
+
+

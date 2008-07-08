@@ -1,0 +1,34 @@
+Some things you might want to do in DARWIN:
+
+// Stuff that should probably be changed:
+* There should be a version of Contour::evenlySpaceContourPoints that
+  returns a FloatContour.  It should be called in Match::findErrorBetweenFins
+  to reduce a potential source of error.
+
+// Questionable things you may want to look at:
+* The function that finds the beginning of the leading edge only
+  considers that a diverging section can angle upwards.
+
+* Right now, the image added to the database is the originally opened
+  image, not the processed version.  This may not be the right way to do things.
+
+// Possible usability improvements: 
+* Add a rotate dialog that asks the user for an angle.  (Doing the
+  rotation interactively is too slow.)  Alternatively, add a simple,
+  interactive grid that gets rotated instead of the image, like how
+  the gimp does it. (This is far more complicated.)
+
+* Add a nice little dialog to ask the user to enter a name, id code, and
+  a damage category when he or she clicks the "No Fins Match" button in the
+  MatchResultsWindow.
+
+* Write a manual and make it accessible on the Help menu.  Probably the simplest
+  way to do this is to write it in HTML, and do a system call to a web browser.
+  You could use an #ifdef to help out ("WIN32" is defined by default when you
+  compile in MSVC++).  There might be a really easy way using file association
+  type stuff, but I haven't looked into it.
+ 
+* Make it so MatchResultsWindow handles resizing better.  (or make it
+  unresizable)
+
+////////////////////////////////////////////////////////////////////////////////
