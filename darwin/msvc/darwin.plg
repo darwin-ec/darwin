@@ -6,6 +6,9 @@
 --------------------Configuration: darwin - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+<<<<<<< .mine
+Creating temporary file "C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP4E.tmp" with contents
+=======
 Creating command line "rc.exe /l 0x409 /fo"Debug/Icon.res" /d "_DEBUG" "C:\temp\darwin-ec\trunk\darwin\msvc\Icon.rc"" 
 Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPF8.tmp" with contents
 [
@@ -76,14 +79,90 @@ Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPF8.tmp" with conte
 ]
 Creating command line "cl.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPF8.tmp" 
 Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPF9.tmp" with contents
+>>>>>>> .r8
 [
 /nologo /MDd /w /W0 /Gm /GX /ZI /Od /I ".." /I "..\png\libpng\include" /I "..\png\zlib1\include" /I "..\gtk\include\\" /I "..\gtk\lib\glib-2.0\include" /I "..\gtk\lib\gtk-2.0\include" /D "CRTDLL2" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR"Debug/" /Fp"Debug/darwin.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+<<<<<<< .mine
+"E:\darwin\darwinSVN\trunk\darwin\src\interface\MainWindow.cxx"
+=======
 "C:\temp\darwin-ec\trunk\darwin\src\interface\MainWindow.cxx"
+>>>>>>> .r8
 ]
+<<<<<<< .mine
+Creating command line "cl.exe @C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP4E.tmp" 
+Creating temporary file "C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP4F.tmp" with contents
+=======
 Creating command line "cl.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPF9.tmp" 
 Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPFA.tmp" with contents
+>>>>>>> .r8
 [
 zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.lib atk-1.0.lib pango-1.0.lib gdk_pixbuf-2.0.lib gobject-2.0.lib glib-2.0.lib gdk-win32-2.0.lib jpeg.lib gtk-win32-2.0.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/darwin.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/darwin.exe" /pdbtype:sept /libpath:"..\gtk\lib" /libpath:"..\jpeg-6b\lib" /libpath:"..\png\libpng\lib" /libpath:"..\png\zlib1\lib" 
+<<<<<<< .mine
+.\Debug\AboutDialog.obj
+.\Debug\AlterBrightnessDialog.obj
+.\Debug\AreaMatch.obj
+.\Debug\BinaryImage.obj
+.\Debug\CatalogSchemeDialog.obj
+.\Debug\Chain.obj
+.\Debug\ColorImage.obj
+.\Debug\ConfigFile.obj
+.\Debug\Contour.obj
+.\Debug\ContourInfoDialog.obj
+.\Debug\conversions.obj
+.\Debug\CreateDatabaseDialog.obj
+.\Debug\Database.obj
+.\Debug\DatabaseSupport.obj
+.\Debug\DataExportDialog.obj
+.\Debug\DeleteOutlineDialog.obj
+.\Debug\edge_detect.obj
+.\Debug\EnhanceContrastDialog.obj
+.\Debug\ErrorDialog.obj
+.\Debug\exif.obj
+.\Debug\FloatContour.obj
+.\Debug\gaussj.obj
+.\Debug\GrayImage.obj
+.\Debug\hysteresis.obj
+.\Debug\ImageMod.obj
+.\Debug\ImageViewDialog.obj
+.\Debug\IntensityContour.obj
+.\Debug\IntensityContourCyan.obj
+.\Debug\main.obj
+.\Debug\MainWindow.obj
+.\Debug\mapContour.obj
+.\Debug\MappedContoursDialog.obj
+.\Debug\Match.obj
+.\Debug\MatchingDialog.obj
+.\Debug\MatchingQueue.obj
+.\Debug\MatchingQueueDialog.obj
+.\Debug\MatchResults.obj
+.\Debug\MatchResultsWindow.obj
+.\Debug\ModifyDatabaseWindow.obj
+.\Debug\NoMatchWindow.obj
+.\Debug\OldDatabase.obj
+.\Debug\OpenFileChooserDialog.obj
+.\Debug\OptionsDialog.obj
+.\Debug\Outline.obj
+.\Debug\pngImageSupport.obj
+.\Debug\ResizeDialog.obj
+.\Debug\SaveFileSelectionDialog.obj
+.\Debug\snake.obj
+.\Debug\SplashWindow.obj
+.\Debug\sqlite3.obj
+.\Debug\SQLiteDatabase.obj
+.\Debug\support.obj
+.\Debug\thumbnail.obj
+.\Debug\TraceWindow.obj
+.\Debug\waveletUtil.obj
+.\Debug\wlcError.obj
+.\Debug\wlcMem.obj
+.\Debug\wlcPackets.obj
+.\Debug\wlcPWavelet.obj
+.\Debug\wlcSBFilter.obj
+.\Debug\wlcSWavelet.obj
+.\Debug\wlcUtils.obj
+.\Debug\wlRWavelet.obj
+.\Debug\Icon.res
+=======
 ".\Debug\AboutDialog.obj"
 ".\Debug\AlterBrightnessDialog.obj"
 ".\Debug\AreaMatch.obj"
@@ -149,11 +228,18 @@ zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.li
 ".\Debug\wlcUtils.obj"
 ".\Debug\wlRWavelet.obj"
 ".\Debug\Icon.res"
+>>>>>>> .r8
 ]
+<<<<<<< .mine
+Creating command line "link.exe @C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP4F.tmp"
+=======
 Creating command line "link.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPFA.tmp"
+>>>>>>> .r8
 <h3>Output Window</h3>
 Compiling resources...
 Compiling...
+<<<<<<< .mine
+=======
 AboutDialog.cxx
 AlterBrightnessDialog.cxx
 AreaMatch.cxx
@@ -250,11 +336,82 @@ wlcSWavelet.c
 wlcUtils.c
 wlRWavelet.c
 Compiling...
+>>>>>>> .r8
 MainWindow.cxx
 Linking...
+<<<<<<< .mine
+Creating temporary file "C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP51.tmp" with contents
+=======
 Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPFC.tmp" with contents
+>>>>>>> .r8
 [
 /nologo /o"Debug/darwin.bsc" 
+<<<<<<< .mine
+.\Debug\AboutDialog.sbr
+.\Debug\AlterBrightnessDialog.sbr
+.\Debug\AreaMatch.sbr
+.\Debug\BinaryImage.sbr
+.\Debug\CatalogSchemeDialog.sbr
+.\Debug\Chain.sbr
+.\Debug\ColorImage.sbr
+.\Debug\ConfigFile.sbr
+.\Debug\Contour.sbr
+.\Debug\ContourInfoDialog.sbr
+.\Debug\conversions.sbr
+.\Debug\CreateDatabaseDialog.sbr
+.\Debug\Database.sbr
+.\Debug\DatabaseSupport.sbr
+.\Debug\DataExportDialog.sbr
+.\Debug\DeleteOutlineDialog.sbr
+.\Debug\edge_detect.sbr
+.\Debug\EnhanceContrastDialog.sbr
+.\Debug\ErrorDialog.sbr
+.\Debug\exif.sbr
+.\Debug\FloatContour.sbr
+.\Debug\gaussj.sbr
+.\Debug\GrayImage.sbr
+.\Debug\hysteresis.sbr
+.\Debug\ImageMod.sbr
+.\Debug\ImageViewDialog.sbr
+.\Debug\IntensityContour.sbr
+.\Debug\IntensityContourCyan.sbr
+.\Debug\main.sbr
+.\Debug\MainWindow.sbr
+.\Debug\mapContour.sbr
+.\Debug\MappedContoursDialog.sbr
+.\Debug\Match.sbr
+.\Debug\MatchingDialog.sbr
+.\Debug\MatchingQueue.sbr
+.\Debug\MatchingQueueDialog.sbr
+.\Debug\MatchResults.sbr
+.\Debug\MatchResultsWindow.sbr
+.\Debug\ModifyDatabaseWindow.sbr
+.\Debug\NoMatchWindow.sbr
+.\Debug\OldDatabase.sbr
+.\Debug\OpenFileChooserDialog.sbr
+.\Debug\OptionsDialog.sbr
+.\Debug\Outline.sbr
+.\Debug\pngImageSupport.sbr
+.\Debug\ResizeDialog.sbr
+.\Debug\SaveFileSelectionDialog.sbr
+.\Debug\snake.sbr
+.\Debug\SplashWindow.sbr
+.\Debug\sqlite3.sbr
+.\Debug\SQLiteDatabase.sbr
+.\Debug\support.sbr
+.\Debug\thumbnail.sbr
+.\Debug\TraceWindow.sbr
+.\Debug\waveletUtil.sbr
+.\Debug\wlcError.sbr
+.\Debug\wlcMem.sbr
+.\Debug\wlcPackets.sbr
+.\Debug\wlcPWavelet.sbr
+.\Debug\wlcSBFilter.sbr
+.\Debug\wlcSWavelet.sbr
+.\Debug\wlcUtils.sbr
+.\Debug\wlRWavelet.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\STEWMA~1\LOCALS~1\Temp\RSP51.tmp"
+=======
 ".\Debug\AboutDialog.sbr"
 ".\Debug\AlterBrightnessDialog.sbr"
 ".\Debug\AreaMatch.sbr"
@@ -320,6 +477,7 @@ Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPFC.tmp" with conte
 ".\Debug\wlcUtils.sbr"
 ".\Debug\wlRWavelet.sbr"]
 Creating command line "bscmake.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSPFC.tmp"
+>>>>>>> .r8
 Creating browse info file...
 <h3>Output Window</h3>
 

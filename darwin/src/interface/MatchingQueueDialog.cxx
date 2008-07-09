@@ -89,7 +89,7 @@ MatchingQueueDialog::MatchingQueueDialog(
 		mDialog(NULL),
 		mCList(NULL),
 		mDrawingArea(NULL),
-		mFileSelectionDialog(NULL),
+		//mFileSelectionDialog(NULL),
 		mFileChooserDialog(NULL), //***1.4
 		mMatchingQueue(NULL),
 		mImage(NULL),
@@ -519,158 +519,6 @@ GtkWidget* MatchingQueueDialog::createMatchingQueueDialog()
 
 //*******************************************************************
 //
-GtkWidget* MatchingQueueDialog::createMatchingQueueFileSelectionDialog()
-{
-	GtkWidget *matchingQueueFileSelectionDialog;
-	GtkWidget *mqFileSelectionButtonOK;
-	GtkWidget *mqFileSelectionButtonCancel;
-
-	// set base path to %DARWINHOME%
-	//string directory = getenv("DARWINHOME");
-	//***1.85 - everything is now relative to the current survey area
-	string directory = gOptions->mCurrentSurveyArea;
-	directory += PATH_SLASH;
-
-	switch (mActionSelected) 
-	{
-	case ADD_FILENAME:
-  		matchingQueueFileSelectionDialog = gtk_file_selection_new (_("Select a Traced Fin (*.fin)"));
-		directory += "tracedFins";
-		directory += PATH_SLASH;
-		//***1.4 - allow multiple file selections -- change this later
-		gtk_file_selection_set_select_multiple (
-				GTK_FILE_SELECTION (matchingQueueFileSelectionDialog), 
-				TRUE);
-		break;
-	case LOAD_QUEUE:
-		matchingQueueFileSelectionDialog = gtk_file_selection_new (_("Load Matching Queue (*.que)"));
-		directory += "matchQueues";
-		directory += PATH_SLASH;
-		// prevent multiple file selections
-		gtk_file_selection_set_select_multiple (
-				GTK_FILE_SELECTION (matchingQueueFileSelectionDialog), 
-				FALSE);
-		break;
-	case SAVE_QUEUE:
-		matchingQueueFileSelectionDialog = gtk_file_selection_new (_("Save Matching Queue As ... (*.que)"));
-		directory += "matchQueues";
-		directory += PATH_SLASH;
-		// prevent multiple file selections
-		gtk_file_selection_set_select_multiple (
-				GTK_FILE_SELECTION (matchingQueueFileSelectionDialog), 
-				FALSE);
-		break;
-	case VIEW_RESULTS:
-		matchingQueueFileSelectionDialog = gtk_file_selection_new (_("Select Results file ..."));
-		directory += "matchQResults";
-		directory += PATH_SLASH;
-		// prevent multiple file selections
-		gtk_file_selection_set_select_multiple (
-				GTK_FILE_SELECTION (matchingQueueFileSelectionDialog), 
-				FALSE);
-		break;
-	default:
-		matchingQueueFileSelectionDialog = gtk_file_selection_new (_("Select a File"));
-		break;
-	}
-
-  	gtk_window_set_modal(GTK_WINDOW(matchingQueueFileSelectionDialog),TRUE); //***1.2
-
-	gtk_window_set_transient_for(
-			GTK_WINDOW(matchingQueueFileSelectionDialog),
-			GTK_WINDOW(this->mDialog));
-
-	if (directory == gLastDirectory)
-	{
-		gtk_file_selection_complete(
-				GTK_FILE_SELECTION(matchingQueueFileSelectionDialog),
-				(gLastDirectory+gLastFileName).c_str());
-
-		// the file_list is a GtkTreeView rather than a GtkCList.  This code sets
-		// the focus on the correct row and scrolls list down appropriately
-
-		if (gLastTreePathStr)
-		{
-			gtk_tree_view_scroll_to_cell(
-				GTK_TREE_VIEW(GTK_FILE_SELECTION(matchingQueueFileSelectionDialog)->file_list),
-				gtk_tree_path_new_from_string(gLastTreePathStr), NULL,
-				TRUE,
-				0.5,0.5);
-			gtk_tree_selection_select_path(
-				gtk_tree_view_get_selection(
-					GTK_TREE_VIEW(GTK_FILE_SELECTION(matchingQueueFileSelectionDialog)->file_list)),
-				gtk_tree_path_new_from_string(gLastTreePathStr));
-		}
-	}
-	else
-	{
-		gtk_file_selection_set_filename(
-				GTK_FILE_SELECTION(matchingQueueFileSelectionDialog),
-				directory.c_str());
-		gLastDirectory = directory;
-		gLastFileName = "";
-	}
-
-	//***1.2 - prevent user from changing folder location
-	//gtk_widget_hide(GTK_FILE_SELECTION (matchingQueueFileSelectionDialog)->dir_list);
-	gtk_widget_hide(GTK_FILE_SELECTION (matchingQueueFileSelectionDialog)->history_pulldown);
-	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (matchingQueueFileSelectionDialog));
-
-
-
-	gtk_object_set_data (GTK_OBJECT (matchingQueueFileSelectionDialog), "matchingQueueFileSelectionDialog", matchingQueueFileSelectionDialog);
-	gtk_container_set_border_width (GTK_CONTAINER (matchingQueueFileSelectionDialog), 10);
-	gtk_window_set_position (GTK_WINDOW (matchingQueueFileSelectionDialog), GTK_WIN_POS_CENTER);
-	gtk_window_set_policy (GTK_WINDOW (matchingQueueFileSelectionDialog), TRUE, TRUE, TRUE);
-
-	mqFileSelectionButtonOK = GTK_FILE_SELECTION (matchingQueueFileSelectionDialog)->ok_button;
-	gtk_object_set_data (GTK_OBJECT (matchingQueueFileSelectionDialog), "mqFileSelectionButtonOK", mqFileSelectionButtonOK);
-	gtk_widget_show (mqFileSelectionButtonOK);
-	GTK_WIDGET_SET_FLAGS (mqFileSelectionButtonOK, GTK_CAN_DEFAULT);
-
-	mqFileSelectionButtonCancel = GTK_FILE_SELECTION (matchingQueueFileSelectionDialog)->cancel_button;
-	gtk_object_set_data (GTK_OBJECT (matchingQueueFileSelectionDialog), "mqFileSelectionButtonCancel", mqFileSelectionButtonCancel);
-	gtk_widget_show (mqFileSelectionButtonCancel);
-	GTK_WIDGET_SET_FLAGS (mqFileSelectionButtonCancel, GTK_CAN_DEFAULT);
-	
-	gtk_signal_connect (GTK_OBJECT (matchingQueueFileSelectionDialog), "delete_event",
-			GTK_SIGNAL_FUNC (on_matchingQueueFileSelectionDialog_delete_event),
-			(void*)this);
-	gtk_signal_connect (GTK_OBJECT (mqFileSelectionButtonOK), "clicked",
-			GTK_SIGNAL_FUNC (on_mqFileSelectionButtonOK_clicked),
-			(void*)this);
-	gtk_signal_connect (GTK_OBJECT (mqFileSelectionButtonCancel), "clicked",
-			GTK_SIGNAL_FUNC (on_mqFileSelectionButtonCancel_clicked),
-			(void*)this);
-
-  	// callbacks for the file_list and dir_list GtkTreeViews in the FileSelection
-
-	GtkTreeSelection *select;
-	/*	
-	select = gtk_tree_view_get_selection(
-			GTK_TREE_VIEW(GTK_FILE_SELECTION(fileSelection)->dir_list));
-	g_signal_connect(G_OBJECT(select),"changed",
-			G_CALLBACK(on_directoryList_changed), (void *) this); 
-	*/
-	select = gtk_tree_view_get_selection(
-			GTK_TREE_VIEW(GTK_FILE_SELECTION(matchingQueueFileSelectionDialog)->file_list));
-	g_signal_connect(G_OBJECT(select),"changed",
-			G_CALLBACK(on_mqFileSelectionListCell_changed), 
-			(void *) this);
-
-	gtk_signal_connect(
-			GTK_OBJECT(GTK_FILE_SELECTION(matchingQueueFileSelectionDialog)->selection_entry),
-			"changed",
-			GTK_SIGNAL_FUNC(on_mqFileSelectionEntry_changed),
-			(void *) this);
-
-	gtk_widget_grab_default (mqFileSelectionButtonOK);
-
-	return matchingQueueFileSelectionDialog;
-}
-
-//*******************************************************************
-//
 void MatchingQueueDialog::updateQueueList()
 {
 	if (NULL == mCList)
@@ -857,10 +705,6 @@ void on_matchingQueueButtonAdd_clicked(
 	
 	dialog->mActionSelected = ADD_FILENAME;
 
-	//***1.4 - file selector not used anymore
-	//dialog->mFileSelectionDialog = dialog->createMatchingQueueFileSelectionDialog();
-	//gtk_widget_show(dialog->mFileSelectionDialog);
-
 	//***1.4 - begin new code for use of file chooser so multiple selection works correctly
 	dialog->mFileChooserDialog = dialog->createMatchingQueueFileChooserDialog();
 	mqFileChooser_run_and_respond(dialog);
@@ -927,16 +771,10 @@ void on_matchingQueueButtonViewResults_clicked(
 	if (NULL == dialog)
 		return;
 	
-//	if (NULL != dialog->mFileSelectionDialog)
-//		return;
-
 	if (NULL != dialog->mFileChooserDialog) //***1.4
 		return; //***1.4
 
 	dialog->mActionSelected = VIEW_RESULTS;
-
-//	dialog->mFileSelectionDialog = dialog->createMatchingQueueFileSelectionDialog();
-//	gtk_widget_show(dialog->mFileSelectionDialog);
 
 	dialog->mFileChooserDialog = dialog->createMatchingQueueFileChooserDialog(); //***1.4
 	mqFileChooser_run_and_respond(dialog); //***1.4
@@ -954,16 +792,10 @@ void on_matchingQueueButtonSaveList_clicked(
 	if (NULL == dialog)
 		return;
 	
-//	if (NULL != dialog->mFileSelectionDialog)
-//		return;
-
 	if (NULL != dialog->mFileChooserDialog) //***1.4
 		return; //***1.4
 	
 	dialog->mActionSelected = SAVE_QUEUE;
-
-//	dialog->mFileSelectionDialog = dialog->createMatchingQueueFileSelectionDialog();
-//	gtk_widget_show(dialog->mFileSelectionDialog);
 
 	dialog->mFileChooserDialog = dialog->createMatchingQueueFileChooserDialog(); //***1.4
 	mqFileChooser_run_and_respond(dialog); //***1.4
@@ -981,16 +813,10 @@ void on_matchingQueueButtonLoadList_clicked(
 	if (NULL == dialog)
 		return;
 	
-//	if (NULL != dialog->mFileSelectionDialog)
-//		return;
-
 	if (NULL != dialog->mFileChooserDialog) //***1.4
 		return; //***1.4
 
 	dialog->mActionSelected = LOAD_QUEUE;
-
-//	dialog->mFileSelectionDialog = dialog->createMatchingQueueFileSelectionDialog();
-//	gtk_widget_show(dialog->mFileSelectionDialog);
 
 	dialog->mFileChooserDialog = dialog->createMatchingQueueFileChooserDialog(); //***1.4
 	mqFileChooser_run_and_respond(dialog); //***1.4
@@ -1010,314 +836,6 @@ void on_matchingQueueButtonCancel_clicked(
 
 	dialog->mMatchCancelled = true;
 }
-
-//*******************************************************************
-//
-gboolean on_matchingQueueFileSelectionDialog_delete_event(
-	GtkWidget *widget,
-	GdkEvent *event,
-	gpointer userData
-	)
-{
-	MatchingQueueDialog *dialog = (MatchingQueueDialog*)userData;
-
-	if (NULL == dialog)
-		return FALSE;
-	
-	gtk_widget_destroy(GTK_WIDGET(dialog->mFileSelectionDialog));
-	dialog->mFileSelectionDialog = NULL;
-
-	return TRUE;
-}
-
-//*******************************************************************
-//
-void on_mqFileSelectionButtonOK_clicked(
-	GtkButton *button,
-	gpointer userData
-	)
-{
-	MatchingQueueDialog *dialog = (MatchingQueueDialog*)userData;
-
-	if (NULL == dialog)
-		return;
-	
-	string fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(dialog->mFileSelectionDialog));
-    					
-	ifstream inFile;
-
-	// If the user hasn't selected a directory name...
-	if (!(fileName[fileName.length() - 1] == '/' || fileName[fileName.length() - 1] == '\\')) {
-
-		switch (dialog->mActionSelected) {
-			case ADD_FILENAME:
-				inFile.open(fileName.c_str());
-				if (inFile.fail())
-				{
-					showError("Could not open selected file!");
-					break;
-				}
-				char test[sizeof(unsigned long)+1];
-				inFile.read((char*)&test, sizeof(unsigned long));
-				inFile.close();
-				test[5] = '\0';
-				if ((strncmp(test,"DFIN",4) != 0) && (strncmp(test,"NIFD",4) != 0))
-				{
-					showError("This is not a traced dolphin fin!");
-					break;
-				}
-				dialog->mMatchingQueue->add(fileName);
-				dialog->updateQueueList();
-				break;
-			case SAVE_QUEUE:
-				try {
-					dialog->mMatchingQueue->save(fileName);
-				} catch (Error e) {
-					showError(e.errorString());
-				}
-				break;
-			case LOAD_QUEUE:
-				try {
-					dialog->mMatchingQueue->load(fileName);
-					dialog->updateQueueList();
-				} catch (Error e) {
-					showError(e.errorString());
-				}
-				break;
-			case VIEW_RESULTS: //***1.1
-				try {
-
-					MatchResults *mRes = new MatchResults();
-
-					DatabaseFin<ColorImage> *unkFin = mRes->load(dialog->mFinDatabase, fileName);
-					if (NULL == unkFin)
-						break; // failure of read, not a valid result file
-					
-					unkFin->mFinImage = new ColorImage(unkFin->mImageFilename);
-
-					//int pos = unkFin->mImageFilename.find_last_of('.');
-					//string modImgFilename = unkFin->mImageFilename.substr(0,pos) + "_wDarwinMods.ppm"; 
-					// do it based on FIN file root instead
-					int pos = fileName.rfind(".fin");
-					string modImgFilename = fileName.substr(0,pos) + "_wDarwinMods.ppm"; 
-					unkFin->mModifiedFinImage = new ColorImage(modImgFilename);
-
-					MatchResultsWindow *resultsWindow = new MatchResultsWindow(
-		                    unkFin,
-		                    mRes, // just a pointer
-		                    dialog->mFinDatabase,
-		                    dialog->mMainWin,
-							NULL,  // revise MatchResultsWindow so we can return here?
-							//dialog->mDialog,    //***1.3
-							dialog, //***1.3
-							fileName, //***1.6 - name of results file loaded
-		                    dialog->mOptions);
-					resultsWindow->show();
-
-					// do NOT delete dialog here, let it persist so we can launch 
-					// multiple match results dialogs and/or return to this dialog
-					// when done with viewing
-
-					delete unkFin;
-
-					delete mRes;
-
-				} catch (Error e) {
-					showError(e.errorString());
-				}
-				break;
-		}
-	}
-	
-	gtk_widget_destroy(GTK_WIDGET(dialog->mFileSelectionDialog));
-	dialog->mFileSelectionDialog = NULL;
-}
-
-//*******************************************************************
-//
-void on_mqFileSelectionButtonCancel_clicked(
-	GtkButton *button,
-	gpointer userData
-	)
-{
-	MatchingQueueDialog *dialog = (MatchingQueueDialog*)userData;
-
-	if (NULL == dialog)
-		return;
-	
-	gtk_widget_destroy(GTK_WIDGET(dialog->mFileSelectionDialog));
-	dialog->mFileSelectionDialog = NULL;
-}
-
-
-//*******************************************************************
-//
-// void on_mqFileSelectionListCell_changed(...)
-//
-//    This gets called once AFTER the on_mqFileSelectionEntry_changed()
-//    callback.  So, the signal that the GtkFileSelection->selection_entry
-//    has "changed" seems to preceed the signal that the 
-//    GtkFileSelection->file_viewhas "changed" -- this may NOT be a consistent
-//    order.
-//
-void on_mqFileSelectionListCell_changed(
-	GtkWidget *widget,
-	gpointer userData
-	)
-{
-	//g_print("IN on_fileListCell_changed()\n");
-
-	MatchingQueueDialog *dlg = (MatchingQueueDialog *) userData;
-
-	if (NULL == dlg)
-		return;
-		
-	string fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(dlg->mFileSelectionDialog));
-	//g_print("fileName is %s\n",fileName.c_str());
-
-	GtkTreeSelection *treeSelect = GTK_TREE_SELECTION(widget);
-
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-
-	if (gtk_tree_selection_get_selected(treeSelect,&model,&iter))
-	{
-		// A change has occurred in the highlighting of a file name
-		// and some name is now highlighted.  The selected file is the file
-		// that will be opened if a double-click occurs following this call 
-		// to the function.
-		gchar *fname;
-		gtk_tree_model_get(model,&iter,0,&fname,-1);
-		//g_print("name = \"%s\"\n",fname);
-
-		gLastFileName = fname;
-
-		// code so correct filename gets highlighted on next return to file selector
-		if	(gLastTreePathStr != NULL) {
-			g_free(gLastTreePathStr);
-			gLastTreePath = NULL;
-		}
-		// find GtkTree path & save as formatted string.  This identifies
-		// the row to make active when we reopen the FileSelector the
-		// next time
-		gLastTreePath = gtk_tree_model_get_path(model,&iter);
-		gLastTreePathStr = gtk_tree_path_to_string(gLastTreePath);
-
-		g_free(fname);
-	}
-	else
-	{
-		// There is NO highlighted or selected file name
-		// so we have just made a CHANGE in the currently active directory.
-		// Nothing to do here.
-		
-		//g_print("Just changed to NEW directory\n");
-
-	}
-}
-
-//*******************************************************************
-//
-// void on_mqFileSelectionEntry_changed(...)
-//
-//    This is called whenever the contents of the selection_entry changes.
-//    This happens when the directory is changed and the selection_entry
-//    gets "blanked," and it happens when the highlighted file in the
-//    file list changes.
-//
-void on_mqFileSelectionEntry_changed(
-	GtkWidget *widget,
-	gpointer userData)
-{
-	MatchingQueueDialog *dlg = (MatchingQueueDialog *) userData;
-	
-	//g_print("IN on_fileSelectionEntry_changed()\n");
-
-	if (NULL == dlg)
-		return;
-
-	GtkWidget *fileSelect = dlg->mFileSelectionDialog;
-
-	string fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(fileSelect));
-	//g_print("fileName is %s\n",fileName.c_str());
-
-	GtkTreeSelection *dirTreeSelect,*fileTreeSelect;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	gboolean dirSelected, fileSelected;
-	gchar *fname = NULL, *dname = NULL;
-	string fNameStr, dNameStr;
-
-
-	// see if there is a selected folder name
-	dirTreeSelect = gtk_tree_view_get_selection(
-			GTK_TREE_VIEW(GTK_FILE_SELECTION(fileSelect)->dir_list));
-	if (dirSelected = gtk_tree_selection_get_selected(dirTreeSelect,&model,&iter))
-	{
-		//g_print("There IS a selected FOLDER : ");
-		gtk_tree_model_get(model,&iter,0,&dname,-1);
-		//g_print("name = \"%s\"\n",dname);
-		dNameStr = dname;
-	}
-
-
-	// see if there is a selected file name
-	fileTreeSelect = gtk_tree_view_get_selection(
-			GTK_TREE_VIEW(GTK_FILE_SELECTION(fileSelect)->file_list));
-	if (fileSelected = gtk_tree_selection_get_selected(fileTreeSelect,&model,&iter))
-	{
-		//g_print("There IS a selected FILE : ");
-		gtk_tree_model_get(model,&iter,0,&fname,-1);
-		//g_print("name = \"%s\"\n",fname);
-		fNameStr = fname;
-	}
-
-
-	if ((FALSE == (bool)dirSelected) && (FALSE == (bool)fileSelected))
-	{
-		// no selected names in either tree, so we have just jumped
-		// to a new directory path, the filename is the path
-		gLastDirectory = fileName;
-		gLastDirectory += PATH_SLASH;
-		gLastFileName = "";
-		//g_print("gLastDirectory set to \"%s\"\n",gLastDirectory.c_str());
-	}
-	else if ((FALSE == (bool)dirSelected) && (TRUE == (bool)fileSelected))
-	{
-		// This is one of possibly two calls to this function in response 
-		// to a change in the highlighted file. The selected file will NOT 
-		// be part of the fileName on the first call, but will on the second.
-		int posit = fileName.rfind(fNameStr);
-
-		if (string::npos != posit)
-		{
-			// take action on FIRST call, setting directory and filename
-			// as appropriate
-
-			if (gLastDirectory == "")
-				gLastDirectory = fileName;
-
-			gLastFileName = fNameStr;
-			//g_print("gLastFileName set to \"%s\"\n",gLastFileName.c_str());
-			
-			if	(gLastTreePathStr != NULL) {
-				g_free(gLastTreePathStr);
-				gLastTreePath = NULL;
-			}
-
-			// find GtkTree path & save as formatted string.  This identifies
-			// the row to make active when we reopen the FileSelector the
-			// next time
-			gLastTreePath = gtk_tree_model_get_path(model,&iter);
-			gLastTreePathStr = gtk_tree_path_to_string(gLastTreePath);
-		}
-	}
-
-	// free temp strings
-	if (fname) g_free(fname);
-	if (dname) g_free(dname);
-}
-
 
 //---------------------------------------- 1.4 - new file chooser code ------------------------------
 

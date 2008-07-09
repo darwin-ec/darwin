@@ -103,32 +103,6 @@ class MatchingQueueDialog
 			gpointer userData
 			);
 
-		friend gboolean on_matchingQueueFileSelectionDialog_delete_event(
-			GtkWidget *widget,
-			GdkEvent *event,
-			gpointer userData
-			);
-
-		friend void on_mqFileSelectionButtonOK_clicked(
-			GtkButton *button,
-			gpointer userData
-			);
-
-		friend void on_mqFileSelectionButtonCancel_clicked(
-			GtkButton *button,
-			gpointer userData
-			);
-
-		friend void on_mqFileSelectionListCell_changed(
-			GtkWidget *widget,
-			gpointer userData
-			);
-
-		friend void on_mqFileSelectionEntry_changed(
-			GtkWidget *widget,
-			gpointer userData
-			);
-
 		//***1.4 - new functions for FileChooser
 
 		friend void on_mqFileChooserButtonOK_clicked(
@@ -159,7 +133,6 @@ class MatchingQueueDialog
 			*mDialog,
 			*mCList,
 			*mDrawingArea,
-			*mFileSelectionDialog,
 			*mFileChooserDialog, //***1.4
 			*mProgressBar1, // for tracking percent of queue processed
 			*mProgressBar2; // for tracking percent of database compared to current unknown
@@ -185,7 +158,6 @@ class MatchingQueueDialog
 		mqActionSelection_t mActionSelected;
 
 		GtkWidget* createMatchingQueueDialog();
-		GtkWidget* createMatchingQueueFileSelectionDialog();
 		GtkWidget* createMatchingQueueFileChooserDialog(); //***1.4
 		void updateQueueList();
 };

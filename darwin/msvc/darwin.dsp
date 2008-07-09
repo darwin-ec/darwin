@@ -266,10 +266,6 @@ SOURCE=..\src\interface\OpenFileChooserDialog.cxx
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\interface\OpenFileSelectionDialog.cxx
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\interface\OptionsDialog.cxx
 # End Source File
 # Begin Source File
@@ -559,10 +555,6 @@ SOURCE=..\src\OldDatabase.h
 # Begin Source File
 
 SOURCE=..\src\interface\OpenFileChooserDialog.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Src\interface\OpenFileSelectionDialog.h
 # End Source File
 # Begin Source File
 

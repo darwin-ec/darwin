@@ -2214,14 +2214,7 @@ void on_open_activate(
 	if (NULL == mainWin)
 		return;
 
-	if (getNumOpenFileSelectionDialogReferences() < 1) {
-		/*
-		OpenFileSelectionDialog *dlg = new OpenFileSelectionDialog(
-				mainWin->mDatabase,
-				mainWin,
-				mainWin->mOptions);
-		dlg->show();
-		*/
+	if (getNumOpenFileChooserDialogReferences() < 1) {
 		OpenFileChooserDialog *dlg = new OpenFileChooserDialog(
 				mainWin->mDatabase,
 				mainWin,
@@ -2243,7 +2236,7 @@ void on_open_fin_trace_activate(
 	if (NULL == mainWin)
 		return;
 
-	if (getNumOpenFileSelectionDialogReferences() < 1) {
+	if (getNumOpenFileChooserDialogReferences() < 1) {
 		OpenFileChooserDialog *dlg = new OpenFileChooserDialog(
 				mainWin->mDatabase,
 				mainWin,
@@ -2264,7 +2257,7 @@ void on_open_database_activate(
 	if (NULL == mainWin)
 		return;
 
-	if (getNumOpenFileSelectionDialogReferences() < 1) {
+	if (getNumOpenFileChooserDialogReferences() < 1) {
 		OpenFileChooserDialog *dlg = new OpenFileChooserDialog(
 				mainWin->mDatabase,
 				mainWin,

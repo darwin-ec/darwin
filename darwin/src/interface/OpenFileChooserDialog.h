@@ -16,10 +16,9 @@
 #include <gtk/gtktext.h>
 
 #include "../image_processing/ColorImage.h"
-//#include "../Database.h"
 #include "MainWindow.h"
 #include "../Options.h"
-#include "../DatabaseSupport.h"
+#include "../DatabaseSupport.h" // this also includes Database.h
 
 // getNumOpenFileChooserDialogReferences
 // 	Returns the number of dialogs open.
