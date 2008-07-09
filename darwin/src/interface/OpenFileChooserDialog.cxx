@@ -1182,7 +1182,7 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 		break;  // this is not needed
 
 	case OpenFileChooserDialog::openDatabase : //***1/85 - new option
-
+		{
 		fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
 
 		//g_print("Checking file: ");
@@ -1190,82 +1190,117 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 		//g_print(fileName.c_str());
 		//g_print("\n");
 
-		inFile.open(fileName.c_str());
-		if (inFile.fail())
+		// inFile.open(fileName.c_str());
+		db_opentype_t opentype = databaseOpenType(fileName);
+		if (opentype == cannotOpen)
 		{
 			g_print("Could not open selected database file!\n");
 			inFile.clear();
 		}
 		else
 		{
-			// see if this is really a database file
-			unsigned long dummy;
-			inFile.read((char*)&dummy, sizeof(unsigned long));// skip footer offset
-			unsigned int test;
-			inFile.read((char*)&test, sizeof(int));           // read version #
-			inFile.close();
-			if (((test & 0xFFFF0000) != 0x44420000) &&  // not "DB" v1.85 & 3 or later
-				(test != CURRENT_DBVERSION))            // nor simple CURRENT version number
+			// put dialog asking about conversion here
+			if(opentype == convert)
 			{
-				g_print("\nUnsupported database version or a non database file!\n");
-				g_print("\nFile NOT loaded.\n");
+				cout << "So... wanna bet your database? Y/N" << endl;
+				char answer;
+				cin >> answer;
+				
+				// bail! -- sissies
+				if(answer == 'N' || answer == 'n')
+					break;
 			}
-			else
+
+			// set the options current survey area and database filename
+			dlg->mOptions->mDatabaseFileName = fileName;
+			string cat = "";
+			cat += PATH_SLASH;
+			cat += "catalog";
+			dlg->mOptions->mCurrentSurveyArea = fileName.substr(0,fileName.rfind(cat));
+
+			// make sure the current Options include the survey area and database
+			// filename of the new database ... if not, then add them to the list
+			// to make sure program knows of them in future
+
+			bool known = false;
+			int i;
+			string shortAreaName = dlg->mOptions->mCurrentSurveyArea;
+			shortAreaName = shortAreaName.substr(shortAreaName.rfind(PATH_SLASH)+1);
+			for (i = 0; ((! known) && (i < dlg->mOptions->mNumberOfExistingSurveyAreas)); i++)
+				if (shortAreaName == dlg->mOptions->mExistingSurveyAreaName[i])
+					known = true;
+			if (! known)
 			{
-				// set the options current survey area and database filename
+				// add survey area name to list
+				dlg->mOptions->mExistingSurveyAreaName.push_back(shortAreaName);
+				dlg->mOptions->mNumberOfExistingSurveyAreas ++;
+			}
+
+			known = false;
+			string shortDbName = dlg->mOptions->mDatabaseFileName;
+			shortDbName = shortDbName.substr(shortDbName.rfind(PATH_SLASH)+1);
+			shortDbName = (shortAreaName + PATH_SLASH) + shortDbName;
+			for (i = 0; ((! known) && (i < dlg->mOptions->mNumberOfExistingDatabases)); i++)
+				if (shortDbName == dlg->mOptions->mExistingDatabaseName[i])
+					known = true;
+			if (! known)
+			{
+				// add survey area name to list
+				dlg->mOptions->mExistingDatabaseName.push_back(shortDbName);
+				dlg->mOptions->mNumberOfExistingDatabases ++;
+			}
+
+			// close the current database
+			delete dlg->mDatabase; // this closes the current database file
+
+			if(opentype == convert) {
+				 // "file.db" -> "file.olddb"
+				 int pos = fileName.rfind(".");
+				 string newFilenameOfOldDatabase = fileName.substr(0, pos);
+				 newFilenameOfOldDatabase += ".olddb";
+ 
+				 // move "file.db" "file.olddb"
+				 string mvCmd("move \"");
+				 mvCmd += fileName;
+				 mvCmd += "\" \"";
+				 mvCmd += newFilenameOfOldDatabase;
+				 mvCmd += "\"";
+				 system(mvCmd.c_str());
+
+				 /* we haven't changed the reference to the old database name which we're replacing
+				  with the new database so we're really creating the new database with the old
+				  database name */
+				 cout << "opening target: " << dlg->mOptions->mDatabaseFileName << endl;
+				 Database* targetDatabase = openDatabase(dlg->mOptions, true);
+
+				 dlg->mOptions->mDatabaseFileName = newFilenameOfOldDatabase;
+				
+				 cout << "opening source: " << dlg->mOptions->mDatabaseFileName << endl;
+				 // open the old database
+				 Database* sourceDatabase = openDatabase(dlg->mOptions, false);
+
+				 copyDatabaseContents(sourceDatabase, targetDatabase);
+
+				 sourceDatabase->closeStream();
+				 targetDatabase->closeStream();
+
 				dlg->mOptions->mDatabaseFileName = fileName;
-				string cat = "";
-				cat += PATH_SLASH;
-				cat += "catalog";
-				dlg->mOptions->mCurrentSurveyArea = fileName.substr(0,fileName.rfind(cat));
 
-				// make sure the current Options include the survey area and database
-				// filename of the new database ... if not, then add them to the list
-				// to make sure program knows of them in future
-
-				bool known = false;
-				int i;
-				string shortAreaName = dlg->mOptions->mCurrentSurveyArea;
-				shortAreaName = shortAreaName.substr(shortAreaName.rfind(PATH_SLASH)+1);
-				for (i = 0; ((! known) && (i < dlg->mOptions->mNumberOfExistingSurveyAreas)); i++)
-					if (shortAreaName == dlg->mOptions->mExistingSurveyAreaName[i])
-						known = true;
-				if (! known)
-				{
-					// add survey area name to list
-					dlg->mOptions->mExistingSurveyAreaName.push_back(shortAreaName);
-					dlg->mOptions->mNumberOfExistingSurveyAreas ++;
-				}
-
-				known = false;
-				string shortDbName = dlg->mOptions->mDatabaseFileName;
-				shortDbName = shortDbName.substr(shortDbName.rfind(PATH_SLASH)+1);
-				shortDbName = (shortAreaName + PATH_SLASH) + shortDbName;
-				for (i = 0; ((! known) && (i < dlg->mOptions->mNumberOfExistingDatabases)); i++)
-					if (shortDbName == dlg->mOptions->mExistingDatabaseName[i])
-						known = true;
-				if (! known)
-				{
-					// add survey area name to list
-					dlg->mOptions->mExistingDatabaseName.push_back(shortDbName);
-					dlg->mOptions->mNumberOfExistingDatabases ++;
-				}
-
-				// close the current database
-				delete dlg->mDatabase; // this closes the current database file
-
-				// open the new database
-				//dlg->mDatabase = new Database(dlg->mOptions, false);
-				dlg->mDatabase = openDatabase(dlg->mOptions, false);
-
-				// make sure main window has correct pointer to it -- THIS IS IMPORTANT
-				dlg->mMainWin->mDatabase = dlg->mDatabase;
-
-				// force the main window to reload and display the new database
-				dlg->mMainWin->show();
+				cout << "filename now: " << dlg->mOptions->mDatabaseFileName << endl;
 			}
+
+			// open the new database
+			//dlg->mDatabase = new Database(dlg->mOptions, false);
+			dlg->mDatabase = openDatabase(dlg->mOptions, false);
+
+			// make sure main window has correct pointer to it -- THIS IS IMPORTANT
+			dlg->mMainWin->mDatabase = dlg->mDatabase;
+
+			// force the main window to reload and display the new database
+			dlg->mMainWin->show();
 		}
 		g_free(fname);
+		}
 		break;
 	
 	case  OpenFileChooserDialog::backupDatabase : //***1/85 - new option

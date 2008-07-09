@@ -98,10 +98,12 @@ public:
 	virtual DatabaseFin<ColorImage>* getItemAbsolute(unsigned pos); //***1.3
 
 	virtual DatabaseFin<ColorImage>* getItem(unsigned pos);
-	virtual DatabaseFin<ColorImage>* getItemByName(std::string name);  
+	// virtual DatabaseFin<ColorImage>* getItemByName(std::string name);  
 
 	virtual bool openStream();
 	virtual bool closeStream();
+
+	static bool isType(std::string filePath);
 
 protected:
 	virtual DatabaseFin<ColorImage>* getItem(unsigned pos, std::vector<std::string> *theList);
@@ -110,11 +112,13 @@ private:
 	sqlite3 *db;
 	char *zErrMsg;
 	int rc;
+	int lastInsertedRowID;
 
 	static char* handleNull(char *);
 	int generateUniqueInt();
 	static string escapeString(string);
 	static string stripEscape(string);
+
 	
 	void setSyncMode(int mode);
 	void beginTransaction();

@@ -434,6 +434,10 @@ SOURCE=..\src\interface\DeleteOutlineDialog.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\DummyDatabase.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Src\image_processing\edge_detect.h
 # End Source File
 # Begin Source File

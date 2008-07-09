@@ -95,7 +95,7 @@ class OldDatabase : public Database //***1.99 - now a derived type
 
 		~OldDatabase();
 		
-		virtual void createEmptyOldDatabase(Options *o);
+		virtual void createEmptyDatabase(Options *o);
 
 		virtual unsigned long add(DatabaseFin<ColorImage>* data); 
 
@@ -116,6 +116,7 @@ class OldDatabase : public Database //***1.99 - now a derived type
 		virtual bool OldDatabase::openStream();
 		virtual bool OldDatabase::closeStream();
 
+		static bool isType(std::string filePath);
 
 
 	protected:

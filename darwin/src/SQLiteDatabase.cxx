@@ -1288,12 +1288,6 @@ void SQLiteDatabase::deleteThumbnailByFkImageID(int id) {
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
 
-
-// *****************************************************************************
-//
-// Inserts DatabaseFin<ColorImage>
-//
-
 unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 
 	DBIndividual individual;
@@ -1317,7 +1311,12 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 	}
 	fin->mImageFilename = shortFilename;
 	
-	individual.id = generateUniqueInt();
+	if(lastInsertedRowID == 0)
+		lastInsertedRowID = generateUniqueInt();
+	else
+		lastInsertedRowID++;
+	
+	individual.id = lastInsertedRowID;
 	individual.idcode = fin->getID();
 	individual.name = fin->getName();
 	individual.fkdamagecategoryid = ( selectDamageCategoryByName( fin->getDamage() ) ).id;
@@ -1624,7 +1623,7 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItem(unsigned pos) {
 //
 // Retrieve the fin with given name from the database.
 //
-
+/*
 DatabaseFin<ColorImage>* SQLiteDatabase::getItemByName(std::string name) {
 
 	int individualID;
@@ -1637,6 +1636,7 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItemByName(std::string name) {
 
 	return fin;
 }
+*/
 
 // *****************************************************************************
 //
@@ -2062,6 +2062,47 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 
 }
 
+//*******************************************************************
+//
+bool SQLiteDatabase::isType(std::string filePath)
+{
+
+	const int MAGIC_NUMBER_LENGTH = 15;
+	char MAGIC_NUMBER[] = "SQLite format 3\0";
+
+	// try to open file
+	fstream testFile(filePath.c_str(), ios::in | ios::binary);
+
+	if (!testFile)
+	{
+		printf("\nError locating or opening database file!\n");
+		return false;
+	}
+
+	testFile.seekg(0, ios::beg);
+	
+	char magicNumber[MAGIC_NUMBER_LENGTH+1];
+	magicNumber[15] = '\0';
+	
+	// try to read from the file...
+	if (!(testFile.read(magicNumber, MAGIC_NUMBER_LENGTH))) 
+	{
+		printf("\ndatabase file is completely empty.\n");
+		return false;
+	} 
+
+	if (strcmp(magicNumber, MAGIC_NUMBER) != 0)
+	{
+		printf("\nNon-SQLite database.\n");
+		return false;
+	}
+
+	testFile.close();
+	testFile.clear();
+
+	return true;
+}
+
 // *****************************************************************************
 //
 // Constructor
@@ -2071,7 +2112,7 @@ SQLiteDatabase::SQLiteDatabase(Options *o, bool createEmptyDB)
 	:
 	Database(o, createEmptyDB)
 	{
-	
+	lastInsertedRowID = 0;
 	std::list<DBDamageCategory> *damagecategories = new std::list<DBDamageCategory>();
 	DBDamageCategory damagecategory;
 	int i = 0;

@@ -60,6 +60,7 @@ class Options
 			mDataFieldNamesMax = mDataFieldName.size();
 		}
 
+
 		~Options()
 		{
 			mDefinedCatalogSchemeName.clear();

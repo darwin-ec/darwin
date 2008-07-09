@@ -61,7 +61,7 @@ OldDatabase::OldDatabase(Options *o, bool createEmptyDB)
 			return;
 		}
 		// create the structure of a new empty OldDatabase
-		createEmptyOldDatabase(o); // assumes file is already open
+		createEmptyDatabase(o); // assumes file is already open
 		// clean up before continuing
 		mDbFile.close();
 		mDbFile.clear();
@@ -310,6 +310,56 @@ OldDatabase::OldDatabase(Options *o, bool createEmptyDB)
 	}
 }
 
+//*******************************************************************
+//
+bool OldDatabase::isType(std::string filePath)
+{
+	// try to open file
+	fstream testFile(filePath.c_str(), ios::in | ios::binary);
+
+	if (!testFile)
+	{
+		printf("\nError locating or opening OldDatabase file!\n");
+		return false;
+	}
+
+	testFile.seekg(0, ios::beg);
+	
+	unsigned long footerPos;
+	
+	// try to read from the file...
+	if (!(testFile.read((char*)&footerPos, sizeof(unsigned long)))) 
+	{
+		printf("\nOldDatabase file is completely empty.\n");
+		return false;
+	} 
+
+
+	//check for DB version
+	unsigned int version;
+    testFile.read((char*)&version, sizeof(int));
+
+	//***1.85 - new magic number inclued "DB", program version and db version
+	// IMPORTANT NOTE: take the code 0x4442073D
+	// As an integer the code is interpretted as above with 4442 being the
+	// ASCII digits "DB" in hex and 073D begin 1853 in decimal (or 1.85 & 3) for
+	// the version numbers ...
+	// HOWEVER, if version is treated as the address of a char array
+	// the byte order acts as if reversed and the ASCII codes are ...
+	// (version[0] == 3D, version[0] == 07, version[0] == 42, version[0] == 44)
+	// be careful about how you look at specific positions.
+	
+	if (version != CURRENT_DBVERSION && (version & 0xFFFF0000) != 0x44420000) // the magic part is "DB"
+	{
+		printf("\nOld/Incompatible OldDatabase Version.\n");
+		return false;
+	}
+
+	testFile.close();
+	testFile.clear();
+
+	return true;
+}
 
 //*******************************************************************
 //
@@ -343,7 +393,7 @@ bool OldDatabase::openStream()
 //*******************************************************************
 //
 
-void OldDatabase::createEmptyOldDatabase(Options *o)
+void OldDatabase::createEmptyDatabase(Options *o)
 {
 	mFooterPos = 0;
 	mDataSize = 0;
@@ -625,18 +675,17 @@ DatabaseFin<ColorImage>* OldDatabase::getItem(unsigned pos)
 	return getItem(pos, it);
 }
 
-/*
-  there is an issue with list versus vector -- this function is not currently
-  used in the code anywhere - JHS
+
 //*******************************************************************
 //
-
+/*
 DatabaseFin<ColorImage>* OldDatabase::getItemByName(std::string name)
 {
 #ifdef DEBUG
 	std::cout << "Getting item named " << name << " from the OldDatabase." << std::endl;
 #endif
-	std::list<std::string>::iterator it = mNameList.begin();
+	// std::list<std::string>::iterator it = mNameList.begin();
+	std::vector<std::string>::iterator it = mNameList.begin();
 
 	while (it != mNameList.end()) {
 		istrstream inStream(it->c_str());	
@@ -652,7 +701,8 @@ DatabaseFin<ColorImage>* OldDatabase::getItemByName(std::string name)
 	}
 	return NULL;
 }
-*/
+
+  */
 /*
   again list & vector -- function not used
 //*******************************************************************

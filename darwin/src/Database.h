@@ -80,7 +80,7 @@ public:
 	virtual DatabaseFin<ColorImage>* getItemAbsolute(unsigned pos) = 0;
 
 	virtual DatabaseFin<ColorImage>* getItem(unsigned pos) = 0;
-	virtual DatabaseFin<ColorImage>* getItemByName(std::string name) = 0;  
+	// virtual DatabaseFin<ColorImage>* getItemByName(std::string name) = 0;  
 
 	void sort(db_sort_t sortBy);
 
