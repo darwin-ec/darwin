@@ -55,7 +55,7 @@
 // Global Variables
 //******************************************************************
 typedef struct { int id; std::string idcode; std::string name; int fkdamagecategoryid; } DBIndividual;
-typedef struct { int id; std::string name; } DBDamageCategory; 
+typedef struct { int id; int orderid; std::string name; } DBDamageCategory; 
 typedef struct { int id; int fkindividualid; std::string imagefilename; std::string dateofsighting; std::string rollandframe; std::string locationcode; std::string shortdescription; } DBImage;
 typedef struct { int id; int rows; std::string pixmap; int fkimageid; } DBThumbnail;
 typedef struct { int id; int tipposition; int beginle; int endle; int notchposition; int endte; int fkindividualid; } DBOutline;

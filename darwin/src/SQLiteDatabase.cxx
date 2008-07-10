@@ -104,10 +104,12 @@ int SQLiteDatabase::callbackDamageCategories(void *damagecategories, int argc, c
 			temp.id = atoi( handleNull(argv[i]) );
 		else if(! strcmp(azColName[i], "Name") )
 			temp.name = stripEscape( handleNull(argv[i]) );
+		else if(! strcmp(azColName[i], "OrderID"))
+			temp.orderid = atoi(handleNull(argv[i]));
 
 	}
 	
-	((std::list<DBDamageCategory> *)damagecategories)->push_front(temp);
+	((std::list<DBDamageCategory> *)damagecategories)->push_back(temp);
 
 
 	return 0;
@@ -130,6 +132,7 @@ int SQLiteDatabase::callbackDBInfo(void *dbinfo, int argc, char **argv, char **a
 			temp.key = stripEscape( handleNull(argv[i]) );
 		else if(! strcmp(azColName[i], "Value"))
 			temp.value = stripEscape( handleNull(argv[i]) );
+		
 
 	}
 
@@ -382,8 +385,14 @@ void SQLiteDatabase::commitTransaction() {
 //
 
 void SQLiteDatabase::selectAllDamageCategories(std::list<DBDamageCategory> *damagecategories) {
+	
+	stringstream sql;
 
-	rc = sqlite3_exec(db, "SELECT * FROM DamageCategories;", callbackDamageCategories, damagecategories, &zErrMsg);
+	sql << "SELECT * FROM DamageCategories ORDER BY OrderID;";
+
+	cout << sql.str() << endl;
+
+	rc = sqlite3_exec(db, sql.str().c_str() , callbackDamageCategories, damagecategories, &zErrMsg);
 
 	if( rc!=SQLITE_OK ){
 		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, "SELECT * FROM DamageCategories;");
@@ -418,6 +427,7 @@ DBDamageCategory SQLiteDatabase::selectDamageCategoryByName(std::string name) {
 	else {
 		dc.name = "NONE";
 		dc.id = -1;
+		dc.orderid = -1;
 	}
 
 
@@ -451,6 +461,7 @@ DBDamageCategory SQLiteDatabase::selectDamageCategoryByID(int id) {
 	else {
 		dc.name = "NONE";
 		dc.id = -1;
+		dc.orderid = -1;
 	}
 
 
@@ -844,9 +855,12 @@ void SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
 
 	stringstream sql;
 
-	sql << "INSERT INTO DamageCategories (ID, Name) VALUES ";
+	sql << "INSERT INTO DamageCategories (ID, Name, OrderID) VALUES ";
 	sql << "(NULL, ";
-	sql << "'" << escapeString(damagecategory->name) << "');";
+	sql << "'" << escapeString(damagecategory->name) << "', ";
+	sql << damagecategory->orderid << ");";
+
+	cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
@@ -1042,7 +1056,10 @@ void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 
 	sql << "UPDATE DamageCategories SET ";
 	sql << "Name = '" << escapeString(damagecategory->name) << "' ";
+	sql << "AND OrderID = " << damagecategory->orderid << " ";
 	sql << "WHERE ID = " << damagecategory->id << ";";
+
+	cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
@@ -1621,25 +1638,6 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItem(unsigned pos) {
 
 // *****************************************************************************
 //
-// Retrieve the fin with given name from the database.
-//
-/*
-DatabaseFin<ColorImage>* SQLiteDatabase::getItemByName(std::string name) {
-
-	int individualID;
-	DatabaseFin<ColorImage> *fin = NULL;
-	
-	individualID = selectIndividualByName(name);
-	
-	if(individualID != NOT_IN_LIST)
-		fin = getFin(individualID);
-
-	return fin;
-}
-*/
-
-// *****************************************************************************
-//
 // Delete fin from database
 //
 
@@ -1680,43 +1678,6 @@ void SQLiteDatabase::sortLists() {
 }
 
 //*******************************************************************
-//***1.85 - returns position of id in mIDList as currently sorted
-//
-
-/*
-int SQLiteDatabase::getIDListPosit(std::string id)
-{
-	// NOTE: this list in the database contains strings, but the strings
-	// are made up of two parts ("the Id" and "id" of the fin 
-	// in the Invidiuals table.)
-	
-	std::vector<std::string>::iterator it;
-
-	bool found(false);
-	int posit(0);
-	it = mIDList.begin();
-
-	while ((!found) && (it != mIDList.end()))
-	{
-		std::string listID = *it;
-		listID = listID.substr(0,listID.rfind(" ")); // strip the offset
-		// should we ignore CASE????
-		if (id == listID)
-			found = true;
-		else
-		{
-			++it;
-			posit++;
-		}
-	}
-	if (! found)
-		posit = NOT_IN_LIST;
-
-	return posit;
-}
-*/
-
-//*******************************************************************
 //
 // Looks up row id in AbsoluteOffset list and then uses getFin(int)
 // to retrieve that fin from the database.
@@ -1735,114 +1696,6 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItemAbsolute(unsigned pos) {
 	return fin;
 }
 
-/*
-//*******************************************************************
-//
-// Returns item from list at given position
-//
-
-string SQLiteDatabase::getItemEntryFromList(db_sort_t whichList, unsigned pos) {	
-
-	if (pos > this->size())
-	       throw BoundsError();
-
-	std::vector<std::string> *it;
-
-	switch (whichList) {
-		case DB_SORT_NAME :
-			it = &mNameList;
-			break;
-		case DB_SORT_ID :
-			it = &mIDList;
-			break;
-		case DB_SORT_DATE :
-			it = &mDateList;
-			break;
-		case DB_SORT_ROLL :
-			it = &mRollList;
-			break;
-		case DB_SORT_LOCATION :
-			it = &mLocationList;
-			break;
-		case DB_SORT_DAMAGE :
-			it = &mDamageList;
-			break;
-		case DB_SORT_DESCRIPTION :
-			it = &mDescriptionList;
-			break;
-		default : // it's not a valid sort type
-			return "";
-	}
-
-	return (*it)[pos];
-}
-
-//*******************************************************************
-//
-// Returns pos of item in list with given string
-//
-
-int SQLiteDatabase::getItemListPosFromOffset(db_sort_t whichList, string item) {
-
-	std::vector<std::string>::iterator it, last;
-
-	switch (whichList) {
-
-		case DB_SORT_NAME :
-			it = mNameList.begin();
-			last = mNameList.end();
-			break;
-		case DB_SORT_ID :
-			it = mIDList.begin();
-			last = mIDList.end();
-			break;
-		case DB_SORT_DATE :
-			it = mDateList.begin();
-			last = mDateList.end();
-			break;
-		case DB_SORT_ROLL :
-			it = mRollList.begin();
-			last = mRollList.end();
-			break;
-		case DB_SORT_LOCATION :
-			it = mLocationList.begin();
-			last = mLocationList.end();
-			break;
-		case DB_SORT_DAMAGE :
-			it = mDamageList.begin();
-			last = mDamageList.end();
-			break;
-		case DB_SORT_DESCRIPTION :
-			it = mDescriptionList.begin();
-			last = mDescriptionList.end();
-			break;
-		default : // it's not a valid sort type
-			return NOT_IN_LIST;
-	}
-
-	string itemOffset = item.substr(1 + item.rfind(" "));
-
-	bool found(false);
-	int posit(0);
-
-	while ((!found) && (it != last)) {
-		std::string offset = *it;
-		offset = offset.substr(1 + offset.rfind(" ")); // keep just the offset
-
-		if (itemOffset == offset)
-			found = true;
-		else {
-			++it;
-			posit++;
-		}
-	}
-
-	if (! found)
-		posit = NOT_IN_LIST;
-
-	return posit;
-}
-*/
 //*******************************************************************
 //
 // Given a list and position in that list, returns fin from database.
@@ -1986,8 +1839,6 @@ void SQLiteDatabase::closedb() {
 //
 
 void SQLiteDatabase::createEmptyDatabase(Options *o) {
-	
-	int schemeId = o->mCurrentDefaultCatalogScheme;
 	stringstream sql;
 	DBDamageCategory cat;
 
@@ -1995,6 +1846,7 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 
 	sql << "CREATE TABLE DamageCategories (";
 	sql << "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
+	sql << "OrderID INTEGER, ";
 	sql << "Name TEXT ";
 	sql << ");" << endl;
 
@@ -2055,8 +1907,9 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	
 	// TODO: enter code to populate DBInfo
 	
-	for (int i = 0; i < o->mDefinedCatalogCategoryNamesMax[schemeId]; i++) {
-		cat.name = o->mDefinedCatalogCategoryName[schemeId][i];
+	for (int i = 0; i < o->mCatCategoryNamesMax; i++) {
+		cat.name = o->mCatCategoryName[i];
+		cat.orderid = i;
 		insertDamageCategory(&cat);		
 	}
 
@@ -2064,6 +1917,10 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 
 //*******************************************************************
 //
+/*
+ * Used to figure out if the given filePath refers to a database file
+ * supported by this class.
+ */
 bool SQLiteDatabase::isType(std::string filePath)
 {
 

@@ -312,6 +312,10 @@ OldDatabase::OldDatabase(Options *o, bool createEmptyDB)
 
 //*******************************************************************
 //
+/*
+ * Used to figure out if the given filePath refers to a database file
+ * supported by this class.
+ */
 bool OldDatabase::isType(std::string filePath)
 {
 	// try to open file

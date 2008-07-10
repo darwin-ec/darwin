@@ -1253,46 +1253,12 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 			// close the current database
 			delete dlg->mDatabase; // this closes the current database file
 
-			if(opentype == convert) {
-				 // "file.db" -> "file.olddb"
-				 int pos = fileName.rfind(".");
-				 string newFilenameOfOldDatabase = fileName.substr(0, pos);
-				 newFilenameOfOldDatabase += ".olddb";
- 
-				 // move "file.db" "file.olddb"
-				 string mvCmd("move \"");
-				 mvCmd += fileName;
-				 mvCmd += "\" \"";
-				 mvCmd += newFilenameOfOldDatabase;
-				 mvCmd += "\"";
-				 system(mvCmd.c_str());
-
-				 /* we haven't changed the reference to the old database name which we're replacing
-				  with the new database so we're really creating the new database with the old
-				  database name */
-				 cout << "opening target: " << dlg->mOptions->mDatabaseFileName << endl;
-				 Database* targetDatabase = openDatabase(dlg->mOptions, true);
-
-				 dlg->mOptions->mDatabaseFileName = newFilenameOfOldDatabase;
-				
-				 cout << "opening source: " << dlg->mOptions->mDatabaseFileName << endl;
-				 // open the old database
-				 Database* sourceDatabase = openDatabase(dlg->mOptions, false);
-
-				 copyDatabaseContents(sourceDatabase, targetDatabase);
-
-				 sourceDatabase->closeStream();
-				 targetDatabase->closeStream();
-
-				dlg->mOptions->mDatabaseFileName = fileName;
-
-				cout << "filename now: " << dlg->mOptions->mDatabaseFileName << endl;
-			}
-
-			// open the new database
-			//dlg->mDatabase = new Database(dlg->mOptions, false);
-			dlg->mDatabase = openDatabase(dlg->mOptions, false);
-
+			// convert the database first or open as is
+			if(opentype == convert)
+				dlg->mDatabase = convertDatabase(dlg->mOptions, fileName);
+			else
+				dlg->mDatabase = openDatabase(dlg->mOptions, false);
+			
 			// make sure main window has correct pointer to it -- THIS IS IMPORTANT
 			dlg->mMainWin->mDatabase = dlg->mDatabase;
 
