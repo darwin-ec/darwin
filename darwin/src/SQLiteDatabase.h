@@ -177,8 +177,14 @@ private:
 	void opendb(const char *);
 	void closedb();
 	void loadLists();
-
+	void addFinToLists(int, string, string, string, string,
+							   string, string, string);
+	void deleteFinFromLists(int);
+	void addFinToLists(DatabaseFin<ColorImage>*);
 	void sortLists();
+	string nullToNone(string);
+	void SQLiteDatabase::deleteEntry(std::vector<string>*, int);
+	int SQLiteDatabase::listEntryToID(string);
 
 
 };

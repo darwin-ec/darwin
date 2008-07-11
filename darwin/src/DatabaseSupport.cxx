@@ -82,8 +82,12 @@ void copyFins(Database* from, Database *to)
 	{
 		DatabaseFin<ColorImage>* fin = from->getItem(i);
 		cout << i << endl;
-		if(fin != NULL)
+		if(fin != NULL) {
 			to->add(fin);
+			cout << "added" << endl;
+			delete fin;
+			cout << "deleting" << endl;
+		}
 		else
 			cout << "null" << endl;
 	}
