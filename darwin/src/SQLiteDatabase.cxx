@@ -1871,7 +1871,7 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	sql << "fkDamageCategoryID INTEGER ";
 	sql << ");" << endl;
 	
-	sql << "CREATE TABLE Image ( ";
+	sql << "CREATE TABLE Images ( ";
 	sql << "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
 	sql << "fkIndividualID INTEGER, ";
 	sql << "ImageFilename TEXT, ";
