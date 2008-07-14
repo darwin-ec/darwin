@@ -112,14 +112,13 @@ private:
 	sqlite3 *db;
 	char *zErrMsg;
 	int rc;
-	int lastInsertedRowID;
 
 	static char* handleNull(char *);
 	int generateUniqueInt();
 	static string escapeString(string);
 	static string stripEscape(string);
 
-	
+	int lastInsertedRowID();
 	void setSyncMode(int mode);
 	void beginTransaction();
 	void commitTransaction();
@@ -145,14 +144,14 @@ private:
 	void selectThumbnailsByFkImageID(std::list<DBThumbnail> *, int);
 	DBThumbnail selectThumbnailByFkImageID(int fkimageid);
 
-	void insertIndividual(DBIndividual *);
-	void insertDamageCategory(DBDamageCategory *);
-	void insertPoint(DBPoint *);
+	int insertIndividual(DBIndividual *);
+	int insertDamageCategory(DBDamageCategory *);
+	int insertPoint(DBPoint *);
 	void insertDBInfo(DBInfo *);
-	void insertOutline(DBOutline *);
-	void insertImage(DBImage *);
-	void insertImageModification(DBImageModification *);
-	void insertThumbnail(DBThumbnail *);
+	int insertOutline(DBOutline *);
+	int insertImage(DBImage *);
+	int insertImageModification(DBImageModification *);
+	int insertThumbnail(DBThumbnail *);
 	void insertPoints(std::list<DBPoint>* );
 	void insertImageModifications(std::list<DBImageModification>* );
 

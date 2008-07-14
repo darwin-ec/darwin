@@ -67,8 +67,6 @@ string SQLiteDatabase::stripEscape(string str) {
 
 int SQLiteDatabase::callbackIndividuals(void *individuals, int argc, char **argv, char **azColName) {
 	
-	// cout << "callback for individuals" << endl;
-
 	int i;
 	DBIndividual temp;
 
@@ -99,7 +97,6 @@ int SQLiteDatabase::callbackIndividuals(void *individuals, int argc, char **argv
 
 int SQLiteDatabase::callbackDamageCategories(void *damagecategories, int argc, char **argv, char **azColName) {
 	
-	// cout << "callback for damage cat" << endl;
 	
 	int i;
 	DBDamageCategory temp;
@@ -130,9 +127,7 @@ int SQLiteDatabase::callbackDamageCategories(void *damagecategories, int argc, c
 
 int SQLiteDatabase::callbackDBInfo(void *dbinfo, int argc, char **argv, char **azColName) {
 
-	// cout << "callback for dbinfo" << endl;
-
-	int i;
+		int i;
 	DBInfo temp;
 
 	for(i = 0; i < argc; i++) {
@@ -159,8 +154,6 @@ int SQLiteDatabase::callbackDBInfo(void *dbinfo, int argc, char **argv, char **a
 //
 
 int SQLiteDatabase::callbackImageModifications(void *imagemods, int argc, char **argv, char **azColName) {
-
-	// cout << "callback for img mod" << endl;
 
 	int i;
 	DBImageModification temp;
@@ -207,8 +200,6 @@ int SQLiteDatabase::callbackImageModifications(void *imagemods, int argc, char *
 
 int SQLiteDatabase::callbackImages(void *images, int argc, char **argv, char **azColName) {
 
-	// cout << "callback for imgs" << endl;
-
 	int i;
 	DBImage temp;
 
@@ -250,8 +241,6 @@ int SQLiteDatabase::callbackImages(void *images, int argc, char **argv, char **a
 //
 
 int SQLiteDatabase::callbackOutlines(void *outlines, int argc, char **argv, char **azColName) {
-
-	// cout << "callback for outlines" << endl;
 
 	int i;
 	DBOutline temp;
@@ -332,8 +321,6 @@ int SQLiteDatabase::callbackPoints(void *points, int argc, char **argv, char **a
 
 int SQLiteDatabase::callbackThumbnails(void *thumbnails, int argc, char **argv, char **azColName) {
 
-	// cout << "callback for thumbnails" << endl;
-
 	int i;
 	DBThumbnail temp;
 
@@ -360,9 +347,19 @@ int SQLiteDatabase::callbackThumbnails(void *thumbnails, int argc, char **argv, 
 
 // *****************************************************************************
 //
+// Returns the ID of the last successfully inserted row.  If the table contains
+// an INTEGER PRIMARY KEY column, that value is returned.  Otherwise, it returns
+// the value of SQLite's hidden column, ROWID.
+//
+int SQLiteDatabase::lastInsertedRowID() {
+	
+	return (int) sqlite3_last_insert_rowid(db);
+}
+
+// *****************************************************************************
+//
 // Set synchronous mode.  0 = OFF, 1 = NORMAL, 2 = FULL.  Default is FULL.
 //
-
 void SQLiteDatabase::setSyncMode(int mode) {
 	
 	stringstream sql;
@@ -376,7 +373,6 @@ void SQLiteDatabase::setSyncMode(int mode) {
 //
 // Begin transaction.
 //
-
 void SQLiteDatabase::beginTransaction() {
 	
 	stringstream sql;
@@ -390,7 +386,6 @@ void SQLiteDatabase::beginTransaction() {
 //
 // Commit transaction.
 //
-
 void SQLiteDatabase::commitTransaction() {
 	
 	stringstream sql;
@@ -405,16 +400,11 @@ void SQLiteDatabase::commitTransaction() {
 // This returns all the DamageCategory rows as a list of DBDamageCategory 
 // structs.
 //
-
 void SQLiteDatabase::selectAllDamageCategories(std::list<DBDamageCategory> *damagecategories) {
-
-	// cout << "select all dmg cat" << endl;
 	
 	stringstream sql;
 
 	sql << "SELECT * FROM DamageCategories ORDER BY OrderID;";
-
-	// cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str() , callbackDamageCategories, damagecategories, &zErrMsg);
 
@@ -429,10 +419,7 @@ void SQLiteDatabase::selectAllDamageCategories(std::list<DBDamageCategory> *dama
 // Returns DBDamageCategory of damage category with Name in 
 // DamageCategories table.
 //
- 
 DBDamageCategory SQLiteDatabase::selectDamageCategoryByName(std::string name) {
-	
-	// cout << "selecting damage category by name" << endl;
 
 	DBDamageCategory dc;
 
@@ -464,10 +451,7 @@ DBDamageCategory SQLiteDatabase::selectDamageCategoryByName(std::string name) {
 // Returns DBDamageCategory of damage category with id in 
 // DamageCategories table.
 //
- 
 DBDamageCategory SQLiteDatabase::selectDamageCategoryByID(int id) {
-
-	// cout << "select dmg cat by id" << endl;
 	
 	DBDamageCategory dc;
 
@@ -500,10 +484,7 @@ DBDamageCategory SQLiteDatabase::selectDamageCategoryByID(int id) {
 //
 // This returns all the Individuals rows as a list of DBIndividual structs.
 //
-
 void SQLiteDatabase::selectAllIndividuals(std::list<DBIndividual> *individuals) {
-
-	// cout << "select all individ" << endl;
 
 	rc = sqlite3_exec(db, "SELECT * FROM Individuals;", SQLiteDatabase::callbackIndividuals, individuals, &zErrMsg);
 
@@ -517,10 +498,7 @@ void SQLiteDatabase::selectAllIndividuals(std::list<DBIndividual> *individuals) 
 //
 // Returns DBIndividual of individual with ID in Individuals table.
 //
-
 DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
-
-	// cout << "select individ by id " << id << endl;
 	
 	std::list<DBIndividual> individuals = std::list<DBIndividual>();
 
@@ -542,59 +520,8 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 
 // *****************************************************************************
 //
-// Returns DBIndividual of individual with given name in Individuals 
-// table.
-//
-/*
-int SQLiteDatabase::selectIndividualByName(std::string name) {
-
-	// cout << "select individ by name" << endl;
-	
-	std::list<DBIndividual> individuals = std::list<DBIndividual>();
-
-	stringstream sql;
-
-	sql << "SELECT * FROM Individuals WHERE Name = '" << name << "';";
-
-	rc = sqlite3_exec(db, sql.str().c_str(), SQLiteDatabase::callbackIndividuals, &individuals, &zErrMsg);
-
-	if( rc!=SQLITE_OK ){
-		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
-		sqlite3_free(zErrMsg);
-	}
-
-	return (! individuals.empty() ) ? individuals.front().id : NOT_IN_LIST;
-}
-*/
-
-// *****************************************************************************
-//
-// Returns DBIndividual of individual with the given FkDamageCategory
-// value in Individuals table.
-//
-/*
-void SQLiteDatabase::selectIndividualsByFkDamageCategoryID(std::list<DBIndividual> *individuals, int fkdamagecategoryid) {
-
-	// cout << "select individ by dmg cat" << endl;
-
-	stringstream sql;
-
-	sql << "SELECT * FROM Individuals WHERE fkDamageCategoryID = " << fkdamagecategoryid << ";";
-
-	rc = sqlite3_exec(db, sql.str().c_str(), callbackIndividuals, &individuals, &zErrMsg);
-
-	if( rc!=SQLITE_OK ){
-		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
-		sqlite3_free(zErrMsg);
-	}
-}
-*/
-
-// *****************************************************************************
-//
 // This returns all the DBInfo rows as a list of DBInfo structs.
 //
-
 void SQLiteDatabase::selectAllDBInfo(std::list<DBInfo> *dbinfo) {
 
 	// cout << "select all db info" << endl;
@@ -614,7 +541,6 @@ void SQLiteDatabase::selectAllDBInfo(std::list<DBInfo> *dbinfo) {
 // Populates given list<DBImageModification> with all rows from 
 // ImageModifications table.
 //
-
 void SQLiteDatabase::selectAllImageModifications(std::list<DBImageModification> *imagemodifications) {
 
 	// cout << "select all img mod" << endl;
@@ -634,7 +560,6 @@ void SQLiteDatabase::selectAllImageModifications(std::list<DBImageModification> 
 // Populates given list<DBImageModification> with all rows from 
 // ImageModifications table where fkImageID equals the given int.
 //
-
 void SQLiteDatabase::selectImageModificationsByFkImageID(std::list<DBImageModification> *imagemodifications, int fkimageid) {
 
 	// cout << "select img mod by img id" << endl;
@@ -655,7 +580,6 @@ void SQLiteDatabase::selectImageModificationsByFkImageID(std::list<DBImageModifi
 //
 // Populates given list<DBImage> with all rows from Images table.
 //
-
 void SQLiteDatabase::selectAllImages(std::list<DBImage> *images) {
 
 	// cout << "select all img" << endl;
@@ -675,7 +599,6 @@ void SQLiteDatabase::selectAllImages(std::list<DBImage> *images) {
 // Populates given list<DBImage> with all rows from Images table where
 // the fkIndividualID equals the given int.
 //
-
 void SQLiteDatabase::selectImagesByFkIndividualID(std::list<DBImage> *images, int fkindividualid) {
 	
 	// cout << "select imgs by individ id" << endl;
@@ -697,7 +620,6 @@ void SQLiteDatabase::selectImagesByFkIndividualID(std::list<DBImage> *images, in
 //
 // Returns DBImage of row with given fkIndividualID
 //
-
 DBImage SQLiteDatabase::selectImageByFkIndividualID(int fkindividualid) {
 
 	// cout << "select img by individ id" << endl;
@@ -727,7 +649,6 @@ DBImage SQLiteDatabase::selectImageByFkIndividualID(int fkindividualid) {
 //
 // This returns all the Outlines rows as a list of DBOutline structs.
 //
-
 void SQLiteDatabase::selectAllOutlines(std::list<DBOutline> *outlines) {
 
 	// cout << "select all outlines" << endl;
@@ -747,7 +668,6 @@ void SQLiteDatabase::selectAllOutlines(std::list<DBOutline> *outlines) {
 // Returns DBOutline from Outlines table where the fkIndividualID equals
 // the given int.
 //
-
 DBOutline SQLiteDatabase::selectOutlineByFkIndividualID(int fkindividualid) {
 
 	// cout << "select outline by individ id" << endl;
@@ -781,35 +701,12 @@ DBOutline SQLiteDatabase::selectOutlineByFkIndividualID(int fkindividualid) {
 	return outline;
 }
 
-
-// *****************************************************************************
-//
-// This returns all the Points rows as a list of DBPoint structs.
-//
-// NEVER CALLED
-//
-/*
-void SQLiteDatabase::selectAllPoints(std::list<DBPoint> *points) {
-
-	std::string sql = "SELECT * FROM Points ORDER BY OrderID;";
-
-	rc = sqlite3_exec(db, sql.c_str(), callbackPoints, points, &zErrMsg);
-
-	if( rc!=SQLITE_OK ) {
-		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.c_str());
-		sqlite3_free(zErrMsg);
-	}
-}
-*/
 // *****************************************************************************
 //
 // Populates given list<DBPoint> with all rows from Points table where
 // the fkOutlineID equals the given int.
 //
-
 void SQLiteDatabase::selectPointsByFkOutlineID(std::list<DBPoint> *points, int fkoutlineid) {
-
-	// cout << "select pts by outline" << endl;
 
 	stringstream sql;
 
@@ -828,10 +725,7 @@ void SQLiteDatabase::selectPointsByFkOutlineID(std::list<DBPoint> *points, int f
 //
 // This returns all the Thumbnails rows as a list of DBThumbnail structs.
 //
-
 void SQLiteDatabase::selectAllThumbnails(std::list<DBThumbnail> *thumbnails) {
-
-	// cout << "select all thumbnails" << endl;
 	
 	std::string sql = "SELECT * FROM Thumbnails;";
 
@@ -847,10 +741,7 @@ void SQLiteDatabase::selectAllThumbnails(std::list<DBThumbnail> *thumbnails) {
 //
 // This returns all the Thumbnails rows as a list of DBThumbnail structs.
 //
-
 void SQLiteDatabase::selectThumbnailsByFkImageID(std::list<DBThumbnail> *thumbnails, int fkimageid) {
-
-	// cout << "select thumbnails by img " << endl;
 
 	stringstream sql;
 
@@ -868,10 +759,7 @@ void SQLiteDatabase::selectThumbnailsByFkImageID(std::list<DBThumbnail> *thumbna
 //
 // Selects a single Thumbnail.
 //
-
 DBThumbnail SQLiteDatabase::selectThumbnailByFkImageID(int fkimageid) {
-
-	// cout << "select thumbnl by img " << endl;
 	
 	DBThumbnail thumbnail;
 
@@ -893,20 +781,24 @@ DBThumbnail SQLiteDatabase::selectThumbnailByFkImageID(int fkimageid) {
 //
 // Inserts Individual into Individuals table.  id needs to be unique.
 //
-
-void SQLiteDatabase::insertIndividual(DBIndividual *individual) {
-
-	// cout << "insert individ" << endl;
+int SQLiteDatabase::insertIndividual(DBIndividual *individual) {
 	
 	stringstream sql;
 	
 	sql << "INSERT INTO Individuals (ID, IDCode, Name, fkDamageCategoryID) VALUES ";
-	sql << "(" << individual->id << ", ";
+	sql << "(NULL, ";
 	sql << "'" << escapeString(individual->idcode) << "', ";
 	sql << "'" << escapeString(individual->name) << "', ";
 	sql << individual->fkdamagecategoryid << "); ";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		individual->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
@@ -914,10 +806,7 @@ void SQLiteDatabase::insertIndividual(DBIndividual *individual) {
 // Inserts DamageCategory into DamageCategories table.  Ignores id as
 // this is autoincremented in the database.
 //
-
-void SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
-
-	// cout << "insert dmg cat" << endl;
+int SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
 
 	stringstream sql;
 
@@ -929,16 +818,20 @@ void SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
 	// cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		damagecategory->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts DBPoint into Points table
 //
-
-void SQLiteDatabase::insertPoint(DBPoint *point) {
-
-	// // cout << "insert pt" << endl;
+int SQLiteDatabase::insertPoint(DBPoint *point) {
 
 	stringstream sql;
 	
@@ -955,16 +848,20 @@ void SQLiteDatabase::insertPoint(DBPoint *point) {
 	sql << point->orderid << "); ";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		point->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts DBInfo into DBInfo table
 //
-
 void SQLiteDatabase::insertDBInfo(DBInfo *dbinfo) {
-
-	// cout << "insert db info" << endl;
 
 	stringstream sql;
 
@@ -979,10 +876,7 @@ void SQLiteDatabase::insertDBInfo(DBInfo *dbinfo) {
 //
 // Inserts DBOutline into Outlines table
 //
-
-void SQLiteDatabase::insertOutline(DBOutline *outline) {
-
-	// cout << "insert outline" << endl;
+int SQLiteDatabase::insertOutline(DBOutline *outline) {
 
 	stringstream sql;
 
@@ -996,16 +890,20 @@ void SQLiteDatabase::insertOutline(DBOutline *outline) {
 	sql << outline->fkindividualid << ");";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		outline->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts DBImage into Images table
 //
-
-void SQLiteDatabase::insertImage(DBImage *image) {
-
-	// cout << "insert image" << endl;
+int SQLiteDatabase::insertImage(DBImage *image) {
 
 	stringstream sql;
 
@@ -1019,16 +917,20 @@ void SQLiteDatabase::insertImage(DBImage *image) {
 	sql << image->fkindividualid << ");";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		image->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts DBImageModification into ImageModifications table
 //
-
-void SQLiteDatabase::insertImageModification(DBImageModification *imagemod) {
-
-	// cout << "insert img mod" << endl;
+int SQLiteDatabase::insertImageModification(DBImageModification *imagemod) {
 
 	stringstream sql;
 
@@ -1044,16 +946,20 @@ void SQLiteDatabase::insertImageModification(DBImageModification *imagemod) {
 	sql << imagemod->fkimageid << ");";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		imagemod->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts DBThumbnail into Thumbnails table
 //
-
-void SQLiteDatabase::insertThumbnail(DBThumbnail *thumbnail) {
-
-	// cout << "insert thumbnail" << endl;
+int SQLiteDatabase::insertThumbnail(DBThumbnail *thumbnail) {
 
 	stringstream sql;
 
@@ -1064,18 +970,20 @@ void SQLiteDatabase::insertThumbnail(DBThumbnail *thumbnail) {
 	sql << thumbnail->fkimageid << ");";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if(rc == SQLITE_OK) {
+		int id = lastInsertedRowID();
+		thumbnail->id = id;
+		return id;
+	} else
+		return -1;
 }
 
 // *****************************************************************************
 //
 // Inserts list of DBPoint's into Points table
 //
-
 void SQLiteDatabase::insertPoints(std::list<DBPoint>* points) {
-
-//	// cout << "insert pts" << endl;
-
-	beginTransaction();
 
 	while(! points->empty() ) {
 		DBPoint point;
@@ -1084,18 +992,13 @@ void SQLiteDatabase::insertPoints(std::list<DBPoint>* points) {
 
 		insertPoint(&point);
 	}
-
-	commitTransaction();
 }
 
 // *****************************************************************************
 //
 // Inserts list of DBImageModification's into ImageModifications table
 //
-
 void SQLiteDatabase::insertImageModifications(std::list<DBImageModification>* imagemods) {
-
-	// cout << "insert img mod" << endl;
 
 	while(! imagemods->empty() ) {
 		DBImageModification imagemod;
@@ -1110,7 +1013,6 @@ void SQLiteDatabase::insertImageModifications(std::list<DBImageModification>* im
 //
 // Updates outline in Outlines table  
 //
-
 void SQLiteDatabase::updateOutline(DBOutline *outline) {
 
 	stringstream sql;
@@ -1131,7 +1033,6 @@ void SQLiteDatabase::updateOutline(DBOutline *outline) {
 // Updates row in DamageCategories table using given DBDamageCategory struct.
 // Uses ID field for identifying row.
 //
-
 void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 
 	stringstream sql;
@@ -1151,7 +1052,6 @@ void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 // Updates row in Individuals table using given DBIndividual struct.  Uses ID
 // field for identifying row.
 //
-
 void SQLiteDatabase::updateIndividual(DBIndividual *individual) {
 
 	stringstream sql;
@@ -1170,7 +1070,6 @@ void SQLiteDatabase::updateIndividual(DBIndividual *individual) {
 // Updates row in Images table using given DBImage struct.  Uses ID
 // field for identifying row.
 //
-
 void SQLiteDatabase::updateImage(DBImage *image) {
 
 	stringstream sql;
@@ -1192,7 +1091,6 @@ void SQLiteDatabase::updateImage(DBImage *image) {
 // Updates row in ImageModifications table using given DBImageModification
 // struct.  Uses ID field for identifying row.
 //
-
 void SQLiteDatabase::updateImageModification(DBImageModification *imagemod) {
 
 	stringstream sql;
@@ -1215,7 +1113,6 @@ void SQLiteDatabase::updateImageModification(DBImageModification *imagemod) {
 // Updates row in Thumbnails table using given DBThumbnail
 // struct.  Uses ID field for identifying row.
 //
-
 void SQLiteDatabase::updateThumbnail(DBThumbnail *thumbnail) {
 
 	stringstream sql;
@@ -1234,7 +1131,6 @@ void SQLiteDatabase::updateThumbnail(DBThumbnail *thumbnail) {
 // Updates row in DBInfo table using given DBInfo
 // struct.  Uses ID field for identifying row.
 //
-
 void SQLiteDatabase::updateDBInfo(DBInfo *dbinfo) {
 
 	stringstream sql;
@@ -1252,7 +1148,6 @@ void SQLiteDatabase::updateDBInfo(DBInfo *dbinfo) {
 //
 // Deletes set of points from Points table using fkOutlineID  
 //
-
 void SQLiteDatabase::deletePoints(int fkOutlineID) {
 
 	stringstream sql;
@@ -1269,7 +1164,6 @@ void SQLiteDatabase::deletePoints(int fkOutlineID) {
 //
 // Delete outline from Outlines table using fkIndividualID  
 //
-
 void SQLiteDatabase::deleteOutlineByFkIndividualID(int fkIndividualID) {
 
 	stringstream sql;
@@ -1284,7 +1178,6 @@ void SQLiteDatabase::deleteOutlineByFkIndividualID(int fkIndividualID) {
 //
 // Delete outline from Outlines table using id  
 //
-
 void SQLiteDatabase::deleteOutlineByID(int id) {
 
 	stringstream sql;
@@ -1300,7 +1193,6 @@ void SQLiteDatabase::deleteOutlineByID(int id) {
 //
 // Delete individual from Individuals table using id  
 //
-
 void SQLiteDatabase::deleteIndividual(int id) {
 
 	stringstream sql;
@@ -1315,7 +1207,6 @@ void SQLiteDatabase::deleteIndividual(int id) {
 //
 // Delete damagecategory from DamageCategories table using id  
 //
-
 void SQLiteDatabase::deleteDamageCategory(int id) {
 
 	stringstream sql;
@@ -1330,7 +1221,6 @@ void SQLiteDatabase::deleteDamageCategory(int id) {
 //
 // Delete image from Images table using id  
 //
-
 void SQLiteDatabase::deleteImage(int id) {
 
 	stringstream sql;
@@ -1346,7 +1236,6 @@ void SQLiteDatabase::deleteImage(int id) {
 //
 // Delete imagemod from ImageModifications table using id  
 //
-
 void SQLiteDatabase::deleteImageModification(int id) {
 
 	stringstream sql;
@@ -1361,7 +1250,6 @@ void SQLiteDatabase::deleteImageModification(int id) {
 //
 // Delete thumbnail from Thumbnails table using id  
 //
-
 void SQLiteDatabase::deleteThumbnail(int id) {
 
 	stringstream sql;
@@ -1376,7 +1264,6 @@ void SQLiteDatabase::deleteThumbnail(int id) {
 //
 // Delete thumbnail from Thumbnails table using fkImageID  
 //
-
 void SQLiteDatabase::deleteThumbnailByFkImageID(int id) {
 
 	stringstream sql;
@@ -1390,7 +1277,6 @@ void SQLiteDatabase::deleteThumbnailByFkImageID(int id) {
 unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 
 	// cout << "adding fin" << endl;
-
 	DBIndividual individual;
 	DBImage image;
 	DBOutline outline;
@@ -1413,14 +1299,9 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 	}
 	fin->mImageFilename = shortFilename;
 	
-	if(lastInsertedRowID == 0)
-		lastInsertedRowID = generateUniqueInt();
-	else
-		lastInsertedRowID++;
-	
+	beginTransaction();
 	dmgCat = selectDamageCategoryByName( fin->getDamage() );
-
-	individual.id = lastInsertedRowID;
+	
 	individual.idcode = fin->getID();
 	individual.name = fin->getName();
 	individual.fkdamagecategoryid = dmgCat.id;
@@ -1434,9 +1315,6 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 	outline.endte = finOutline->getFeaturePoint(POINT_OF_INFLECTION);
 	outline.fkindividualid = individual.id;
 	insertOutline(&outline);
-
-	// we do this as we don't know what the outline id is
-	outline = selectOutlineByFkIndividualID(individual.id);	
 	
 	numPoints = finOutline->length();
 	fc = finOutline->getFloatContour();
@@ -1458,8 +1336,6 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 	image.fkindividualid = individual.id;
 	insertImage(&image);
 
-	// do this as we don't know the image id
-	image = selectImageByFkIndividualID(individual.id);
 
 	for (i = 0; i < fin->mThumbnailRows; i++) {;
 		pixTemp += fin->mThumbnailPixmap[i];
@@ -1470,16 +1346,12 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 	thumbnail.fkimageid = image.id;
 	insertThumbnail(&thumbnail);
 
-	 // or we could update mDataPos in DatabaseFin but I worry about the side effects of that...
-	/*DatabaseFin<ColorImage> *newfin = getFin(individual.id);
-	addFinToLists(newfin);
-	delete newfin;*/
+	commitTransaction();
 
 	addFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
 		image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
 
 	sortLists();
-	// loadLists(); // reload and re-sort lists
 	
 	delete points;
 
@@ -1565,8 +1437,6 @@ void SQLiteDatabase::update(DatabaseFin<ColorImage> *fin) {
 //
 
 DatabaseFin<ColorImage>* SQLiteDatabase::getFin(int id) {
-	
-	// cout << "getFin(" << id << ") called" << endl;
 
 	DBIndividual individual;
 	DBImage image;
@@ -1580,12 +1450,14 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getFin(int id) {
 	string imageFilename;
 	int pos;
 	
+	beginTransaction();
 	individual = selectIndividualByID(id);
 	damagecategory = selectDamageCategoryByID(individual.fkdamagecategoryid);
 	image = selectImageByFkIndividualID(id);
 	outline = selectOutlineByFkIndividualID(id);
 	thumbnail = selectThumbnailByFkImageID(image.id);
 	selectPointsByFkOutlineID(points, outline.id);
+	commitTransaction();
 
 	// Although having both of these blocks of code seems uesless, this ensures that
 	// the given path contains only the image filename.  If the given path contains
@@ -1670,14 +1542,11 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getFin(int id) {
 //
 
 std::list< DatabaseFin<ColorImage>* >* SQLiteDatabase::getAllFins(void) {
-	
-	// cout << "getAllFins()" << endl;
 
 	std::list<DBIndividual> *individuals = new std::list<DBIndividual>();
 	std::list< DatabaseFin<ColorImage>* > *fins = new std::list< DatabaseFin<ColorImage>* >();
 	DBIndividual individual;
 	
-	beginTransaction();
 	selectAllIndividuals(individuals);
 
 	while(! individuals->empty() ) {
@@ -1686,7 +1555,7 @@ std::list< DatabaseFin<ColorImage>* >* SQLiteDatabase::getAllFins(void) {
 		fins->push_back( getFin(individual.id) );
 	}
 
-	commitTransaction();
+	
 	delete individuals;
 
 	return fins;
@@ -1742,8 +1611,6 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItem(unsigned pos) {
 //
 
 void SQLiteDatabase::Delete(DatabaseFin<ColorImage> *fin) {
-	
-	cout << "deleting a fin" << endl;
 
 	DBOutline outline;
 	DBImage image;
@@ -1807,23 +1674,7 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getItemAbsolute(unsigned pos) {
 
 DatabaseFin<ColorImage>* SQLiteDatabase::getItem(unsigned pos, std::vector<std::string> *theList) {	
 	
-	// cout << "getItem(" << pos << ", list)" << endl;
-	int id = listEntryToID((*theList)[pos]);
-	/*
-	istrstream inStream((*theList)[pos].c_str());
-
-	std::string prev, cur;
-	
-	// we'll assume the last token in the stream is the position in
-	// the file
-	while (inStream >> cur)
-		prev = cur;
-
-	// cout << "pos: " << prev << endl;
-	*/
-
-	// return getFin(atoi(prev.c_str()));
-	return getFin(id);
+	return getFin( listEntryToID((*theList)[pos]) );
 }
 
 
@@ -2149,7 +2000,6 @@ SQLiteDatabase::SQLiteDatabase(Options *o, bool createEmptyDB)
 	:
 	Database(o, createEmptyDB)
 	{
-	lastInsertedRowID = 0;
 	std::list<DBDamageCategory> *damagecategories = new std::list<DBDamageCategory>();
 	DBDamageCategory damagecategory;
 	int i = 0;

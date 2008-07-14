@@ -86,7 +86,6 @@ void copyFins(Database* from, Database *to)
 			to->add(fin);
 			cout << "added" << endl;
 			delete fin;
-			cout << "deleting" << endl;
 		}
 		else
 			cout << "null" << endl;
