@@ -114,7 +114,6 @@ private:
 	int rc;
 
 	static char* handleNull(char *);
-	int generateUniqueInt();
 	static string escapeString(string);
 	static string stripEscape(string);
 

@@ -7,28 +7,16 @@
 //
 // Ensures that the given character array is valid, otherwise returns "NULL".
 //
-
 char* SQLiteDatabase::handleNull(char *in) {
 
 	return strcmp(in, "\0") != 0 ? in : "NULL";
 }
 
-// *****************************************************************************
-//
-// Generates an unique int based on the number of seconds pasted since the Unix
-// epoch.
-//
-
-int SQLiteDatabase::generateUniqueInt() {
-
-	return (int) time(NULL);
-}
 
 // *****************************************************************************
 //
 // Escapes strings
 //
-
 string SQLiteDatabase::escapeString(string str) {
 	string buffer = str;
 
@@ -41,11 +29,11 @@ string SQLiteDatabase::escapeString(string str) {
 
 	return buffer;
 }
+
 // *****************************************************************************
 //
 // Strip escapes
 //
-
 string SQLiteDatabase::stripEscape(string str) {
 	string buffer = str;
 
@@ -64,7 +52,6 @@ string SQLiteDatabase::stripEscape(string str) {
 // table.  It populates a DBIndividual and then adds it to the 
 // list<DBIndividual> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackIndividuals(void *individuals, int argc, char **argv, char **azColName) {
 	
 	int i;
@@ -94,7 +81,6 @@ int SQLiteDatabase::callbackIndividuals(void *individuals, int argc, char **argv
 // DamageCategories table.  It populates a DBDamageCategory and then 
 // adds it to the list<DBDamageCategory> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackDamageCategories(void *damagecategories, int argc, char **argv, char **azColName) {
 	
 	
@@ -124,7 +110,6 @@ int SQLiteDatabase::callbackDamageCategories(void *damagecategories, int argc, c
 // DBInfo table.  It populates a DBInfo and then adds it to the 
 // list<DBInfo> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackDBInfo(void *dbinfo, int argc, char **argv, char **azColName) {
 
 		int i;
@@ -152,7 +137,6 @@ int SQLiteDatabase::callbackDBInfo(void *dbinfo, int argc, char **argv, char **a
 // then adds it to the list<DBImageModification> passed as the first
 // argument.
 //
-
 int SQLiteDatabase::callbackImageModifications(void *imagemods, int argc, char **argv, char **azColName) {
 
 	int i;
@@ -197,7 +181,6 @@ int SQLiteDatabase::callbackImageModifications(void *imagemods, int argc, char *
 // table.  It populates a DBImage and then adds it to the
 // list<DBImage> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackImages(void *images, int argc, char **argv, char **azColName) {
 
 	int i;
@@ -239,7 +222,6 @@ int SQLiteDatabase::callbackImages(void *images, int argc, char **argv, char **a
 // table.  It populates a DBOutline and then adds it to the
 // list<DBOutline> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackOutlines(void *outlines, int argc, char **argv, char **azColName) {
 
 	int i;
@@ -281,7 +263,6 @@ int SQLiteDatabase::callbackOutlines(void *outlines, int argc, char **argv, char
 // table.  It populates a DBPoint and then adds it to the
 // list<DBPoint> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackPoints(void *points, int argc, char **argv, char **azColName) {
 	
 	int i;
@@ -318,7 +299,6 @@ int SQLiteDatabase::callbackPoints(void *points, int argc, char **argv, char **a
 // table.  It populates a DBThumbnail and then adds it to the
 // list<DBThumbnail> passed as the first argument.
 //
-
 int SQLiteDatabase::callbackThumbnails(void *thumbnails, int argc, char **argv, char **azColName) {
 
 	int i;
@@ -345,6 +325,7 @@ int SQLiteDatabase::callbackThumbnails(void *thumbnails, int argc, char **argv, 
 	return 0;
 }
 
+
 // *****************************************************************************
 //
 // Returns the ID of the last successfully inserted row.  If the table contains
@@ -369,6 +350,7 @@ void SQLiteDatabase::setSyncMode(int mode) {
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
 
+
 // *****************************************************************************
 //
 // Begin transaction.
@@ -382,6 +364,7 @@ void SQLiteDatabase::beginTransaction() {
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
 
+
 // *****************************************************************************
 //
 // Commit transaction.
@@ -394,6 +377,7 @@ void SQLiteDatabase::commitTransaction() {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
+
 
 // *****************************************************************************
 //
@@ -413,6 +397,7 @@ void SQLiteDatabase::selectAllDamageCategories(std::list<DBDamageCategory> *dama
 		sqlite3_free(zErrMsg);
 	}
 }
+
 
 // *****************************************************************************
 //
@@ -445,6 +430,7 @@ DBDamageCategory SQLiteDatabase::selectDamageCategoryByName(std::string name) {
 
 	return dc;
 }
+
 
 // *****************************************************************************
 //
@@ -500,6 +486,8 @@ void SQLiteDatabase::selectAllIndividuals(std::list<DBIndividual> *individuals) 
 //
 DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 	
+	DBIndividual individual;
+	
 	std::list<DBIndividual> individuals = std::list<DBIndividual>();
 
 	stringstream sql;
@@ -515,7 +503,16 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 
 	// cout << "list empty: " << individuals.empty() << endl;
 
-	return individuals.front();
+	if(! individuals.empty())
+		individual = individuals.front();
+	else {
+		individual.id = -1;
+		individual.name = "NONE";
+		individual.idcode = "NONE";
+		individual.fkdamagecategoryid = -1;
+	}
+
+	return individual;
 }
 
 // *****************************************************************************
@@ -523,8 +520,6 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 // This returns all the DBInfo rows as a list of DBInfo structs.
 //
 void SQLiteDatabase::selectAllDBInfo(std::list<DBInfo> *dbinfo) {
-
-	// cout << "select all db info" << endl;
 	
 	std::string sql = "SELECT * FROM DBInfo;";
 
@@ -543,8 +538,6 @@ void SQLiteDatabase::selectAllDBInfo(std::list<DBInfo> *dbinfo) {
 //
 void SQLiteDatabase::selectAllImageModifications(std::list<DBImageModification> *imagemodifications) {
 
-	// cout << "select all img mod" << endl;
-
 	std::string sql = "SELECT * FROM ImageModifications;";
 
 	rc = sqlite3_exec(db, sql.c_str(), callbackImageModifications, imagemodifications, &zErrMsg);
@@ -561,8 +554,6 @@ void SQLiteDatabase::selectAllImageModifications(std::list<DBImageModification> 
 // ImageModifications table where fkImageID equals the given int.
 //
 void SQLiteDatabase::selectImageModificationsByFkImageID(std::list<DBImageModification> *imagemodifications, int fkimageid) {
-
-	// cout << "select img mod by img id" << endl;
 	
 	stringstream sql;
 
@@ -899,6 +890,7 @@ int SQLiteDatabase::insertOutline(DBOutline *outline) {
 		return -1;
 }
 
+
 // *****************************************************************************
 //
 // Inserts DBImage into Images table
@@ -925,6 +917,7 @@ int SQLiteDatabase::insertImage(DBImage *image) {
 	} else
 		return -1;
 }
+
 
 // *****************************************************************************
 //
@@ -955,6 +948,7 @@ int SQLiteDatabase::insertImageModification(DBImageModification *imagemod) {
 		return -1;
 }
 
+
 // *****************************************************************************
 //
 // Inserts DBThumbnail into Thumbnails table
@@ -979,6 +973,7 @@ int SQLiteDatabase::insertThumbnail(DBThumbnail *thumbnail) {
 		return -1;
 }
 
+
 // *****************************************************************************
 //
 // Inserts list of DBPoint's into Points table
@@ -994,6 +989,7 @@ void SQLiteDatabase::insertPoints(std::list<DBPoint>* points) {
 	}
 }
 
+
 // *****************************************************************************
 //
 // Inserts list of DBImageModification's into ImageModifications table
@@ -1008,6 +1004,7 @@ void SQLiteDatabase::insertImageModifications(std::list<DBImageModification>* im
 		insertImageModification(&imagemod);
 	}
 }
+
 
 // *****************************************************************************
 //
@@ -1028,6 +1025,7 @@ void SQLiteDatabase::updateOutline(DBOutline *outline) {
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
 
+
 // *****************************************************************************
 //
 // Updates row in DamageCategories table using given DBDamageCategory struct.
@@ -1047,6 +1045,7 @@ void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
 
+
 // *****************************************************************************
 //
 // Updates row in Individuals table using given DBIndividual struct.  Uses ID
@@ -1064,6 +1063,7 @@ void SQLiteDatabase::updateIndividual(DBIndividual *individual) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
+
 
 // *****************************************************************************
 //
@@ -1085,6 +1085,7 @@ void SQLiteDatabase::updateImage(DBImage *image) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 }
+
 
 // *****************************************************************************
 //
@@ -1870,7 +1871,7 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	sql << "fkDamageCategoryID INTEGER ";
 	sql << ");" << endl;
 	
-	sql << "CREATE TABLE Images ( ";
+	sql << "CREATE TABLE Image ( ";
 	sql << "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
 	sql << "fkIndividualID INTEGER, ";
 	sql << "ImageFilename TEXT, ";
