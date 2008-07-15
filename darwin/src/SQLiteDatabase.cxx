@@ -348,6 +348,11 @@ void SQLiteDatabase::setSyncMode(int mode) {
 	sql << "PRAGMA synchronous = " << mode << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -362,6 +367,12 @@ void SQLiteDatabase::beginTransaction() {
 	sql << "BEGIN TRANSACTION;";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -376,6 +387,12 @@ void SQLiteDatabase::commitTransaction() {
 	sql << "COMMIT TRANSACTION;";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -784,12 +801,16 @@ int SQLiteDatabase::insertIndividual(DBIndividual *individual) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		individual->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	individual->id = id;
+	return id;
 }
 
 // *****************************************************************************
@@ -810,12 +831,16 @@ int SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		damagecategory->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	damagecategory->id = id;
+	return id;
 }
 
 // *****************************************************************************
@@ -840,12 +865,16 @@ int SQLiteDatabase::insertPoint(DBPoint *point) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		point->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	point->id = id;
+	return id;
 }
 
 // *****************************************************************************
@@ -861,6 +890,11 @@ void SQLiteDatabase::insertDBInfo(DBInfo *dbinfo) {
 	sql << "'" << escapeString(dbinfo->value) << "'); ";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -882,12 +916,16 @@ int SQLiteDatabase::insertOutline(DBOutline *outline) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		outline->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	outline->id = id;
+	return id;
 }
 
 
@@ -910,12 +948,16 @@ int SQLiteDatabase::insertImage(DBImage *image) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		image->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	image->id = id;
+	return id;
 }
 
 
@@ -940,12 +982,16 @@ int SQLiteDatabase::insertImageModification(DBImageModification *imagemod) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		imagemod->id = id;
-		return id;
-	} else
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	imagemod->id = id;
+	return id;
 }
 
 
@@ -965,12 +1011,15 @@ int SQLiteDatabase::insertThumbnail(DBThumbnail *thumbnail) {
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
-	if(rc == SQLITE_OK) {
-		int id = lastInsertedRowID();
-		thumbnail->id = id;
-		return id;
-	} else
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
 		return -1;
+	}
+
+	int id = lastInsertedRowID();
+	thumbnail->id = id;
+	return id;
 }
 
 
@@ -1023,6 +1072,12 @@ void SQLiteDatabase::updateOutline(DBOutline *outline) {
 	sql << "WHERE ID = " << outline->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1043,6 +1098,12 @@ void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 	// cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1062,6 +1123,12 @@ void SQLiteDatabase::updateIndividual(DBIndividual *individual) {
 	sql << "WHERE ID = " << individual->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1084,6 +1151,12 @@ void SQLiteDatabase::updateImage(DBImage *image) {
 	sql << "WHERE ID = " << image->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1107,6 +1180,12 @@ void SQLiteDatabase::updateImageModification(DBImageModification *imagemod) {
 	sql << "WHERE ID = " << imagemod->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1125,6 +1204,12 @@ void SQLiteDatabase::updateThumbnail(DBThumbnail *thumbnail) {
 	sql << "WHERE ID = " << thumbnail->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1141,6 +1226,12 @@ void SQLiteDatabase::updateDBInfo(DBInfo *dbinfo) {
 	sql << "WHERE Key = '" <<escapeString(dbinfo->key) << "';";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1157,6 +1248,12 @@ void SQLiteDatabase::deletePoints(int fkOutlineID) {
 	sql << "WHERE fkOutlineID = " << fkOutlineID << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1173,6 +1270,12 @@ void SQLiteDatabase::deleteOutlineByFkIndividualID(int fkIndividualID) {
 	sql << "WHERE fkIndividualID = " << fkIndividualID << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1187,6 +1290,12 @@ void SQLiteDatabase::deleteOutlineByID(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1202,6 +1311,11 @@ void SQLiteDatabase::deleteIndividual(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1216,6 +1330,12 @@ void SQLiteDatabase::deleteDamageCategory(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1230,6 +1350,12 @@ void SQLiteDatabase::deleteImage(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 
@@ -1245,6 +1371,12 @@ void SQLiteDatabase::deleteImageModification(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1259,6 +1391,12 @@ void SQLiteDatabase::deleteThumbnail(int id) {
 	sql << "WHERE ID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 // *****************************************************************************
@@ -1273,6 +1411,12 @@ void SQLiteDatabase::deleteThumbnailByFkImageID(int id) {
 	sql << "WHERE fkImageID = " << id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	
+	if( rc!=SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 }
 
 unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
@@ -1363,22 +1507,24 @@ unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 //
 // Updates DatabaseFin<ColorImage>
 //
-
 void SQLiteDatabase::update(DatabaseFin<ColorImage> *fin) {
 	DBIndividual individual;
 	DBImage image;
 	DBOutline outline;
 	DBThumbnail thumbnail;
+	DBDamageCategory dmgCat;
 	Outline *finOutline;
 	std::list<DBPoint> points = std::list<DBPoint>();
 	FloatContour *fc;
 	int i, numPoints;
 	std::string pixTemp;
 	
+	dmgCat = selectDamageCategoryByName(fin->getDamage());
+
 	individual.id = fin->mDataPos; // mapping Individuals id to mDataPos
 	individual.idcode = fin->getID();
 	individual.name = fin->getName();
-	individual.fkdamagecategoryid = ( selectDamageCategoryByName(fin->getDamage()) ).id;
+	individual.fkdamagecategoryid = dmgCat.id;
 	updateIndividual(&individual);
 
 	finOutline = fin->mFinOutline;
@@ -1428,7 +1574,13 @@ void SQLiteDatabase::update(DatabaseFin<ColorImage> *fin) {
 
 	updateThumbnail(&thumbnail);
 
-	loadLists(); // reload and re-sort lists.
+	// loadLists(); // reload and re-sort lists.
+
+	deleteFinFromLists(individual.id);
+	addFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
+		image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
+
+	sortLists();
 }
 
 // *****************************************************************************
@@ -1936,6 +2088,11 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	sql << "CREATE INDEX thmbnl_img ON Thumbnails (fkImageID);" << endl;
 
 	sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
+
+	if( rc != SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s %s\n", zErrMsg, sql.str().c_str());
+		sqlite3_free(zErrMsg);
+	}
 	
 	// TODO: enter code to populate DBInfo
 	
