@@ -34,9 +34,9 @@ static bool gShowingPreviews = true; //***051
 #define PATH_SLASH "/"
 #endif
 
-static string gLastDirectory = "";   // disk & path last in use
-static string gLastFileName = "";    // simple name of last file "touched" -- if any
-static string gLastFolderName = "";  // simple name of folder last "touched" -- if any
+static string gLastDirectory[] = {"","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mOpenModes
+static string gLastFileName[] = {"","","","","","","",""};    // simple name of last file "touched" -- if any
+static string gLastFolderName[] = {"","","","","","","",""};  // simple name of folder last "touched" -- if any
 
 static gchar  *gLastTreePathStr = NULL; // GtkTree path (ex: "10:3:5") for same -- must free with g_free()
 static GtkTreePath *gLastTreePath;
@@ -138,18 +138,18 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 		
 		directory = gOptions->mDarwinHome;
 
-		if ("" != gLastDirectory)
+		if ("" != gLastDirectory[mOpenMode])
 		{
-			if ("" != gLastFileName)
+			if ("" != gLastFileName[mOpenMode])
 				// go back to last selected file
 				gtk_file_chooser_set_filename (
 						GTK_FILE_CHOOSER (openFCDialog), 
-						((gLastDirectory+PATH_SLASH)+gLastFileName).c_str());
+						((gLastDirectory[mOpenMode]+PATH_SLASH)+gLastFileName[mOpenMode]).c_str());
 			else
 				// go to last selected folder
 				gtk_file_chooser_set_current_folder (				
 						GTK_FILE_CHOOSER (openFCDialog), 
-						gLastDirectory.c_str());
+						gLastDirectory[mOpenMode].c_str());
 				// JHS - for some bizzare reason this results in the
 				// path tool showing the path to the DEFAULT runtime location
 				// of the software (e.g, e:\darwin\darwin-1.95\msvc)
@@ -164,8 +164,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 			gtk_file_chooser_set_current_folder (
 					GTK_FILE_CHOOSER (openFCDialog), 
 					directory.c_str());
-			gLastDirectory = directory;
-			gLastFileName = "";
+			gLastDirectory[mOpenMode] = directory;
+			gLastFileName[mOpenMode] = "";
 		}
 
 		//***1.95 - test of image preview widget
@@ -204,12 +204,12 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 
 		directory = gOptions->mCurrentSurveyArea + PATH_SLASH + "tracedFins";
 
-		if (directory == gLastDirectory)
+		if (directory == gLastDirectory[mOpenMode])
 		{
 			// go back to last selected file
 			gtk_file_chooser_set_filename (
 					GTK_FILE_CHOOSER (openFCDialog), 
-					((gLastDirectory+PATH_SLASH)+gLastFileName).c_str());
+					((gLastDirectory[mOpenMode]+PATH_SLASH)+gLastFileName[mOpenMode]).c_str());
 		}
 		else
 		{
@@ -217,8 +217,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 			gtk_file_chooser_set_current_folder (
 					GTK_FILE_CHOOSER (openFCDialog), 
 					directory.c_str());
-			gLastDirectory = directory;
-			gLastFileName = "";
+			gLastDirectory[mOpenMode] = directory;
+			gLastFileName[mOpenMode] = "";
 		}
 		break;
 	case openDatabase : //***1.85
@@ -249,8 +249,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (openFCDialog), 
 				directory.c_str());
-		gLastDirectory = directory;
-		gLastFileName = "";
+		gLastDirectory[mOpenMode] = directory;
+		gLastFileName[mOpenMode] = "";
 
 		break;
 	case importDatabase :  //***1.85
@@ -281,8 +281,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (openFCDialog), 
 				directory.c_str());
-		gLastDirectory = directory;
-		gLastFileName = "";
+		gLastDirectory[mOpenMode] = directory;
+		gLastFileName[mOpenMode] = "";
 
 		break;
 	case exportDatabase : //***1.85
@@ -312,8 +312,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (openFCDialog), 
 				directory.c_str());
-		gLastDirectory = directory;
-		gLastFileName = "";
+		gLastDirectory[mOpenMode] = directory;
+		gLastFileName[mOpenMode] = "";
 
 		break;
 	case exportDataFields : //***1.9
@@ -345,8 +345,8 @@ GtkWidget* OpenFileChooserDialog::createFileChooserDialog()
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (openFCDialog), 
 				directory.c_str());
-		gLastDirectory = directory;
-		gLastFileName = "";
+		gLastDirectory[mOpenMode] = directory;
+		gLastFileName[mOpenMode] = "";
 
 		break;
 /*
@@ -840,7 +840,7 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 		//g_print("lastDir: %s\n",gLastDirectory.c_str());
 		//g_print("selFile: %s\n",fileName.c_str());
 
-		if (fileName != gLastDirectory) 
+		if (fileName != gLastDirectory[dlg->mOpenMode]) 
 		{
 
 			try {
@@ -1325,9 +1325,9 @@ void on_fileChooserButtonCancel_clicked(
 	gchar *folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dlg->mDialog));
 	gchar *fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
 
-	gLastDirectory = folder;
+	gLastDirectory[dlg->mOpenMode] = folder;
 	if (NULL == fname)
-		gLastFileName = "";
+		gLastFileName[dlg->mOpenMode] = "";
 	else
 	{
 		string 
@@ -1335,9 +1335,9 @@ void on_fileChooserButtonCancel_clicked(
 			path = folder;
 		if (path.substr(path.rfind(PATH_SLASH)+1) == name.substr(name.rfind(PATH_SLASH)+1))
 			// there is no real filename, just a folder at end of path
-			gLastFileName = "";
+			gLastFileName[dlg->mOpenMode] = "";
 		else
-			gLastFileName = name.substr(name.rfind(PATH_SLASH)+1);
+			gLastFileName[dlg->mOpenMode] = name.substr(name.rfind(PATH_SLASH)+1);
 		g_free(fname);
 	}
 	g_free(folder);
@@ -1367,13 +1367,13 @@ void on_openFileChooserFileSelections_changed(
 	if (NULL == fileName)
 	{
 		// change in folder or something eles that "unselected" all files
-		gLastFileName = "";
+		gLastFileName[dlg->mOpenMode] = "";
 	}
 	else
 	{
 		// strip path and set global last filename so we can return there next time
-		gLastFileName = fileName;
-		gLastFileName = gLastFileName.substr(gLastFileName.find_last_of(PATH_SLASH)+1);
+		gLastFileName[dlg->mOpenMode] = fileName;
+		gLastFileName[dlg->mOpenMode] = gLastFileName[dlg->mOpenMode].substr(gLastFileName[dlg->mOpenMode].find_last_of(PATH_SLASH)+1);
 
 		//	g_print("Last Filename : ");
 		//	g_print(gLastFileName.c_str());
@@ -1402,8 +1402,8 @@ void on_openFileChooserDirectory_changed(
 	gchar *folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dlg->mDialog));
 
 	// set global last directory and blank filename so we can return there next time
-	gLastDirectory = folder;
-	gLastFileName = "";
+	gLastDirectory[dlg->mOpenMode] = folder;
+	gLastFileName[dlg->mOpenMode] = "";
 
 	//g_print("Last Folder : ");
 	//g_print(gLastDirectory.c_str());
