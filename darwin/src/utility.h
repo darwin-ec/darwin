@@ -327,5 +327,17 @@ void stripCRLF(std::string &line)
 		if (line[i] == '\r' || line[i] == '\n')
 			line[i] = ' ';
 }
+
+inline
+string extractBasename(string filepath)
+{
+	int pos = filename.find_last_of(PATH_SLASH);
+	
+	if (pos >= 0)
+			return filename.substr(pos+1);
+	
+	return filepath;
+}
+
 #endif
 

@@ -219,7 +219,7 @@ Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetF
 }
 
 /*
- * This makes a backup in the DARWINHOME/backups" folder with
+ * This makes a backup in the "DARWINHOME/backups" folder with
  * a name coprised of the SurveyArea name, catalog Database
  * filename, the current date, and a sequence number, if necessary.
  *
@@ -380,12 +380,160 @@ bool backupCatalog(Database *db)
 	return true;
 }
 
+/*
+ * Restores from "DARWINHOME/backups".  Assumes the survey area in the 
+ * Options is the target.
+ */
 
 bool restoreCatalogFrom(Options *o, std::string filename)
 {
 	return false;
 }
+/*
+	string cmd("7z.exe x");
+	cmd += " '" + filename + "' ";
+	cmd += " '" + o->mCurrentSurveyArea;
+	cmd += PATH_SLASH;
+	cmd += "catalog" + "' ";
+	system(cmd.c_str());
 
+
+	return false;
+	backupFilename = "\"";
+		backupFilename += gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
+		backupFilename += "\"";
+
+		cout << "\nRestoring database from BACKUP location ...\n\n  " << backupFilename << endl;
+		cout << "\n\nPlease wait." << endl;
+
+		// extract the file list with the path information
+		// this is necessary because the 7-zip program does NOT support relative
+		// path information in a simple fashion when wanting to archive only
+		// selected files within a folder
+
+		command = "7z x -aoa "; // extract and overwrite existing file
+		command += backupFilename + " filesToArchive.txt";
+			
+		system(command.c_str()); // extract the file list file
+
+		infile.open("filesToArchive.txt");
+		getline(infile,line); // first is location of original backup
+		getline(infile,line); // this is the database file
+		infile.close();
+
+		system("del filesToArchive.txt"); // remove temporary file list file
+
+		restorePath = line.substr(0,line.rfind(PATH_SLASH)+1) + "\""; //***1.981a re-append quote
+
+		//***1.982 - break out parts and inform user what is about to happen
+
+		line2 = line.substr(1,line.length()-2); // strip quotes
+		pos = line2.rfind(PATH_SLASH);
+		restoreDBName = line2.substr(pos+1); // save database name for restore
+		line2 = line2.substr(0,pos); // strip database filename
+		pos = line2.rfind(PATH_SLASH);
+		line2 = line2.substr(0,pos); // strip "catalog"
+		pos = line2.rfind(PATH_SLASH);
+		restoreSurveyArea = line2.substr(pos+1); // save survey area name for restore
+		line2 = line2.substr(0,pos); // strip survey area name
+		pos = line2.rfind(PATH_SLASH);
+		line2 = line2.substr(0,pos); // strip "surveyAreas"
+		restoreHome = line2; // save DARWINHOME for restore
+
+		{	// this BLOCK is simply to allow local vars for file / folder search & repair
+
+			// determine whether the file folder structure is intact for this
+			// database location ... ensure existance of surveyAreas\<restoreSurveyArea> and
+			// its subfolders ...
+			//    catalog, tracedFins, matchQueues, matchQResults, sightings
+			struct _finddata_t c_file;
+			long hFile;
+			string path;
+
+			// Find surveyArea\<restoreSurveyArea>
+			path = restoreHome + PATH_SLASH + "surveyAreas";
+			if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"SurveyAreas\" folder ...\n" );
+				_mkdir(path.c_str());
+			}
+			_findclose( hFile );
+			path += PATH_SLASH + restoreSurveyArea;
+			if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"%s\" SurveyArea subfolder...\n", 
+					restoreSurveyArea.c_str());
+				_mkdir(path.c_str());
+			}
+			_findclose( hFile );
+			// find subfolders and, if missing, fix them ...
+			path += PATH_SLASH;
+			if( (hFile = _findfirst((path+"catalog").c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"catalog\" folder ...\n" );
+				_mkdir((path+"catalog").c_str());
+			}
+			_findclose( hFile );
+			if( (hFile = _findfirst((path+"tracedFins").c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"tracedFins\" folder ...\n" );
+				_mkdir((path+"tracedFins").c_str());
+			}
+			_findclose( hFile );
+			if( (hFile = _findfirst((path+"matchQueues").c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"matchQueues\" folder ...\n" );
+				_mkdir((path+"matchQueues").c_str());
+			}
+			_findclose( hFile );
+			if( (hFile = _findfirst((path+"matchQResults").c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"matchQResults\" folder ...\n" );
+				_mkdir((path+"matchQResults").c_str());
+			}
+			_findclose( hFile );
+			if( (hFile = _findfirst((path+"sightings").c_str(), &c_file )) == -1L )
+			{
+				printf( "Creating missing \"sightings\" folder ...\n" );
+				_mkdir((path+"sightings").c_str());
+			}
+		}
+		//***1.982 - end user notification
+
+		// all is OK, so now proceed ...
+		
+		// extract database file from the archive
+
+		// note: restorePath and backupFilename are already QUOTED
+
+		command = "7z x -aoa -o"; // put in proper folder and force overwriting
+		command += restorePath + " ";
+		command += backupFilename + " *.db";
+
+		dlg->mMainWin->mDatabase->closeStream(); // close database in order to overwrite it
+
+		cout << command << endl;
+
+		system(command.c_str()); // start extraction process
+
+		// extract images referenced from database file
+
+		//command = "7z x -aos -o\""; // extract into proper folder without overwriting
+		//***1.981a - extra quote removed
+		command = "7z x -aos -o"; // extract into proper folder without overwriting
+		command += restorePath + " -x!filesToArchive.txt "; // but don't extract file list
+		command += " -x!*.db "; // and don't extract database again
+		command += backupFilename;
+
+		cout << command << endl;
+
+		system(command.c_str()); // start extraction process
+
+		//***1.982 - update current Survey Area indicator in global Options
+		gOptions->mCurrentSurveyArea = 
+			restoreHome + PATH_SLASH + "surveyAreas" + PATH_SLASH + restoreSurveyArea;
+}
+*/
 
 bool exportCatalogTo(Options *o, std::string filename)
 {
@@ -396,4 +544,97 @@ bool exportCatalogTo(Options *o, std::string filename)
 bool importCatalogFrom(Options *o, std::string filename)
 {
 	return false;
+}
+
+DatabaseFin<ColorImage>* openFinz(string filename)
+{
+	string tempdir("");
+	tempdir += "%TEMP%";
+	tempdir += PATH_SLASH;
+	tempdir += "darwin";
+	tempdir += PATH_SLASH;
+	tempdir += filename;
+
+	// extract finz to temp dir
+	string cmd("7z.exe x");
+	cmd += " '" + filename + "' ";
+	cmd += " '" + tempdir + "' ";
+	system(cmd.c_str());
+
+	Options o = Options();
+	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
+
+	SQLiteDatabase db = SQLiteDatabase(&o, false);
+
+	DatabaseFin<ColorImage>* fin = db.getItem(0); // first and only fin
+	
+	// I really hope C++ managed code works how I think it does...
+
+	return fin;
+}
+
+void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
+{
+	string baseFilename = extractBasename(filename);
+
+	string tempdir("");
+	tempdir += "%TEMP%";
+	tempdir += PATH_SLASH;
+	tempdir += "darwin";
+	tempdir += PATH_SLASH;
+	tempdir += baseFilename;
+
+	// create target dir
+	string cmd("mkdir ");
+	cmd += " '" + tempdir + "' ";
+	system(cmd.c_str());
+
+	// copy modified image over into catalog folder
+	string srcFilename = getenv("DARWINHOME");
+	srcFilename += PATH_SLASH;
+	srcFilename += "catalog";
+	srcFilename += PATH_SLASH;
+	srcFilename += fin->mImageFilename;
+
+	string targetFilename = tempdir + PATH_SLASH + fin->mImageFilename;
+
+	cmd = "copy '";
+	cmd += " '" + srcFilename + "' ";
+	cmd += targetFilename + "'";
+	system(cmd.c_str());
+
+	// copy original
+	srcFilename = getenv("DARWINHOME");
+	srcFilename += PATH_SLASH;
+	srcFilename += "catalog";
+	srcFilename += PATH_SLASH;
+	srcFilename += fin->mOriginalImageFilename;
+
+	targetFilename = tempdir + PATH_SLASH + fin->mOriginalImageFilename;
+
+	cmd = "copy '";
+	cmd += " '" + srcFilename + "' ";
+	cmd += targetFilename + "'";
+	system(cmd.c_str());
+
+	Options o = Options();
+	o.mCatCategoryNamesMax = 1;
+	o.mCatCategoryName.resize( o.mCatCategoryNamesMax );
+	o.mCatCategoryName[0] = fin->mDamageCategory;
+	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
+
+	SQLiteDatabase db = SQLiteDatabase(&o, true);
+
+	db.add(fin);
+
+	db.closeStream();
+
+	// compress contents
+	srcFilename = tempdir + PATH_SLASH + "*.*";
+	targetFilename = filename;
+
+	cmd = "7z.exe a";
+	cmd += " '" + targetFilename + "' ";
+	cmd += " '" + srcFilename + "' ";
+	system(cmd.c_str());
 }

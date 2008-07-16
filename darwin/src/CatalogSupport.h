@@ -10,6 +10,7 @@
 #include "DummyDatabase.h"
 #include "interface/MainWindow.h"
 #include "interface/DBConvertDialog.h"
+#include "utility.h"
 
 typedef enum {
 			cannotOpen = 0,
