@@ -619,7 +619,7 @@ DatabaseFin<ColorImage>* OldDatabase::getItemAbsolute(unsigned pos)
 
 	mDbFile.seekg(this->mAbsoluteOffset[pos]);
 
-	DatabaseFin<ColorImage> *fin = new DatabaseFin<ColorImage>(mDbFile);
+	DatabaseFin<ColorImage> *fin = new DatabaseFin<ColorImage>(mDbFile,getFilename());
 
 	return fin;
 }
@@ -1364,7 +1364,7 @@ DatabaseFin<ColorImage>* OldDatabase::getItem(unsigned pos, std::vector<std::str
 
 	mDbFile.seekg(atoi(prev.c_str()), ios::beg);
 
-	DatabaseFin<ColorImage> *fin = new DatabaseFin<ColorImage>(mDbFile);
+	DatabaseFin<ColorImage> *fin = new DatabaseFin<ColorImage>(mDbFile,getFilename());
 
 	return fin;
 }

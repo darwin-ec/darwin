@@ -1,6 +1,30 @@
-// CatalogSupport.cxx
+// DatabaseSupport.cxx
 
 #include "CatalogSupport.h"
+
+#include <set>
+#include <cctype>
+
+using namespace std;
+
+// The woCaseLesThan::operator() is used to compare strings without 
+// distinguishing case differences.  Specifically, it is used in 
+// backupDatabaseTo() to build set of uninque image filenames associated 
+// with a particular *.db file being archived.
+
+class woCaseLessThan {
+public:
+	bool operator() (const string &s1, const string &s2) const
+	{ 
+		string first(s1), second(s2);
+		int i;
+		for (i=0; i < first.length(); i++)
+			first[i] = tolower(first[i]);
+		for (i=0; i < second.length(); i++)
+			second[i] = tolower(second[i]);
+		return (first < second);
+	}
+};
 
 /*
  *	Tries to instantiate a database object using the filename
@@ -15,22 +39,68 @@
 Database * openDatabase(Options *o, bool create)
 {
 	Database* db;
-	fstream testFile(o->mDatabaseFileName.c_str(), ios::in | ios::binary);
 
-	if(!create && !testFile)
-	{
-			DummyDatabase* dummy = new DummyDatabase(o, false);
-			dummy->setStatus(Database::fileNotFound);
-			db = dummy;
-	} else if(create || SQLiteDatabase::isType(o->mDatabaseFileName))
+	if (create || SQLiteDatabase::isType(o->mDatabaseFileName))
 		db = new SQLiteDatabase(o, create);
 	else if(OldDatabase::isType(o->mDatabaseFileName))
-		db = new OldDatabase(o, false);
-
-	if(!testFile)
+		db = openDatabase(NULL,o->mDatabaseFileName);
+	else
 	{
-		testFile.close();
-		testFile.clear();
+		DummyDatabase* dummy = new DummyDatabase(o, false);
+		dummy->setStatus(Database::fileNotFound);
+		db = dummy;
+	} 
+
+	return db;
+}
+
+//
+// This version is called to open and return (possibly converting)
+// an EXISTING database.
+//
+Database * openDatabase(MainWindow *mainWin, string filename)
+{
+	Database *db = NULL;
+	
+	Options o;	
+	o.mDatabaseFileName = filename;
+	o.mDarwinHome = getenv("DARWINHOME");
+
+	db_opentype_t opentype = databaseOpenType(filename);
+	
+	switch (opentype)
+	{
+	case cannotOpen:
+			// notify user of problem
+			g_print("Could not open selected database file!\n");
+		break;
+	case convert:
+		{
+			// convert the OldDatabase
+			DBConvertDialog *cdlg = new DBConvertDialog(
+					mainWin,
+					filename,
+					&db); // this is set to return converted/opened SQLDatabase
+			cdlg->run_and_respond();
+		}
+		break;
+	case canOpen:
+			// open the SQLite database
+			o.mDatabaseFileName = filename;
+			o.mDarwinHome = getenv("DARWINHOME");
+			db = new SQLiteDatabase(&o, false);
+		break;
+	default:
+		// nothing required, shold NEVER end up here
+		break;
+	}
+
+	if (NULL == db)
+	{
+		// either open database failed or we ended up in the default case above
+		o.mDatabaseFileName = filename;
+		o.mDarwinHome = getenv("DARWINHOME");
+		db = new DummyDatabase(&o, false);
 	}
 
 	return db;
@@ -45,24 +115,13 @@ Database * openDatabase(Options *o, bool create)
  */
 db_opentype_t databaseOpenType(string filePath)
 {
-	db_opentype_t type;
+	db_opentype_t type = cannotOpen;
 
-	fstream testFile(filePath.c_str(), ios::in | ios::binary);
-
-	if(!testFile)
-			type = cannotOpen;
-
-	else if(SQLiteDatabase::isType(filePath))
+	if(SQLiteDatabase::isType(filePath))
 		type = canOpen;
 
 	else if(OldDatabase::isType(filePath))
 		type = convert;
-
-	if(!testFile)
-	{
-		testFile.close();
-		testFile.clear();
-	}
 
 	return type;
 }
@@ -157,4 +216,184 @@ Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetF
 	copyFins(sourceDatabase, targetDatabase);
 	
 	return targetDatabase;
+}
+
+/*
+ * This makes a backup in the DARWINHOME/backups" folder with
+ * a name coprised of the SurveyArea name, catalog Database
+ * filename, the current date, and a sequence number, if necessary.
+ *
+ * It assumes ONLY that the database (db) is open and complete.
+ *
+ */
+
+bool backupCatalog(Database *db)
+{
+	cout << "\nCreating BACKUP of Database ...\n  " 
+	     << db->getFilename() << endl;
+
+	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
+
+	// build list of image names referenced from within database
+
+	set<string,woCaseLessThan> imageNames;
+	set<string,woCaseLessThan>::iterator it, oit;
+	DatabaseFin<ColorImage> *fin;
+	ImageFile<ColorImage> img;
+	string catalogPath = db->getFilename();;
+	catalogPath = catalogPath.substr(0,catalogPath.rfind(PATH_SLASH)+1);
+	int i;
+
+
+	int limit = db->sizeAbsolute();
+
+	for (i = 0; i < limit; i++)
+	{
+		fin = db->getItemAbsolute(i);
+
+		if (NULL == fin)
+			continue; // found a hole (previously deleted fin) in the database
+		
+		// if modified image filename not already in set, then add it
+
+		it = imageNames.find(fin->mImageFilename);
+		if (it == imageNames.end())
+		{
+			imageNames.insert(fin->mImageFilename);
+
+			if (img.loadPNGcommentsOnly(fin->mImageFilename))
+			{
+				// if original image filename is not in set, then add it
+
+				string origImageName = catalogPath + img.mOriginalImageFilename;
+				oit = imageNames.find(origImageName);
+				if (oit == imageNames.end())
+					imageNames.insert(origImageName);
+
+				// make sure fields are empty for next image file read
+
+				img.mImageMods.clear();
+				img.mOriginalImageFilename = "";
+			}
+		}
+
+		delete fin; // make sure to return storage
+	}
+
+	// create backup filename .. should allow user to choose this
+
+	string shortName = db->getFilename();
+	shortName = shortName.substr(1+shortName.rfind(PATH_SLASH));
+	shortName = shortName.substr(0,shortName.rfind(".db")); // just root name of DB file
+
+	string shortArea = db->getFilename();
+	shortArea = shortArea.substr(0,shortArea.rfind(PATH_SLASH));
+	shortArea = shortArea.substr(0,shortArea.rfind(PATH_SLASH));
+	shortArea = shortArea.substr(1+shortArea.rfind(PATH_SLASH)); // just the area name
+
+	shortName = shortArea + "_" + shortName; // merge two name parts
+
+	// now append the date & time
+	shortName = shortName.substr(0,shortName.rfind(".db"));
+	time_t ltime;
+	time( &ltime );
+	tm *today = localtime( &ltime );
+	char buffer[128];
+	strftime(buffer,128,"_%b_%d_%Y",today); // month name, day & year
+	shortName += buffer;
+	// and append ".zip"
+	shortName += ".zip";
+	
+	string backupPath, backupFilename, fileList, command;
+
+	backupPath = getenv("DARWINHOME");
+	backupPath = backupPath 
+		+ PATH_SLASH 
+		+ "backups" 
+		+ PATH_SLASH;
+	backupFilename = backupPath + shortName;
+
+	// find out if archive already exists, and if so, append a suffix to backup
+	ifstream testFile(backupFilename.c_str());
+	if (! testFile.fail())
+	{
+		testFile.close();
+		backupFilename = backupFilename.substr(0,backupFilename.rfind(".zip")); // strip ".zip"
+		char suffix[16];
+		int i=2;
+		bool done=false;
+		while (! done)
+		{
+			sprintf(suffix,"[%d]",i);
+			testFile.open((backupFilename + suffix + ".zip").c_str());
+			if (testFile.fail())
+				done = true;
+			else
+			{
+				testFile.close();
+				i++;
+			}
+		}
+		backupFilename = backupFilename + suffix + ".zip";
+	}
+	
+	// put quotes around name
+	backupFilename = "\"" + backupFilename + "\"";
+
+	fileList = "\"";
+	fileList += backupPath + "filesToArchive.txt\"";
+
+	cout << "\nBACKUP filename is ...\n\n  " << backupFilename << endl;
+
+	// create the archive file using 7z compression program (Windows)
+
+	command += "7z a -tzip ";
+	command += backupFilename + " @" + fileList;
+			
+	db->closeStream();
+
+	ofstream archiveListFile;
+	archiveListFile.open((backupPath + "filesToArchive.txt").c_str());
+	if (! archiveListFile.fail())
+	{	
+		archiveListFile <<  fileList << endl;
+		archiveListFile << "\"" << db->getFilename() << "\"" << endl;
+		for (it = imageNames.begin(); it != imageNames.end(); ++it)
+			archiveListFile << "\"" << (*it) << "\"" << endl;
+
+		archiveListFile.close();
+
+		system(command.c_str()); // start the archive process using 7-zip
+
+		//***1.982 - remove "filesToArchive.txt"
+		command = "del " + fileList;
+		system(command.c_str());
+	}
+
+	if (! db->openStream())
+	{
+		ErrorDialog *err = new ErrorDialog("Database failed to reopen.");
+		err->show();
+		return false;
+	}
+
+	return true;
+}
+
+
+bool restoreCatalogFrom(Options *o, std::string filename)
+{
+	return false;
+}
+
+
+bool exportCatalogTo(Options *o, std::string filename)
+{
+	return false;
+}
+
+
+bool importCatalogFrom(Options *o, std::string filename)
+{
+	return false;
 }

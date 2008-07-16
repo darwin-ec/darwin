@@ -422,7 +422,8 @@ class DatabaseFin
 		// called ONLY from Database.h getItem(pos) member function
 		//
 		DatabaseFin(
-			std::fstream &inFile
+			std::fstream &inFile,
+			std::string fileName //***1.99 needed to allow opening db without gOptions
 		) :
 			mFinImage(NULL),
 			mModifiedFinImage(NULL), //***1.5
@@ -447,9 +448,9 @@ class DatabaseFin
 			mIsAlternate(false) //***1.95
 		{
 			try {
-				string status = this->load(inFile,true);  //***001DB
-				if(status != "Loaded")                    //***001DB
-					throw Error(status.c_str());          //***001DB
+				string status = this->load(inFile,fileName,true);
+				if(status != "Loaded")
+					throw Error(status.c_str());
 			} catch (...) {
 				throw;
 			}
@@ -759,7 +760,7 @@ class DatabaseFin
 			if (!inFile)
 				throw Error("reading from file " + fileName);
 
-			this->load(inFile, false);
+			this->load(inFile, fileName, false);
 
 			mFinFilename = fileName;
 		}
@@ -776,7 +777,7 @@ class DatabaseFin
 		// loading from the database, the filenames include no path info and
 		// must be catenated with the correct catalog path
 		//
-		string load(std::fstream &inFile, bool fromDBfile) //***001DB
+		string load(std::fstream &inFile, std::string inFilename, bool fromDBfile)
 		{
 			try {
 				char line[255];
@@ -800,7 +801,13 @@ class DatabaseFin
 					line[pos] = '\0';
 				}
                          
-				//***054
+				//***1.99 - do NOT depend on GLOBAL gOptions anymore
+				string path = inFilename;
+				path = path.substr(0,path.rfind(PATH_SLASH)); // strip *.db or *.fin
+				mImageFilename = path + PATH_SLASH + line;
+
+															  
+/*				//***054
 				// new code to combine relative path with simple filename
 				// EXCEPT in cases where fin is being loaded from stand alone file
 				if (fromDBfile)
@@ -823,7 +830,7 @@ class DatabaseFin
 					mImageFilename += PATH_SLASH;
 					mImageFilename += line;
 				}
-                          
+*/                          
 				//************************
 				// Major change here
 				// The constructors will no longer load the image of the fin

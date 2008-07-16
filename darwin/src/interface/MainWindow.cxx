@@ -31,6 +31,7 @@
 #include "OptionsDialog.h"
 #include "CreateDatabaseDialog.h" //***1.85 
 #include "DataExportDialog.h" //***1.9
+#include "../CatalogSupport.h" //***1.99
 
 #include "../thumbnail.h" //***1.85
 
@@ -2429,6 +2430,12 @@ void on_backup_database_activate(
 	gtk_window_iconify(GTK_WINDOW(mainWin->getWindow())); //***1.93
 	//***1.93 - end new code segment
 
+	if (! backupCatalog(mainWin->mDatabase))
+	{
+		cout << "OOPS!" << endl;
+	}
+
+	/*
 	cout << "\nCreating BACKUP of Database ...\n  " << mainWin->mOptions->mDatabaseFileName << endl;
 
 	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
@@ -2565,7 +2572,7 @@ void on_backup_database_activate(
 		command = "del " + fileList;
 		system(command.c_str());
 	}
-
+*/
 	if (! mainWin->mDatabase->openStream())
 	{
 		ErrorDialog *err = new ErrorDialog("Database failed to reopen");

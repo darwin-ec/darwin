@@ -149,6 +149,10 @@ SOURCE=..\src\interface\DataExportDialog.cxx
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\interface\DBConvertDialog.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\interface\DeleteOutlineDialog.cxx
 # End Source File
 # Begin Source File
@@ -423,6 +427,10 @@ SOURCE=..\Src\DatabaseFin.h
 # Begin Source File
 
 SOURCE=..\src\interface\DataExportDialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\interface\DBConvertDialog.h
 # End Source File
 # Begin Source File
 

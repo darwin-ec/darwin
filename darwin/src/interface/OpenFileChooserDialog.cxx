@@ -19,6 +19,8 @@
 #include "ErrorDialog.h"
 #include "TraceWindow.h"
 
+#include "DBConvertDialog.h"
+
 using namespace std;
 
 static const int IMAGE_WIDTH = 300;
@@ -1190,27 +1192,10 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 		//g_print(fileName.c_str());
 		//g_print("\n");
 
-		// inFile.open(fileName.c_str());
-		db_opentype_t opentype = databaseOpenType(fileName);
-		if (opentype == cannotOpen)
-		{
-			g_print("Could not open selected database file!\n");
-			inFile.clear();
-		}
-		else
-		{
-			// put dialog asking about conversion here
-			if(opentype == convert)
-			{
-				cout << "So... wanna bet your database? Y/N" << endl;
-				char answer;
-				cin >> answer;
-				
-				// bail! -- sissies
-				if(answer == 'N' || answer == 'n')
-					break;
-			}
+		Database *newDb = openDatabase(dlg->mMainWin,fileName);
 
+		if ((NULL != newDb) && (newDb->status() == Database::loaded))
+		{
 			// set the options current survey area and database filename
 			dlg->mOptions->mDatabaseFileName = fileName;
 			string cat = "";
@@ -1253,12 +1238,8 @@ void on_fileChooserButtonOK_clicked(OpenFileChooserDialog *dlg)
 			// close the current database
 			delete dlg->mDatabase; // this closes the current database file
 
-			// convert the database first or open as is
-			if(opentype == convert)
-				dlg->mDatabase = convertDatabase(dlg->mOptions, fileName);
-			else
-				dlg->mDatabase = openDatabase(dlg->mOptions, false);
-			
+			dlg->mDatabase = newDb;
+
 			// make sure main window has correct pointer to it -- THIS IS IMPORTANT
 			dlg->mMainWin->mDatabase = dlg->mDatabase;
 
