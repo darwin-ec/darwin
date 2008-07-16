@@ -1320,10 +1320,22 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 		_("Import a database ...\n"
 		"(into a NEW user specified Survey Area.)"), NULL);
 
+	// new Export submenu
+
+	GtkWidget *export = gtk_menu_item_new_with_mnemonic(_("    Export"));
+	gtk_widget_show (export);
+	gtk_container_add (GTK_CONTAINER (file_menu), export);
+
+	GtkWidget *exportSub = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (export), exportSub);
+
+	// Export Catalog submenu item
+
 	GtkWidget *exportDB = gtk_menu_item_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
-	tmpLabel = gtk_label_new(_("    Export"));
+	tmpLabel = gtk_label_new(_("    Export Catalog"));
+
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), exportDB);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1332,10 +1344,39 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_container_add(GTK_CONTAINER(exportDB), tmpBox);
 
 	gtk_widget_show (exportDB);
-	gtk_container_add (GTK_CONTAINER (file_menu), exportDB);
+
+	gtk_container_add(GTK_CONTAINER(exportSub), exportDB);
+
 	gtk_tooltips_set_tip (tooltips, exportDB, 
 		_("Export the currently open database ...\n"
 		"(to a user specified *.zip file)"), NULL);
+
+	//***1.85 - if database load failed do not allow this menu option
+	if (mDatabase->status() != Database::loaded)
+		gtk_widget_set_sensitive(exportDB, FALSE);
+	mExportDBMenuItem = exportDB;
+
+	// Export Fin (*.finz) submenu item
+
+	GtkWidget *exportFinz = gtk_menu_item_new();
+
+	tmpBox = gtk_hbox_new(FALSE, 0);
+	tmpLabel = gtk_label_new(_("    Export Fin (*.finz)"));
+
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), exportFinz);
+	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
+	gtk_widget_show(tmpLabel);
+	gtk_widget_show(tmpBox);
+
+	gtk_container_add(GTK_CONTAINER(exportFinz), tmpBox);
+
+	gtk_widget_show (exportFinz);
+
+	gtk_container_add(GTK_CONTAINER(exportSub), exportFinz);
+
+	gtk_tooltips_set_tip (tooltips, exportFinz, 
+		_("Export a fin ...\n"
+		"(to a user specified *.finz file)"), NULL);
 
 	//***1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
@@ -2088,6 +2129,11 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (exportDB), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_database_activate),
 	                    (void *) this);
+	//***1.99 - callback for exporting a Fin
+	gtk_signal_connect (GTK_OBJECT (exportFinz), "activate",
+	                    GTK_SIGNAL_FUNC (on_export_finz_activate),
+	                    (void *) this);
+
 	//***1.85 - new callbacks for restoring or importing a database
 	gtk_signal_connect (GTK_OBJECT (restore), "activate",
 	                    GTK_SIGNAL_FUNC (on_restore_database_activate),
@@ -2584,6 +2630,18 @@ void on_backup_database_activate(
 	gtk_window_deiconify(GTK_WINDOW(mainWin->getWindow())); //***1.93
 	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), FALSE); //***1.93
 
+}
+
+//*******************************************************************
+//***1.99 - new
+//
+void on_export_finz_activate(
+	GtkMenuItem *menuitem,
+	gpointer userData)
+{
+	// just a stub!
+
+	cout << "Exporting Fin to *.finz file (NOT INPLEMENTED YET!)" << endl;
 }
 
 //*******************************************************************

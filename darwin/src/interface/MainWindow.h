@@ -106,6 +106,10 @@ class MainWindow
 				GtkMenuItem *menuitem,
 				gpointer userData);
 
+		friend void on_export_finz_activate( //***1.99
+				GtkMenuItem *menuitem,
+				gpointer userData);
+
 		friend void on_matching_queue_activate(
 				GtkMenuItem *menuitem,
 				gpointer userData);
