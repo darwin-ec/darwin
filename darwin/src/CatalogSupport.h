@@ -1,7 +1,7 @@
-// DatabaseSupport.h
+// CatalogSupport.h
 
-#ifndef DATABASE_SUPPORT_H
-#define DATABASE_SUPPORT_H
+#ifndef CATALOG_SUPPORT_H
+#define CATALOG_SUPPORT_H
 
 #include "Database.h"
 #include "SQLiteDatabase.h"

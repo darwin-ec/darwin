@@ -55,7 +55,7 @@
 #include "ConfigFile.h"
 #include "support.h"
 #include "interface/MainWindow.h"
-#include "DatabaseSupport.h"
+#include "CatalogSupport.h"
 #include "Options.h"
 #include "interface/SplashWindow.h"
 #include "waveletUtil.h"

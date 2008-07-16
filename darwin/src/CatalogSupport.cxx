@@ -1,6 +1,6 @@
-// DatabaseSupport.cxx
+// CatalogSupport.cxx
 
-#include "DatabaseSupport.h"
+#include "CatalogSupport.h"
 
 /*
  *	Tries to instantiate a database object using the filename

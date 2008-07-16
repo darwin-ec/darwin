@@ -109,6 +109,10 @@ SOURCE=..\src\interface\CatalogSchemeDialog.cxx
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\CatalogSupport.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\Chain.cxx
 # End Source File
 # Begin Source File
@@ -138,10 +142,6 @@ SOURCE=..\src\interface\CreateDatabaseDialog.cxx
 # Begin Source File
 
 SOURCE=..\src\Database.cxx
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\DatabaseSupport.cxx
 # End Source File
 # Begin Source File
 
@@ -374,6 +374,10 @@ SOURCE=..\src\interface\CatalogSchemeDialog.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\CatalogSupport.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\Chain.h
 # End Source File
 # Begin Source File
@@ -415,10 +419,6 @@ SOURCE=..\Src\Database.h
 # Begin Source File
 
 SOURCE=..\Src\DatabaseFin.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\DatabaseSupport.h
 # End Source File
 # Begin Source File
 
