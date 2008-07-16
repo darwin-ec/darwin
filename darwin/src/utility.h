@@ -329,14 +329,14 @@ void stripCRLF(std::string &line)
 }
 
 inline
-string extractBasename(string filepath)
+std::string extractBasename(std::string filename)
 {
 	int pos = filename.find_last_of(PATH_SLASH);
 	
 	if (pos >= 0)
 			return filename.substr(pos+1);
 	
-	return filepath;
+	return filename;
 }
 
 #endif

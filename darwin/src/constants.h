@@ -15,6 +15,12 @@
 #define PI 3.14159265359
 #endif
 
+#ifdef WIN32
+#define PATH_SLASH "\\"
+#else
+#define PATH_SLASH "/"
+#endif
+
 #define PIOVER2 1.570796327
 
 #endif

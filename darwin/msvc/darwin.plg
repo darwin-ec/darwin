@@ -6,7 +6,60 @@
 --------------------Configuration: darwin - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP293.tmp" with contents
+Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP323.tmp" with contents
+[
+/nologo /MDd /Gm /GX /ZI /Od /I ".." /I "..\png\libpng\include" /I "..\png\zlib1\include" /I "..\gtk\include\\" /I "..\gtk\lib\glib-2.0\include" /I "..\gtk\lib\gtk-2.0\include" /D "CRTDLL2" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR"Debug/" /Fp"Debug/darwin.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\temp\darwin-ec\trunk\darwin\src\interface\AlterBrightnessDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\BinaryImage.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\CatalogSupport.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\Chain.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\ColorImage.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\ConfigFile.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\Contour.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\ContourInfoDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\conversions.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\CreateDatabaseDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\Database.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\DataExportDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\DBConvertDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\DeleteOutlineDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\edge_detect.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\EnhanceContrastDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\FloatContour.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\GrayImage.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\image_processing\hysteresis.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\ImageViewDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\IntensityContour.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\IntensityContourCyan.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\main.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\mapContour.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\MappedContoursDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\matching\Match.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\MatchingDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\matching\MatchingQueue.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\MatchingQueueDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\matching\MatchResults.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\MatchResultsWindow.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\ModifyDatabaseWindow.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\NoMatchWindow.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\OldDatabase.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\OpenFileChooserDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\OptionsDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\Outline.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\ResizeDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\SaveFileSelectionDialog.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\snake.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\interface\SplashWindow.cxx"
+"C:\temp\darwin-ec\trunk\darwin\src\SQLiteDatabase.cxx"
+]
+Creating command line "cl.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP323.tmp" 
+Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP324.tmp" with contents
+[
+/nologo /MDd /w /W0 /Gm /GX /ZI /Od /I ".." /I "..\png\libpng\include" /I "..\png\zlib1\include" /I "..\gtk\include\\" /I "..\gtk\lib\glib-2.0\include" /I "..\gtk\lib\gtk-2.0\include" /D "CRTDLL2" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR"Debug/" /Fp"Debug/darwin.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\temp\darwin-ec\trunk\darwin\src\interface\MainWindow.cxx"
+]
+Creating command line "cl.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP324.tmp" 
+Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP325.tmp" with contents
 [
 zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.lib atk-1.0.lib pango-1.0.lib gdk_pixbuf-2.0.lib gobject-2.0.lib glib-2.0.lib gdk-win32-2.0.lib jpeg.lib gtk-win32-2.0.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/darwin.pdb" /debug /machine:I386 /nodefaultlib:"msvcrt.lib" /out:"Debug/darwin.exe" /pdbtype:sept /libpath:"..\gtk\lib" /libpath:"..\jpeg-6b\lib" /libpath:"..\png\libpng\lib" /libpath:"..\png\zlib1\lib" 
 ".\Debug\AboutDialog.obj"
@@ -24,6 +77,7 @@ zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.li
 ".\Debug\CreateDatabaseDialog.obj"
 ".\Debug\Database.obj"
 ".\Debug\DataExportDialog.obj"
+".\Debug\DBConvertDialog.obj"
 ".\Debug\DeleteOutlineDialog.obj"
 ".\Debug\edge_detect.obj"
 ".\Debug\EnhanceContrastDialog.obj"
@@ -74,9 +128,125 @@ zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.li
 ".\Debug\wlRWavelet.obj"
 ".\Debug\Icon.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP293.tmp"
+Creating command line "link.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP325.tmp"
 <h3>Output Window</h3>
+Compiling...
+AlterBrightnessDialog.cxx
+BinaryImage.cxx
+CatalogSupport.cxx
+Chain.cxx
+ColorImage.cxx
+ConfigFile.cxx
+Contour.cxx
+ContourInfoDialog.cxx
+conversions.cxx
+CreateDatabaseDialog.cxx
+Database.cxx
+DataExportDialog.cxx
+DBConvertDialog.cxx
+FloatContour.cxx
+main.cxx
+mapContour.cxx
+MappedContoursDialog.cxx
+Outline.cxx
+Skipping... (no relevant changes detected)
+DeleteOutlineDialog.cxx
+edge_detect.cxx
+EnhanceContrastDialog.cxx
+GrayImage.cxx
+hysteresis.cxx
+ImageViewDialog.cxx
+IntensityContour.cxx
+IntensityContourCyan.cxx
+Match.cxx
+MatchingDialog.cxx
+MatchingQueue.cxx
+MatchingQueueDialog.cxx
+MatchResults.cxx
+MatchResultsWindow.cxx
+ModifyDatabaseWindow.cxx
+NoMatchWindow.cxx
+OldDatabase.cxx
+OpenFileChooserDialog.cxx
+OptionsDialog.cxx
+ResizeDialog.cxx
+SaveFileSelectionDialog.cxx
+snake.cxx
+SplashWindow.cxx
+SQLiteDatabase.cxx
+Compiling...
+MainWindow.cxx
 Linking...
+Creating temporary file "C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP327.tmp" with contents
+[
+/nologo /o"Debug/darwin.bsc" 
+".\Debug\AboutDialog.sbr"
+".\Debug\AlterBrightnessDialog.sbr"
+".\Debug\AreaMatch.sbr"
+".\Debug\BinaryImage.sbr"
+".\Debug\CatalogSchemeDialog.sbr"
+".\Debug\CatalogSupport.sbr"
+".\Debug\Chain.sbr"
+".\Debug\ColorImage.sbr"
+".\Debug\ConfigFile.sbr"
+".\Debug\Contour.sbr"
+".\Debug\ContourInfoDialog.sbr"
+".\Debug\conversions.sbr"
+".\Debug\CreateDatabaseDialog.sbr"
+".\Debug\Database.sbr"
+".\Debug\DataExportDialog.sbr"
+".\Debug\DBConvertDialog.sbr"
+".\Debug\DeleteOutlineDialog.sbr"
+".\Debug\edge_detect.sbr"
+".\Debug\EnhanceContrastDialog.sbr"
+".\Debug\ErrorDialog.sbr"
+".\Debug\exif.sbr"
+".\Debug\FloatContour.sbr"
+".\Debug\gaussj.sbr"
+".\Debug\GrayImage.sbr"
+".\Debug\hysteresis.sbr"
+".\Debug\ImageMod.sbr"
+".\Debug\ImageViewDialog.sbr"
+".\Debug\IntensityContour.sbr"
+".\Debug\IntensityContourCyan.sbr"
+".\Debug\main.sbr"
+".\Debug\MainWindow.sbr"
+".\Debug\mapContour.sbr"
+".\Debug\MappedContoursDialog.sbr"
+".\Debug\Match.sbr"
+".\Debug\MatchingDialog.sbr"
+".\Debug\MatchingQueue.sbr"
+".\Debug\MatchingQueueDialog.sbr"
+".\Debug\MatchResults.sbr"
+".\Debug\MatchResultsWindow.sbr"
+".\Debug\ModifyDatabaseWindow.sbr"
+".\Debug\NoMatchWindow.sbr"
+".\Debug\OldDatabase.sbr"
+".\Debug\OpenFileChooserDialog.sbr"
+".\Debug\OptionsDialog.sbr"
+".\Debug\Outline.sbr"
+".\Debug\pngImageSupport.sbr"
+".\Debug\ResizeDialog.sbr"
+".\Debug\SaveFileSelectionDialog.sbr"
+".\Debug\snake.sbr"
+".\Debug\SplashWindow.sbr"
+".\Debug\sqlite3.sbr"
+".\Debug\SQLiteDatabase.sbr"
+".\Debug\support.sbr"
+".\Debug\thumbnail.sbr"
+".\Debug\TraceWindow.sbr"
+".\Debug\waveletUtil.sbr"
+".\Debug\wlcError.sbr"
+".\Debug\wlcMem.sbr"
+".\Debug\wlcPackets.sbr"
+".\Debug\wlcPWavelet.sbr"
+".\Debug\wlcSBFilter.sbr"
+".\Debug\wlcSWavelet.sbr"
+".\Debug\wlcUtils.sbr"
+".\Debug\wlRWavelet.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\labuser\LOCALS~1\Temp\RSP327.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
 
 
 
