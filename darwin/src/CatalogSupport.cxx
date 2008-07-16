@@ -556,10 +556,11 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	tempdir += filename;
 
 	// extract finz to temp dir
-	string cmd("7z.exe x");
-	cmd += " '" + filename + "' ";
+	string cmd("7z.exe x -o");
 	cmd += " '" + tempdir + "' ";
+	cmd += " '" + filename + "' ";
 	system(cmd.c_str());
+	cout << cmd << endl;
 
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
@@ -633,8 +634,9 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	srcFilename = tempdir + PATH_SLASH + "*.*";
 	targetFilename = filename;
 
-	cmd = "7z.exe a";
+	cmd = "7z.exe a -tzip";
 	cmd += " '" + targetFilename + "' ";
 	cmd += " '" + srcFilename + "' ";
 	system(cmd.c_str());
+	cout << cmd << endl;
 }
