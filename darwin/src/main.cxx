@@ -623,6 +623,8 @@ int main(int argc, char *argv[])
 
 		gtk_main(); //***1.85
 
+		saveConfig();
+
 	} else if (strcmp(argv[1], ".finz")>0) { //Open finz file
 		/*TraceWindow::TraceWindow(
 			MainWindow *m,
@@ -652,8 +654,6 @@ int main(int argc, char *argv[])
 
 	// ugly hack from waveletUtil.h
 	destroyFilters();
-
-	saveConfig();
 
 	//SAH--Remove Temporary Directory -- just to be nice
 	//cmd ="rmdir /s /q \"" + Constants::TEMPDIR() + "\"";
