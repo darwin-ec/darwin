@@ -1,6 +1,7 @@
 ;darwin nsis installer
 
 !include "MUI2.nsh"
+!include "fileassoc.nsh"
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\nsis.bmp" ; optional ;
@@ -90,7 +91,9 @@ Section "Installer Section"
 	;Environmental Variable
 	;http://nsis.sourceforge.net/Setting_Environment_Variables_Examples
 	
-	
+	;Associate .finz with darwin.exe
+	!insertmacro APP_ASSOCIATE "finz" "darwin.FinFile" "Darwin Finz" "$INSTDIR\system\bin\darwin.exe,0" \
+	     "Open with darwin" "$INSTDIR\system\bin\darwin.exe $\"%1$\""	
 	
 	;Write the uninstaller and add to Add/Remove Programs before we finish
 	WriteUninstaller $INSTDIR\uninstall.exe
@@ -121,6 +124,9 @@ Section "un.Uninstaller Section"
 	;Remove shortcuts
 	RMDir /r /REBOOTOK "$SMPROGRAMS\darwin"
 	Delete /REBOOTOK "$DESKTOP\darwin.lnk"
+	
+	;Remove file association
+	!insertmacro APP_UNASSOCIATE "finz" "darwin.FinFile"
 	
 	;Always remember to remove key from Add/Remove Programs
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Darwin"
