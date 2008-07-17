@@ -52,6 +52,8 @@
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 
+#include "CatalogSupport.h" //SAH
+#include "Interface/TraceWindow.h" //SAH
 #include "ConfigFile.h"
 #include "support.h"
 #include "interface/MainWindow.h"
@@ -582,6 +584,13 @@ int main(int argc, char *argv[])
 	gOptions = new Options();
 	readConfig();
 
+	//SAH
+	//Create Temporary Directory
+	string cmd = "";
+	//cmd = "mkdir \"" + Constants::TEMPDIR() + "\"";
+	cmd = "mkdir \"%temp%\\darwin\"";
+	system(cmd.c_str());
+
 	// ugly hack from waveletUtil.h
 	initFilters();
 
@@ -596,26 +605,60 @@ int main(int argc, char *argv[])
 	add_pixmap_directory(PACKAGE_SOURCE_DIR "/pixmaps");
   
 	gdk_rgb_init();
-	SplashWindow *splash = new SplashWindow();
-	splash->show();
 
-	splash->updateStatus(_("Loading fin database..."));
-	//Database *db = new Database(gOptions, false); //***1.99
-	Database *db = openDatabase(gOptions, false); //***1.99
 
-	//splash->updateStatus(_("Initializing interface..."));
-	splash->startTimeout();
 
-	MainWindow *mainWin = new MainWindow(db, gOptions);
+	if (!(argc > 1)) { //Standard open
+		SplashWindow *splash = new SplashWindow();
+		splash->show();
+		splash->updateStatus(_("Loading fin database..."));
+		//Database *db = new Database(gOptions, false); //***1.99
+		Database *db = openDatabase(gOptions, false); //***1.99
+
+		//splash->updateStatus(_("Initializing interface..."));
+		splash->startTimeout();
+
+		MainWindow *mainWin = new MainWindow(db, gOptions);
+		splash->mwDone(mainWin); //***1.85 - notify splash we are done & splash shows main window
+
+		gtk_main(); //***1.85
+
+	} else if (strcmp(argv[1], ".finz")>0) { //Open finz file
+		/*TraceWindow::TraceWindow(
+			MainWindow *m,
+			const string &fileName,
+			DatabaseFin<ColorImage> *fin,
+			Database *db,
+			Options *o)
+		*/
+		string filename(argv[1]);
+		DatabaseFin<ColorImage>* dbFin = openFinz(filename);
+		TraceWindow *traceWin= new TraceWindow(
+			       NULL, //MainWindow
+				   filename,
+				   dbFin,
+				   ///*CatalogSupport::*/openFinz(filename), 
+			       NULL, //Database
+				   gOptions);
+		traceWin->show();
+		gtk_main();
+		//if (NULL!=dbFin)
+		//	delete dbFin; //THIS PRODUCES ERROR CURRENTLY. WHY???
+
+		//Delete traceWin???
+
+	}
 	
-	splash->mwDone(mainWin); //***1.85 - notify splash we are done & splash shows main window
-
-	gtk_main(); //***1.85
 
 	// ugly hack from waveletUtil.h
 	destroyFilters();
 
 	saveConfig();
+
+	//SAH--Remove Temporary Directory -- just to be nice
+	//cmd ="rmdir /s /q \"" + Constants::TEMPDIR() + "\"";
+	cmd = "rmdir /s /q \"%temp%\\darwin\"";
+	system(cmd.c_str());
 
 #ifdef TIMING_ENABLED
 	timingOutFile.close(); //***1.95 - to save timing information

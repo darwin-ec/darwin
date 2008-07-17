@@ -318,6 +318,10 @@ TraceWindow::~TraceWindow()
 	delete mUndoImage;
 
 	gNumReferences--;
+
+	if (NULL == mMainWin) {//if there is not a main window to return to, then quit (e.g. opened a finz file)
+		gtk_main_quit();
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -3319,6 +3323,16 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
     gtk_object_set_data(GTK_OBJECT(traceWindow), "tooltips", tooltips);
 
     gtk_window_add_accel_group(GTK_WINDOW(traceWindow), accel_group);
+
+
+	//SAH--Allow trace window to launch independently
+	if (NULL == mDatabase ) {
+		//Disable Match, Add to Database, Export Data buttons
+		//Could use gtk_widget_hide(wiget) to hide completely
+		gtk_widget_set_sensitive(traceButtonMatch,FALSE);
+		gtk_widget_set_sensitive(traceButtonAddToDatabase,FALSE);
+		gtk_widget_set_sensitive(traceButtonDumpData,FALSE);
+	}
 
     return traceWindow;
 }

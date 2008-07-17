@@ -477,18 +477,7 @@ bool createArchive (Database *db, string filename)
 
 	return true;
 }
-<<<<<<< .mine
-=======
 
-/*
- * Restores from "DARWINHOME/backups".  Assumes the survey area in the 
- * Options is the target.
- */
-
-bool restoreCatalogFrom(Options *o, std::string filename)
-{
-	return false;
-}
 /*
 	string cmd("7z.exe x");
 	cmd += " '" + filename + "' ";
@@ -641,33 +630,46 @@ bool exportCatalogTo(Options *o, std::string filename)
 }
 
 
-bool importCatalogFrom(Options *o, std::string filename)
-{
-	return false;
-}
-
 DatabaseFin<ColorImage>* openFinz(string filename)
 {
+
+	string baseimgfilename;
 	string tempdir("");
-	tempdir += "%TEMP%";
+	tempdir += getenv("TEMP");
 	tempdir += PATH_SLASH;
 	tempdir += "darwin";
 	tempdir += PATH_SLASH;
-	tempdir += filename;
+	tempdir += extractBasename(filename);
 
 	// extract finz to temp dir
-	string cmd("7z.exe x -o");
-	cmd += " '" + tempdir + "' ";
-	cmd += " '" + filename + "' ";
+	string cmd("7z.exe x -aoa -o");
+	cmd += "\"" + tempdir + "\" ";
+	cmd += " \"" + filename + "\" ";
 	system(cmd.c_str());
 	cout << cmd << endl;
 
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
+	cout << "about to open db" << o.mDatabaseFileName << endl;
 	SQLiteDatabase db = SQLiteDatabase(&o, false);
 
+	cout << "going to select first fin" << endl;
 	DatabaseFin<ColorImage>* fin = db.getItem(0); // first and only fin
+
+	baseimgfilename = extractBasename(fin->mImageFilename);
+	fin->mImageFilename = tempdir + PATH_SLASH + baseimgfilename;
+
+	cout << "got fin" << endl;
+
+	cout << (NULL == fin) << endl;
+
+	cout << "fin: \n"
+		<< endl << fin->mIDCode
+		<< endl << fin->mName
+		<< endl << fin->mDamageCategory
+		<< endl << fin->mImageFilename
+		<< endl << fin->mOriginalImageFilename << endl;
 	
 	// I really hope C++ managed code works how I think it does...
 
@@ -679,7 +681,7 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	string baseFilename = extractBasename(filename);
 
 	string tempdir("");
-	tempdir += "%TEMP%";
+	tempdir += getenv("TEMP");
 	tempdir += PATH_SLASH;
 	tempdir += "darwin";
 	tempdir += PATH_SLASH;
@@ -740,4 +742,3 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	system(cmd.c_str());
 	cout << cmd << endl;
 }
->>>>>>> .r36
