@@ -17,8 +17,7 @@
 #include "../support.h"
 #include "SaveFileChooserDialog.h"
 #include "ErrorDialog.h"
-
-#include "ImageViewDialog.h" // for test of PNG file I/O
+#include "../CatalogSupport.h"
 
 #ifdef WIN32
 #define PATH_SLASH "\\"
@@ -71,17 +70,6 @@ SaveFileChooserDialog::~SaveFileChooserDialog()
 	gNumReferences--;
 }
 
-void SaveFileChooserDialog::save(string fileName)
-{
-	try {
-
-		mFin->save(fileName);
-	
-	} catch (Error e) {
-		showError(e.errorString());
-	}
-}
-
 GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 {
 /*	GtkWidget *saveFileSelection;
@@ -107,13 +95,49 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 	switch (mSaveMode) 
 	{
 	case saveFin:
+		saveFCDialog = gtk_file_chooser_dialog_new (
+				_("Enter filename for the Traced Fin File(*.fin)"),
+				GTK_WINDOW(mParent),
+				GTK_FILE_CHOOSER_ACTION_SAVE,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+		// could do this if we had version 2.8 or later of GTK+
+		// gtk_file_chooser_set_do_overwrite_confirmation(
+		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "Fin Files (*.fin)");
+		gtk_file_filter_add_pattern(filter, "*.fin");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "All Files (*.*)");
+		gtk_file_filter_add_pattern(filter, "*.*");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+
+		// do NOT allow multiple file selections
+		gtk_file_chooser_set_select_multiple (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				FALSE);
+		
+		if (gLastDirectory[mSaveMode] == "")
+		{
+			//***1.85 - everything is now relative to the current survey area
+			gLastDirectory[mSaveMode] = gOptions->mCurrentSurveyArea;
+			gLastDirectory[mSaveMode] += PATH_SLASH;
+			gLastDirectory[mSaveMode] += "tracedFins";
+			gLastDirectory[mSaveMode] += PATH_SLASH;
+		}
+		gtk_file_chooser_set_current_folder (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				gLastDirectory[mSaveMode].c_str());
+		gLastFileName[mSaveMode] = "";
 		break;
-	case exportFinz:
+	case saveFinz:
 		break;
 	case exportDatabase:
 		saveFCDialog = gtk_file_chooser_dialog_new (
 				_("Enter filename for the EXPORT Database Archive(*.zip)"),
-				GTK_WINDOW(this->mMainWin->getWindow()),
+				GTK_WINDOW(mParent),
 				GTK_FILE_CHOOSER_ACTION_SAVE,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
@@ -150,74 +174,6 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 			(void *) this);
 
 	return saveFCDialog;
-/*
-	//***1.1 - have file viewer open in tracedFins folder
-	if (gLastDirectory == "")
-	{
-		// set path to %DARWINHOME% for first file open
-		//gLastDirectory = getenv("DARWINHOME");
-		//***1.85 - everything is now relative to the current survey area
-		gLastDirectory = gOptions->mCurrentSurveyArea;
-		gLastDirectory += PATH_SLASH;
-		gLastDirectory += "tracedFins";
-		gLastDirectory += PATH_SLASH;
-	}
-
-	//***1.1 - go to correct folder location and suggest initial filename based on fin ID
-  	gtk_file_selection_set_filename(
-			GTK_FILE_SELECTION(saveFileSelection),
-			gLastDirectory.c_str());
-	gtk_file_selection_complete(
-			GTK_FILE_SELECTION (saveFileSelection), 
-			(this->mFin->mIDCode + ".fin").c_str());
-
-	//***1.1 - prevent user from changing folder location
-	gtk_widget_hide(GTK_FILE_SELECTION (saveFileSelection)->dir_list);
-	gtk_widget_hide(GTK_FILE_SELECTION (saveFileSelection)->history_pulldown);
-	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (saveFileSelection));
-
-	// prevent multiple file selections
-	gtk_file_selection_set_select_multiple (GTK_FILE_SELECTION (saveFileSelection), FALSE);
-
-  gtk_object_set_data (GTK_OBJECT (saveFileSelection), "saveFileSelection", saveFileSelection);
-  gtk_container_set_border_width (GTK_CONTAINER (saveFileSelection), 10);
-  GTK_WINDOW (saveFileSelection)->type = WINDOW_DIALOG;
-  gtk_window_set_wmclass(GTK_WINDOW(saveFileSelection), "darwin_save", "DARWIN");
-
-  saveButtonOK = GTK_FILE_SELECTION (saveFileSelection)->ok_button;
-  gtk_object_set_data (GTK_OBJECT (saveFileSelection), "saveButtonOK", saveButtonOK);
-  gtk_widget_show (saveButtonOK);
-  GTK_WIDGET_SET_FLAGS (saveButtonOK, GTK_CAN_DEFAULT);
-  gtk_widget_add_accelerator (saveButtonOK, "clicked", accel_group,
-                              GDK_O, GDK_MOD1_MASK,
-                              GTK_ACCEL_VISIBLE);
-
-  saveButtonCancel = GTK_FILE_SELECTION (saveFileSelection)->cancel_button;
-  gtk_object_set_data (GTK_OBJECT (saveFileSelection), "saveButtonCancel", saveButtonCancel);
-  gtk_widget_show (saveButtonCancel);
-  GTK_WIDGET_SET_FLAGS (saveButtonCancel, GTK_CAN_DEFAULT);
-  gtk_widget_add_accelerator (saveButtonCancel, "clicked", accel_group,
-                              GDK_C, GDK_MOD1_MASK,
-                              GTK_ACCEL_VISIBLE);
-  gtk_widget_add_accelerator (saveButtonCancel, "clicked", accel_group,
-                              GDK_Escape, GDK_MOD1_MASK,
-                              GTK_ACCEL_VISIBLE);
-
-  gtk_signal_connect (GTK_OBJECT (saveFileSelection), "delete_event",
-                      GTK_SIGNAL_FUNC (on_saveFileSelection_delete_event),
-                      (void *) this);
-  gtk_signal_connect (GTK_OBJECT (saveButtonOK), "clicked",
-                      GTK_SIGNAL_FUNC (on_saveButtonOK_clicked),
-                      (void *) this);
-  gtk_signal_connect (GTK_OBJECT (saveButtonCancel), "clicked",
-                      GTK_SIGNAL_FUNC (on_saveButtonCancel_clicked),
-                      (void *) this);
-
-  gtk_widget_grab_default (saveButtonOK);
-  gtk_window_add_accel_group (GTK_WINDOW (saveFileSelection), accel_group);
-
-  return saveFileSelection;
-  */
 }
 
 gboolean on_saveFileChooser_delete_event(
@@ -256,124 +212,25 @@ void on_saveFileChooserButtonOK_clicked(
 		break;
 	case SaveFileChooserDialog::saveFin :
 		{
-/* this code is not functional yet - JHS
+		gchar *temp;
 
-		string fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(dlg->mDialog));
+		temp = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
+		string fileName = temp;
+		g_free(temp);
 
-	if (fileName[fileName.length() - 1] == '/' || fileName[fileName.length() - 1] == '\\') {
-		showError("Oops.. It looks like you selected a directory.\nPlease try again, and select a fin file.");
-		delete dlg;
-		return;
-	}
+		if (fileName[fileName.length() - 1] == '/' || fileName[fileName.length() - 1] == '\\') {
+			showError("Oops.. It looks like you selected a directory.\nPlease try again, and select a fin file.");
+			delete dlg;
+			return;
+		}
 
-	//***1.4 - enforce ".fin" extension
-	int posit = fileName.rfind(".fin");
-	int shouldBe = (fileName.length() - 4);
-	if (posit != shouldBe)
-		fileName += ".fin";
+		saveFin(dlg->mFin, fileName);
 
-	//***1.1 - saved fin traces now go in a standard location - DARWINHOME/tracedFins
+		if (NULL != dlg->mTraceWin)
+			dlg->mTraceWin->setSavedFinFilename(fileName);
 
-	// this should be more flexible and allow user to place files wherever desired,
-	// but for now they all go here
-
-	// copy unknown image to tracedFins folder and use short filename in database
-
-	string shortFilename = dlg->mFin->mImageFilename;
-	int pos = shortFilename.find_last_of(PATH_SLASH);
-	if (pos >= 0)
-	{
-		shortFilename = shortFilename.substr(pos+1);
-	}
-
-	//printf("copying \"%s\" to tracedFins\n",shortFilename.c_str());
-
-	//string path = getenv("DARWINHOME");
-	//***1.85 - everything is now relative to the current survey area
-	string path = gOptions->mCurrentSurveyArea;
-	path += PATH_SLASH;
-	path += "tracedFins";
-	path += PATH_SLASH;
-	string copyFilename = path + shortFilename;
-
-	// copy image over into tracedFins folder
-
-#ifdef WIN32
-	string command = "copy \"";
-#else
-	string command = "cp \"";
-#endif
-	command += dlg->mFin->mImageFilename;
-	command += "\" \"";
-	command += copyFilename;
-	command += "\"";
-
-#ifdef DEBUG
-	printf("copy command: \"%s\"",command.c_str());
-#endif
-
-	if (copyFilename != dlg->mFin->mImageFilename) //***1.8 - prevent copy onto self
-	{
-		printf("copying \"%s\" to tracedFins\n",shortFilename.c_str()); //***1.8 - moved here
-		system(command.c_str());
-				
-		// ***1.8 - save path & name of copy of original image file
-		dlg->mFin->mOriginalImageFilename = copyFilename; // ***1.8
-	}
-
-	//***1.5 - save modified image alongside original
-	if (NULL == dlg->mFin->mModifiedFinImage)
-		throw Error("Attempt to save Trace without modified image");
-
-	// create filename
-	//int pos = copyFilename.find_last_of('.');
-	//copyFilename = copyFilename.substr(0,pos);
-	//copyFilename += "_wDarwinMods.ppm";
-	// base this on FIN filename now
-	pos = fileName.find_last_of(PATH_SLASH);
-	copyFilename = path + fileName.substr(pos+1);
-	pos = copyFilename.rfind(".fin");
-	copyFilename = copyFilename.substr(0,pos);
-	//copyFilename += "_wDarwinMods.ppm";
-	copyFilename += "_wDarwinMods.png"; //***1.8 - new file format
-		
-	dlg->mFin->mModifiedFinImage->save_wMods( //***1.8 - new save modified image call
-		copyFilename,    // the filename of the modified image
-		shortFilename,   // the filename of the original image
-		dlg->mFin->mImageMods); // the list of image modifications
-	
-	// set image filename to path & filename of modified image so that name is 
-	// saved as part of the DatabaseFin record in the file
-	dlg->mFin->mImageFilename = copyFilename; //***1.8 - save this filename now
-
-
-	//***1.8 - write a PNG file as a test
-	//dlg->mFin->mModifiedFinImage->save("testFinImage.png"); 
-	//***1.8 - NOW read it back in
-	//ColorImage *temp = new ColorImage("testFinImage.png");
-	//ImageViewDialog *seeIt = new ImageViewDialog("PNG file",temp);
-	//seeIt->show();
-
-	//delete temp;
-
-
-	// DatabaseFin::save()  shortens the mImageFilename, so this call must
-	// precede the setting of the mImagefilename to the path+filename
-	// needed in the TraceWindow code if Add to Database is done after a
-	// save of the fin trace
-	dlg->save(fileName); 
-
-	// set image filename to path & filename of modified image so that name is 
-	// saved as part of the DatabaseFin record in the file
-	dlg->mFin->mImageFilename = copyFilename; //***1.8 - save this filename now
-
-
-	dlg->mTraceWin->setSavedFinFilename(fileName);
-
-	//***1.3 - do not delete trace window here
-	//   allow us to return so we can proceed with match after saving fin, if desired
-	//delete dlg->mTraceWin;
-	*/
+		//***1.3 - do not delete trace window here
+		//   allow us to return so we can proceed with match after saving fin, if desired
 		}
 		break;
 	default:

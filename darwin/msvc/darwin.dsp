@@ -290,10 +290,6 @@ SOURCE=..\src\interface\SaveFileChooserDialog.cxx
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\interface\SaveFileSelectionDialog.cxx
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\snake.cxx
 # End Source File
 # Begin Source File
@@ -599,10 +595,6 @@ SOURCE=..\Src\interface\ResizeDialog.h
 # Begin Source File
 
 SOURCE=..\src\interface\SaveFileChooserDialog.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\Src\interface\SaveFileSelectionDialog.h
 # End Source File
 # Begin Source File
 

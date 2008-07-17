@@ -85,7 +85,7 @@
 #include "ErrorDialog.h"
 #include "MatchingDialog.h"
 #include "ResizeDialog.h"
-#include "SaveFileSelectionDialog.h"
+#include "SaveFileChooserDialog.h" //***1.99
 #include "../IntensityContour.h" //101AT
 #include "../IntensityContourCyan.h" //103AT SAH
 
@@ -5269,7 +5269,7 @@ void on_traceButtonMatch_clicked(GtkButton * button, gpointer userData)
 //
 void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 {
-	if (getNumSaveFileSelectionDialogReferences() >= 1)
+	if (getNumSaveFileChooserDialogReferences() >= 1)
 		return;
 
 	TraceWindow *traceWin = (TraceWindow *) userData;
@@ -5389,14 +5389,18 @@ void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 	// original image filename be set BEFORE any match is attmepted
 	traceWin->mFin->mOriginalImageFilename = traceWin->mImagefilename; //***1.98
 
-	SaveFileSelectionDialog *dlg = new SaveFileSelectionDialog(
+	SaveFileChooserDialog *dlg = new SaveFileChooserDialog(
+			traceWin->mDatabase,
 			/*newFin*/traceWin->mFin, 
+			NULL, // no MainWindow
 			traceWin,
-			traceWin->mWindow);
+			traceWin->mOptions,
+			traceWin->mWindow,
+			SaveFileChooserDialog::saveFin);
 
 	// note that we don't want to delete newFin here...the save dialog does it
 	
-	dlg->show();
+	dlg->run_and_respond();
 }
 
 //*******************************************************************

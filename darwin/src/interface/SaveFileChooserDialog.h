@@ -27,7 +27,7 @@ class SaveFileChooserDialog
 
 		enum {
 			saveFin = 0,
-			exportFinz,
+			saveFinz,
 			exportDatabase,
 			exportDataFields
 		} ;
@@ -103,8 +103,6 @@ class SaveFileChooserDialog
 			mSaveMode; // openFinImage, openFinTrace or openDatabase
 
 		GtkWidget *createSaveFileChooser();
-
-		void save(std::string fileName);
 
 };
 

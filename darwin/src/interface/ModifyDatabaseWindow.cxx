@@ -716,8 +716,8 @@ gboolean on_modifyDrawingArea_expose_event(GtkWidget * widget,
 //
 void on_modifyButtonSave_clicked(GtkButton * button, gpointer userData)
 {
-	if (getNumSaveFileSelectionDialogReferences() >= 1)
-		return;
+	//if (getNumSaveFileSelectionDialogReferences() >= 1)
+	//	return;
 
 	ModifyDatabaseWindow *modifyWin = (ModifyDatabaseWindow *) userData;
 

@@ -7,6 +7,40 @@
 
 using namespace std;
 
+bool continueOverwrite(string winLabel, string message, string fileName)
+{
+	GtkWidget *dialog = gtk_dialog_new_with_buttons (
+				winLabel.c_str(),
+				NULL, // do not have parent
+				(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
+				GTK_STOCK_OK,
+				GTK_RESPONSE_ACCEPT,
+				GTK_STOCK_CANCEL,
+				GTK_RESPONSE_REJECT,
+				NULL);
+
+	gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 140);
+
+	GtkWidget *label = gtk_label_new(message.c_str());
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
+	gtk_widget_show(label);
+
+	GtkWidget *entry = gtk_entry_new();
+	gtk_entry_set_text(GTK_ENTRY(entry),fileName.c_str());
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),entry);
+	gtk_widget_show(entry);
+
+	label = gtk_label_new("Replace this file?");
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
+	gtk_widget_show(label);
+
+	gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+	gtk_widget_destroy (dialog);
+
+	return (result == GTK_RESPONSE_ACCEPT);
+}
+
 // The woCaseLesThan::operator() is used to compare strings without 
 // distinguishing case differences.  Specifically, it is used in 
 // backupDatabaseTo() to build set of uninque image filenames associated 
@@ -292,13 +326,6 @@ bool backupCatalog(Database *db)
 }
 
 
-//
-// This will eventually contain restore code found in the main window
-//
-bool restoreCatalogFrom(Options *o, std::string filename)
-{
-	return false;
-}
 
 
 //
@@ -318,43 +345,20 @@ bool exportCatalogTo(Database *db, Options *o, std::string filename)
 	ifstream testFile(exportFilename.c_str());
 	if (! testFile.fail())
 	{
-		GtkWidget *dialog = gtk_dialog_new_with_buttons (
+		testFile.close();
+
+		bool doTheOverwrite = continueOverwrite(
 				"REPLACE existing file?",
-				NULL, // do not have parent
-				(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
-				GTK_STOCK_OK,
-				GTK_RESPONSE_ACCEPT,
-				GTK_STOCK_CANCEL,
-				GTK_RESPONSE_REJECT,
-				NULL);
-
-		gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 140);
-
-		GtkWidget *label = gtk_label_new("Selected EXPORT file already exists!");
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
-		gtk_widget_show(label);
-
-		GtkWidget *entry = gtk_entry_new();
-		gtk_entry_set_text(GTK_ENTRY(entry),exportFilename.c_str());
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),entry);
-		gtk_widget_show(entry);
-
-		label = gtk_label_new("Replace this file?");
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
-		gtk_widget_show(label);
-
-		gint result = gtk_dialog_run (GTK_DIALOG (dialog));
-
-		gtk_widget_destroy (dialog);
-
-		if (GTK_RESPONSE_ACCEPT != result)
+				"Selected EXPORT file already exists!",
+				exportFilename);
+		
+		if (! doTheOverwrite)
 		{
 			cout << "EXPORT aborted - User refused REPLACEMENT of existing archive!" << endl;
 			return false;
 		}
 
-		// close and delete the exising archive file
-		testFile.close();
+		// delete the exising archive file
 		string command = "DEL /Q \"" + exportFilename + "\" >nul";
 		system(command.c_str());
 	}
@@ -624,11 +628,127 @@ bool createArchive (Database *db, string filename)
 }
 */
 
-bool exportCatalogTo(Options *o, std::string filename)
+
+DatabaseFin<ColorImage>* openFin(string filename)
 {
-	return false;
+	return NULL;
 }
 
+//
+// save old fin trace in old (multi-file) format
+//
+
+bool saveFin(DatabaseFin<ColorImage>* fin, string fileName)
+{
+	cout << "\nSAVING Fin ...\n  " << fileName << endl;
+						
+	//***1.4 - enforce ".fin" extension
+		int posit = fileName.rfind(".fin");
+		int shouldBe = (fileName.length() - 4);
+		if (posit != shouldBe)
+			fileName += ".fin";
+
+	// find out if file already exists
+	ifstream testFile(fileName.c_str());
+	if (! testFile.fail())
+	{
+		testFile.close();
+
+		bool doTheOverwrite = continueOverwrite(
+				"REPLACE existing file?",
+				"Selected EXPORT file already exists!",
+				fileName);
+		
+		if (! doTheOverwrite)
+		{
+			cout << "FIN SAVE aborted - User refused REPLACEMENT of existing file!" << endl;
+			return false;
+		}
+
+		// delete the exising archive file
+		string command = "DEL /Q \"" + fileName + "\" >nul";
+		system(command.c_str());
+	}
+
+	// now actually save the file and images (modified and original)
+
+	// copy unknown image to same folder as *.fin file will go
+
+	string saveFolder = fileName.substr(0,fileName.rfind(PATH_SLASH));
+
+	string shortFilename = fin->mImageFilename;
+	int pos = shortFilename.find_last_of(PATH_SLASH);
+	if (pos >= 0)
+	{
+		shortFilename = shortFilename.substr(pos+1);
+	}
+
+	string copyFilename = saveFolder + PATH_SLASH + shortFilename;
+
+	// copy image over into save folder
+
+#ifdef WIN32
+	string command = "copy \"";
+#else
+	string command = "cp \"";
+#endif
+	command += fin->mImageFilename;
+	command += "\" \"";
+	command += copyFilename;
+	command += "\"";
+
+#ifdef DEBUG
+	printf("copy command: \"%s\"",command.c_str());
+#endif
+
+	if (copyFilename != fin->mImageFilename) //***1.8 - prevent copy onto self
+	{
+		printf("copying \"%s\" to %s\n",shortFilename.c_str(),copyFilename.c_str());
+		system(command.c_str());
+				
+		// ***1.8 - save path & name of copy of original image file
+		fin->mOriginalImageFilename = copyFilename; // ***1.8
+	}
+
+	//***1.5 - save modified image alongside original
+	if (NULL == fin->mModifiedFinImage)
+		throw Error("Attempt to save Trace without modified image");
+
+	// create filename - base this on FIN filename now
+	pos = fileName.find_last_of(PATH_SLASH);
+	copyFilename = saveFolder + fileName.substr(pos);
+	pos = copyFilename.rfind(".fin");
+	copyFilename = copyFilename.substr(0,pos);
+	copyFilename += "_wDarwinMods.png"; //***1.8 - new file format
+		
+	fin->mModifiedFinImage->save_wMods( //***1.8 - new save modified image call
+		copyFilename,    // the filename of the modified image
+		shortFilename,   // the filename of the original image
+		fin->mImageMods); // the list of image modifications
+	
+	// set image filename to path & filename of modified image so that name is 
+	// saved as part of the DatabaseFin record in the file
+	fin->mImageFilename = copyFilename; //***1.8 - save this filename now
+
+	// DatabaseFin::save()  shortens the mImageFilename, so this call must
+	// precede the setting of the mImagefilename to the path+filename
+	// needed in the TraceWindow code if Add to Database is done after a
+	// save of the fin trace
+	try {
+		fin->save(fileName);
+	} catch (Error e) {
+		showError(e.errorString());
+	}
+	// set image filename to path & filename of modified image so that name is 
+	// saved as part of the DatabaseFin record in the file
+	fin->mImageFilename = copyFilename; //***1.8 - save this filename now
+
+	return true;
+}
+
+//
+// open new archived fin file
+//
 
 DatabaseFin<ColorImage>* openFinz(string filename)
 {
