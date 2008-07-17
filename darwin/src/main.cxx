@@ -13,20 +13,22 @@
 // Software designed and coded as a collaborative effort ...             //
 //                                                                       //
 // ... by  The DARWIN Research Group                                     //
+//                                                                       //
 //	Kelly R. Debure, PhD (GTK+, X Window System version)                 //
+//	John H. Stewman, PhD (all versions)                                  //
 //	Kristen McCoy (GTK+ Version)                                         //
 //	Henry Burroughs (GTK+ Version)                                       //
 //	Zach Roberts (X Window System version)                               //
 //	Daniel J. Wilkin (X Window System version)                           //
-//	John H. Stewman, PhD (all versions)                                  //
 //	Mark C. Allen (Microsoft Win 3.1 version, Expert System version)     //
 //	Rachel Stanley (Expert System version)                               //
 //	Andrew Cameron (protype database)                                    //
-//	Adam Russell (stuff)                                                 //
-//  Scott Hale (autotrace)
+//	Adam Russell (major Object Oriented rewrite & Gtk GUI)               //
+//  Scott Hale (autotrace ...)                                           //
+//  R J Rowling (SQLite database)                                        // 
 //                                                                       //
 // ... at  Eckerd College                                                //
-//	St.Petersburg, FL                                                    //
+//	       St.Petersburg, FL                                             //
 //                                                                       //
 // xdarwin (DARWIN for the X Window System)                              //
 //                                                                       //
@@ -35,7 +37,7 @@
 // ... and updated starting June 12, 1995 (DW)                           //
 // ... then maintained by Daniel J. Wilkin and Zach Roberts              //
 // ... major rewrite using GTK+ 2000-2002 (Adam Russell)                 //
-// ... currently maintained by JHS & KWD                                 //
+// ... currently maintained by JHS & KRD                                 //
 //                                                                       //
 // Supported by grants from the National Science Foundation              //
 //                                                                       //
@@ -306,43 +308,8 @@ void readConfig()
 
 	if (!gCfg->getItem("CurrentDefaultCatalogScheme", gOptions->mCurrentDefaultCatalogScheme))
 	{
+		// no default catalog defined in config file so use Eckerd College catalog
 		gOptions->mCurrentDefaultCatalogScheme = 0;
-
-		// no catalog defined in config file so use Eckerd College catalog
-
-		gOptions->mCatCategoryNamesMax = 14;
-		gOptions->mCatCategoryName.resize(14); //***1.85 - container is now a vector not an array
-		gOptions->mCatCategoryName[0] = "NONE";  // shown as "Unspecified" in database and pull-down lists
-		gOptions->mCatCategoryName[1] = "Upper";
-		gOptions->mCatCategoryName[2] = "Middle";
-		gOptions->mCatCategoryName[3] = "Lower";
-		gOptions->mCatCategoryName[4] = "Upper-Middle";
-		gOptions->mCatCategoryName[5] = "Upper-Lower";
-		gOptions->mCatCategoryName[6] = "Middle-Lower";
-		gOptions->mCatCategoryName[7] = "Leading Edge";
-		gOptions->mCatCategoryName[8] = "Entire";
-		gOptions->mCatCategoryName[9] = "Tip-Nick";
-		gOptions->mCatCategoryName[10] = "Missing Tip";
-		gOptions->mCatCategoryName[11] = "Extended Tip";
-		gOptions->mCatCategoryName[12] = "Peduncle";
-		gOptions->mCatCategoryName[13] = "Pergatory";
-	}
-	else
-	{
-		// read category names from config file
-
-		int cur = gOptions->mCurrentDefaultCatalogScheme;
-
-		gOptions->mCatSchemeName = gOptions->mDefinedCatalogSchemeName[cur];
-
-		gOptions->mCatCategoryNamesMax = gOptions->mDefinedCatalogCategoryNamesMax[cur]; //***1.6DB
-
-		//***1.85 - make room in the categor name vector
-		int n = gOptions->mCatCategoryNamesMax;
-		gOptions->mCatCategoryName.resize(n);
-
-		for (int i = 0; i < n; i++) //***1.85
-			gOptions->mCatCategoryName[i] = gOptions->mDefinedCatalogCategoryName[cur][i];
 	}
 
 	//***1.65 - load global setting for Show/Hide/Alt IDs in all windows
@@ -379,20 +346,8 @@ void readConfig()
 
 	if (!gCfg->getItem("NumberOfExistingDatabases",gOptions->mNumberOfExistingDatabases))
 	{
-		// but no database is ... this is probably a MORE serious error than handling 
-		// like this would reflect
-
 		//****1.85 - default is now NO DATABASE
-
-		//gOptions->mNumberOfExistingDatabases = 1;
 		gOptions->mNumberOfExistingDatabases = 0;
-#ifdef WIN32
-		//gOptions->mExistingDatabaseName.push_back("default\\darwin.db");
-		//gOptions->mExistingDatabaseName.push_back("");
-#else
-		//gOptions->mExistingDatabaseName.push_back("default/darwin.db");
-		//gOptions->mExistingDatabaseName.push_back("");
-#endif
 	}
 	else
 	{
@@ -612,10 +567,8 @@ int main(int argc, char *argv[])
 		SplashWindow *splash = new SplashWindow();
 		splash->show();
 		splash->updateStatus(_("Loading fin database..."));
-		//Database *db = new Database(gOptions, false); //***1.99
 		Database *db = openDatabase(gOptions, false); //***1.99
 
-		//splash->updateStatus(_("Initializing interface..."));
 		splash->startTimeout();
 
 		MainWindow *mainWin = new MainWindow(db, gOptions);

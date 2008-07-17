@@ -359,17 +359,17 @@ GtkWidget *ModifyDatabaseWindow::createModifyDatabaseWindow(const string &title)
 
 	string damageStr = mFin->getDamage();
 
-	for (int catIDnum = 0; catIDnum < mOptions->mCatCategoryNamesMax; catIDnum++)
+	for (int catIDnum = 0; catIDnum < mDatabase->catCategoryNamesMax(); catIDnum++)
 	{
-		if ("NONE" == mOptions->mCatCategoryName[catIDnum])
+		if ("NONE" == mDatabase->catCategoryName(catIDnum))
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
 				_("Unspecified"));			
 		else
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
-				_(mOptions->mCatCategoryName[catIDnum].c_str()));
-		if (damageStr == mOptions->mCatCategoryName[catIDnum])
+				_(mDatabase->catCategoryName(catIDnum).c_str()));
+		if (damageStr == mDatabase->catCategoryName(catIDnum))
 			gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage),catIDnum);
 	}
 
@@ -783,7 +783,7 @@ void on_modifyButtonSave_clicked(GtkButton * button, gpointer userData)
 		// cannot use gtk_combo_box_get_active_text() until we upgrade to GTK 2.6+
 		//int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(modifyWin->mEntryDamage)); //***051
 		if (damageIDnum != -1)
-			damage = modifyWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+			damage = modifyWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 		temp = gtk_editable_get_chars(
 					      GTK_EDITABLE(modifyWin->mEntryDescription),

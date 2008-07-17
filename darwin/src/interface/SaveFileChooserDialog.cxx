@@ -125,7 +125,6 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 			gLastDirectory[mSaveMode] = gOptions->mCurrentSurveyArea;
 			gLastDirectory[mSaveMode] += PATH_SLASH;
 			gLastDirectory[mSaveMode] += "tracedFins";
-			gLastDirectory[mSaveMode] += PATH_SLASH;
 		}
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (saveFCDialog), 

@@ -682,6 +682,9 @@ class DatabaseFin
 			this->mImageFilename = shortFilename;
 			//***1.1 end
 
+			//***1.99 - assignment of magic number moved here from calling contexts
+			this->mDataPos = 0x4E494644; // DO NOT CHANGE MAGIC # - it is "DFIN" in hex
+
 			this->save(outFile);
 
 			outFile.close();

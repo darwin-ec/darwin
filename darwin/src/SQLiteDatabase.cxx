@@ -2095,9 +2095,10 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	}
 	
 	// TODO: enter code to populate DBInfo
-	
-	for (int i = 0; i < o->mCatCategoryNamesMax; i++) {
-		cat.name = o->mCatCategoryName[i];
+
+	int schemeId = o->mCurrentDefaultCatalogScheme;
+	for (int i = 0; i < o->mDefinedCatalogCategoryNamesMax[schemeId]; i++) {
+		cat.name = o->mDefinedCatalogCategoryName[schemeId][i];
 		cat.orderid = i;
 		insertDamageCategory(&cat);		
 	}
@@ -2188,13 +2189,14 @@ SQLiteDatabase::SQLiteDatabase(Options *o, bool createEmptyDB)
 	
 	// get damage categories
 	this->selectAllDamageCategories(damagecategories);
-	o->mCatCategoryNamesMax = damagecategories->size();
-	o->mCatCategoryName.resize( o->mCatCategoryNamesMax );
+	//o->mCatCategoryNamesMax = damagecategories->size();
+	//o->mCatCategoryName.resize( o->mCatCategoryNamesMax );
 	
 	while(! damagecategories->empty()) {
 		damagecategory = damagecategories->front();
 		damagecategories->pop_front();
-		o->mCatCategoryName[i++] = damagecategory.name;
+		//o->mCatCategoryName[i++] = damagecategory.name;
+		mCatCategoryNames.push_back(damagecategory.name);
 	}
 	
 	loadLists();

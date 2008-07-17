@@ -840,13 +840,16 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	cmd += targetFilename + "'";
 	system(cmd.c_str());
 
+	// the category related items are no longer in Options -- JHS
 	Options o = Options();
-	o.mCatCategoryNamesMax = 1;
-	o.mCatCategoryName.resize( o.mCatCategoryNamesMax );
-	o.mCatCategoryName[0] = fin->mDamageCategory;
+	//o.mCatCategoryNamesMax = 1;
+	//o.mCatCategoryName.resize( o.mCatCategoryNamesMax );
+	//o.mCatCategoryName[0] = fin->mDamageCategory;
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
 	SQLiteDatabase db = SQLiteDatabase(&o, true);
+
+	db.appendCategoryName(fin->mDamageCategory);
 
 	db.add(fin);
 

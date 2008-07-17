@@ -380,17 +380,17 @@ GtkWidget *NoMatchWindow::createNoMatchWindow(const string &title)
 
 	string damageStr = mFin->getDamage();
 
-	for (int catIDnum = 0; catIDnum < mOptions->mCatCategoryNamesMax; catIDnum++)
+	for (int catIDnum = 0; catIDnum < mDatabase->catCategoryNamesMax(); catIDnum++)
 	{
-		if ("NONE" == mOptions->mCatCategoryName[catIDnum])
+		if ("NONE" == mDatabase->catCategoryName(catIDnum))
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
 				_("Unspecified"));
 		else
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
-				_(mOptions->mCatCategoryName[catIDnum].c_str()));
-		if (damageStr == mOptions->mCatCategoryName[catIDnum])
+				_(mDatabase->catCategoryName(catIDnum).c_str()));
+		if (damageStr == mDatabase->catCategoryName(catIDnum))
 			gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage),catIDnum);
 	}
 	//
@@ -775,7 +775,7 @@ void on_nomatchButtonAddToDatabase_clicked(GtkButton * button, gpointer userData
 		//int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(nomatchWin->mEntryDamage)); //***051
 		damage = "";
 		if (damageIDnum != -1)
-			damage = nomatchWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+			damage = nomatchWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 
 		temp = gtk_editable_get_chars(

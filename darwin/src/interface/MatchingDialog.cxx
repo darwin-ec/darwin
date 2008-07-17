@@ -1008,8 +1008,8 @@ GtkWidget* MatchingDialog::createMatchingDialog()
 	// NOTE: These categories are currently based on the Eckerd College database
 
 	// set up categories and buttons in 5 columns
-	int catColumnHeight = 1 + (mOptions->mCatCategoryNamesMax / 5);
-	for (int catID=0; catID < mOptions->mCatCategoryNamesMax; catID++)
+	int catColumnHeight = 1 + (mDatabase->catCategoryNamesMax() / 5);
+	for (int catID=0; catID < mDatabase->catCategoryNamesMax(); catID++)
 	{
 		if (catID % catColumnHeight == 0)
 		{
@@ -1019,16 +1019,16 @@ GtkWidget* MatchingDialog::createMatchingDialog()
 			gtk_container_add(GTK_CONTAINER(hpanedTop), vbox);
 		}
 		// create a button for the next category
-		if ("NONE" == mOptions->mCatCategoryName[catID])
+		if ("NONE" == mDatabase->catCategoryName(catID))
 			mCategoryButton[catID] = gtk_check_button_new_with_label(_("Unspecified"));
 		else
 			mCategoryButton[catID] = gtk_check_button_new_with_label(
-				_(mOptions->mCatCategoryName[catID].c_str()));
+				_(mDatabase->catCategoryName(catID).c_str()));
 		gtk_container_add(GTK_CONTAINER(vbox), mCategoryButton[catID]);
 		gtk_widget_show(mCategoryButton[catID]);
 		// set button as active if it matches the category of the unkown
 		// selected in the TraceWindow
-		if (mOptions->mCatCategoryName[catID] == (this)->mFin->mDamageCategory)
+		if (mDatabase->catCategoryName(catID) == (this)->mFin->mDamageCategory)
 		{
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mCategoryButton[catID]),TRUE);
 			mCategoryToMatch[catID] = TRUE;
@@ -1400,7 +1400,7 @@ void on_mCategoryButton_toggled(
 	// some ONE category button was toggled, so make sure all flags 
 	// are consistent with current check button states
 
-	for (int catID=0; catID < dlg->mOptions->mCatCategoryNamesMax; catID++)
+	for (int catID=0; catID < dlg->mDatabase->catCategoryNamesMax(); catID++)
 	{
 		bool checked = gtk_toggle_button_get_active(
 			                    GTK_TOGGLE_BUTTON(dlg->mCategoryButton[catID]));
@@ -1439,7 +1439,7 @@ void on_categoryCheckButtonAll_clicked(
 
 	// make sure all flags and check buttons are TRUE (checked)
 
-	for (int catID=0; catID < dlg->mOptions->mCatCategoryNamesMax; catID++)
+	for (int catID=0; catID < dlg->mDatabase->catCategoryNamesMax(); catID++)
 		if (! dlg->mCategoryToMatch[catID])
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(dlg->mCategoryButton[catID]),TRUE);
 }
@@ -1458,7 +1458,7 @@ void on_categoryCheckButtonClear_clicked(
 
 	// make sure all flags and check buttons are FALSE (unchecked)
 
-	for (int catID=0; catID < dlg->mOptions->mCatCategoryNamesMax; catID++)
+	for (int catID=0; catID < dlg->mDatabase->catCategoryNamesMax(); catID++)
 		if (dlg->mCategoryToMatch[catID])
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(dlg->mCategoryButton[catID]),FALSE);
 }

@@ -2985,19 +2985,19 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 
 	int activeNum = 0; //***1.4
 
-	for (int catIDnum = 0; catIDnum < mOptions->mCatCategoryNamesMax; catIDnum++)
+	for (int catIDnum = 0; catIDnum < mDatabase->catCategoryNamesMax(); catIDnum++)
 	{
-		if ("NONE" == mOptions->mCatCategoryName[catIDnum])
+		if ("NONE" == mDatabase->catCategoryName(catIDnum))
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
 				_("Unspecified"));
 		else
 			gtk_combo_box_append_text(
 				GTK_COMBO_BOX(mEntryDamage),
-				_(mOptions->mCatCategoryName[catIDnum].c_str()));
+				_(mDatabase->catCategoryName(catIDnum).c_str()));
 
 		//***1.4 - set category from fin data if loading previously traced fin
-		if ((NULL != mFin) && (mFin->mDamageCategory == mOptions->mCatCategoryName[catIDnum]))
+		if ((NULL != mFin) && (mFin->mDamageCategory == mDatabase->catCategoryName(catIDnum)))
 			activeNum = catIDnum;
 	}
 	gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage), activeNum); //***1.4 - use activeNum
@@ -4971,7 +4971,7 @@ void on_traceButtonDumpData_clicked(
 	// cannot use gtk_combo_box_get_active_text() until we upgrade to GTK 2.6+
 	string damage = "";
 	if (damageIDnum != -1)
-		damage = traceWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+		damage = traceWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 	//***1.65 - use ID from mFin instead if hiding ID's
 	if ((NULL != traceWin->mFin) && (traceWin->mOptions->mHideIDs))
@@ -5118,7 +5118,7 @@ void on_traceButtonMatch_clicked(GtkButton * button, gpointer userData)
 	//int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(traceWin->mEntryDamage)); //***051
 	string damage = "";
 	if (damageIDnum != -1)
-		damage = traceWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+		damage = traceWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 	//***1.65 - use ID from mFin instead if hiding ID's
 	if ((NULL != traceWin->mFin) && (traceWin->mOptions->mHideIDs))
@@ -5324,7 +5324,7 @@ void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 	int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(traceWin->mEntryDamage)); //***051
 	string damage = "";
 	if (damageIDnum != -1)
-		damage = traceWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+		damage = traceWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 	if ("" == id)
 		id = "NONE";
@@ -5374,8 +5374,6 @@ void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 			damage,
 			description
 			);
-
-	/*newFin*/traceWin->mFin->mDataPos = 0x4E494644; // DO NOT CHANGE this MAGIC # - it is "DFIN" in hex
 
 	//***1.5 - pass along nonZoomed, but modified image to be saved along with fin file
 	/*newFin*/traceWin->mFin->mModifiedFinImage = new ColorImage(traceWin->mNonZoomedImage); //***1.5 
@@ -5599,7 +5597,7 @@ void on_traceButtonAddToDatabase_clicked(GtkButton * button,
 		int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(traceWin->mEntryDamage)); //***051
 		damage = "";
 		if (damageIDnum != -1)
-			damage = traceWin->mOptions->mCatCategoryName[damageIDnum]; //***051
+			damage = traceWin->mDatabase->catCategoryName(damageIDnum); //***051
 
 		temp = gtk_editable_get_chars(
 				GTK_EDITABLE(traceWin->mEntryDescription),

@@ -172,10 +172,10 @@ float Match::matchSingleFin(int registrationMethod, int regSegmentsUsed,
 
 
 		bool tryMatch = false;
-		for (int i = 0; (i < mOptions->mCatCategoryNamesMax) && (! tryMatch); i++)
+		for (int i = 0; (i < mDatabase->catCategoryNamesMax()) && (! tryMatch); i++)
 		{
 			tryMatch = (
-				(thisDBFin->getDamage() == mOptions->mCatCategoryName[i]) && categoryToMatch[i]);
+				(thisDBFin->getDamage() == mDatabase->catCategoryName(i)) && categoryToMatch[i]);
 		}
 
 		if (tryMatch)

@@ -44,7 +44,51 @@ bool Database::isEmpty() const
 
 //*******************************************************************
 //
+string Database::catCategoryName(int id)
+{
+	string name = "";
+	if ((0 <= id) && (id < mCatCategoryNames.size()))
+		name = mCatCategoryNames[id];
+	return name;
+}
 
+//*******************************************************************
+//
+string Database::catSchemeName()
+{
+	return mCatSchemeName;
+}
+
+//*******************************************************************
+//
+int Database::catCategoryNamesMax()
+{
+	return mCatCategoryNames.size();
+}
+
+//*******************************************************************
+//
+void Database::appendCategoryName(string name)
+{
+	mCatCategoryNames.push_back(name);
+}
+
+//*******************************************************************
+//
+void Database::setCatSchemeName(string name)
+{
+	mCatSchemeName = name;
+}
+
+//*******************************************************************
+//
+void Database::clearCatalogScheme()
+{
+	mCatCategoryNames.clear();
+}
+
+//*******************************************************************
+//
 Database::db_status_t Database::status() const
 {
 	return mDBStatus;
@@ -226,13 +270,15 @@ string Database::getFilename() {
 
 // *****************************************************************************
 //
-// Constructor - plain vanilla (***1.99)
+// Constructor - plain vanilla (***1.99 - mod by JHS)
 //
 
-Database::Database(Options *o, bool createEmptyDB) {
-	
-	dbOpen = false;
-	mFilename = std::string(o->mDatabaseFileName);
-	mCurrentSort = DB_SORT_NAME;
-	mDBStatus = errorLoading;
+Database::Database(Options *o, bool createEmptyDB) 
+	:	dbOpen(false),
+		mFilename(o->mDatabaseFileName),
+		mCurrentSort(DB_SORT_NAME),
+		mDBStatus(errorLoading),
+		mCatSchemeName("")
+{
+	mCatCategoryNames.clear();
 }

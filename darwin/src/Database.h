@@ -111,12 +111,26 @@ public:
 	virtual bool openStream() = 0;
 	virtual bool closeStream() = 0;
 
+	//***1.99 - new access functions for catalog scheme moved from Options
+	std::string catCategoryName(int id);
+	std::string catSchemeName();
+	int catCategoryNamesMax();
+	void appendCategoryName(std::string name);
+	void setCatSchemeName(std::string name);
+	void clearCatalogScheme();
+
 protected:
 	bool dbOpen;
 
 	db_status_t mDBStatus; //***1.85
 
 	std::string mFilename;
+
+	//***1.99 - the catalog scheme for this database (moved from Options)
+	std::vector<std::string> 
+		mCatCategoryNames;     // names of catalog categories
+	std::string 
+		mCatSchemeName;       // name of catalog scheme
 
 	unsigned long mFooterPos;
 	unsigned long mDataSize;

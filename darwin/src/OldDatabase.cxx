@@ -198,13 +198,15 @@ OldDatabase::OldDatabase(Options *o, bool createEmptyDB)
 				<< " with OldDatabase format #" << dbVersion << ")" << endl;
 
 			// load Catalog Category Names specified in OldDatabase
-			mDbFile.read((char*)&o->mCatCategoryNamesMax, sizeof(int));
+			int maxCatNames;
+			mDbFile.read((char*)&maxCatNames, sizeof(int));
 			mHeaderSize += sizeof(int);
-			o->mCatCategoryName.resize(o->mCatCategoryNamesMax); //***1.85 - it is a vector now
-			for (int id = 0; id < o->mCatCategoryNamesMax; id++)
+			mCatCategoryNames.resize(maxCatNames); //***1.85 - it is a vector now
+			for (int id = 0; id < maxCatNames; id++)
 			{
-				getline(mDbFile,o->mCatCategoryName[id]);
-				mHeaderSize += o->mCatCategoryName[id].length() + 1; //***055DB,***1.4 (+1 for '\n')
+				getline(mDbFile,mCatCategoryNames[id]);
+				mHeaderSize += mCatCategoryNames[id].length() + 1; //***055DB,***1.4 (+1 for '\n')
+
 			}
 
 			mFooterPos = footerPos;

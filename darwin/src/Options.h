@@ -38,7 +38,6 @@ class Options
 #else
 			mCurrentSurveyArea("surveyAreas/default"),
 #endif
-			mCatCategoryNamesMax(0), //***054 - no category support as default
 			mNumberOfDefinedCatalogSchemes(0), //***1.4 - none is default
 			mHideIDs(true) //***1.65
 		{
@@ -91,15 +90,8 @@ class Options
 		std::string mDatabaseFileName; // the CURRENT database name
 
 		//***054 NEW catalog category support
-		//***1.1 - the following two members specify the nature of the CURRENTLY OPEN database
 
-		int mCatCategoryNamesMax;
-		//std::string mCatCategoryName[32]; // no catalog can have more than 32 categories
-		std::vector<std::string> mCatCategoryName; //***1.85 - no longer a limit on # of names
-
-		std::string mCatSchemeName;       //***1.4 - name of current scheme
-
-		//***1.9 - new members for saving data filed names, eventually we will support
+		//***1.9 - new members for saving data field names, eventually we will support
 		//         user specification of field names
 
 		int mDataFieldNamesMax; //***1.9

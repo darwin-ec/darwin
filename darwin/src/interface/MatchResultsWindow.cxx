@@ -2382,7 +2382,6 @@ string MatchResultsWindow::saveFinIfNeeded()
 	string rootName = shortFilename.substr(0,pos);
 	string ext = shortFilename.substr(pos);
 
-	//string path = getenv("DARWINHOME");
 	//***1.85 - traced fins now go inside current survey area folder
 	string path = gOptions->mCurrentSurveyArea;
 	path += PATH_SLASH;
@@ -2416,7 +2415,6 @@ string MatchResultsWindow::saveFinIfNeeded()
 	if (i > 1)
 		rootName = rootName + num;
 
-	//string destImgShortName = rootName + ext;
 	int slashPos = mUnknownFin->mImageFilename.find_last_of(PATH_SLASH);
 	string destImgShortName = mUnknownFin->mImageFilename.substr(slashPos+1);
 
@@ -2456,7 +2454,6 @@ string MatchResultsWindow::saveFinIfNeeded()
 	if (NULL != mUnknownFin->mModifiedFinImage)
 	{
 		// create filename
-		//string copyModFilename = path + rootName + "_wDarwinMods.ppm";
 		copyModFilename = path + rootName + "_wDarwinMods.png"; //***1.9
 
 		//***1.9 - need modified image filename, original filename & image mods
@@ -2467,7 +2464,6 @@ string MatchResultsWindow::saveFinIfNeeded()
 		// I am not sure why yet - JHS
 
 		// save image
-		//mUnknownFin->mModifiedFinImage->save(copyModFilename);
 		mUnknownFin->mModifiedFinImage->save_wMods(
 				copyModFilename,
 				shortFilename,
@@ -2475,7 +2471,6 @@ string MatchResultsWindow::saveFinIfNeeded()
 		
 		//***1.6 - more of message
 		mSaveMessage += " and ";
-		//mSaveMessage += (rootName + "_wDarwinMods.ppm");
 		mSaveMessage += (rootName + "_wDarwinMods.png"); //***1.9
 	}
 
@@ -2489,14 +2484,11 @@ string MatchResultsWindow::saveFinIfNeeded()
 	else
 		mUnknownFin->mImageFilename = copyModFilename; //***1.9
 
-	mUnknownFin->mDataPos = 0x4E494644; // DO NOT CHANGE this MAGIC # - it is "DFIN" in hex
-
 	mUnknownFin->save(finFileName);
 	
 	mResults->setFinFilename(finFileName);
 
 	mUnknownFin->mImageFilename = temp; // restore original image name ?????
-
 
 	//***1.6 - more message
 	mSaveMessage += "Fin Trace: ";
