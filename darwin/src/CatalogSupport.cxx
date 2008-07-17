@@ -229,58 +229,9 @@ Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetF
 
 bool backupCatalog(Database *db)
 {
-	cout << "\nCreating BACKUP of Database ...\n  " 
-	     << db->getFilename() << endl;
+	cout << "\nCreating BACKUP of Database ...\n  " << db->getFilename() << endl;
 
-	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
-
-	// build list of image names referenced from within database
-
-	set<string,woCaseLessThan> imageNames;
-	set<string,woCaseLessThan>::iterator it, oit;
-	DatabaseFin<ColorImage> *fin;
-	ImageFile<ColorImage> img;
-	string catalogPath = db->getFilename();;
-	catalogPath = catalogPath.substr(0,catalogPath.rfind(PATH_SLASH)+1);
-	int i;
-
-
-	int limit = db->sizeAbsolute();
-
-	for (i = 0; i < limit; i++)
-	{
-		fin = db->getItemAbsolute(i);
-
-		if (NULL == fin)
-			continue; // found a hole (previously deleted fin) in the database
-		
-		// if modified image filename not already in set, then add it
-
-		it = imageNames.find(fin->mImageFilename);
-		if (it == imageNames.end())
-		{
-			imageNames.insert(fin->mImageFilename);
-
-			if (img.loadPNGcommentsOnly(fin->mImageFilename))
-			{
-				// if original image filename is not in set, then add it
-
-				string origImageName = catalogPath + img.mOriginalImageFilename;
-				oit = imageNames.find(origImageName);
-				if (oit == imageNames.end())
-					imageNames.insert(origImageName);
-
-				// make sure fields are empty for next image file read
-
-				img.mImageMods.clear();
-				img.mOriginalImageFilename = "";
-			}
-		}
-
-		delete fin; // make sure to return storage
-	}
-
-	// create backup filename .. should allow user to choose this
+	// create backup filename .. should we allow user to choose this?
 
 	string shortName = db->getFilename();
 	shortName = shortName.substr(1+shortName.rfind(PATH_SLASH));
@@ -336,27 +287,174 @@ bool backupCatalog(Database *db)
 		}
 		backupFilename = backupFilename + suffix + ".zip";
 	}
+
+	return createArchive(db, backupFilename);
+}
+
+
+//
+// This will eventually contain restore code found in the main window
+//
+bool restoreCatalogFrom(Options *o, std::string filename)
+{
+	return false;
+}
+
+
+//
+// This will be eventually simplified to use a common archiver
+// since it is essentially the same process as a backup - JHS
+//
+bool exportCatalogTo(Database *db, Options *o, std::string filename)
+{
+	cout << "\nEXPORTING Database ...\n  " << db->getFilename() << endl;
+
+	string exportFilename = filename;
+				
+	if (exportFilename.find(".zip") != (exportFilename.length() - 4))
+		exportFilename += ".zip"; // archive MUST end in .zip - force it
+
+	// find out if archive already exists, and if so, append a suffix to backup
+	ifstream testFile(exportFilename.c_str());
+	if (! testFile.fail())
+	{
+		GtkWidget *dialog = gtk_dialog_new_with_buttons (
+				"REPLACE existing file?",
+				NULL, // do not have parent
+				(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
+				GTK_STOCK_OK,
+				GTK_RESPONSE_ACCEPT,
+				GTK_STOCK_CANCEL,
+				GTK_RESPONSE_REJECT,
+				NULL);
+
+		gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 140);
+
+		GtkWidget *label = gtk_label_new("Selected EXPORT file already exists!");
+		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
+		gtk_widget_show(label);
+
+		GtkWidget *entry = gtk_entry_new();
+		gtk_entry_set_text(GTK_ENTRY(entry),exportFilename.c_str());
+		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),entry);
+		gtk_widget_show(entry);
+
+		label = gtk_label_new("Replace this file?");
+		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
+		gtk_widget_show(label);
+
+		gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+		gtk_widget_destroy (dialog);
+
+		if (GTK_RESPONSE_ACCEPT != result)
+		{
+			cout << "EXPORT aborted - User refused REPLACEMENT of existing archive!" << endl;
+			return false;
+		}
+
+		// close and delete the exising archive file
+		testFile.close();
+		string command = "DEL /Q \"" + exportFilename + "\" >nul";
+		system(command.c_str());
+	}
 	
+	return createArchive(db, exportFilename);
+}
+
+//
+// This will eventually contain import code now found in the main window
+//
+
+bool importCatalogFrom(Options *o, std::string filename)
+{
+	return false;
+}
+
+//
+// Contains the common code for creating a zipped archive of a catalog.
+// This is used by both export and backup processes.
+//
+bool createArchive (Database *db, string filename)
+{
+
+	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
+
+	// build list of image names referenced from within database
+
+	set<string,woCaseLessThan> imageNames;
+	set<string,woCaseLessThan>::iterator it, oit;
+	DatabaseFin<ColorImage> *fin;
+	ImageFile<ColorImage> img;
+	string catalogPath = db->getFilename();
+	catalogPath = catalogPath.substr(0,catalogPath.rfind(PATH_SLASH)+1);
+	int i;
+
+	int limit = db->sizeAbsolute();
+
+	for (i = 0; i < limit; i++)
+	{
+		fin = db->getItemAbsolute(i);
+
+		if (NULL == fin)
+			continue; // found a hole (previously deleted fin) in the database
+		
+		// if modified image filename not already in set, then add it
+
+		it = imageNames.find(fin->mImageFilename);
+		if (it == imageNames.end())
+		{
+			imageNames.insert(fin->mImageFilename);
+
+			if (img.loadPNGcommentsOnly(fin->mImageFilename))
+			{
+				// if original image filename is not in set, then add it
+
+				string origImageName = catalogPath + img.mOriginalImageFilename;
+				oit = imageNames.find(origImageName);
+				if (oit == imageNames.end())
+					imageNames.insert(origImageName);
+
+				// make sure fileds are empty for next image file read
+
+				img.mImageMods.clear();
+				img.mOriginalImageFilename = "";
+			}
+		}
+
+		delete fin; // make sure to return storage
+	}
+	// end of code moved from above
+
 	// put quotes around name
-	backupFilename = "\"" + backupFilename + "\"";
+	string archiveFilename = "\"" + filename + "\"";
+		
+	string 
+		command, 
+		fileList = getenv("DARWINHOME");
 
-	fileList = "\"";
-	fileList += backupPath + "filesToArchive.txt\"";
+	fileList = fileList 
+		+ PATH_SLASH 
+		+ "backups" 
+		+ PATH_SLASH
+		+ "filesToArchive.txt";
 
-	cout << "\nBACKUP filename is ...\n\n  " << backupFilename << endl;
+	string fileListQuoted = "\"" + fileList + "\"";
+
+	cout << "\nARCHIVE filename is ...\n\n  " << filename << endl;
 
 	// create the archive file using 7z compression program (Windows)
 
 	command += "7z a -tzip ";
-	command += backupFilename + " @" + fileList;
+	command += archiveFilename + " @" + fileListQuoted;
 			
 	db->closeStream();
 
 	ofstream archiveListFile;
-	archiveListFile.open((backupPath + "filesToArchive.txt").c_str());
+	archiveListFile.open(fileList.c_str());
 	if (! archiveListFile.fail())
 	{	
-		archiveListFile <<  fileList << endl;
+		archiveListFile <<  fileListQuoted << endl;
 		archiveListFile << "\"" << db->getFilename() << "\"" << endl;
 		for (it = imageNames.begin(); it != imageNames.end(); ++it)
 			archiveListFile << "\"" << (*it) << "\"" << endl;
@@ -366,19 +464,21 @@ bool backupCatalog(Database *db)
 		system(command.c_str()); // start the archive process using 7-zip
 
 		//***1.982 - remove "filesToArchive.txt"
-		command = "del " + fileList;
+		command = "del " + fileListQuoted;
 		system(command.c_str());
 	}
 
 	if (! db->openStream())
 	{
-		ErrorDialog *err = new ErrorDialog("Database failed to reopen.");
+		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
 		err->show();
 		return false;
 	}
 
 	return true;
 }
+<<<<<<< .mine
+=======
 
 /*
  * Restores from "DARWINHOME/backups".  Assumes the survey area in the 
@@ -640,3 +740,4 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	system(cmd.c_str());
 	cout << cmd << endl;
 }
+>>>>>>> .r36

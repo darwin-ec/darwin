@@ -28,6 +28,7 @@
 #include "MatchingQueueDialog.h"
 #include "OpenFileSelectionDialog.h"
 #include "OpenFileChooserDialog.h" //***1.4
+#include "SaveFileChooserDialog.h" //***1.99
 #include "OptionsDialog.h"
 #include "CreateDatabaseDialog.h" //***1.85 
 #include "DataExportDialog.h" //***1.9
@@ -133,6 +134,13 @@ MainWindow::~MainWindow()
 void MainWindow::setDatabasePtr(Database *db) //***1.85 - used when opening new DB
 {
 	mDatabase = db; // assume existing database was deleted by caller
+}
+
+//*******************************************************************
+	
+void MainWindow::setExportFilename(std::string filename) //***1.99
+{
+	mExportToFilename = filename;
 }
 
 //*******************************************************************
@@ -2481,144 +2489,6 @@ void on_backup_database_activate(
 		cout << "OOPS!" << endl;
 	}
 
-	/*
-	cout << "\nCreating BACKUP of Database ...\n  " << mainWin->mOptions->mDatabaseFileName << endl;
-
-	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
-
-	// build list of image names referenced from within database
-
-	set<string> imageNames;
-	set<string>::iterator it, oit;
-	DatabaseFin<ColorImage> *fin;
-	ImageFile<ColorImage> img;
-	string catalogPath = mainWin->mOptions->mDatabaseFileName;
-	catalogPath = catalogPath.substr(0,catalogPath.rfind(PATH_SLASH)+1);
-	int i;
-
-
-	int limit = mainWin->mDatabase->sizeAbsolute();
-
-	for (i = 0; i < limit; i++)
-	{
-		fin = mainWin->mDatabase->getItemAbsolute(i);
-
-		if (NULL == fin)
-			continue; // found a hole (previously deleted fin) in the database
-		
-		// if modified image filename not already in set, then add it
-
-		it = imageNames.find(fin->mImageFilename);
-		if (it == imageNames.end())
-		{
-			imageNames.insert(fin->mImageFilename);
-
-			if (img.loadPNGcommentsOnly(fin->mImageFilename))
-			{
-				// if original image filename is not in set, then add it
-
-				string origImageName = catalogPath + img.mOriginalImageFilename;
-				oit = imageNames.find(origImageName);
-				if (oit == imageNames.end())
-					imageNames.insert(origImageName);
-
-				// make sure fields are empty for next image file read
-
-				img.mImageMods.clear();
-				img.mOriginalImageFilename = "";
-			}
-		}
-
-		delete fin; // make sure to return storage
-	}
-
-	// create backup filename .. should allow user to choose this
-
-	string shortName = mainWin->mOptions->mDatabaseFileName;
-	shortName = shortName.substr(1+shortName.rfind(PATH_SLASH));
-	shortName = shortName.substr(0,shortName.rfind(".db")); // just root name of DB file
-
-	string shortArea = mainWin->mOptions->mCurrentSurveyArea;
-	shortArea = shortArea.substr(1+shortArea.rfind(PATH_SLASH)); // just the area name
-
-	shortName = shortArea + "_" + shortName; // merge two name parts
-
-	// now append the date & time
-	shortName = shortName.substr(0,shortName.rfind(".db"));
-	time_t ltime;
-	time( &ltime );
-	tm *today = localtime( &ltime );
-	char buffer[128];
-	strftime(buffer,128,"_%b_%d_%Y",today); // month name, day & year
-	shortName += buffer;
-	// and append ".zip"
-	shortName += ".zip";
-	
-	string backupPath, backupFilename, fileList, command;
-
-	backupPath = mainWin->mOptions->mDarwinHome 
-		+ PATH_SLASH 
-		+ "backups" 
-		+ PATH_SLASH;
-	backupFilename = backupPath + shortName;
-
-	// find out if archive already exists, and if so, append a suffix to backup
-	ifstream testFile(backupFilename.c_str());
-	if (! testFile.fail())
-	{
-		testFile.close();
-		backupFilename = backupFilename.substr(0,backupFilename.rfind(".zip")); // strip ".zip"
-		char suffix[16];
-		int i=2;
-		bool done=false;
-		while (! done)
-		{
-			sprintf(suffix,"[%d]",i);
-			testFile.open((backupFilename + suffix + ".zip").c_str());
-			if (testFile.fail())
-				done = true;
-			else
-			{
-				testFile.close();
-				i++;
-			}
-		}
-		backupFilename = backupFilename + suffix + ".zip";
-	}
-	
-	// put quotes around name
-	backupFilename = "\"" + backupFilename + "\"";
-
-	fileList = "\"";
-	fileList += backupPath + "filesToArchive.txt\"";
-
-	cout << "\nBACKUP filename is ...\n\n  " << backupFilename << endl;
-
-	// create the archive file using 7z compression program (Windows)
-
-	command += "7z a -tzip ";
-	command += backupFilename + " @" + fileList;
-			
-	mainWin->mDatabase->closeStream();
-
-	ofstream archiveListFile;
-	archiveListFile.open((backupPath + "filesToArchive.txt").c_str());
-	if (! archiveListFile.fail())
-	{	
-		archiveListFile <<  fileList << endl;
-		archiveListFile << "\"" << mainWin->mOptions->mDatabaseFileName << "\"" << endl;
-		for (it = imageNames.begin(); it != imageNames.end(); ++it)
-			archiveListFile << "\"" << (*it) << "\"" << endl;
-
-		archiveListFile.close();
-
-		system(command.c_str()); // start the archive process using 7-zip
-
-		//***1.982 - remove "filesToArchive.txt"
-		command = "del " + fileList;
-		system(command.c_str());
-	}
-*/
 	if (! mainWin->mDatabase->openStream())
 	{
 		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
@@ -2658,66 +2528,21 @@ void on_export_database_activate(
 
 	cout << "\nEXPORTING Database ...\n  " << mainWin->mOptions->mDatabaseFileName << endl;
 
-	cout << "\nCollecting list of files comprising database ... \n\n  Please Wait." << endl;
-
-	// build list of image names referenced from within database
-
-	set<string> imageNames;
-	set<string>::iterator it, oit;
-	DatabaseFin<ColorImage> *fin;
-	ImageFile<ColorImage> img;
-	string catalogPath = mainWin->mOptions->mDatabaseFileName;
-	catalogPath = catalogPath.substr(0,catalogPath.rfind(PATH_SLASH)+1);
-	int i;
-
-
-	int limit = mainWin->mDatabase->sizeAbsolute();
-
-	for (i = 0; i < limit; i++)
-	{
-		fin = mainWin->mDatabase->getItemAbsolute(i);
-
-		if (NULL == fin)
-			continue; // found a hole (previously deleted fin) in the database
-		
-		// if modified image filename not already in set, then add it
-
-		it = imageNames.find(fin->mImageFilename);
-		if (it == imageNames.end())
-		{
-			imageNames.insert(fin->mImageFilename);
-
-			if (img.loadPNGcommentsOnly(fin->mImageFilename))
-			{
-				// if original image filename is not in set, then add it
-
-				string origImageName = catalogPath + img.mOriginalImageFilename;
-				oit = imageNames.find(origImageName);
-				if (oit == imageNames.end())
-					imageNames.insert(origImageName);
-
-				// make sure fileds are empty for next image file read
-
-				img.mImageMods.clear();
-				img.mOriginalImageFilename = "";
-			}
-		}
-
-		delete fin; // make sure to return storage
-	}
-
 	mainWin->mExportToFilename = "";
 
-	// let user decide where to put the EXPORT
+	// let user decide where to put the EXPORT - now uses SaveFileChooserDialog
 
-	OpenFileChooserDialog 
-		*open = new OpenFileChooserDialog(
+	SaveFileChooserDialog 
+		*save = new SaveFileChooserDialog(
 						mainWin->mDatabase,
+						NULL, // no DatabaseFin to pass
 						mainWin,
+						NULL, // no TraceWindow involved
 						mainWin->mOptions,
-						OpenFileChooserDialog::exportDatabase);
+						mainWin->mWindow,
+						SaveFileChooserDialog::exportDatabase);
 
-	open->run_and_respond();
+	save->run_and_respond();
 
 	// now mainWin->mExportToFilename is either "" or it contains the name
 	// of a file into which the archive will be written
@@ -2727,100 +2552,12 @@ void on_export_database_activate(
 		cout << "EXPORT aborted - User cancel, or NO filename specified!" << endl;
 		return;
 	}
-	
-	string exportFilename, fileList, command;
-
-	fileList = mainWin->mOptions->mDarwinHome 
-		+ PATH_SLASH 
-		+ "backups" 
-		+ PATH_SLASH
-		+ "filesToArchive.txt";
-	
-	exportFilename = mainWin->mExportToFilename;
-				
-	if (exportFilename.find(".zip") != (exportFilename.length() - 4))
-		exportFilename += ".zip"; // archive MUST end in .zip - force it
-
-	// find out if archive already exists, and if so, append a suffix to backup
-	ifstream testFile(exportFilename.c_str());
-	if (! testFile.fail())
-	{
-		GtkWidget *dialog = gtk_dialog_new_with_buttons (
-				"REPLACE existing file?",
-				GTK_WINDOW(mainWin->mWindow),
-				(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
-				GTK_STOCK_OK,
-				GTK_RESPONSE_ACCEPT,
-				GTK_STOCK_CANCEL,
-				GTK_RESPONSE_REJECT,
-				NULL);
-
-		gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 140);
-
-		GtkWidget *label = gtk_label_new("Selected EXPORT file already exists!");
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
-		gtk_widget_show(label);
-
-		GtkWidget *entry = gtk_entry_new();
-		gtk_entry_set_text(GTK_ENTRY(entry),exportFilename.c_str());
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),entry);
-		gtk_widget_show(entry);
-
-		label = gtk_label_new("Replace this file?");
-		gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
-		gtk_widget_show(label);
-
-		gint result = gtk_dialog_run (GTK_DIALOG (dialog));
-
-		gtk_widget_destroy (dialog);
-
-		if (GTK_RESPONSE_ACCEPT != result)
-		{
-			cout << "EXPORT aborted - User refused REPLACEMENT of existing archive!" << endl;
-			return;
-		}
-
-		// close and delete the exising archive file
-		testFile.close();
-		command = "DEL /Q \"" + exportFilename + "\" >nul";
-		system(command.c_str());
-		command = "";
-	}
-	
-	// put quotes around name
-	exportFilename = "\"" + exportFilename + "\"";
-	string fileListQuoted = "\"" + fileList + "\"";
-
-	cout << "\nEXPORT filename is ...\n\n  " << exportFilename << endl;
-
-	// create the archive file using 7z compression program (Windows)
-
-	command += "7z a -tzip ";
-	command += exportFilename + " @" + fileListQuoted;
-			
-	mainWin->mDatabase->closeStream();
-
-	ofstream archiveListFile;
-	archiveListFile.open(fileList.c_str());
-	if (! archiveListFile.fail())
-	{	
-		archiveListFile <<  fileListQuoted << endl;
-		archiveListFile << "\"" << mainWin->mOptions->mDatabaseFileName << "\"" << endl;
-		for (it = imageNames.begin(); it != imageNames.end(); ++it)
-			archiveListFile << "\"" << (*it) << "\"" << endl;
-
-		archiveListFile.close();
-
-		system(command.c_str()); // start the archive process using 7-zip
-
-		//***1.982 - remove "filesToArchive.txt"
-		command = "del " + fileListQuoted;
-		system(command.c_str());
-	}
+		
+	exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename);
 
 	if (! mainWin->mDatabase->openStream())
 	{
-		ErrorDialog *err = new ErrorDialog("Database filed to reopen");
+		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
 		err->show();
 	}
 

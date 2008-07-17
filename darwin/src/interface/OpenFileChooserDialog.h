@@ -28,7 +28,7 @@ class OpenFileChooserDialog
 {
 	public:
 
-		// three modes of operation
+		// the modes of operation
 		enum {
 			openFinImage = 0,
 			openFinTrace,

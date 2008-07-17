@@ -286,6 +286,10 @@ SOURCE=..\src\interface\ResizeDialog.cxx
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\interface\SaveFileChooserDialog.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\interface\SaveFileSelectionDialog.cxx
 # End Source File
 # Begin Source File
@@ -591,6 +595,10 @@ SOURCE=..\src\Point.h
 # Begin Source File
 
 SOURCE=..\Src\interface\ResizeDialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\interface\SaveFileChooserDialog.h
 # End Source File
 # Begin Source File
 

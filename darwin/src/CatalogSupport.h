@@ -30,7 +30,12 @@ bool restoreCatalogFrom(Options *o, std::string filename);
 bool exportCatalogTo(Database *db, Options *o, std::string filename);
 bool importCatalogFrom(Options *o, std::string filename);
 
+<<<<<<< .mine
+bool createArchive (Database *db, string filename); // creates zipped catalog
+
+=======
 DatabaseFin<ColorImage>* openFinz(string filename);
 void saveFinz(DatabaseFin<ColorImage>* fin, string filename);
 
+>>>>>>> .r36
 #endif

@@ -65,6 +65,8 @@ class MainWindow
 
 		void setDatabasePtr(Database *db); //***1.85 - used when opening new DB
 
+		void setExportFilename(std::string filename); //***1.99
+
 		void resetTitleButtonsAndBackupOnDBLoad(); //***1.85 - called after load or import of DB
 
 		// GTK+ callback functions
