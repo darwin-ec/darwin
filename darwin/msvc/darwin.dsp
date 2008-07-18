@@ -374,6 +374,10 @@ SOURCE=..\src\image_processing\BinaryImage.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\CatalogScheme.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\interface\CatalogSchemeDialog.h
 # End Source File
 # Begin Source File

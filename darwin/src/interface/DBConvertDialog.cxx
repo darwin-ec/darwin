@@ -106,7 +106,10 @@ bool DBConvertDialog::convert2SQLite(int degreeOfBackup)
 	OldDatabase *db = NULL;
 	
 	o.mDatabaseFileName = oldDbFilename;
-	db = new OldDatabase(&o,false);
+
+	CatalogScheme dummyCat; // empty
+
+	db = new OldDatabase(&o, dummyCat, false);
 
 	if (degreeOfBackup == 2)
 		backupCatalog(db);

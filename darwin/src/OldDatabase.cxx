@@ -22,9 +22,9 @@
 //*******************************************************************
 //
 
-OldDatabase::OldDatabase(Options *o, bool createEmptyDB) 
+OldDatabase::OldDatabase(Options *o, CatalogScheme cat, bool createEmptyDB) 
 	:
-	Database(o,createEmptyDB) //***1.99 - call parent constructor
+	Database(o,cat,createEmptyDB) //***1.99 - call parent constructor
 	// next two assigns are performed in parent constructor
 	//mFilename(o->mDatabaseFileName /*filename*/),
 	//mCurrentSort(DB_SORT_NAME)

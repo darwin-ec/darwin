@@ -19,6 +19,8 @@
 
 #include "Options.h"
 
+#include "CatalogScheme.h" //***1.99
+
 #include <fstream>
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
@@ -55,6 +57,7 @@ typedef enum {
 	DB_SORT_DESCRIPTION
 } db_sort_t;
 
+
 //******************************************************************
 // Function Definitions
 //******************************************************************
@@ -69,7 +72,8 @@ public:
 			oldDBVersion
 	} db_status_t;
 
-	Database(Options *o, bool createEmptyDB);
+	Database(Options *o, CatalogScheme cat, bool createEmptyDB);
+	Database(); // called only by DummyDatabase()
 	virtual ~Database() {};
 	
 	virtual void createEmptyDatabase(Options *o) = 0;
@@ -118,6 +122,7 @@ public:
 	void appendCategoryName(std::string name);
 	void setCatSchemeName(std::string name);
 	void clearCatalogScheme();
+	CatalogScheme catalogScheme();
 
 protected:
 	bool dbOpen;

@@ -87,6 +87,18 @@ void Database::clearCatalogScheme()
 	mCatCategoryNames.clear();
 }
 
+
+//*******************************************************************
+//
+CatalogScheme Database::catalogScheme()
+{
+	CatalogScheme cat;
+	cat.schemeName = mCatSchemeName;
+	cat.categoryNames = mCatCategoryNames;
+
+	return cat;
+}
+
 //*******************************************************************
 //
 Database::db_status_t Database::status() const
@@ -270,12 +282,30 @@ string Database::getFilename() {
 
 // *****************************************************************************
 //
-// Constructor - plain vanilla (***1.99 - mod by JHS)
+// Constructors - plain vanilla (***1.99 - mod by JHS)
 //
 
-Database::Database(Options *o, bool createEmptyDB) 
+Database::Database(Options *o, CatalogScheme cat, bool createEmptyDB) 
 	:	dbOpen(false),
 		mFilename(o->mDatabaseFileName),
+		mCurrentSort(DB_SORT_NAME),
+		mDBStatus(errorLoading),
+		mCatSchemeName("")
+{
+	mCatCategoryNames.clear();
+	// set the category names for the database here initially for a create situation
+	if (createEmptyDB)
+	{
+		mCatSchemeName = cat.schemeName;
+		mCatCategoryNames = cat.categoryNames;
+	}
+}
+
+// called ONLY by DummyDatabase constructor
+
+Database::Database() 
+	:	dbOpen(false),
+		mFilename("DummyDatabase"),
 		mCurrentSort(DB_SORT_NAME),
 		mDBStatus(errorLoading),
 		mCatSchemeName("")

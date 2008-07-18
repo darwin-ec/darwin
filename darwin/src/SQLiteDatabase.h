@@ -71,7 +71,7 @@ typedef struct { int id; int operation; int value1; int value2; int value3; int 
 class SQLiteDatabase : public Database {
 public:
 
-	SQLiteDatabase(Options *o, bool createEmptyDB); //***054 - since catagories may change
+	SQLiteDatabase(Options *o, CatalogScheme cat, bool createEmptyDB);
 
 	~SQLiteDatabase();
 	

@@ -91,7 +91,7 @@ class OldDatabase : public Database //***1.99 - now a derived type
 {
 	public:
 
-		OldDatabase(Options *o, bool createEmptyDB);
+		OldDatabase(Options *o, CatalogScheme cat, bool createEmptyDB);
 
 		~OldDatabase();
 		

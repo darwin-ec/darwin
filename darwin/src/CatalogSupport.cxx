@@ -73,9 +73,21 @@ public:
 Database * openDatabase(Options *o, bool create)
 {
 	Database* db;
+	CatalogScheme cat; // empty scheme by default
 
-	if (create || SQLiteDatabase::isType(o->mDatabaseFileName))
-		db = new SQLiteDatabase(o, create);
+	if (create)
+	{
+		// should ONLY end up here with IFF we are NOT converting an old database
+		int id = o->mCurrentDefaultCatalogScheme;
+		cat.schemeName = o->mDefinedCatalogSchemeName[id];
+		cat.categoryNames = o->mDefinedCatalogCategoryName[id]; // this is a vector
+		db = new SQLiteDatabase(o, cat, create);
+	}
+	else if (SQLiteDatabase::isType(o->mDatabaseFileName))
+	{
+		// the catalog scheme will come out of the existing database
+		db = new SQLiteDatabase(o, cat, create);
+	}
 	else if(OldDatabase::isType(o->mDatabaseFileName))
 		db = openDatabase(NULL,o->mDatabaseFileName);
 	else
@@ -100,6 +112,8 @@ Database * openDatabase(MainWindow *mainWin, string filename)
 	o.mDatabaseFileName = filename;
 	o.mDarwinHome = getenv("DARWINHOME");
 
+	CatalogScheme cat; // empty by default
+
 	db_opentype_t opentype = databaseOpenType(filename);
 	
 	switch (opentype)
@@ -122,10 +136,10 @@ Database * openDatabase(MainWindow *mainWin, string filename)
 			// open the SQLite database
 			o.mDatabaseFileName = filename;
 			o.mDarwinHome = getenv("DARWINHOME");
-			db = new SQLiteDatabase(&o, false);
+			db = new SQLiteDatabase(&o, cat, false);
 		break;
 	default:
-		// nothing required, shold NEVER end up here
+		// nothing required, should NEVER end up here
 		break;
 	}
 
@@ -165,6 +179,9 @@ db_opentype_t databaseOpenType(string filePath)
  * method of the target database, and thus, most likely will
  * not create new damage categories.
  * ONLY WORKS FOR DATABASES WITH THE SAME DAMAGE CATEGORIES!!!
+ *
+ * The categories in the target database are now set correctly
+ * prior to calling this function from duplicateDatabase() - JHS
 */
 void copyFins(Database* from, Database *to)
 {
@@ -245,7 +262,11 @@ Database* convertDatabase(Options* o, string sourceFilename)
 Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetFilename)
 {
 	o->mDatabaseFileName = targetFilename;
-	Database* targetDatabase = openDatabase(o, true);
+	//Database* targetDatabase = openDatabase(o, true);
+
+	// we have already gone through openDatabase once at this point so call the 
+	// constructor for the target database type directly
+	Database* targetDatabase = new SQLiteDatabase(o, sourceDatabase->catalogScheme(), true);
 
 	copyFins(sourceDatabase, targetDatabase);
 	
@@ -771,8 +792,10 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
+	CatalogScheme cat; // just an empty dummy scheme
+
 	cout << "about to open db" << o.mDatabaseFileName << endl;
-	SQLiteDatabase db = SQLiteDatabase(&o, false);
+	SQLiteDatabase db = SQLiteDatabase(&o, cat, false);
 
 	cout << "going to select first fin" << endl;
 	DatabaseFin<ColorImage>* fin = db.getItem(0); // first and only fin
@@ -847,7 +870,12 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	//o.mCatCategoryName[0] = fin->mDamageCategory;
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
-	SQLiteDatabase db = SQLiteDatabase(&o, true);
+	// here are is the damage category info
+	CatalogScheme cat;
+	cat.schemeName = "FinzSimple";
+	cat.categoryNames.push_back(fin->getDamage());
+
+	SQLiteDatabase db = SQLiteDatabase(&o, cat, true);
 
 	db.appendCategoryName(fin->mDamageCategory);
 

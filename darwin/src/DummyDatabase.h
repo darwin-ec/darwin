@@ -61,8 +61,7 @@ class DummyDatabase : public Database //***1.99 - now a derived type
 
 		DummyDatabase(Options *o, bool createEmptyDB)
 			:
-			Database(o, createEmptyDB) {
-			
+			Database() {
 		};
 
 		~DummyDatabase() {};

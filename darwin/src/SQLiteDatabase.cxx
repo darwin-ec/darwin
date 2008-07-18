@@ -2004,6 +2004,7 @@ void SQLiteDatabase::closedb() {
 // Create empty db
 //
 
+//void SQLiteDatabase::createEmptyDatabase(Options *o) {
 void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	stringstream sql;
 	DBDamageCategory cat;
@@ -2096,9 +2097,12 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	
 	// TODO: enter code to populate DBInfo
 
-	int schemeId = o->mCurrentDefaultCatalogScheme;
-	for (int i = 0; i < o->mDefinedCatalogCategoryNamesMax[schemeId]; i++) {
-		cat.name = o->mDefinedCatalogCategoryName[schemeId][i];
+	// At this point, the Database class already contains the catalog scheme 
+	// specification.  It was set in the Database(...) constructor from 
+	// a CatalogScheme passed into the SQLiteDatabase constructor - JHS
+
+	for (int i = 0; i < mCatCategoryNames.size(); i++) {
+		cat.name = mCatCategoryNames[i];
 		cat.orderid = i;
 		insertDamageCategory(&cat);		
 	}
@@ -2155,10 +2159,10 @@ bool SQLiteDatabase::isType(std::string filePath)
 // Constructor
 //
 
-SQLiteDatabase::SQLiteDatabase(Options *o, bool createEmptyDB)
+SQLiteDatabase::SQLiteDatabase(Options *o, const CatalogScheme cat, bool createEmptyDB)
 	:
-	Database(o, createEmptyDB)
-	{
+	Database(o, cat, createEmptyDB)
+{
 	std::list<DBDamageCategory> *damagecategories = new std::list<DBDamageCategory>();
 	DBDamageCategory damagecategory;
 	int i = 0;
@@ -2186,17 +2190,16 @@ SQLiteDatabase::SQLiteDatabase(Options *o, bool createEmptyDB)
 
 	if(createEmptyDB)
 		createEmptyDatabase(o);
+	else 
+	{
+		// get damage categories when NOT creating new Database
+		this->selectAllDamageCategories(damagecategories);
 	
-	// get damage categories
-	this->selectAllDamageCategories(damagecategories);
-	//o->mCatCategoryNamesMax = damagecategories->size();
-	//o->mCatCategoryName.resize( o->mCatCategoryNamesMax );
-	
-	while(! damagecategories->empty()) {
-		damagecategory = damagecategories->front();
-		damagecategories->pop_front();
-		//o->mCatCategoryName[i++] = damagecategory.name;
-		mCatCategoryNames.push_back(damagecategory.name);
+		while(! damagecategories->empty()) {
+			damagecategory = damagecategories->front();
+			damagecategories->pop_front();
+			mCatCategoryNames.push_back(damagecategory.name);
+		}
 	}
 	
 	loadLists();

@@ -25,7 +25,7 @@
 //	Andrew Cameron (protype database)                                    //
 //	Adam Russell (major Object Oriented rewrite & Gtk GUI)               //
 //  Scott Hale (autotrace ...)                                           //
-//  R J Rowling (SQLite database)                                        // 
+//  R J Nowling (SQLite database)                                        // 
 //                                                                       //
 // ... at  Eckerd College                                                //
 //	       St.Petersburg, FL                                             //
