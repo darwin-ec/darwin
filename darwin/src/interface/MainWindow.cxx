@@ -1334,6 +1334,10 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (export);
 	gtk_container_add (GTK_CONTAINER (file_menu), export);
 
+	// if database load failed do not allow this menu option
+	if (mDatabase->status() != Database::loaded)
+		gtk_widget_set_sensitive(export, FALSE);
+
 	GtkWidget *exportSub = gtk_menu_new ();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (export), exportSub);
 
@@ -1388,7 +1392,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	//***1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
-		gtk_widget_set_sensitive(exportDB, FALSE);
+		gtk_widget_set_sensitive(exportFinz, FALSE);
 	mExportDBMenuItem = exportDB;
 
 	// create a separator line in submenu

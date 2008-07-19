@@ -2,6 +2,9 @@
 
 #include "CatalogSupport.h"
 
+#include <io.h>     //***1.982 - _findFirst()
+#include <direct.h> //***1.982 - _mkdir()
+
 #include <set>
 #include <cctype>
 
@@ -346,7 +349,141 @@ bool backupCatalog(Database *db)
 	return createArchive(db, backupFilename);
 }
 
+//
+// This builds/rebuilds the folder structure of a Survey Area as needed
+// during restore and import catalog operations.  The force parameter
+// indicates whether overwriting of folders is forced.
+//
+void rebuildFolders(string home, string area, bool force)
+{
+	string path;
 
+	if (force) // IMPORT and NEW SURVEY AREA
+	{				
+		// create the entire folder structure for a new SurveyArea
+
+		cout << "Creating folders ..." << endl;
+
+		path = home + PATH_SLASH + "surveyAreas" + PATH_SLASH + area;
+		_mkdir(path.c_str());
+		path += PATH_SLASH;
+		_mkdir(path.c_str());
+		_mkdir((path+"catalog").c_str());
+		_mkdir((path+"tracedFins").c_str());
+		_mkdir((path+"matchQueues").c_str());
+		_mkdir((path+"matchQResults").c_str());
+		_mkdir((path+"sightings").c_str());
+	}
+	else // RESTORE
+	{
+		// determine whether the file folder structure is intact for this
+		// database location ... ensure existance of surveyAreas\<restoreSurveyArea> and
+		// its subfolders ...
+		//    catalog, tracedFins, matchQueues, matchQResults, sightings
+		struct _finddata_t c_file;
+		long hFile;
+		string path;
+
+		// Find surveyArea\<restoreSurveyArea>
+		path = home + PATH_SLASH + "surveyAreas";
+		if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"SurveyAreas\" folder ...\n" );
+			_mkdir(path.c_str());
+		}
+		_findclose( hFile );
+		path += PATH_SLASH + area;
+		if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"%s\" SurveyArea subfolder...\n", 
+				area.c_str());
+			_mkdir(path.c_str());
+		}
+		_findclose( hFile );
+		// find subfolders and, if missing, fix them ...
+		path += PATH_SLASH;
+		if( (hFile = _findfirst((path+"catalog").c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"catalog\" folder ...\n" );
+			_mkdir((path+"catalog").c_str());
+		}
+		_findclose( hFile );
+		if( (hFile = _findfirst((path+"tracedFins").c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"tracedFins\" folder ...\n" );
+			_mkdir((path+"tracedFins").c_str());
+		}
+		_findclose( hFile );
+		if( (hFile = _findfirst((path+"matchQueues").c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"matchQueues\" folder ...\n" );
+			_mkdir((path+"matchQueues").c_str());
+		}
+		_findclose( hFile );
+		if( (hFile = _findfirst((path+"matchQResults").c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"matchQResults\" folder ...\n" );
+			_mkdir((path+"matchQResults").c_str());
+		}
+		_findclose( hFile );
+		if( (hFile = _findfirst((path+"sightings").c_str(), &c_file )) == -1L )
+		{
+			printf( "Creating missing \"sightings\" folder ...\n" );
+			_mkdir((path+"sightings").c_str());
+		}
+	}
+}
+
+//
+// This performs file extraction from a zipped archive for both the 
+// restoreDatabase() and importDatabaseFrom()
+//
+void extractCatalogFiles(string backupFilename, string toFolder)
+{
+	// extract database file from the archive
+
+	// note: restorePath and backupFilename are NOT QUOTED!
+	
+	string command;
+
+	command = "7z x -aoa -o"; // put in proper folder and force overwriting
+	command += quoted(toFolder) + " ";
+	command += quoted(backupFilename) + " *.db";
+
+	cout << command << endl;
+
+	system(command.c_str()); // start extraction process
+
+	// extract images referenced from database file
+
+	//***1.981a - extra quote removed
+	command = "7z x -aos -o"; // extract into proper folder without overwriting
+	command += quoted(toFolder) + " -x!filesToArchive.txt "; // but don't extract file list
+	command += " -x!*.db "; // and don't extract database again
+	command += quoted(backupFilename);
+
+	cout << command << endl;
+
+	system(command.c_str()); // start extraction process
+
+}
+
+//
+// This handles restoration of a damaged Catalog from previous backup.
+//
+bool restoreCatalogFrom(string backupFilename, 
+						string restorePath, 
+						string restoreHome, 
+						string restoreArea)
+{
+	// rebuild folder structure if it is compromised
+	rebuildFolders(restoreHome, restoreArea, false); // DO NOT force overwite of folders
+
+	// folder structure is OK, so now proceed with extraction ...
+	extractCatalogFiles(backupFilename, restorePath);
+
+	return true;
+}
 
 
 //
@@ -388,11 +525,21 @@ bool exportCatalogTo(Database *db, Options *o, std::string filename)
 }
 
 //
-// This will eventually contain import code now found in the main window
+// This handles import of catalog into DARWIN from a zipped archive
 //
-
-bool importCatalogFrom(Options *o, std::string filename)
+bool importCatalogFrom(string backupFilename, 
+						string importPath, 
+						string importHome, 
+						string importArea)
 {
+	// at this level this is the almost the same as a restore 
+
+	// build folder structure (assumes this is a NEW Survey Area)
+	rebuildFolders(importHome, importArea, true); // force building of folders
+	
+	// folder structure is OK, so now proceed with extraction ...
+	extractCatalogFiles(backupFilename, importPath);
+
 	return false;
 }
 
@@ -502,152 +649,6 @@ bool createArchive (Database *db, string filename)
 
 	return true;
 }
-
-/*
-	string cmd("7z.exe x");
-	cmd += " '" + filename + "' ";
-	cmd += " '" + o->mCurrentSurveyArea;
-	cmd += PATH_SLASH;
-	cmd += "catalog" + "' ";
-	system(cmd.c_str());
-
-
-	return false;
-	backupFilename = "\"";
-		backupFilename += gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
-		backupFilename += "\"";
-
-		cout << "\nRestoring database from BACKUP location ...\n\n  " << backupFilename << endl;
-		cout << "\n\nPlease wait." << endl;
-
-		// extract the file list with the path information
-		// this is necessary because the 7-zip program does NOT support relative
-		// path information in a simple fashion when wanting to archive only
-		// selected files within a folder
-
-		command = "7z x -aoa "; // extract and overwrite existing file
-		command += backupFilename + " filesToArchive.txt";
-			
-		system(command.c_str()); // extract the file list file
-
-		infile.open("filesToArchive.txt");
-		getline(infile,line); // first is location of original backup
-		getline(infile,line); // this is the database file
-		infile.close();
-
-		system("del filesToArchive.txt"); // remove temporary file list file
-
-		restorePath = line.substr(0,line.rfind(PATH_SLASH)+1) + "\""; //***1.981a re-append quote
-
-		//***1.982 - break out parts and inform user what is about to happen
-
-		line2 = line.substr(1,line.length()-2); // strip quotes
-		pos = line2.rfind(PATH_SLASH);
-		restoreDBName = line2.substr(pos+1); // save database name for restore
-		line2 = line2.substr(0,pos); // strip database filename
-		pos = line2.rfind(PATH_SLASH);
-		line2 = line2.substr(0,pos); // strip "catalog"
-		pos = line2.rfind(PATH_SLASH);
-		restoreSurveyArea = line2.substr(pos+1); // save survey area name for restore
-		line2 = line2.substr(0,pos); // strip survey area name
-		pos = line2.rfind(PATH_SLASH);
-		line2 = line2.substr(0,pos); // strip "surveyAreas"
-		restoreHome = line2; // save DARWINHOME for restore
-
-		{	// this BLOCK is simply to allow local vars for file / folder search & repair
-
-			// determine whether the file folder structure is intact for this
-			// database location ... ensure existance of surveyAreas\<restoreSurveyArea> and
-			// its subfolders ...
-			//    catalog, tracedFins, matchQueues, matchQResults, sightings
-			struct _finddata_t c_file;
-			long hFile;
-			string path;
-
-			// Find surveyArea\<restoreSurveyArea>
-			path = restoreHome + PATH_SLASH + "surveyAreas";
-			if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"SurveyAreas\" folder ...\n" );
-				_mkdir(path.c_str());
-			}
-			_findclose( hFile );
-			path += PATH_SLASH + restoreSurveyArea;
-			if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"%s\" SurveyArea subfolder...\n", 
-					restoreSurveyArea.c_str());
-				_mkdir(path.c_str());
-			}
-			_findclose( hFile );
-			// find subfolders and, if missing, fix them ...
-			path += PATH_SLASH;
-			if( (hFile = _findfirst((path+"catalog").c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"catalog\" folder ...\n" );
-				_mkdir((path+"catalog").c_str());
-			}
-			_findclose( hFile );
-			if( (hFile = _findfirst((path+"tracedFins").c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"tracedFins\" folder ...\n" );
-				_mkdir((path+"tracedFins").c_str());
-			}
-			_findclose( hFile );
-			if( (hFile = _findfirst((path+"matchQueues").c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"matchQueues\" folder ...\n" );
-				_mkdir((path+"matchQueues").c_str());
-			}
-			_findclose( hFile );
-			if( (hFile = _findfirst((path+"matchQResults").c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"matchQResults\" folder ...\n" );
-				_mkdir((path+"matchQResults").c_str());
-			}
-			_findclose( hFile );
-			if( (hFile = _findfirst((path+"sightings").c_str(), &c_file )) == -1L )
-			{
-				printf( "Creating missing \"sightings\" folder ...\n" );
-				_mkdir((path+"sightings").c_str());
-			}
-		}
-		//***1.982 - end user notification
-
-		// all is OK, so now proceed ...
-		
-		// extract database file from the archive
-
-		// note: restorePath and backupFilename are already QUOTED
-
-		command = "7z x -aoa -o"; // put in proper folder and force overwriting
-		command += restorePath + " ";
-		command += backupFilename + " *.db";
-
-		dlg->mMainWin->mDatabase->closeStream(); // close database in order to overwrite it
-
-		cout << command << endl;
-
-		system(command.c_str()); // start extraction process
-
-		// extract images referenced from database file
-
-		//command = "7z x -aos -o\""; // extract into proper folder without overwriting
-		//***1.981a - extra quote removed
-		command = "7z x -aos -o"; // extract into proper folder without overwriting
-		command += restorePath + " -x!filesToArchive.txt "; // but don't extract file list
-		command += " -x!*.db "; // and don't extract database again
-		command += backupFilename;
-
-		cout << command << endl;
-
-		system(command.c_str()); // start extraction process
-
-		//***1.982 - update current Survey Area indicator in global Options
-		gOptions->mCurrentSurveyArea = 
-			restoreHome + PATH_SLASH + "surveyAreas" + PATH_SLASH + restoreSurveyArea;
-}
-*/
 
 
 DatabaseFin<ColorImage>* openFin(string filename)

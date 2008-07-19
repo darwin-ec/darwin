@@ -18,6 +18,7 @@
 
 float round(float n);
 double round(double n);
+std::string quoted(std::string& s);
 std::string upperCase(std::string& s);
 std::string lowerCase(std::string& s);
 int byteStringToInt (unsigned char* byteString, int length);
@@ -41,6 +42,16 @@ float round(float n) { return n + 0.5; }
 
 inline
 double round(double n) { return n + 0.5; }
+
+// make a quoted "s" version of the string s
+inline
+std::string quoted(std::string& s)
+{
+	std::string r = "\"";
+	r += s;
+	r += "\"";
+	return r;
+}
 
 // Make an uppercase copy of s
 inline

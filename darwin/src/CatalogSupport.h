@@ -25,10 +25,19 @@ db_opentype_t databaseOpenType(string filePath);
 Database* convertDatabase(Options* o, string sourceFilename);
 Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetFilename);
 
+void rebuildFolders(std::string home, std::string area, bool force);
+void extractCatalogFiles(std::string backupFilename, std::string toFollder);
+
 bool backupCatalog(Database *db);
-bool restoreCatalogFrom(Options *o, std::string filename);
+bool restoreCatalogFrom(std::string filename,
+						std::string restorePath, 
+						std::string restoreHome, 
+						std::string restoreArea);
 bool exportCatalogTo(Database *db, Options *o, std::string filename);
-bool importCatalogFrom(Options *o, std::string filename);
+bool importCatalogFrom(string backupFilename, 
+						string restorePath, 
+						string restoreHome, 
+						string restoreArea);
 
 bool createArchive (Database *db, string filename); // creates zipped catalog
 bool continueOverwrite(string winLabel, string message, string fileName);

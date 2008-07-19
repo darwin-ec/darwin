@@ -521,7 +521,7 @@ void on_createDbButtonOK_clicked(
 			}
 		}
 
-		// all is well, now we can create the new survey area and database
+		// set full paths to new Survey Area
 
 		fullSurveyAreaName = dlg->mOptions->mDarwinHome;
 		fullSurveyAreaName += PATH_SLASH;
@@ -529,44 +529,29 @@ void on_createDbButtonOK_clicked(
 		fullSurveyAreaName += PATH_SLASH;
 		fullSurveyAreaName += surveyAreaName;
 
-		fullDatabaseName = fullSurveyAreaName;
-		fullDatabaseName += PATH_SLASH;
-		fullDatabaseName += "catalog";
-		fullDatabaseName += PATH_SLASH;
-		fullDatabaseName += databaseName;
-
 		cout << "Creating folders ..." << endl;
 
-#ifdef WIN32
-		commandRoot = "mkdir ";
-		commandArgs = fullSurveyAreaName;
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-		commandArgs = fullSurveyAreaName + PATH_SLASH + "catalog";
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-		commandArgs = fullSurveyAreaName + PATH_SLASH + "sightings";
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-		commandArgs = fullSurveyAreaName + PATH_SLASH + "tracedFins";
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-		commandArgs = fullSurveyAreaName + PATH_SLASH + "matchQueues";
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-		commandArgs = fullSurveyAreaName + PATH_SLASH + "matchQResults";
-		command = (commandRoot + "\"") + (commandArgs + "\""); // path in quotes
-		system (command.c_str());
-#else
-
-#endif
 		// delete existing database
 
 		if (dlg->mMainWin->mDatabase != NULL)
 			delete dlg->mMainWin->mDatabase;
 
+		// all is well, now we can create the new survey area and database
+
 		if (dlg->mArchiveName == "")
 		{
+			// FORCE building of the new survey area folder structure here
+
+			rebuildFolders(dlg->mOptions->mDarwinHome, surveyAreaName, true);
+
+			// set full path to new database being created
+
+			fullDatabaseName = fullSurveyAreaName;
+			fullDatabaseName += PATH_SLASH;
+			fullDatabaseName += "catalog";
+			fullDatabaseName += PATH_SLASH;
+			fullDatabaseName += databaseName;
+
 			// save GLOBAL currentDefaultScheme and set as selected here (for this DB creation ONLY)
 
 			savedDefaultScheme = dlg->mOptions->mCurrentDefaultCatalogScheme;
@@ -576,7 +561,6 @@ void on_createDbButtonOK_clicked(
 			// create new one
 
 			dlg->mOptions->mDatabaseFileName = fullDatabaseName;
-			//dlg->mMainWin->mDatabase = new Database(dlg->mOptions, true); //***1.99
 			dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true); //***1.99
 
 			// restore GLOBAL currentDefaultScheme
@@ -598,15 +582,12 @@ void on_createDbButtonOK_clicked(
 			cout << "\nImporting database from ARCHIVE location ...\n\n  " << dlg->mArchiveName << endl;
 			cout << "\n\nPlease wait." << endl;
 
-			// extract the database name from the archive
-
-			// see below for modification needed when path/filename has SPACES in it
-			//command = "7z x -aoa "; // extract and overwrite existing file
-			//command += dlg->mArchiveName + " filesToArchive.txt";
+			// grab database name from archive file in this case -- IGNORE the 
+			// fullDatabaseName used above in non import case
 
 			//***1.982 - put archive path/filename in QUOTES
-			command = "7z x -aoa \""; // extract and overwrite existing file
-			command += dlg->mArchiveName + "\" filesToArchive.txt";
+			command = "7z x -aoa "; // extract and overwrite existing file
+			command += quoted(dlg->mArchiveName) + " filesToArchive.txt";
 			
 			system(command.c_str()); // extract the file list file
 
@@ -621,29 +602,20 @@ void on_createDbButtonOK_clicked(
 
 			// strip the old path info held in the archive
 			shortDatabaseName = shortDatabaseName.substr(shortDatabaseName.rfind(PATH_SLASH) + 1);
-			// strip the trailing QUOTE (")
+			// and strip the trailing QUOTE (")
 			shortDatabaseName = shortDatabaseName.substr(0,shortDatabaseName.length()-1);
 
 			system("del filesToArchive.txt"); // remove temporary file list file
 
 			string importPath = fullSurveyAreaName + PATH_SLASH + "catalog" + PATH_SLASH;
 
-			// extract database file from the archive
+			// note: the import fuction itself will call the rebuildFolders() function
+			// to build the folder structure, so no need to call for folder rebuild here
 
-			command = "7z x -aoa -o\""; // put in proper folder and force overwriting
-			command += importPath + "\" \"";
-			command += dlg->mArchiveName + "\" *.db";
-
-			system(command.c_str()); // start extraction process
-
-			// extract images referenced from database file
-
-			command = "7z x -aos -o\""; // extract into proper folder without overwriting
-			command += importPath + "\" -x!filesToArchive.txt "; // but don't extract file list
-			command += " -x!*.db "; // and don't extract database again
-			command += "\"" + dlg->mArchiveName + "\"";
-
-			system(command.c_str()); // start extraction process
+			importCatalogFrom(dlg->mArchiveName,
+					importPath,
+					dlg->mOptions->mDarwinHome,
+					surveyAreaName);
 
 			// now, recreate the main window database from the newly imported database file
 
