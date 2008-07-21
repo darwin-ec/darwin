@@ -801,6 +801,9 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
+	
+	if(! SQLiteDatabase::isType(o.mDatabaseFileName) )
+		return NULL;
 
 	Database *db = openDatabase(&o, false);
 
