@@ -113,7 +113,7 @@ Database * openDatabase(MainWindow *mainWin, string filename)
 	
 	Options o;	
 	o.mDatabaseFileName = filename;
-	o.mDarwinHome = getenv("DARWINHOME");
+	o.mDarwinHome = gOptions->mDarwinHome;//getenv("DARWINHOME");
 
 	CatalogScheme cat; // empty by default
 
@@ -138,7 +138,7 @@ Database * openDatabase(MainWindow *mainWin, string filename)
 	case canOpen:
 			// open the SQLite database
 			o.mDatabaseFileName = filename;
-			o.mDarwinHome = getenv("DARWINHOME");
+			o.mDarwinHome = gOptions->mDarwinHome;//getenv("DARWINHOME");
 			db = new SQLiteDatabase(&o, cat, false);
 		break;
 	default:
@@ -150,7 +150,7 @@ Database * openDatabase(MainWindow *mainWin, string filename)
 	{
 		// either open database failed or we ended up in the default case above
 		o.mDatabaseFileName = filename;
-		o.mDarwinHome = getenv("DARWINHOME");
+		o.mDarwinHome = gOptions->mDarwinHome;//getenv("DARWINHOME");
 		db = new DummyDatabase(&o, false);
 	}
 
@@ -315,7 +315,7 @@ bool backupCatalog(Database *db)
 	
 	string backupPath, backupFilename, fileList, command;
 
-	backupPath = getenv("DARWINHOME");
+	backupPath = gOptions->mDarwinHome;//getenv("DARWINHOME");
 	backupPath = backupPath 
 		+ PATH_SLASH 
 		+ "backups" 
@@ -629,7 +629,7 @@ bool createArchive (Database *db, string filename)
 		
 	string 
 		command, 
-		fileList = getenv("DARWINHOME");
+		fileList = gOptions->mDarwinHome;//getenv("DARWINHOME");
 
 	fileList = fileList 
 		+ PATH_SLASH 
@@ -786,7 +786,7 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 
 	string baseimgfilename;
 	string tempdir("");
-	tempdir += getenv("TEMP");
+	tempdir += gOptions->mTempDirectory;//getenv("TEMP");
 	tempdir += PATH_SLASH;
 	tempdir += "darwin";
 	tempdir += PATH_SLASH;
@@ -838,7 +838,7 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	string baseFilename = extractBasename(filename);
 
 	string tempdir("");
-	tempdir += getenv("TEMP");
+	tempdir += gOptions->mTempDirectory;//getenv("TEMP");
 	tempdir += PATH_SLASH;
 	tempdir += "darwin";
 	tempdir += PATH_SLASH;

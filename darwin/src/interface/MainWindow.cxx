@@ -2826,11 +2826,18 @@ void on_docs_activate(
 	if (NULL == mainWin)
 		return;
 
+	
+	//SAH 2008-07-18
+	string cmd;
 #ifdef WIN32
-	system("explorer.exe %DARWINHOME%\\docs\\usersguide.htm&");
+	cmd = "explorer.exe ";
+	//system("explorer.exe %DARWINHOME%\\docs\\usersguide.htm&");
 #else
-	system("firefox file:$DARWINHOME/docs/usersguide.htm&");
+	cmd = "firefox ";
+	//system("firefox file:$DARWINHOME/docs/usersguide.htm&");
 #endif
+	cmd += "\"" + gOptions->mDarwinHome + PATH_SLASH + "docs" + PATH_SLASH + "usersguide.htm&\"";
+	system(cmd.c_str());
 }
 
 //*******************************************************************

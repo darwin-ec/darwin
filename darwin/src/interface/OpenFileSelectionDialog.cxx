@@ -130,7 +130,8 @@ GtkWidget* OpenFileSelectionDialog::createFileSelectionDialog()
 	if (gLastDirectory == "")
 	{
 		// set path to %DARWINHOME% for first file open
-		gLastDirectory = getenv("DARWINHOME");
+		//gLastDirectory = getenv("DARWINHOME");
+		gLastDirectory = gOptions->mDarwinHome; //SAH 2008-07-18
 		//gLastDirectory += PATH_SLASH;
 	}
 

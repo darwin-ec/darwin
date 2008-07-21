@@ -86,7 +86,7 @@ bool DBConvertDialog::convert2MySQL(int degreeOfBackup)
 bool DBConvertDialog::convert2SQLite(int degreeOfBackup)
 {
 	Options o;
-	o.mDarwinHome = getenv("DARWINHOME");
+	o.mDarwinHome = gOptions->mDarwinHome; //getenv("DARWINHOME"); //SAH--2008-07-18
 
 	// COPY database file by copying *.db to *.olddb
 	// this is a minimal backup AND is required so OldDatabase and new

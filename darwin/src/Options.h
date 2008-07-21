@@ -110,6 +110,7 @@ class Options
 		// moved in a similar fashion.
 
 		std::string mDarwinHome;                        // value of %DARWINHOME% set by runDarwin.bat
+		std::string mTempDirectory; //Temporary directory
 
 		// For al versions 1.85 and later ...
 		// the following is now the root path for all relative filenames in the catalog

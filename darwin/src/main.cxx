@@ -71,6 +71,7 @@
 #include <crtdbg.h>
 #endif
 #include <iostream>
+#include <direct.h>
 
 using namespace std;
 
@@ -87,7 +88,7 @@ void saveConfig();
 
 //*******************************************************************
 //
-void readConfig()
+void readConfig(string homedir)
 {
 
 #ifdef WIN32
@@ -97,9 +98,12 @@ void readConfig()
 
 	string fileName("");
 
-	char *homedir = getenv("DARWINHOME");
+	//char *homedir = getenv("DARWINHOME");
 
 	gOptions->mDarwinHome = homedir; // ***1.1
+
+	string tempdir = getenv("temp");
+	gOptions->mTempDirectory = tempdir + "\\darwin";
 	
 	fileName += homedir;
 	fileName += "\\system\\darwin.cfg";
@@ -514,30 +518,69 @@ int main(int argc, char *argv[])
 
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
+
+	string darwinhome(argv[0]);//first argument is absolute if double-clicked in windows; otherwise, may be relative
+	//we will overide this if argv[1]==--set-home="..."
+	int basePos = darwinhome.rfind("\\system\\bin\\darwin.exe");
+	if (basePos!=string::npos) {
+		darwinhome=darwinhome.substr(0,basePos);
+	} else { //try current directory...may be relative if executed from command line
+		char c_cwd[_MAX_PATH];
+		getcwd(c_cwd, _MAX_PATH);
+		string cwd(c_cwd);
+		darwinhome=cwd;
+		basePos = darwinhome.rfind("\\system\\bin");
+		if (basePos!=string::npos)	{
+			darwinhome=darwinhome.substr(0,basePos);
+		}
+	}
+
+
+	string option("");
+	string finz("");
+
+	for (int i=1; i<argc; i++) {
+		string argv(argv[i]);
+		if (argv.find("--")==0) {//we have an option index
+			option = argv;
+		} else if (argv.find(".finz")!=string::npos) {//we have a finz file
+			finz = argv;
+		}
+	}
+
   
-	if (argc > 1) 
+	if (!option.empty()) 
 	{
-		if (!strcmp(argv[1], "--help")) 
+		if (option.find("--help")!=string::npos) 
 		{
-			cout << "Usage: darwin [option]" << endl
+			cout << "Usage: darwin [option] [filename.finz]" << endl
 			     << "\t Where viable options include: " << endl
-			     //<< "\t --testreg (Tests the registration features by registering each" << endl
-			     //<< "\t            outline in the database with every other one." << endl
-			     //<< "\t            Dumps output to multiple files in current directory.)" << endl
-			     << "\t --version (Prints program version and exits)" << endl;
+			     << "\t --set-home=\"...\" (Sets DARWINHOME; otherwise, directory containing .exe is used)" << endl
+			     << "\t --version (Prints program version and exits)" << endl
+				 << endl
+				 << "\t If a filename.finz file is given, open it in a standalone viewer; otherwise, open whole proogram" << endl;
 			return 0;	
 		}
 
-		if (!strcmp(argv[1], "--version")) 
+		if (option.find("--version")!=string::npos) 
 		{
 			cout << PACKAGE << " " << VERSION << endl;
 			return 0;	
 		}
 
+		if (option.find("--set-home=")!=string::npos) {			
+			darwinhome=option.substr(option.find("=")+1);
+			//override darwinhome with user supplied path
+		}
+
+
+
 	}
 
 	gOptions = new Options();
-	readConfig();
+
+	readConfig(darwinhome);
+	cout << "DARWINHOME=" << gOptions->mDarwinHome << endl;
 
 	//SAH
 	//Create Temporary Directory
@@ -563,7 +606,7 @@ int main(int argc, char *argv[])
 
 
 
-	if (!(argc > 1)) { //Standard open
+	if (finz.empty()) { //Standard open
 		SplashWindow *splash = new SplashWindow();
 		splash->show();
 		splash->updateStatus(_("Loading fin database..."));
@@ -578,7 +621,7 @@ int main(int argc, char *argv[])
 
 		saveConfig();
 
-	} else if (strcmp(argv[1], ".finz")>0) { //Open finz file
+	} else { //Open finz file
 		/*TraceWindow::TraceWindow(
 			MainWindow *m,
 			const string &fileName,
@@ -586,13 +629,11 @@ int main(int argc, char *argv[])
 			Database *db,
 			Options *o)
 		*/
-		string filename(argv[1]);
-		DatabaseFin<ColorImage>* dbFin = openFinz(filename);
+		DatabaseFin<ColorImage>* dbFin = openFinz(finz);
 		TraceWindow *traceWin= new TraceWindow(
 			       NULL, //MainWindow
-				   filename,
+				   finz,
 				   dbFin,
-				   ///*CatalogSupport::*/openFinz(filename), 
 			       NULL, //Database
 				   gOptions);
 		traceWin->show();
