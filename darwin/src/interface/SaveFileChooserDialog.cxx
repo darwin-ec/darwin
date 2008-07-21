@@ -223,7 +223,8 @@ void on_saveFileChooserButtonOK_clicked(
 			return;
 		}
 
-		saveFin(dlg->mFin, fileName);
+		//saveFin(dlg->mFin, fileName);//SAH 2008-07-17
+		saveFinz(dlg->mFin,fileName);
 
 		if (NULL != dlg->mTraceWin)
 			dlg->mTraceWin->setSavedFinFilename(fileName);

@@ -48,4 +48,8 @@ bool saveFin(DatabaseFin<ColorImage>* fin, string filename);
 DatabaseFin<ColorImage>* openFinz(string filename);
 void saveFinz(DatabaseFin<ColorImage>* fin, string filename);
 
+string saveImages(DatabaseFin<ColorImage>* fin, string savefolder, string filename);
+
+bool testFileExistsAndPrompt(string filename);
+
 #endif

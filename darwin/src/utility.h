@@ -350,5 +350,17 @@ std::string extractBasename(std::string filename)
 	return filename;
 }
 
+inline
+std::string extractPath(std::string filename)
+{
+	int pos = filename.find_last_of(PATH_SLASH);
+	
+	if (pos >= 0)
+			return filename.substr(0, pos);
+	
+	return filename;
+}
+
+
 #endif
 

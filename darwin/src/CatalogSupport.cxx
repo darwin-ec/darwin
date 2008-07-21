@@ -524,6 +524,32 @@ bool exportCatalogTo(Database *db, Options *o, std::string filename)
 	return createArchive(db, exportFilename);
 }
 
+bool testFileExistsAndPrompt(string filename)
+{
+	ifstream testFile(filename.c_str());
+	if (! testFile.fail())
+	{
+		testFile.close();
+
+		bool doTheOverwrite = continueOverwrite(
+				"REPLACE existing file?",
+				"Selected EXPORT file already exists!",
+				filename);
+		
+		if (! doTheOverwrite)
+		{
+			cout << "EXPORT aborted - User refused REPLACEMENT of existing archive!" << endl;
+			return false;
+		}
+
+		// delete the exising archive file
+		string command = "DEL /Q \"" + filename + "\" >nul";
+		system(command.c_str());
+	}
+
+	return true;
+}
+
 //
 // This handles import of catalog into DARWIN from a zipped archive
 //
@@ -671,39 +697,35 @@ bool saveFin(DatabaseFin<ColorImage>* fin, string fileName)
 			fileName += ".fin";
 
 	// find out if file already exists
-	ifstream testFile(fileName.c_str());
-	if (! testFile.fail())
-	{
-		testFile.close();
-
-		bool doTheOverwrite = continueOverwrite(
-				"REPLACE existing file?",
-				"Selected EXPORT file already exists!",
-				fileName);
-		
-		if (! doTheOverwrite)
-		{
-			cout << "FIN SAVE aborted - User refused REPLACEMENT of existing file!" << endl;
-			return false;
-		}
-
-		// delete the exising archive file
-		string command = "DEL /Q \"" + fileName + "\" >nul";
-		system(command.c_str());
-	}
+	if(!testFileExistsAndPrompt(fileName))
+		return false;
 
 	// now actually save the file and images (modified and original)
 
 	// copy unknown image to same folder as *.fin file will go
 
 	string saveFolder = fileName.substr(0,fileName.rfind(PATH_SLASH));
+	
+	string copyfilename = saveImages(fin, saveFolder, fileName);	
 
-	string shortFilename = fin->mImageFilename;
-	int pos = shortFilename.find_last_of(PATH_SLASH);
-	if (pos >= 0)
-	{
-		shortFilename = shortFilename.substr(pos+1);
+	// DatabaseFin::save()  shortens the mImageFilename, so this call must
+	// precede the setting of the mImagefilename to the path+filename
+	// needed in the TraceWindow code if Add to Database is done after a
+	// save of the fin trace
+	try {
+		fin->save(fileName);
+	} catch (Error e) {
+		showError(e.errorString());
 	}
+
+	fin->mImageFilename = copyfilename; //***1.8 - save this filename now
+
+	return true;
+}
+
+string saveImages(DatabaseFin<ColorImage>* fin, string saveFolder, string fileName)
+{
+	string shortFilename = extractBasename(fin->mImageFilename);
 
 	string copyFilename = saveFolder + PATH_SLASH + shortFilename;
 
@@ -737,8 +759,8 @@ bool saveFin(DatabaseFin<ColorImage>* fin, string fileName)
 		throw Error("Attempt to save Trace without modified image");
 
 	// create filename - base this on FIN filename now
-	pos = fileName.find_last_of(PATH_SLASH);
-	copyFilename = saveFolder + fileName.substr(pos);
+	int pos = fileName.find_last_of(PATH_SLASH);
+	copyFilename = saveFolder + fileName.substr(pos); // includes slash
 	pos = copyFilename.rfind(".fin");
 	copyFilename = copyFilename.substr(0,pos);
 	copyFilename += "_wDarwinMods.png"; //***1.8 - new file format
@@ -752,20 +774,7 @@ bool saveFin(DatabaseFin<ColorImage>* fin, string fileName)
 	// saved as part of the DatabaseFin record in the file
 	fin->mImageFilename = copyFilename; //***1.8 - save this filename now
 
-	// DatabaseFin::save()  shortens the mImageFilename, so this call must
-	// precede the setting of the mImagefilename to the path+filename
-	// needed in the TraceWindow code if Add to Database is done after a
-	// save of the fin trace
-	try {
-		fin->save(fileName);
-	} catch (Error e) {
-		showError(e.errorString());
-	}
-	// set image filename to path & filename of modified image so that name is 
-	// saved as part of the DatabaseFin record in the file
-	fin->mImageFilename = copyFilename; //***1.8 - save this filename now
-
-	return true;
+	return copyFilename;
 }
 
 //
@@ -793,35 +802,39 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
-	CatalogScheme cat; // just an empty dummy scheme
+	Database *db = openDatabase(&o, false);
 
-	cout << "about to open db" << o.mDatabaseFileName << endl;
-	SQLiteDatabase db = SQLiteDatabase(&o, cat, false);
+	if(db->status() != Database::loaded)
+	{
+		delete db;
+		return NULL;
+	}
 
-	cout << "going to select first fin" << endl;
-	DatabaseFin<ColorImage>* fin = db.getItem(0); // first and only fin
+	DatabaseFin<ColorImage>* fin = db->getItem(0); // first and only fin
+	
 
+	// construct absolute file paths and open images
 	baseimgfilename = extractBasename(fin->mImageFilename);
 	fin->mImageFilename = tempdir + PATH_SLASH + baseimgfilename;
+	fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
+	fin->mOriginalImageFilename = tempdir + PATH_SLASH + extractBasename(fin->mModifiedFinImage->mOriginalImageFilename);
+	if ("" != fin->mOriginalImageFilename)
+		fin->mFinImage = new ColorImage(fin->mOriginalImageFilename);
+	fin->mImageMods = fin->mModifiedFinImage->mImageMods;
 
-	cout << "got fin" << endl;
-
-	cout << (NULL == fin) << endl;
-
-	cout << "fin: \n"
-		<< endl << fin->mIDCode
-		<< endl << fin->mName
-		<< endl << fin->mDamageCategory
-		<< endl << fin->mImageFilename
-		<< endl << fin->mOriginalImageFilename << endl;
+	delete db;
 	
-	// I really hope C++ managed code works how I think it does...
+	cout << " if you get this message, i'm just letting you know I'm going down" << endl;
 
 	return fin;
 }
 
 void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 {
+
+	if(!testFileExistsAndPrompt(filename))
+		return;
+
 	string baseFilename = extractBasename(filename);
 
 	string tempdir("");
@@ -831,66 +844,63 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	tempdir += PATH_SLASH;
 	tempdir += baseFilename;
 
-	// create target dir
-	string cmd("mkdir ");
-	cmd += " '" + tempdir + "' ";
+	// delete and make dir
+	string cmd("rmdir /s /q");
+	cmd += " \"" + tempdir + "\"";
 	system(cmd.c_str());
 
-	// copy modified image over into catalog folder
-	string srcFilename = getenv("DARWINHOME");
-	srcFilename += PATH_SLASH;
-	srcFilename += "catalog";
-	srcFilename += PATH_SLASH;
-	srcFilename += fin->mImageFilename;
-
-	string targetFilename = tempdir + PATH_SLASH + fin->mImageFilename;
-
-	cmd = "copy '";
-	cmd += " '" + srcFilename + "' ";
-	cmd += targetFilename + "'";
+	cmd = "mkdir";
+	cmd += " \"" + tempdir + "\"";
 	system(cmd.c_str());
 
-	// copy original
-	srcFilename = getenv("DARWINHOME");
-	srcFilename += PATH_SLASH;
-	srcFilename += "catalog";
-	srcFilename += PATH_SLASH;
-	srcFilename += fin->mOriginalImageFilename;
-
-	targetFilename = tempdir + PATH_SLASH + fin->mOriginalImageFilename;
-
-	cmd = "copy '";
-	cmd += " '" + srcFilename + "' ";
-	cmd += targetFilename + "'";
+	// save images
+	string srcFilename = fin->mOriginalImageFilename; // source orig img path 
+	fin->mOriginalImageFilename = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename); // target orig img path
+	
+	// copy from orig to new path
+	cmd = "copy";
+	cmd += " \"" + srcFilename + "\" ";
+	cmd += " \"" + fin->mOriginalImageFilename + "\"";
 	system(cmd.c_str());
-
-	// the category related items are no longer in Options -- JHS
+	cout << cmd << endl;
+	
+	// replace ."finz" with "_wDarwinMods.png" for modified image filename
+	int pos = extractBasename(filename).rfind(".");
+	fin->mImageFilename = tempdir + PATH_SLASH + extractBasename(filename).substr(0,pos) + "_wDarwinMods.png";
+	
+	// save modified image
+	fin->mModifiedFinImage->save_wMods(fin->mImageFilename,
+		extractBasename(fin->mOriginalImageFilename),
+		fin->mImageMods);
+	
+	// set mod img path name as relative
+	fin->mImageFilename = extractBasename(fin->mImageFilename);
+	// finish saving images
+	
 	Options o = Options();
-	//o.mCatCategoryNamesMax = 1;
-	//o.mCatCategoryName.resize( o.mCatCategoryNamesMax );
-	//o.mCatCategoryName[0] = fin->mDamageCategory;
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 
-	// here are is the damage category info
-	CatalogScheme cat;
+	// here is the damage category info
+	CatalogScheme cat = CatalogScheme();
 	cat.schemeName = "FinzSimple";
+	if(fin->getDamage() != "NONE")
+		cat.categoryNames.push_back("NONE");
 	cat.categoryNames.push_back(fin->getDamage());
 
-	SQLiteDatabase db = SQLiteDatabase(&o, cat, true);
+	// C++ managed code really didn't work like I thought it did...
+	SQLiteDatabase *db = new SQLiteDatabase(&o, cat, true);
 
-	db.appendCategoryName(fin->mDamageCategory);
+	db->add(fin);
 
-	db.add(fin);
-
-	db.closeStream();
+	delete db;
 
 	// compress contents
 	srcFilename = tempdir + PATH_SLASH + "*.*";
-	targetFilename = filename;
+	string targetFilename = filename;
 
 	cmd = "7z.exe a -tzip";
-	cmd += " '" + targetFilename + "' ";
-	cmd += " '" + srcFilename + "' ";
+	cmd += " \"" + targetFilename + "\" ";
+	cmd += " \"" + srcFilename + "\" ";
 	system(cmd.c_str());
 	cout << cmd << endl;
 }
