@@ -2978,34 +2978,46 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 
 	// damage category using a scroll-down menu
 
-	mEntryDamage = gtk_combo_box_new_text();
-	gtk_widget_show(mEntryDamage);
-    gtk_box_pack_start(GTK_BOX(traceVBoxRight), mEntryDamage, FALSE,
-			FALSE, 0);
 
-	int activeNum = 0; //***1.4
+	if (NULL!=mDatabase) {
+		//We have a full-blown database, create a drop-down
 
-	for (int catIDnum = 0; catIDnum < mDatabase->catCategoryNamesMax(); catIDnum++)
-	{
-		if ("NONE" == mDatabase->catCategoryName(catIDnum))
-			gtk_combo_box_append_text(
-				GTK_COMBO_BOX(mEntryDamage),
-				_("Unspecified"));
-		else
-			gtk_combo_box_append_text(
-				GTK_COMBO_BOX(mEntryDamage),
-				_(mDatabase->catCategoryName(catIDnum).c_str()));
+		mEntryDamage = gtk_combo_box_new_text();
+		gtk_widget_show(mEntryDamage);
+		gtk_box_pack_start(GTK_BOX(traceVBoxRight), mEntryDamage, FALSE,
+				FALSE, 0);
 
-		//***1.4 - set category from fin data if loading previously traced fin
-		if ((NULL != mFin) && (mFin->mDamageCategory == mDatabase->catCategoryName(catIDnum)))
-			activeNum = catIDnum;
+		int activeNum = 0; //***1.4
+
+		for (int catIDnum = 0; catIDnum < mDatabase->catCategoryNamesMax(); catIDnum++)
+		{
+			if ("NONE" == mDatabase->catCategoryName(catIDnum))
+				gtk_combo_box_append_text(
+					GTK_COMBO_BOX(mEntryDamage),
+					_("Unspecified"));
+			else
+				gtk_combo_box_append_text(
+					GTK_COMBO_BOX(mEntryDamage),
+					_(mDatabase->catCategoryName(catIDnum).c_str()));
+
+			//***1.4 - set category from fin data if loading previously traced fin
+			if ((NULL != mFin) && (mFin->mDamageCategory == mDatabase->catCategoryName(catIDnum)))
+				activeNum = catIDnum;
+		}
+		gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage), activeNum); //***1.4 - use activeNum
+
+	} else {//just give a label, we are probably opening a finz file directly from command-line (e.g. stand alone viewer)
+		//Label with mDatabaseFin->mDamageCategory (string)
+		mEntryDamage = gtk_label_new(_(mFin->mDamageCategory.c_str()));
+		gtk_widget_show(mEntryDamage);
+		gtk_box_pack_start(GTK_BOX(traceVBoxRight), mEntryDamage,
+				   FALSE, FALSE, 2);
 	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage), activeNum); //***1.4 - use activeNum
 
-    traceLabelDescription = gtk_label_new(_("Short Description"));
-    gtk_widget_show(traceLabelDescription);
-    gtk_box_pack_start(GTK_BOX(traceVBoxRight), traceLabelDescription,
-		       FALSE, FALSE, 2);
+	traceLabelDescription = gtk_label_new(_("Short Description"));
+	gtk_widget_show(traceLabelDescription);
+	gtk_box_pack_start(GTK_BOX(traceVBoxRight), traceLabelDescription,
+			   FALSE, FALSE, 2);
 
 	// Short Description TEXT ENTRY
 
