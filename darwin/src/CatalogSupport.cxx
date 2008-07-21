@@ -831,21 +831,24 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 
 void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 {
+	Options o;	
+	CatalogScheme cat;
+	string tempdir, cmd, baseFilename, srcFilename, targetFilename;
+	int pos;
 
 	if(!testFileExistsAndPrompt(filename))
 		return;
 
-	string baseFilename = extractBasename(filename);
+	baseFilename = extractBasename(filename);
 
-	string tempdir("");
-	tempdir += gOptions->mTempDirectory;//getenv("TEMP");
+	tempdir = gOptions->mTempDirectory;//getenv("TEMP");
 	tempdir += PATH_SLASH;
 	tempdir += "darwin";
 	tempdir += PATH_SLASH;
 	tempdir += baseFilename;
 
 	// delete and make dir
-	string cmd("rmdir /s /q");
+	cmd = "rmdir /s /q";
 	cmd += " \"" + tempdir + "\"";
 	system(cmd.c_str());
 
@@ -854,53 +857,50 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	system(cmd.c_str());
 
 	// save images
-	string srcFilename = fin->mOriginalImageFilename; // source orig img path 
-	fin->mOriginalImageFilename = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename); // target orig img path
+	srcFilename = fin->mOriginalImageFilename; // source orig img path 
+	targetFilename = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename); // target orig img path
 	
 	// copy from orig to new path
 	cmd = "copy";
 	cmd += " \"" + srcFilename + "\" ";
-	cmd += " \"" + fin->mOriginalImageFilename + "\"";
+	cmd += " \"" + targetFilename + "\"";
 	system(cmd.c_str());
-	cout << cmd << endl;
+
+	fin->mOriginalImageFilename = extractBasename(targetFilename);
 	
 	// replace ."finz" with "_wDarwinMods.png" for modified image filename
-	int pos = extractBasename(filename).rfind(".");
-	fin->mImageFilename = tempdir + PATH_SLASH + extractBasename(filename).substr(0,pos) + "_wDarwinMods.png";
+	pos = baseFilename.rfind(".");
+	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
 	
 	// save modified image
 	fin->mModifiedFinImage->save_wMods(fin->mImageFilename,
-		extractBasename(fin->mOriginalImageFilename),
+		fin->mOriginalImageFilename,
 		fin->mImageMods);
 	
 	// set mod img path name as relative
-	fin->mImageFilename = extractBasename(fin->mImageFilename);
-	// finish saving images
-	
-	Options o = Options();
-	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
+	fin->mImageFilename = extractBasename(fin->mImageFilename);	
 
-	// here is the damage category info
-	CatalogScheme cat = CatalogScheme();
+	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 	cat.schemeName = "FinzSimple";
 	if(fin->getDamage() != "NONE")
 		cat.categoryNames.push_back("NONE");
 	cat.categoryNames.push_back(fin->getDamage());
 
 	// C++ managed code really didn't work like I thought it did...
-	SQLiteDatabase *db = new SQLiteDatabase(&o, cat, true);
+	SQLiteDatabase db(&o, cat, true);
 
-	db->add(fin);
+	db.add(fin);
 
-	delete db;
+	db.closeStream();
+
+	//delete db;
 
 	// compress contents
 	srcFilename = tempdir + PATH_SLASH + "*.*";
-	string targetFilename = filename;
+	targetFilename = filename;
 
 	cmd = "7z.exe a -tzip";
 	cmd += " \"" + targetFilename + "\" ";
 	cmd += " \"" + srcFilename + "\" ";
 	system(cmd.c_str());
-	cout << cmd << endl;
 }

@@ -1980,16 +1980,15 @@ void SQLiteDatabase::loadLists() {
 //
 
 void SQLiteDatabase::opendb(const char *filename) {
+	
+	if(dbOpen)
+		return;
 
 	rc = sqlite3_open(filename, &db);
 
 	if( rc != SQLITE_OK ) {
 		fprintf(stdout, "SQL error: %s %s\n", zErrMsg, filename);
 		sqlite3_free(zErrMsg);
-	}
-
-	if( rc!=SQLITE_OK ) {
-		//cout << "Can't open database: " << sqlite3_errmsg(db) << endl;
 		closedb();
 		dbOpen = false;
 		mDBStatus = errorLoading;
@@ -2119,8 +2118,7 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 		cout << "inserting dc " << cat.name << endl;
 
 		insertDamageCategory(&cat);		
-	}
-	
+	}	
 	commitTransaction();
 
 }
@@ -2174,7 +2172,6 @@ bool SQLiteDatabase::isType(std::string filePath)
 //
 // Constructor
 //
-
 SQLiteDatabase::SQLiteDatabase(Options *o, const CatalogScheme cat, bool createEmptyDB)
 	:
 	Database(o, cat, createEmptyDB)
