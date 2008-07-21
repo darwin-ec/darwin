@@ -60,11 +60,6 @@ class OpenFileChooserDialog
 		void run_and_respond(); // replaces show
 
 		// GTK+ callback functions
-		friend gboolean on_fileChooserDialog_delete_event(
-				GtkWidget *widget,
-				GdkEvent *event,
-				gpointer userData);
-
 		friend void on_fileChooserPreviewCheckButton_toggled(
 				GtkToggleButton *togglebutton,
 				gpointer userData);
