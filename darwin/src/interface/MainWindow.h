@@ -206,6 +206,12 @@ class MainWindow
 				GdkEventExpose *event,
 				gpointer userData);
 
+		//***1.99 - so we can display original image as well as modified
+		friend gboolean on_mainDrawingAreaOrigImage_expose_event(
+				GtkWidget *widget,
+				GdkEventExpose *event,
+				gpointer userData);
+
 		friend gboolean on_mainEventBoxOutline_button_press_event(
 				GtkWidget *widget,
 				GdkEventButton *event,
@@ -222,6 +228,12 @@ class MainWindow
 				gpointer userData);
 
 		friend gboolean on_mainDrawingAreaImage_configure_event(
+				GtkWidget *widget,
+				GdkEventConfigure *event,
+				gpointer userData);
+
+		//***1.99 - so we can display original image as well as modified
+		friend gboolean on_mainDrawingAreaOrigImage_configure_event(
 				GtkWidget *widget,
 				GdkEventConfigure *event,
 				gpointer userData);
@@ -269,6 +281,7 @@ class MainWindow
 
 			// drawing areas
 			*mDrawingAreaImage,
+			*mDrawingAreaOrigImage, //***1.99
 			*mDrawingAreaOutline,
 
 			*mButtonNext,
@@ -295,7 +308,8 @@ class MainWindow
 			
 			*mStatusBar,
 			
-			*mFrame;
+			*mFrameMod,  //***1.99
+			*mFrameOrig; //***1.99
 
 		db_sort_t 
 			mOldSort, //***1.85 - previous sorting of CList
@@ -315,7 +329,9 @@ class MainWindow
 
 		Database *mDatabase;
 
-		ColorImage *mImage;
+		ColorImage 
+			*mImage,
+			*mOrigImage; //***1.99
 		int
 			mCurImageHeight, mCurImageWidth,
 			mCurContourHeight, mCurContourWidth;
@@ -334,6 +350,7 @@ class MainWindow
 		GtkWidget* createMainWindow(toolbarDisplayType toolbarDisplay);
 
 		void refreshImage();
+		void refreshOrigImage();
 		void refreshOutline();
 
 		void updateCursor();

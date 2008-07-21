@@ -77,6 +77,7 @@ MainWindow::MainWindow(Database *db, Options *o)
 	  mSelectedFin(NULL),
 	  mDatabase(db),
 	  mImage(NULL),
+	  mOrigImage(NULL), //***1.99
 	  mCList(NULL), //***1.95
 	  mCurImageHeight(IMAGE_HEIGHT),
 	  mCurImageWidth(IMAGE_WIDTH),
@@ -117,6 +118,7 @@ MainWindow::~MainWindow()
 		gtk_widget_destroy(mWindow);
 	
 	delete mImage;
+	delete mOrigImage; //***1.99
 	delete mSelectedFin;
 	delete mDatabase;
 
@@ -266,13 +268,22 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 //*******************************************************************
 void MainWindow::refreshImage()
 {
-	on_mainDrawingAreaImage_expose_event(mDrawingAreaImage, NULL, (void *) this);
+	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaImage->window)) // notebook page is visible
+		on_mainDrawingAreaImage_expose_event(mDrawingAreaImage, NULL, (void *) this);
+}
+
+//*******************************************************************
+void MainWindow::refreshOrigImage()
+{
+	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaOrigImage->window)) // notebook page is visible
+		on_mainDrawingAreaOrigImage_expose_event(mDrawingAreaOrigImage, NULL, (void *) this);
 }
 
 //*******************************************************************
 void MainWindow::refreshOutline()
 {
-	on_mainDrawingAreaOutline_expose_event(mDrawingAreaOutline, NULL, (void *) this);
+	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaOutline->window)) // notebook page is visible
+		on_mainDrawingAreaOutline_expose_event(mDrawingAreaOutline, NULL, (void *) this);
 }
 
 //*******************************************************************
@@ -299,7 +310,8 @@ void MainWindow::clearText()				//***002DB - nf
   	gtk_widget_set_sensitive(mEntryDamage, FALSE);
   	gtk_widget_set_sensitive(mEntryDescription, FALSE);
 
-  	gtk_frame_set_label(GTK_FRAME(mFrame), "ID Code");
+  	gtk_frame_set_label(GTK_FRAME(mFrameMod), "ID Code");
+  	gtk_frame_set_label(GTK_FRAME(mFrameOrig), "ID Code");
 
   	return;
 
@@ -888,10 +900,12 @@ void MainWindow::updateCursor()
                       magnify_xhot, magnify_yhot);
  
 	// I'm paranoid, what can I say?
-	if (NULL != mCursor && NULL != mDrawingAreaOutline)
+	if (NULL != mCursor && NULL != mDrawingAreaOutline &&
+		NULL != mDrawingAreaOutline->window) //***1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaOutline->window, mCursor);
 
-	if (NULL != mCursor && NULL != mDrawingAreaImage)
+	if (NULL != mCursor && NULL != mDrawingAreaImage &&
+		NULL != mDrawingAreaImage->window) //***1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaImage->window, mCursor);
 }
 
@@ -899,7 +913,8 @@ void MainWindow::updateCursor()
 void MainWindow::updateGC()
 {
 	if (NULL == mGC) {
-		if (NULL == mDrawingAreaOutline)
+		if (NULL == mDrawingAreaOutline || 
+			NULL == mDrawingAreaOutline->window) //***1.99 - notebook page may  be hidden
 			return;
 
 		mGC = gdk_gc_new(mDrawingAreaOutline->window);
@@ -1961,7 +1976,8 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_container_add(GTK_CONTAINER(mButtonModify), tmpBox);
 
 	gtk_widget_show(mButtonModify);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonModify);
+	//***1.99 - this button goes with the data in the new notebook page below
+	//gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonModify);
 	GTK_WIDGET_SET_FLAGS (mButtonModify, GTK_CAN_DEFAULT);
 	gtk_tooltips_set_tip (tooltips, mButtonModify, _("Modify selected entry in the database."), NULL);
 	//***002DB <
@@ -1969,7 +1985,9 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	mainInfoTable = gtk_table_new (7, 2, FALSE);
 	gtk_widget_show(mainInfoTable);
-	gtk_box_pack_start (GTK_BOX (mainLeftVBox), mainInfoTable, FALSE, TRUE, 0);
+	//***1.99 - the data table now goes inside a notebook page in the tabbed
+	// view code below
+	//gtk_box_pack_start (GTK_BOX (mainLeftVBox), mainInfoTable, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (mainInfoTable), 3);
 	gtk_table_set_row_spacings (GTK_TABLE (mainInfoTable), 4);
 	gtk_table_set_col_spacings (GTK_TABLE (mainInfoTable), 5);
@@ -2065,6 +2083,9 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_editable (GTK_ENTRY (mEntryID), FALSE);
 
+	//***1.99 - the right frame will now contain a TABBED area for the
+	// modified image, original image, data fields, outline, ...
+
 	rightFrame = gtk_frame_new(NULL);
 	gtk_widget_show(rightFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(rightFrame), GTK_SHADOW_IN);
@@ -2074,15 +2095,30 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainRightVBox);
 	gtk_container_add(GTK_CONTAINER(rightFrame), mainRightVBox);
 
-	mFrame = gtk_frame_new(_("(ID Code)"));
-	gtk_container_set_border_width(GTK_CONTAINER(mFrame), 3);
-	gtk_frame_set_label_align(GTK_FRAME(mFrame), 1.0, 0.0);
-	gtk_widget_show(mFrame);
-	gtk_box_pack_start(GTK_BOX (mainRightVBox), mFrame, TRUE, TRUE, 0);
+	//*** - here is the NEW tabbed notebook
+
+	GtkWidget *notebook = gtk_notebook_new();
+
+	gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
+	gtk_box_pack_start(GTK_BOX (mainRightVBox), notebook, TRUE, TRUE, 0);
+	gtk_widget_show(notebook);
+
+	GtkWidget *tempLabel; // for tab text
+
+	// now create a framed view for the MODIFIED IMAGE and put it in the notebook
+	// as page number 1
+
+	mFrameMod = gtk_frame_new(_("(ID Code)"));
+	gtk_container_set_border_width(GTK_CONTAINER(mFrameMod), 3);
+	gtk_frame_set_label_align(GTK_FRAME(mFrameMod), 1.0, 0.0);
+	gtk_widget_show(mFrameMod);
+	tempLabel = gtk_label_new(_("Modified Image"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), mFrameMod, tempLabel);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),0); // this is default page
 
 	mainEventBoxImage = gtk_event_box_new ();
 	gtk_widget_show (mainEventBoxImage);
-	gtk_container_add (GTK_CONTAINER (mFrame), mainEventBoxImage);
+	gtk_container_add (GTK_CONTAINER (mFrameMod), mainEventBoxImage);
 
 	mDrawingAreaImage = gtk_drawing_area_new ();
 	gtk_widget_show (mDrawingAreaImage);
@@ -2090,11 +2126,36 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	gtk_drawing_area_size(GTK_DRAWING_AREA(mDrawingAreaImage), IMAGE_WIDTH, IMAGE_HEIGHT);
 
+	// now create a framed view for the ORIGINAL IMAGE and put it in the notebook
+	// as page number 2
+
+	mFrameOrig = gtk_frame_new(_("(ID Code)"));
+	gtk_container_set_border_width(GTK_CONTAINER(mFrameOrig), 3);
+	gtk_frame_set_label_align(GTK_FRAME(mFrameOrig), 1.0, 0.0);
+	gtk_widget_show(mFrameOrig);
+	tempLabel = gtk_label_new(_("Original Image"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), mFrameOrig, tempLabel);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook),0); // this is default page
+
+	GtkWidget *mainEventBoxOrigImage = gtk_event_box_new ();
+	gtk_widget_show (mainEventBoxOrigImage);
+	gtk_container_add (GTK_CONTAINER (mFrameOrig), mainEventBoxOrigImage);
+
+	mDrawingAreaOrigImage = gtk_drawing_area_new ();
+	gtk_widget_show (mDrawingAreaOrigImage);
+	gtk_container_add (GTK_CONTAINER (mainEventBoxOrigImage), mDrawingAreaOrigImage);
+
+	gtk_drawing_area_size(GTK_DRAWING_AREA(mDrawingAreaOrigImage), IMAGE_WIDTH, IMAGE_HEIGHT);
+
+	// now create a framed view for the fin OUTLINE and put it in the notebook
+	// as page number 3
+
 	mainFrameOutline = gtk_frame_new (_("Fin Outline"));
 	gtk_container_set_border_width(GTK_CONTAINER(mainFrameOutline), 3);
 	gtk_frame_set_label_align(GTK_FRAME(mainFrameOutline), 1.0, 0.0);
 	gtk_widget_show (mainFrameOutline);
-	gtk_box_pack_start (GTK_BOX (mainRightVBox), mainFrameOutline, TRUE, TRUE, 0);
+	tempLabel = gtk_label_new(_("Fin Outline"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), mainFrameOutline, tempLabel);
 
 	mainEventBoxOutline = gtk_event_box_new ();
 	gtk_widget_show (mainEventBoxOutline);
@@ -2106,6 +2167,27 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	gtk_drawing_area_size(GTK_DRAWING_AREA(mDrawingAreaOutline), IMAGE_WIDTH/4, IMAGE_HEIGHT/4);
 
+	// now create a framed view for the fin DATA and put it in the notebook
+	// as page number 4
+	GtkWidget *dataFrame = gtk_frame_new (_("Fin Data"));
+	gtk_container_set_border_width(GTK_CONTAINER(dataFrame), 3);
+	gtk_frame_set_label_align(GTK_FRAME(dataFrame), 1.0, 0.0);
+	gtk_widget_show (dataFrame);
+	tempLabel = gtk_label_new(_("Fin Data"));
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebook), dataFrame, tempLabel);
+	// connect data table to this new frame
+	gtk_container_add (GTK_CONTAINER (dataFrame), mainInfoTable);
+
+	GtkWidget *hbuttonbox2 = gtk_hbutton_box_new();
+	gtk_widget_show(hbuttonbox2);
+	gtk_container_add(GTK_CONTAINER(mainRightVBox), hbuttonbox2);
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbuttonbox2), GTK_BUTTONBOX_SPREAD);
+	
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), mButtonModify);
+
+
+	// FINALLY, at bottom of main window is a status bar
+	
 	mStatusBar = gtk_statusbar_new ();
 	gtk_widget_show(mStatusBar);
 
@@ -2224,6 +2306,10 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (mDrawingAreaImage), "expose_event",
 	                    GTK_SIGNAL_FUNC (on_mainDrawingAreaImage_expose_event),
 	                    (void *) this);
+	//***1.99 - new callback for exposure of Original image
+	gtk_signal_connect (GTK_OBJECT (mDrawingAreaOrigImage), "expose_event",
+	                    GTK_SIGNAL_FUNC (on_mainDrawingAreaOrigImage_expose_event),
+	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (mainEventBoxOutline), "button_press_event",
 	                    GTK_SIGNAL_FUNC (on_mainEventBoxOutline_button_press_event),
 	                    (void *) this);
@@ -2233,6 +2319,10 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	gtk_signal_connect (GTK_OBJECT(mDrawingAreaImage), "configure_event",
 	                    GTK_SIGNAL_FUNC(on_mainDrawingAreaImage_configure_event),
+	                    (void *) this);
+	//***1.99 - new callback for showing original image
+	gtk_signal_connect (GTK_OBJECT(mDrawingAreaOrigImage), "configure_event",
+	                    GTK_SIGNAL_FUNC(on_mainDrawingAreaOrigImage_configure_event),
 	                    (void *) this);
 
 	gtk_signal_connect (GTK_OBJECT(mDrawingAreaOutline), "configure_event",
@@ -3002,7 +3092,8 @@ void on_mainCList_select_row(
 		gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryDamage), damage);
 		gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryDescription), shortdescription);
 
-		gtk_frame_set_label(GTK_FRAME(mainWin->mFrame), idcode);
+		gtk_frame_set_label(GTK_FRAME(mainWin->mFrameMod), idcode);
+		gtk_frame_set_label(GTK_FRAME(mainWin->mFrameOrig), idcode);
 
 		delete[] idcode;
 		delete[] name;
@@ -3031,9 +3122,12 @@ void on_mainCList_select_row(
 			// newly selected fin IS NOT the same fin as was previously selected
 			// so remember offset and force reloading of fin image
 			if (mainWin->mWindow->window != NULL) //***1.85
+			{
 				on_mainDrawingAreaImage_configure_event(mainWin->mDrawingAreaImage,NULL,userData); //***1.7
-			// configure call above reloads image, so remember the offset of the fin
-			// with the currently loaded image, but do so AFTER the configure event
+				on_mainDrawingAreaOrigImage_configure_event(mainWin->mDrawingAreaOrigImage,NULL,userData); //***1.7
+				// configure call above reloads image, so remember the offset of the fin
+				// with the currently loaded image, but do so AFTER the configure event
+			}
 			mainWin->mDBCurEntryOffset = mainWin->mSelectedFin->mDataPos; //***1.96a
 		}
 
@@ -3042,6 +3136,7 @@ void on_mainCList_select_row(
 	}
 	
 	mainWin->refreshImage();
+	mainWin->refreshOrigImage(); //***1.99
 	mainWin->refreshOutline();
 	// the following now ONLY updates the scrolling list to display correctly
 	mainWin->selectFromCList(mainWin->mDBCurEntry); //***1.7
@@ -3224,6 +3319,47 @@ gboolean on_mainDrawingAreaImage_expose_event(
 }
 
 //*******************************************************************
+gboolean on_mainDrawingAreaOrigImage_expose_event(
+	GtkWidget *widget,
+	GdkEventExpose *event,
+	gpointer userData)
+{
+	MainWindow *mainWin = (MainWindow *) userData;
+
+	if (NULL == mainWin)
+		return FALSE;
+
+	if(mainWin->mDatabase->size()==0){		//***002DB >
+		gdk_draw_rectangle(
+			mainWin->mDrawingAreaOrigImage->window,
+			mainWin->mDrawingAreaOrigImage->style->bg_gc[GTK_STATE_NORMAL],
+			TRUE,
+			0,
+			0,
+			widget->allocation.width,
+			widget->allocation.height);
+		return TRUE;
+	}						//***002DB <
+
+	//***1.85 - moved from above backgound redraw
+	if (NULL == mainWin->mDrawingAreaOrigImage || NULL == mainWin->mOrigImage)
+		return FALSE;
+
+	gdk_draw_rgb_image(
+		mainWin->mDrawingAreaOrigImage->window,
+		mainWin->mDrawingAreaOrigImage->style->fg_gc[GTK_STATE_NORMAL],
+		0, 0,
+		mainWin->mOrigImage->getNumCols(),
+		mainWin->mOrigImage->getNumRows(),
+		GDK_RGB_DITHER_NONE,
+		(guchar*)mainWin->mOrigImage->getData(),
+		mainWin->mOrigImage->bytesPerPixel() * mainWin->mOrigImage->getNumCols()
+		);
+
+	return TRUE;
+}
+
+//*******************************************************************
 gboolean on_mainEventBoxOutline_button_press_event(
 	GtkWidget *widget,
 	GdkEventButton *event,
@@ -3338,6 +3474,8 @@ gboolean on_mainDrawingAreaOutline_configure_event(
 	mainWin->mCurContourHeight = widget->allocation.height;
 	mainWin->mCurContourWidth = widget->allocation.width;
 
+	mainWin->updateGC(); //***1.99 - in cae notebook page was hidden initially
+
 	mainWin->refreshOutline();
 
 	return TRUE;
@@ -3379,12 +3517,21 @@ gboolean on_mainDrawingAreaImage_configure_event(
 			mainWin->mDrawingAreaImage->allocation.height, //***1.7
 			mainWin->mDrawingAreaImage->allocation.width); //***1.7
 
+	//***1.99 - since the resizeWithBorder DOES NOT preserve any image
+	// attributes except the basi image pixel data, we must copy the info
+	// over here -- this should be fixed in the image classes and their support
+	// functions - JHS
+
+	mainWin->mImage->mOriginalImageFilename = tempImage->mOriginalImageFilename;
+	mainWin->mImage->mNormScale = tempImage->mNormScale; // this may not be usefull
+	mainWin->mImage->mImageMods = tempImage->mImageMods;
+
 	//***1.8 - if information available, set up FRAME label to indicate any image reversal
 	gchar *frameLabel = new gchar[mainWin->mSelectedFin->mIDCode.length() + 12]; // leave room for " (reversed)"
 	strcpy(frameLabel,mainWin->mSelectedFin->mIDCode.c_str());
 	if (tempImage->mImageMods.imageIsReversed())
 		strcat(frameLabel, " (reversed)");
-	gtk_frame_set_label(GTK_FRAME(mainWin->mFrame), frameLabel);
+	gtk_frame_set_label(GTK_FRAME(mainWin->mFrameMod), frameLabel);
 	delete[] frameLabel;
 	//***1.8 - end
 
@@ -3415,6 +3562,71 @@ gboolean on_mainDrawingAreaImage_configure_event(
 	delete tempImage;
 
 	mainWin->refreshImage();
+
+	return TRUE;
+}
+
+//*******************************************************************
+gboolean on_mainDrawingAreaOrigImage_configure_event(
+	GtkWidget *widget,
+	GdkEventConfigure *event,
+	gpointer userData)
+{
+	MainWindow *mainWin = (MainWindow *) userData;
+
+	if (NULL == mainWin)
+		return FALSE;
+
+	if (NULL == mainWin->mSelectedFin)
+		return TRUE;
+
+	//***1.96a - no change in image so no need to reconfigure (reload image)
+	// second condition makes sure this was called by us on Clist row selection
+	// and NOT by an actual window size/state change
+	if ((mainWin->mSelectedFin->mDataPos == mainWin->mDBCurEntryOffset) &&
+		(event == NULL))
+		return TRUE;
+
+	// the only way we know the original image name is if the modifed image
+	// is already loaded, so if not we bail
+	if (NULL == mainWin->mImage)
+		return FALSE;
+
+	// if the original image name is not available, then mImage is not
+	// a darwin modified image, so again we bail
+	if ("" == mainWin->mImage->mOriginalImageFilename)
+		return FALSE;
+
+	// set the selected fin's original filename
+	string path = mainWin->mSelectedFin->mImageFilename;
+	path = path.substr(0,path.rfind(PATH_SLASH)+1); // don't strip slash
+	mainWin->mSelectedFin->mOriginalImageFilename =
+			path + 
+			mainWin->mImage->mOriginalImageFilename; // short name
+
+	cout << "ORIG: " << mainWin->mSelectedFin->mOriginalImageFilename << endl;
+
+	delete mainWin->mOrigImage;
+
+	// since resizeWithBorder creates a new image, we must delete this one after it is used
+	ColorImage *tempImage = new ColorImage(mainWin->mSelectedFin->mOriginalImageFilename);
+
+	mainWin->mOrigImage = resizeWithBorder(		
+			tempImage,
+			mainWin->mDrawingAreaOrigImage->allocation.height, //***1.7
+			mainWin->mDrawingAreaOrigImage->allocation.width); //***1.7
+
+	//indicat that this is the original image
+	gchar *frameLabel = new gchar[mainWin->mSelectedFin->mIDCode.length() + 12]; // leave room for " (reversed)"
+	strcpy(frameLabel,mainWin->mSelectedFin->mIDCode.c_str());
+	strcat(frameLabel, " (original)");
+	gtk_frame_set_label(GTK_FRAME(mainWin->mFrameOrig), frameLabel);
+	delete[] frameLabel;
+
+	// delete here or memory leak results
+	delete tempImage;
+
+	mainWin->refreshOrigImage();
 
 	return TRUE;
 }

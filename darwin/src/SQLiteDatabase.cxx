@@ -1684,6 +1684,7 @@ DatabaseFin<ColorImage>* SQLiteDatabase::getFin(int id) {
 		);
 	
 	delete fc; 	//***1.0LK - fc is COPIED in Outline so we must delete it here
+	delete finOutline; //***1.99 - this is COPIED in the DatabaseFin *fin
 	delete points;
 	
 	return fin;
@@ -2004,7 +2005,6 @@ void SQLiteDatabase::closedb() {
 // Create empty db
 //
 
-//void SQLiteDatabase::createEmptyDatabase(Options *o) {
 void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	stringstream sql;
 	DBDamageCategory cat;
