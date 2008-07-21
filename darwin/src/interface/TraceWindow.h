@@ -64,7 +64,7 @@ class TraceWindow
 		//***1.4 - new version for loading single previously traced fin file into TraceWindow
 		TraceWindow::TraceWindow(
 				MainWindow *m,
-				const string &fileName,
+				const std::string &fileName,
 				DatabaseFin<ColorImage> *unkFin,
 				Database *db,
 				Options *o);
@@ -94,7 +94,7 @@ class TraceWindow
 		// returns scale factor used to normalize *c relative to origin
 		friend float normalizeContour(Contour *c); //***006CM
 
-		void setSavedFinFilename(string fname); //***1.6
+		void setSavedFinFilename(std::string fname); //***1.6
 
 		ImageModList& theImageMods(); //***1.8 - ref to list so it can be accessed/modified
 
@@ -314,7 +314,7 @@ class TraceWindow
 		Outline
 			*mOutline; //***008OL
 
-		string mSavedLabel;   //***054
+		std::string mSavedLabel;   //***054
 
 		//***006FC new member widgets
 

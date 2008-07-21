@@ -106,11 +106,11 @@ public:
 
 	//***1.85 - new functions for processing lists IN MEMORY without file access
 		
-	string getItemEntryFromList(db_sort_t whichList, unsigned pos); //***1.85
+	std::string getItemEntryFromList(db_sort_t whichList, unsigned pos); //***1.85
 
-	int getItemListPosFromOffset(db_sort_t whichList, string item); //***1.85
+	int getItemListPosFromOffset(db_sort_t whichList, std::string item); //***1.85
 
-	string getFilename(); //***1.85
+	std::string getFilename(); //***1.85
 
 	virtual bool openStream() = 0;
 	virtual bool closeStream() = 0;

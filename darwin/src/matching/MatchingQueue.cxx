@@ -94,7 +94,12 @@ Match *MatchingQueue::getNextUnknownToMatch()
 
 	//mUnknownFin = this->getItemNum(mCurrentFinID); replaced
 	string tracedFinFilename = this->getItemNum(mCurrentFinID); //***1.1
-	mUnknownFin = new DatabaseFin<ColorImage>(tracedFinFilename); //***1.1
+	
+	if(string::npos == tracedFinFilename.find_last_of(".finz"))
+		mUnknownFin = new DatabaseFin<ColorImage>(tracedFinFilename); //***1.1
+	else
+		mUnknownFin = openFinz(tracedFinFilename);
+
 	mMatcher = new Match(mUnknownFin, mFinDatabase, mOptions);
 	mResults = mMatcher->getMatchResults();
 	mResults->setFinFilename(tracedFinFilename); //***1.1

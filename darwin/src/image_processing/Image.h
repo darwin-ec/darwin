@@ -21,7 +21,7 @@ public:
 	InvalidImage() : Error("Invalid image.")
 	{ }
 
-	InvalidImage(string s) : Error("Invalid image passed to: " + s)
+	InvalidImage(std::string s) : Error("Invalid image passed to: " + s)
 	{ }
 };
 
@@ -30,7 +30,7 @@ public:
 	ImageSizeMismatch() : Error("Image sizes do not match.")
 	{ }
 
-	ImageSizeMismatch(string s) : Error("Image sizes do not match in: " + s)
+	ImageSizeMismatch(std::string s) : Error("Image sizes do not match in: " + s)
 	{ }
 };
 

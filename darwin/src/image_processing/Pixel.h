@@ -13,7 +13,7 @@
 #include "types.h"
 #include "../utility.h"
 
-using namespace std;
+// using namespace std;
 
 const unsigned MAX_PIXEL_INTENSITY = 255;
 

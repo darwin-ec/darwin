@@ -55,7 +55,7 @@ class MatchResultsWindow
 				MatchingDialog *matchingDialog, //***043MA
 				//GtkWidget *parentWindow,        //***1.3
 				MatchingQueueDialog *matchingQueueDialog, //***1.3
-				string resultsFilename, //***1.6
+				std::string resultsFilename, //***1.6
 				Options *o);
 		
 		// Destructor
@@ -261,7 +261,7 @@ class MatchResultsWindow
 		GdkGC *mGC1, *mGC2;
 		GdkCursor *mCursor;
 
-		string mSaveMessage; //***1.6 - used to display name(s) of files saved when saving RESULTS
+		std::string mSaveMessage; //***1.6 - used to display name(s) of files saved when saving RESULTS
 
 		bool mLocalHideIDs; //***1.65 - to allow hide/show of IDs, just affecting this window
 
@@ -292,7 +292,7 @@ class MatchResultsWindow
 		void updateGCColor(GdkGC *gc, double color[4]);
 
 		//***1.4 - part of saving MatchResults
-		string saveFinIfNeeded();
+		std::string saveFinIfNeeded();
 
 };
 

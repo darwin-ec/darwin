@@ -1,7 +1,7 @@
 // CatalogSupport.h
 
-#ifndef DATABASE_SUPPORT_H
-#define DATABASE_SUPPORT_H
+#ifndef CATALOG_SUPPORT_H
+#define CATALOG_SUPPORT_H
 
 #include "interface/ErrorDialog.h"
 #include "Database.h"
@@ -13,17 +13,17 @@
 #include "utility.h"
 
 typedef enum {
-			cannotOpen = 0,
-				canOpen,
-				convert
-	} db_opentype_t;
+	cannotOpen = 0,
+	canOpen,
+	convert
+} db_opentype_t;
 
 Database* openDatabase(Options *o, bool create);
-Database * openDatabase(MainWindow *mainWin, string filename);
+Database * openDatabase(MainWindow *mainWin, std::string filename);
 void copyFins(Database* from, Database *to);
-db_opentype_t databaseOpenType(string filePath);
-Database* convertDatabase(Options* o, string sourceFilename);
-Database* duplicateDatabase(Options* o, Database* sourceDatabase, string targetFilename);
+db_opentype_t databaseOpenType(std::string filePath);
+Database* convertDatabase(Options* o, std::string sourceFilename);
+Database* duplicateDatabase(Options* o, Database* sourceDatabase, std::string targetFilename);
 
 void rebuildFolders(std::string home, std::string area, bool force);
 void extractCatalogFiles(std::string backupFilename, std::string toFollder);
@@ -34,22 +34,22 @@ bool restoreCatalogFrom(std::string filename,
 						std::string restoreHome, 
 						std::string restoreArea);
 bool exportCatalogTo(Database *db, Options *o, std::string filename);
-bool importCatalogFrom(string backupFilename, 
-						string restorePath, 
-						string restoreHome, 
-						string restoreArea);
+bool importCatalogFrom(std::string backupFilename, 
+						std::string restorePath, 
+						std::string restoreHome, 
+						std::string restoreArea);
 
-bool createArchive (Database *db, string filename); // creates zipped catalog
-bool continueOverwrite(string winLabel, string message, string fileName);
+bool createArchive (Database *db, std::string filename); // creates zipped catalog
+bool continueOverwrite(std::string winLabel, std::string message, std::string fileName);
 
-DatabaseFin<ColorImage>* openFin(string filename);
-bool saveFin(DatabaseFin<ColorImage>* fin, string filename);
+DatabaseFin<ColorImage>* openFin(std::string filename);
+bool saveFin(DatabaseFin<ColorImage>* fin, std::string filename);
 
-DatabaseFin<ColorImage>* openFinz(string filename);
-void saveFinz(DatabaseFin<ColorImage>* fin, string filename);
+DatabaseFin<ColorImage>* openFinz(std::string filename);
+void saveFinz(DatabaseFin<ColorImage>* fin, std::string filename);
 
-string saveImages(DatabaseFin<ColorImage>* fin, string savefolder, string filename);
+std::string saveImages(DatabaseFin<ColorImage>* fin, std::string savefolder, std::string filename);
 
-bool testFileExistsAndPrompt(string filename);
+bool testFileExistsAndPrompt(std::string filename);
 
 #endif

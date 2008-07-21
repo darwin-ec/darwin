@@ -1,5 +1,11 @@
 
+/*
+ * RJ wrote this -- replacing with proper header.
+ */
+
 #include "SQLiteDatabase.h"
+
+using namespace std;
 
 //#include "SQLiteDatabase.cpp" -- all code already included below -- JHS
 

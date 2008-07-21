@@ -780,7 +780,7 @@ class DatabaseFin
 		// loading from the database, the filenames include no path info and
 		// must be catenated with the correct catalog path
 		//
-		string load(std::fstream &inFile, std::string inFilename, bool fromDBfile)
+		std::string load(std::fstream &inFile, std::string inFilename, bool fromDBfile)
 		{
 			try {
 				char line[255];

@@ -320,8 +320,8 @@ class MainWindow
 
 		bool mShowAlternates; //***1.95
 
-		vector<int> mRow2Id; //***1.95 - since not all images may be displayed
-		vector<int> mId2Row; //***1.95 - since not all images may be displayed
+		std::vector<int> mRow2Id; //***1.95 - since not all images may be displayed
+		std::vector<int> mId2Row; //***1.95 - since not all images may be displayed
 
 		guint mContextID;
 
@@ -342,7 +342,7 @@ class MainWindow
 
 		Options *mOptions;
 
-		string
+		std::string
 			mImportFromFilename, //***1.85
 			mExportToFilename;   //***1.85
 

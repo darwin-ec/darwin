@@ -96,7 +96,7 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 	{
 	case saveFin:
 		saveFCDialog = gtk_file_chooser_dialog_new (
-				_("Enter filename for the Traced Fin File(*.fin)"),
+				_("Enter filename for the Traced Fin File(*.finz)"),
 				GTK_WINDOW(mParent),
 				GTK_FILE_CHOOSER_ACTION_SAVE,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -106,8 +106,8 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 		// gtk_file_chooser_set_do_overwrite_confirmation(
 		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
 		filter = gtk_file_filter_new();
-		gtk_file_filter_set_name(filter, "Fin Files (*.fin)");
-		gtk_file_filter_add_pattern(filter, "*.fin");
+		gtk_file_filter_set_name(filter, "Finz Files (*.finz)");
+		gtk_file_filter_add_pattern(filter, "*.finz");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
 		filter = gtk_file_filter_new();
 		gtk_file_filter_set_name(filter, "All Files (*.*)");

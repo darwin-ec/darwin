@@ -15,9 +15,11 @@
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 #include <list>
+#include "Match.h"
+#include "../CatalogSupport.h"
 #include "../DatabaseFin.h"
 #include "../Database.h"
-#include "Match.h"
+
 
 typedef struct {
 	std::string
@@ -52,7 +54,7 @@ class MatchingQueue
 
 		void finalizeMatch(); //***1.1
 
-		void summarizeMatching(ostream& out = cout); //***1.1
+		void summarizeMatching(std::ostream& out = std::cout); //***1.1
 
 		Match *getNextUnknownToMatch(); //***1.1
 		Match *getCurrentUnknownToMatch(); //***1.1

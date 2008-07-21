@@ -12,6 +12,8 @@
 #include <iostream> //for debug purposes
 #include "image_processing/transform.h"//used for resizeNN
 
+using namespace std;
+
 //#define DEBUG
 /*
  * See IntensityContour::IntensityContour(GrayImage*)

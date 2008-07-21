@@ -28,7 +28,7 @@ class CreateDatabaseDialog
 			createNewDatabaseOnly
 		};
 
-		CreateDatabaseDialog(MainWindow *mainWin, Options *o, string archiveFilename);
+		CreateDatabaseDialog(MainWindow *mainWin, Options *o, std::string archiveFilename);
 		
 		~CreateDatabaseDialog();
 

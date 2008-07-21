@@ -858,7 +858,7 @@ GtkWidget* MatchingQueueDialog::createMatchingQueueFileChooserDialog()
 	{
 	case ADD_FILENAME:
   		matchingQueueFileChooserDialog = gtk_file_chooser_dialog_new (
-				_("Select a Traced Fin (*.fin)"),
+				_("Select a Traced Fin (*.fin, *.finz)"),
 				GTK_WINDOW(this->mDialog),
 				GTK_FILE_CHOOSER_ACTION_OPEN,
 				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -866,8 +866,9 @@ GtkWidget* MatchingQueueDialog::createMatchingQueueFileChooserDialog()
 				NULL);
 				
 		filter = gtk_file_filter_new();
-		gtk_file_filter_set_name(filter, "Fin Files (*.fin)");
+		gtk_file_filter_set_name(filter, "Fin(z) Files (*.fin, *.finz)");
 		gtk_file_filter_add_pattern(filter, "*.fin");
+		gtk_file_filter_add_pattern(filter, "*.finz");
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(matchingQueueFileChooserDialog),filter);
 		filter = gtk_file_filter_new();
 		gtk_file_filter_set_name(filter, "All Files (*.*)");
@@ -1058,11 +1059,18 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 				{
 					g_print("Could not open selected file!\n");
 					inFile.clear();
+					g_free(g_slist_nth(fileNames,i)->data);
 					//showError("Could not open selected file!");
-					//break;
+					break;
+				}
+
+				if(fileName.find_last_of(".finz") != string::npos)
+				{
+					dialog->mMatchingQueue->add(fileName);
+					dialog->updateQueueList();
 				}
 				else
-				{
+				{ 
 					char test[sizeof(unsigned long)+1];
 					inFile.read((char*)&test, sizeof(unsigned long));
 					inFile.close();

@@ -36,7 +36,7 @@
     #include <limits.h>
 #endif
 
-using namespace std;
+// using namespace std;
 
 //define a unsigned char as uchar.  Easier to type.
 typedef unsigned char uchar;
@@ -130,8 +130,8 @@ public:
 	~c_Exif();
 
 	//accessor functions
-	string GetDate();
-	string GetTime();
+	std::string GetDate();
+	std::string GetTime();
 	
 private:
 	unsigned char * LastExifRefd;
@@ -142,8 +142,8 @@ private:
 	int MotorolaOrder;
 	uchar DateTime [20];
 	int  numDateTimeTags;
-	string Date;
-	string Time;
+	std::string Date;
+	std::string Time;
 	int SectionsRead;
 	int HaveAll;
 	Section_t Sections[MAX_SECTIONS];

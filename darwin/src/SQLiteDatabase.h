@@ -114,8 +114,8 @@ private:
 	int rc;
 
 	static char* handleNull(char *);
-	static string escapeString(string);
-	static string stripEscape(string);
+	static std::string escapeString(std::string);
+	static std::string stripEscape(std::string);
 
 	int lastInsertedRowID();
 	void setSyncMode(int mode);
@@ -175,14 +175,14 @@ private:
 	void opendb(const char *);
 	void closedb();
 	void loadLists();
-	void addFinToLists(int, string, string, string, string,
-							   string, string, string);
+	void addFinToLists(int, std::string, std::string, std::string, std::string,
+							   std::string, std::string, std::string);
 	void deleteFinFromLists(int);
 	void addFinToLists(DatabaseFin<ColorImage>*);
 	void sortLists();
-	string nullToNone(string);
-	void SQLiteDatabase::deleteEntry(std::vector<string>*, int);
-	int SQLiteDatabase::listEntryToID(string);
+	std::string nullToNone(std::string);
+	void SQLiteDatabase::deleteEntry(std::vector<std::string>*, int);
+	int SQLiteDatabase::listEntryToID(std::string);
 
 
 };

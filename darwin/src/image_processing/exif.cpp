@@ -13,6 +13,7 @@
 
 #include "exif.h"
 
+using namespace std;
 
 //--------------------------------------------------------------------------
 // Convert a 16 bit unsigned value from file's native byte order

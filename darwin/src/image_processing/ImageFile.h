@@ -174,7 +174,7 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 	  mNormScale(1.0f), //***1.5
 	  mOriginalImageFilename("") //***1.9
 {
-	std::ifstream infile(filename.c_str(), ios::binary);
+	std::ifstream infile(filename.c_str(), std::ios::binary);
 
 	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
 
@@ -229,7 +229,7 @@ inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols, PIXEL_TY
 template <class PIXEL_TYPE>
 void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 {
-	std::ifstream infile(filename.c_str(), ios::binary);
+	std::ifstream infile(filename.c_str(), std::ios::binary);
 
 	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
 
@@ -484,7 +484,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNM(std::ifstream& infile)
 		numRows,
 		numCols;
 
-	infile.seekg (0, ios::beg);
+	infile.seekg (0, std::ios::beg);
 
 	// Grab the first line which should include the PNM #
 	infile.getline (PNMType, 255); 
@@ -613,7 +613,7 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 	unsigned char pixID; //***1.95
 
 	// read start pos of image
-	infile.seekg(10, ios::beg);
+	infile.seekg(10, std::ios::beg);
 
 	infile.read((char*)byteString, 4);
 	readTemp = byteStringToInt(byteString, 4);
@@ -661,7 +661,7 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 
 			// Move past some header junk
 			// ImageSize, XPixelsPerM, YPixelsPerM
-			infile.seekg(12, ios::cur);
+			infile.seekg(12, std::ios::cur);
 			
 			infile.read((char*)byteString, 4);
 			readTemp = byteStringToInt(byteString, 4);
@@ -710,7 +710,7 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 	}
 
 	// skip to the bitmap mData
-	infile.seekg(startpos, ios::beg); //***1.95 moved from above previous check
+	infile.seekg(startpos, std::ios::beg); //***1.95 moved from above previous check
 
 	mRows = numRows;
 	mCols = numCols;
@@ -1019,7 +1019,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNGcommentsOnly(const std::string &filename)
 template <class PIXEL_TYPE>
 bool ImageFile<PIXEL_TYPE>::saveRawPPM(const std::string &filename) const
 {
-	std::ofstream outfile(filename.c_str(), ios::binary);
+	std::ofstream outfile(filename.c_str(), std::ios::binary);
 
 	if (!outfile) throw SaveError();
 
@@ -1049,7 +1049,7 @@ bool ImageFile<PIXEL_TYPE>::saveRawPPM(const std::string &filename) const
 template <class PIXEL_TYPE>
 bool ImageFile<PIXEL_TYPE>::saveRawPGM(const std::string &filename) const
 {
-	std::ofstream outfile(filename.c_str(), ios::binary);
+	std::ofstream outfile(filename.c_str(), std::ios::binary);
 
 	if (!outfile) throw SaveError();
 

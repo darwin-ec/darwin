@@ -777,10 +777,9 @@ string saveImages(DatabaseFin<ColorImage>* fin, string saveFolder, string fileNa
 	return copyFilename;
 }
 
-//
-// open new archived fin file
-//
-
+/*
+ * Open Finz file for viewing
+ */
 DatabaseFin<ColorImage>* openFinz(string filename)
 {
 
@@ -832,6 +831,9 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	return fin;
 }
 
+/*
+ * Saves a fin into a finz file
+ */
 void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 {
 	Options o;	

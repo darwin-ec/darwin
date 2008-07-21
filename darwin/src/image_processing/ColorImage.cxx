@@ -13,6 +13,8 @@
 #include "../../pixmaps/question.xpm" //***1.5
 #include "../../pixmaps/fnf.xpm" //***1.5
 
+using namespace std;
+
 void ColorImage::createDefaultImageFromXPM(char **xpm)
 {
 	int colors, chPerColor;
