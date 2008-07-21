@@ -2605,7 +2605,11 @@ void on_export_finz_activate(
 {
 	// just a stub!
 
-	cout << "Exporting Fin to *.finz file (NOT INPLEMENTED YET!)" << endl;
+	cout << "Exporting Fin to *.finz file (NOT FULLY INPLEMENTED YET!)" << endl;
+
+	//Save the currently selected fin for the moment (should show dialog allowing for multiple fin selection (or all fins))
+	MainWindow *mainWin = (MainWindow *)userData;
+	/*CatalogSupport*/saveFinz(mainWin->mSelectedFin,"test.finz");
 }
 
 //*******************************************************************

@@ -873,6 +873,10 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 
 	fin->mOriginalImageFilename = extractBasename(targetFilename);
 	
+	if (fin->mModifiedFinImage==NULL) {
+		fin->mModifiedFinImage=new ColorImage(fin->mImageFilename);
+	}
+
 	// replace ."finz" with "_wDarwinMods.png" for modified image filename
 	pos = baseFilename.rfind(".");
 	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
