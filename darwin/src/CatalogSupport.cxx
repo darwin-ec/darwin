@@ -813,6 +813,7 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	}
 
 	DatabaseFin<ColorImage>* fin = db->getItem(0); // first and only fin
+
 	
 
 	// construct absolute file paths and open images
@@ -820,13 +821,17 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 	fin->mImageFilename = tempdir + PATH_SLASH + baseimgfilename;
 	fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
 	fin->mOriginalImageFilename = tempdir + PATH_SLASH + extractBasename(fin->mModifiedFinImage->mOriginalImageFilename);
+	
 	if ("" != fin->mOriginalImageFilename)
+	{
 		fin->mFinImage = new ColorImage(fin->mOriginalImageFilename);
+	}
+	
 	fin->mImageMods = fin->mModifiedFinImage->mImageMods;
 
+	cout << "img mods size " << fin->mImageMods.size() << endl;
+
 	delete db;
-	
-	cout << " if you get this message, i'm just letting you know I'm going down" << endl;
 
 	return fin;
 }
@@ -873,18 +878,28 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 
 	fin->mOriginalImageFilename = extractBasename(targetFilename);
 	
-	if (fin->mModifiedFinImage==NULL) {
-		fin->mModifiedFinImage=new ColorImage(fin->mImageFilename);
-	}
+	/*
+	 * It seems we have two situations for the image mod list.
+	 * If there is no modified image instantiated, then the mod list
+	 * should come from the instantion of the modified image. If there
+	 * is a modified image, it means that the mod list comes from
+	 * fin->mImageMods
+	 */
+	if (fin->mModifiedFinImage == NULL) {
+		fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
+		fin->mImageMods = fin->mModifiedFinImage->mImageMods;
+	} else
+		fin->mModifiedFinImage->mImageMods = fin->mImageMods;
 
 	// replace ."finz" with "_wDarwinMods.png" for modified image filename
 	pos = baseFilename.rfind(".");
 	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
 	
-	// save modified image
 	fin->mModifiedFinImage->save_wMods(fin->mImageFilename,
 		fin->mOriginalImageFilename,
 		fin->mImageMods);
+
+	// fin->mModifiedFinImage->mImageMods = fin->mModifiedFinImage->mImageMods;
 	
 	// set mod img path name as relative
 	fin->mImageFilename = extractBasename(fin->mImageFilename);	
