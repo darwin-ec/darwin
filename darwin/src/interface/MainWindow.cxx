@@ -2303,6 +2303,10 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (mainEventBoxImage), "button_press_event",
 	                    GTK_SIGNAL_FUNC (on_mainEventBoxImage_button_press_event),
 	                    (void *) this);
+	//***1.99 - new callback for popup viewer containing Original Image
+	gtk_signal_connect (GTK_OBJECT (mainEventBoxOrigImage), "button_press_event",
+	                    GTK_SIGNAL_FUNC (on_mainEventBoxOrigImage_button_press_event),
+	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (mDrawingAreaImage), "expose_event",
 	                    GTK_SIGNAL_FUNC (on_mainDrawingAreaImage_expose_event),
 	                    (void *) this);
@@ -2580,10 +2584,12 @@ void on_backup_database_activate(
 
 	if (! backupCatalog(mainWin->mDatabase))
 	{
-		cout << "OOPS!" << endl;
+		ErrorDialog *err = new ErrorDialog("Database backup failed.");
+		err->show();
 	}
 
-	if (! mainWin->mDatabase->openStream())
+	// must check here to ensure database reopened correctly
+	if (! mainWin->mDatabase->isOpen())
 	{
 		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
 		err->show();
@@ -2651,14 +2657,17 @@ void on_export_database_activate(
 		return;
 	}
 		
-	exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename);
-
-	if (! mainWin->mDatabase->openStream())
+	if (exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename))
 	{
-		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
+		ErrorDialog *err = new ErrorDialog("Catalog EXPORT failed.");
 		err->show();
 	}
 
+	if (! mainWin->mDatabase->isOpen())
+	{
+		ErrorDialog *err = new ErrorDialog("Catalog failed to reopen");
+		err->show();
+	}
 }
 
 //*******************************************************************
@@ -3262,6 +3271,34 @@ void on_mainButtonModify_clicked(		//***002DB - nf
 
 //*******************************************************************
 gboolean on_mainEventBoxImage_button_press_event(
+	GtkWidget *widget,
+	GdkEventButton *event,
+	gpointer userData)
+{
+	MainWindow *mainWin = (MainWindow *) userData;
+
+	if (NULL == mainWin)
+		return FALSE;
+
+	if (NULL == mainWin->mSelectedFin)
+		return FALSE;
+
+   // make sure the image exists before creating the ImageViewDialog
+   if (NULL == mainWin->mSelectedFin->mFinImage)
+      mainWin->mSelectedFin->mFinImage  = new ColorImage(mainWin->mSelectedFin->mImageFilename);
+
+	ImageViewDialog *dlg = new ImageViewDialog(
+			mainWin->mSelectedFin->mIDCode,
+			mainWin->mSelectedFin->mFinImage);
+	dlg->show();
+
+	return TRUE;
+}
+
+//*******************************************************************
+//***1.99 - new
+//
+gboolean on_mainEventBoxOrigImage_button_press_event(
 	GtkWidget *widget,
 	GdkEventButton *event,
 	gpointer userData)

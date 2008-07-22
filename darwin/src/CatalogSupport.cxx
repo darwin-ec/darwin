@@ -646,34 +646,30 @@ bool createArchive (Database *db, string filename)
 	command += "7z a -tzip ";
 	command += archiveFilename + " @" + fileListQuoted;
 			
-	db->closeStream();
-
 	ofstream archiveListFile;
 	archiveListFile.open(fileList.c_str());
 	if (! archiveListFile.fail())
 	{	
 		archiveListFile <<  fileListQuoted << endl;
-		archiveListFile << "\"" << db->getFilename() << "\"" << endl;
+		archiveListFile << "\"" << db->getFilename() << "\"" << endl;  // use db here so it cannot be closed
 		for (it = imageNames.begin(); it != imageNames.end(); ++it)
 			archiveListFile << "\"" << (*it) << "\"" << endl;
 
 		archiveListFile.close();
+		db->closeStream();
 
-		system(command.c_str()); // start the archive process using 7-zip
+		int error = system(command.c_str()); // start the archive process using 7-zip
+
+		db->openStream();
 
 		//***1.982 - remove "filesToArchive.txt"
 		command = "del " + fileListQuoted;
 		system(command.c_str());
+
+		return (0 == error);
 	}
 
-	if (! db->openStream())
-	{
-		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
-		err->show();
-		return false;
-	}
-
-	return true;
+	return false; // archive list could not be built
 }
 
 

@@ -114,6 +114,7 @@ public:
 
 	virtual bool openStream() = 0;
 	virtual bool closeStream() = 0;
+	bool isOpen() { return dbOpen;} //***1.99
 
 	//***1.99 - new access functions for catalog scheme moved from Options
 	std::string catCategoryName(int id);

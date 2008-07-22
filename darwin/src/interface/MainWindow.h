@@ -201,6 +201,12 @@ class MainWindow
 				GdkEventButton *event,
 				gpointer userData);
 
+		//***1.99 - create a popup containing the Original Image
+		friend gboolean on_mainEventBoxOrigImage_button_press_event(
+				GtkWidget *widget,
+				GdkEventButton *event,
+				gpointer userData);
+
 		friend gboolean on_mainDrawingAreaImage_expose_event(
 				GtkWidget *widget,
 				GdkEventExpose *event,
