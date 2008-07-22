@@ -95,7 +95,7 @@ Match *MatchingQueue::getNextUnknownToMatch()
 	//mUnknownFin = this->getItemNum(mCurrentFinID); replaced
 	string tracedFinFilename = this->getItemNum(mCurrentFinID); //***1.1
 	
-	if(string::npos == tracedFinFilename.find_last_of(".finz"))
+	if(string::npos == tracedFinFilename.rfind(".finz"))
 		mUnknownFin = new DatabaseFin<ColorImage>(tracedFinFilename); //***1.1
 	else
 		mUnknownFin = openFinz(tracedFinFilename);
@@ -367,9 +367,15 @@ void MatchingQueue::load(string fileName)
 
 	mFileNames.clear();
 
+	const int BUFFERSIZE = 1024;
+
+	char c[BUFFERSIZE];
+
 	string entry;
 
-	while (inFile >> entry) {
+	while (!inFile.eof()) {
+		inFile.getline(c, BUFFERSIZE);
+		entry = c;
 
 		//***1.1 - we assume ALL traced fin files are in the DARWINHOME/tracedFins
 		// folder, so we prepend the DARWINHOME part of the path here. The entries in
@@ -378,6 +384,7 @@ void MatchingQueue::load(string fileName)
 
 		//string filename = getenv("DARWINHOME");
 		//***1.85 - everything is now relative to the current survey area
+		
 		string filename = gOptions->mCurrentSurveyArea;
 		filename += PATH_SLASH;
 		filename += entry;
@@ -386,6 +393,7 @@ void MatchingQueue::load(string fileName)
 
 		//mFileNames.push_back(entry); replaced with following
 		mFileNames.push_back(filename); //***1.1
+		entry = "";
 	}
 
 	inFile.close(); // just to be nice

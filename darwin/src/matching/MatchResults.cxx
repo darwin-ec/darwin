@@ -15,6 +15,7 @@
 #include "../Error.h"
 #include "../utility.h"
 #include "../mapContour.h" //***1.1
+#include "../CatalogSupport.h"
 
 
 #include <iomanip>
@@ -336,10 +337,13 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 
 			return NULL;
 		}
-
+		
+		DatabaseFin<ColorImage> *unkFin;
 		//***1.85 - NOW create the database fin for the unknown
-
-		DatabaseFin<ColorImage> *unkFin = new DatabaseFin<ColorImage>(mTracedFinFile);
+		if(mTracedFinFile.rfind(".finz") == string::npos)
+			unkFin = new DatabaseFin<ColorImage>(mTracedFinFile);
+		else
+			unkFin = openFinz(mTracedFinFile);
 
 
 		getline(inFile,line); // skip Ranking

@@ -521,24 +521,30 @@ GtkWidget* MatchingQueueDialog::createMatchingQueueDialog()
 //
 void MatchingQueueDialog::updateQueueList()
 {
+	cout << "updating queue list" << endl;
 	if (NULL == mCList)
 		return;
 
 	gtk_clist_freeze(GTK_CLIST(mCList));
 	gtk_clist_clear(GTK_CLIST(mCList));
-
+	
+	cout << "getting queue" << endl;
 	list<queueItem_t> qList = mMatchingQueue->getQueue();
 	list<queueItem_t>::iterator it = qList.begin();
 
+	cout << "iterating list" << endl;
 	while (it != qList.end()) {
 		gchar *name, *date, *location;
-
+		
+		cout << "filename " << it->fileName << endl;
 		name = new gchar[it->fileName.length() + 1];
 		strcpy(name, it->fileName.c_str());
-
+		
+		cout << "date " << it->date <<endl;
 		date = new gchar[it->date.length() + 1];
 		strcpy(date, it->date.c_str());
 		
+		cout << "location " << it->location << endl;
 		location = new gchar[it->location.length() + 1];
 		strcpy(location, it->location.c_str());
 
@@ -557,14 +563,21 @@ void MatchingQueueDialog::updateQueueList()
 		++it;
 	}
 
+	cout << "switch action" << endl;
+
 	//***1.2 - appropriately select and highlight item in list
 	switch (this->mActionSelected)
 	{
 	case ADD_FILENAME :
 		// new filename is always added at the end of the list
+		cout << "add filename" << endl;
 		mLastRowSelected = qList.size() - 1;
+		cout << "set selected row" << endl;
 		if (mLastRowSelected >= 0)
+		{
+			cout << "clist select row " << mLastRowSelected << endl;
 			gtk_clist_select_row(GTK_CLIST(mCList), mLastRowSelected, 0);
+		}
 		break;
 	case DELETE_FILENAME :
 		// same relative position in list is seleceted, unless last item
@@ -593,6 +606,8 @@ void MatchingQueueDialog::updateQueueList()
 		// no action required, list is unchanged
 		break;
 	}
+
+	cout << "gtk_clist_thaw" << endl;
 
 	gtk_clist_thaw(GTK_CLIST(mCList));
 }
@@ -634,20 +649,39 @@ void on_MQ_mCList_select_row(
 
 		string finFileName = dialog->mMatchingQueue->getItemNum(row); //***1.1
 		//DatabaseFin<ColorImage> *fin = dialog->mMatchingQueue->getItemNum(row);
-		DatabaseFin<ColorImage> *fin = new DatabaseFin<ColorImage>(finFileName); //***1.1
+		DatabaseFin<ColorImage> *fin;
+
+		cout << "filename " << finFileName << endl;
+		
+		cout << "found finz: " << finFileName.rfind(".finz") << endl;
+		
+
+		if(finFileName.rfind(".finz") != string::npos)
+		{
+			cout << "opening finz" << endl;
+			fin = openFinz(finFileName);
+		}
+		else
+		{
+			cout << "opening dbfin" << endl;
+			fin = new DatabaseFin<ColorImage>(finFileName); //***1.1
+		}
 
 		if (NULL != dialog->mImage)
 			delete dialog->mImage;
-
+		
+		cout << "opening new color image" << endl;
 		ColorImage *newImage = new ColorImage(fin->mImageFilename); //***1.1
-
+		
+		cout << "setting resized image" << endl;
 		dialog->mImage = resizeWithBorder(/*dbFin->mFinImage*/newImage, IMAGE_HEIGHT, IMAGE_WIDTH);
 		on_matchingQueueDrawingArea_expose_event(
 				dialog->mDrawingArea,
 				NULL,
 				(void*)dialog
 				);
-	
+		
+		cout << "deleting newImage and fin" << endl;
 		delete newImage; //***1.1
 		delete fin;
 
@@ -1053,22 +1087,26 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 				fileName = (char *)(g_slist_nth(fileNames,i)->data);
 				//g_print(fileName.c_str());
 				//g_print("\n");
+				
+				cout << "opening file " << fileName << endl;
 
 				inFile.open(fileName.c_str());
 				if (inFile.fail())
 				{
 					g_print("Could not open selected file!\n");
 					inFile.clear();
-					g_free(g_slist_nth(fileNames,i)->data);
+					//g_free(g_slist_nth(fileNames,i)->data);
 					//showError("Could not open selected file!");
-					break;
+					//break;
 				}
-
-				if(fileName.find_last_of(".finz") != string::npos)
+				else if(fileName.find_last_of(".finz") != string::npos)
 				{
+					cout << "finz, adding to queue" << endl;
 					dialog->mMatchingQueue->add(fileName);
+					cout << "updating queue list" << endl;
 					dialog->updateQueueList();
-				}
+					cout << "queue list updated" << endl;
+				} 
 				else
 				{ 
 					char test[sizeof(unsigned long)+1];
@@ -1087,6 +1125,8 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 						dialog->updateQueueList();
 					}
 				}
+
+				inFile.close();
 				g_free(g_slist_nth(fileNames,i)->data);
 			}
 			g_slist_free(fileNames);
