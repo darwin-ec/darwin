@@ -585,8 +585,7 @@ int main(int argc, char *argv[])
 	//SAH
 	//Create Temporary Directory
 	string cmd = "";
-	//cmd = "mkdir \"" + Constants::TEMPDIR() + "\"";
-	cmd = "mkdir \"%temp%\\darwin\"";
+	cmd = "mkdir \"" + gOptions->mTempDirectory + "\"";
 	system(cmd.c_str());
 
 	// ugly hack from waveletUtil.h
@@ -630,19 +629,42 @@ int main(int argc, char *argv[])
 			Options *o)
 		*/
 		DatabaseFin<ColorImage>* dbFin = openFinz(finz);
-		TraceWindow *traceWin= new TraceWindow(
-			       NULL, //MainWindow
-				   finz,
-				   dbFin,
-			       NULL, //Database
-				   gOptions);
-		traceWin->show();
-		gtk_main();
-		//if (NULL!=dbFin)
-		//	delete dbFin; //THIS PRODUCES ERROR CURRENTLY. WHY???
+		if (NULL!=dbFin) {
+			TraceWindow *traceWin= new TraceWindow(
+					   NULL, //MainWindow
+					   finz,
+					   dbFin,
+					   NULL, //Database
+					   gOptions);
+			traceWin->show();
+			gtk_main();
+			
+			//It appears all clean up is handeled in the TraceWindow
+			/*if (NULL!=traceWin)
+				delete traceWin; //THIS PRODUCES ERROR CURRENTLY. WHY???
+			if (NULL!=dbFin)
+				delete dbFin;
+			*/
+		} else {//bad format finz
+			cout << "Invalid finz format." << endl;
+			GtkWidget *dialog = gtk_dialog_new_with_buttons (
+				"Cannot open file",
+				NULL, // do not have parent
+				(GtkDialogFlags)(GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
+				GTK_STOCK_OK,
+				GTK_RESPONSE_ACCEPT,
+				NULL);
 
-		//Delete traceWin???
+				gtk_window_set_default_size(GTK_WINDOW(dialog), 300, 140);
 
+				GtkWidget *label = gtk_label_new("Cannot open file. It is not a valid finz format.");
+				gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),label);
+				gtk_widget_show(label);
+
+				gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+				gtk_widget_destroy (dialog);
+		}
 	}
 	
 
@@ -650,8 +672,7 @@ int main(int argc, char *argv[])
 	destroyFilters();
 
 	//SAH--Remove Temporary Directory -- just to be nice
-	//cmd ="rmdir /s /q \"" + Constants::TEMPDIR() + "\"";
-	cmd = "rmdir /s /q \"%temp%\\darwin\"";
+	cmd = "rmdir /s /q \"" + gOptions->mTempDirectory + "\"";
 	system(cmd.c_str());
 
 #ifdef TIMING_ENABLED
