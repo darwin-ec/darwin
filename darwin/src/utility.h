@@ -361,6 +361,49 @@ std::string extractPath(std::string filename)
 	return filename;
 }
 
+inline
+void systemCopy(std::string src, std::string dest)
+{
+	std::string command = "copy";
+	command += " \"" + src + "\"";
+	command += " \"" + dest + "\"";
+	system(command.c_str());
+}
+
+inline
+void systemMkdir(std::string path)
+{
+	std::string cmd = "mkdir";
+	cmd += " \"" + path + "\"";
+	system(cmd.c_str());
+}
+
+inline
+void systemRmdir(std::string path)
+{
+	std::string cmd = "rmdir /s /q";
+	cmd += " \"" + path + "\"";
+	system(cmd.c_str());
+}
+
+inline
+void systemZip(std::string path, std::string archive)
+{
+	std::string cmd = "7z.exe a -tzip";
+	cmd += " \"" + archive + "\" ";
+	cmd += " \"" + path + "\" ";
+	system(cmd.c_str());
+}
+
+inline
+void systemUnzip(std::string archive, std::string dest)
+{
+	std::string cmd = "7z.exe x -aoa -o";
+	cmd += "\"" + dest + "\" ";
+	cmd += " \"" + archive + "\" ";
+	system(cmd.c_str());
+}
+
 
 #endif
 

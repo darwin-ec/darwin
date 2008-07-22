@@ -780,23 +780,24 @@ string saveImages(DatabaseFin<ColorImage>* fin, string saveFolder, string fileNa
 /*
  * Open Finz file for viewing
  */
-DatabaseFin<ColorImage>* openFinz(string filename)
+DatabaseFin<ColorImage>* openFinz(string archive)
 {
 
 	string baseimgfilename;
 	string tempdir("");
 	tempdir += gOptions->mTempDirectory;//getenv("TEMP");
+	/*tempdir += PATH_SLASH;
+	tempdir += "darwin";*/
 	tempdir += PATH_SLASH;
-	tempdir += "darwin";
-	tempdir += PATH_SLASH;
-	tempdir += extractBasename(filename);
+	tempdir += extractBasename(archive);
 
 	// extract finz to temp dir
-	string cmd("7z.exe x -aoa -o");
+	/*string cmd("7z.exe x -aoa -o");
 	cmd += "\"" + tempdir + "\" ";
 	cmd += " \"" + filename + "\" ";
 	system(cmd.c_str());
-	cout << cmd << endl;
+	cout << cmd << endl;*/
+	systemUnzip(archive, tempdir);
 
 	Options o = Options();
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
@@ -839,44 +840,47 @@ DatabaseFin<ColorImage>* openFinz(string filename)
 /*
  * Saves a fin into a finz file
  */
-void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
+void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 {
 	Options o;	
 	CatalogScheme cat;
-	string tempdir, cmd, baseFilename, srcFilename, targetFilename;
+	string tempdir, cmd, baseFilename, src, dest;
 	int pos;
 
-	if(!testFileExistsAndPrompt(filename))
+	if(!testFileExistsAndPrompt(archivePath))
 		return;
 
-	baseFilename = extractBasename(filename);
+	baseFilename = extractBasename(archivePath);
 
 	tempdir = gOptions->mTempDirectory;//getenv("TEMP");
-	tempdir += PATH_SLASH;
-	tempdir += "darwin";
+	/*tempdir += PATH_SLASH;
+	tempdir += "darwin";*/
 	tempdir += PATH_SLASH;
 	tempdir += baseFilename;
 
 	// delete and make dir
-	cmd = "rmdir /s /q";
+	/*cmd = "rmdir /s /q";
 	cmd += " \"" + tempdir + "\"";
-	system(cmd.c_str());
+	system(cmd.c_str());*/
+	systemRmdir(tempdir);
 
-	cmd = "mkdir";
+	/*cmd = "mkdir";
 	cmd += " \"" + tempdir + "\"";
-	system(cmd.c_str());
+	system(cmd.c_str());*/
+	systemMkdir(tempdir);
 
 	// save images
-	srcFilename = fin->mOriginalImageFilename; // source orig img path 
-	targetFilename = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename); // target orig img path
+	src = fin->mOriginalImageFilename;
+	dest = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename);
 	
 	// copy from orig to new path
-	cmd = "copy";
+	/* cmd = "copy";
 	cmd += " \"" + srcFilename + "\" ";
 	cmd += " \"" + targetFilename + "\"";
-	system(cmd.c_str());
+	system(cmd.c_str()); */
+	systemCopy(src, dest);
 
-	fin->mOriginalImageFilename = extractBasename(targetFilename);
+	fin->mOriginalImageFilename = extractBasename(fin->mOriginalImageFilename);
 	
 	/*
 	 * It seems we have two situations for the image mod list.
@@ -888,18 +892,17 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 	if (fin->mModifiedFinImage == NULL) {
 		fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
 		fin->mImageMods = fin->mModifiedFinImage->mImageMods;
-	} else
+	} else {
 		fin->mModifiedFinImage->mImageMods = fin->mImageMods;
+	}
 
-	// replace ."finz" with "_wDarwinMods.png" for modified image filename
+	// replace ".finz" with "_wDarwinMods.png" for modified image filename
 	pos = baseFilename.rfind(".");
 	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
 	
 	fin->mModifiedFinImage->save_wMods(fin->mImageFilename,
 		fin->mOriginalImageFilename,
 		fin->mImageMods);
-
-	// fin->mModifiedFinImage->mImageMods = fin->mModifiedFinImage->mImageMods;
 	
 	// set mod img path name as relative
 	fin->mImageFilename = extractBasename(fin->mImageFilename);	
@@ -910,21 +913,19 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string filename)
 		cat.categoryNames.push_back("NONE");
 	cat.categoryNames.push_back(fin->getDamage());
 
-	// C++ managed code really didn't work like I thought it did...
 	SQLiteDatabase db(&o, cat, true);
 
 	db.add(fin);
 
 	db.closeStream();
 
-	//delete db;
-
 	// compress contents
-	srcFilename = tempdir + PATH_SLASH + "*.*";
-	targetFilename = filename;
+	src = tempdir + PATH_SLASH + "*.*";
+	// targetFilename = filename;
 
-	cmd = "7z.exe a -tzip";
+	/*cmd = "7z.exe a -tzip";
 	cmd += " \"" + targetFilename + "\" ";
 	cmd += " \"" + srcFilename + "\" ";
-	system(cmd.c_str());
+	system(cmd.c_str());*/
+	systemZip(src, archivePath);
 }
