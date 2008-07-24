@@ -586,8 +586,8 @@ GtkWidget* MatchResultsWindow::createMatchResultsWindow()
 			  FALSE);
     gtk_window_set_wmclass(GTK_WINDOW(matchResultsWindow),
 			   "darwin_matchresults", "DARWIN");
-	gtk_window_set_default_size(GTK_WINDOW(matchResultsWindow), 1024, 600); //***1.7
 	gtk_window_set_position(GTK_WINDOW(matchResultsWindow), GTK_WIN_POS_CENTER); //***1.8
+	gtk_window_set_default_size(GTK_WINDOW(matchResultsWindow), 1024, 600); //***1.7
 
 	//***1.7 - paned window is no more, and left frame is also gone
 	//         the TOOLBAR is gone, LIST VIEW and ICON VIEW are gone
@@ -1716,6 +1716,10 @@ void on_mMRCList_select_row(
 	origName += resWin->mSelectedImageModOriginal->mOriginalImageFilename;
 	resWin->mSelectedFin->mOriginalImageFilename = origName;
 
+	//***1.982b - fix memory leak
+	if (NULL != resWin->mSelectedImageMod)
+		delete resWin->mSelectedImageMod;
+
 	resWin->mSelectedImageMod = resizeWithBorder(
                                         resWin->mSelectedImageModOriginal,
                                         resWin->mDrawingAreaSelected->allocation.height,
@@ -1725,6 +1729,11 @@ void on_mMRCList_select_row(
 		delete resWin->mSelectedImageOriginal;
 
 	resWin->mSelectedImageOriginal = new ColorImage(resWin->mSelectedFin->mOriginalImageFilename);
+
+	//***1.982b - fix memory leak
+	if (NULL != resWin->mSelectedImage)
+		delete resWin->mSelectedImage;
+
 	resWin->mSelectedImage = resizeWithBorder(
                                         resWin->mSelectedImageOriginal,
                                         resWin->mDrawingAreaSelected->allocation.height,

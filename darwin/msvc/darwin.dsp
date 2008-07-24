@@ -173,6 +173,10 @@ SOURCE=..\src\image_processing\exif.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\interface\ExportFinzDialog.cxx
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\FloatContour.cxx
 # End Source File
 # Begin Source File
@@ -463,6 +467,10 @@ SOURCE=..\Src\interface\ErrorDialog.h
 # Begin Source File
 
 SOURCE=..\src\image_processing\exif.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\interface\ExportFinzDialog.h
 # End Source File
 # Begin Source File
 

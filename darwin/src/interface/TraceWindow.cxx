@@ -2306,6 +2306,14 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
     gtk_window_set_policy(GTK_WINDOW(traceWindow), TRUE, TRUE, FALSE);
     gtk_window_set_title(GTK_WINDOW(traceWindow), title.c_str());
     gtk_window_set_wmclass(GTK_WINDOW(traceWindow), "darwin_trace", "DARWIN");
+	gtk_window_set_default_size(GTK_WINDOW(traceWindow), 912, 700);
+	// center near top of screen - assumes 1024x768 or 1024x800 min screen
+	gint x, y;
+	gtk_window_get_size(GTK_WINDOW(traceWindow),&x, &y);
+	gtk_window_move(
+		GTK_WINDOW(traceWindow),
+		(gdk_screen_width() - x) / 2, // left edge of window on screen
+		10);                          // top of window on screen
 
     traceHBoxMain = gtk_hbox_new(FALSE, 0);
     gtk_widget_show(traceHBoxMain);

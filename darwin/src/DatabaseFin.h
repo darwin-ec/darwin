@@ -256,7 +256,8 @@ class DatabaseFin
 			mScale(1.0), //***1.4
 			mModifiedFinImage(NULL), //***1.5
 			mFinFilename(""), //***1.6
-			mFinImage(NULL)
+			mFinImage(NULL),
+			mIsAlternate(false) //***1.99
 		{
 			// let's see what happens... -- rjn
 			/*

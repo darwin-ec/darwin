@@ -32,6 +32,7 @@
 #include "OptionsDialog.h"
 #include "CreateDatabaseDialog.h" //***1.85 
 #include "DataExportDialog.h" //***1.9
+#include "ExportFinzDialog.h" //***1.99
 #include "../CatalogSupport.h" //***1.99
 
 #include "../thumbnail.h" //***1.85
@@ -2615,7 +2616,9 @@ void on_export_finz_activate(
 
 	//Save the currently selected fin for the moment (should show dialog allowing for multiple fin selection (or all fins))
 	MainWindow *mainWin = (MainWindow *)userData;
-	/*CatalogSupport*/saveFinz(mainWin->mSelectedFin,"test.finz");
+	/*CatalogSupport*///saveFinz(mainWin->mSelectedFin,"test.finz");
+	ExportFinzDialog *dlg = new ExportFinzDialog(mainWin->mDatabase,mainWin->mWindow);
+	dlg->show();
 }
 
 //*******************************************************************
