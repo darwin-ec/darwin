@@ -826,7 +826,7 @@ DatabaseFin<ColorImage>* openFinz(string archive)
 	
 	fin->mImageMods = fin->mModifiedFinImage->mImageMods;
 
-	cout << "img mods size " << fin->mImageMods.size() << endl;
+	// cout << "img mods size " << fin->mImageMods.size() << endl;
 
 	delete db;
 
@@ -855,29 +855,13 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	tempdir += baseFilename;
 
 	// delete and make dir
-	/*cmd = "rmdir /s /q";
-	cmd += " \"" + tempdir + "\"";
-	system(cmd.c_str());*/
 	systemRmdir(tempdir);
-
-	/*cmd = "mkdir";
-	cmd += " \"" + tempdir + "\"";
-	system(cmd.c_str());*/
 	systemMkdir(tempdir);
 
-	// save images
-	src = fin->mOriginalImageFilename;
-	dest = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename);
 	
-	// copy from orig to new path
-	/* cmd = "copy";
-	cmd += " \"" + srcFilename + "\" ";
-	cmd += " \"" + targetFilename + "\"";
-	system(cmd.c_str()); */
-	systemCopy(src, dest);
 
-	fin->mOriginalImageFilename = extractBasename(fin->mOriginalImageFilename);
 	
+
 	/*
 	 * It seems we have two situations for the image mod list.
 	 * If there is no modified image instantiated, then the mod list
@@ -892,6 +876,19 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 		fin->mModifiedFinImage->mImageMods = fin->mImageMods;
 	}
 
+	// cout << "mOriginalImageFilename: " << fin->mOriginalImageFilename << endl;
+
+	if(fin->mOriginalImageFilename == "")
+	{
+		fin->mOriginalImageFilename = extractPath(fin->mImageFilename) + PATH_SLASH + extractBasename(fin->mModifiedFinImage->mOriginalImageFilename);
+	}
+
+	src = fin->mOriginalImageFilename;
+	dest = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename);
+	systemCopy(src, dest);
+
+	fin->mOriginalImageFilename = extractBasename(fin->mOriginalImageFilename);
+	
 	// replace ".finz" with "_wDarwinMods.png" for modified image filename
 	pos = baseFilename.rfind(".");
 	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
@@ -917,11 +914,6 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 
 	// compress contents
 	src = tempdir + PATH_SLASH + "*.*";
-	// targetFilename = filename;
 
-	/*cmd = "7z.exe a -tzip";
-	cmd += " \"" + targetFilename + "\" ";
-	cmd += " \"" + srcFilename + "\" ";
-	system(cmd.c_str());*/
 	systemZip(src, archivePath);
 }

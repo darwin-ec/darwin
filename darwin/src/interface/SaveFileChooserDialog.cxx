@@ -18,6 +18,7 @@
 #include "SaveFileChooserDialog.h"
 #include "ErrorDialog.h"
 #include "../CatalogSupport.h"
+#include "../Utility.h"
 
 #ifdef WIN32
 #define PATH_SLASH "\\"
@@ -46,7 +47,8 @@ SaveFileChooserDialog::SaveFileChooserDialog(
 	TraceWindow *traceWin,
 	Options *o,
 	GtkWidget *parent,
-	int saveMode
+	int saveMode,
+	vector<DatabaseFin<ColorImage>* > *fins
 )
 	:	mDatabase(db),
 		mFin(dbFin),
@@ -54,7 +56,8 @@ SaveFileChooserDialog::SaveFileChooserDialog(
 		mTraceWin(traceWin), //***1.2 - so we can delete TraceWindow Object when done
 		mOptions(o),
 		mParent(parent),      //***1.2 - the parent GTK Window Widget
-		mSaveMode(saveMode)
+		mSaveMode(saveMode),
+		mFins(fins)
 {
 	mDialog = createSaveFileChooser(); //***1.1 - this must follow intilization of mFin
 
@@ -94,6 +97,43 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 
 	switch (mSaveMode) 
 	{
+	case saveMultipleFinz:
+		saveFCDialog = gtk_file_chooser_dialog_new (
+				_("Enter directory for the Traced Fin Files (*.finz)"),
+				GTK_WINDOW(mParent),
+				GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+		// could do this if we had version 2.8 or later of GTK+
+		// gtk_file_chooser_set_do_overwrite_confirmation(
+		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "Finz Files (*.finz)");
+		gtk_file_filter_add_pattern(filter, "*.finz");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "All Files (*.*)");
+		gtk_file_filter_add_pattern(filter, "*.*");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+
+		// do NOT allow multiple file selections
+		gtk_file_chooser_set_select_multiple (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				FALSE);
+		
+		if (gLastDirectory[mSaveMode] == "")
+		{
+			//***1.85 - everything is now relative to the current survey area
+			gLastDirectory[mSaveMode] = gOptions->mCurrentSurveyArea;
+			gLastDirectory[mSaveMode] += PATH_SLASH;
+			gLastDirectory[mSaveMode] += "tracedFins";
+		}
+		gtk_file_chooser_set_current_folder (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				gLastDirectory[mSaveMode].c_str());
+		gLastFileName[mSaveMode] = "";
+		break;
 	case saveFin:
 		saveFCDialog = gtk_file_chooser_dialog_new (
 				_("Enter filename for the Traced Fin File(*.finz)"),
@@ -233,6 +273,36 @@ void on_saveFileChooserButtonOK_clicked(
 		//   allow us to return so we can proceed with match after saving fin, if desired
 		}
 		break;
+	case SaveFileChooserDialog::saveMultipleFinz:
+		{
+			gchar *temp;
+
+			temp = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
+			string fileName = temp;
+			g_free(temp);
+			
+			/*
+			if (fileName[fileName.length() - 1] != '/' && fileName[fileName.length() - 1] != '\\') {
+				showError("Oops.. It looks like you selected a file.\nPlease try again, and select a directory.");
+				delete dlg;
+				return;
+			}
+			*/
+
+			if(dlg->mFins == NULL)
+				return;
+
+			vector<DatabaseFin<ColorImage>*>::iterator it;
+			for (it = dlg->mFins->begin(); it != dlg->mFins->end(); it++)
+			{
+				int duplicate = 0;
+				string filename(fileName);
+				filename += PATH_SLASH + (*it)->mIDCode + ".finz";
+				filename = generateUniqueName(filename);
+				saveFinz(*it, filename);
+			}
+		}
+		break;
 	default:
 		break;
 	}
@@ -318,7 +388,7 @@ void on_saveFileChooserDirectory_changed(
 
 //*******************************************************************
 //
-void SaveFileChooserDialog::run_and_respond()
+bool SaveFileChooserDialog::run_and_respond()
 {
 	gint response = gtk_dialog_run (GTK_DIALOG (mDialog));
 
@@ -329,11 +399,13 @@ void SaveFileChooserDialog::run_and_respond()
 		break;
 	case GTK_RESPONSE_ACCEPT :
 		on_saveFileChooserButtonOK_clicked(NULL,this);
+		return true;
 		break;
 	default :
 		// no other action required
 		break;
 	}
+	return false;
 }
 
 

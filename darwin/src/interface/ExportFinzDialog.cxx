@@ -17,6 +17,7 @@
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/exit.xpm"
 #include "../../pixmaps/fin.xpm"
+#include "SaveFileChooserDialog.h"
 
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
@@ -1025,7 +1026,55 @@ void on_finzDialogButtonSaveFinz_clicked(
 	if (NULL == dlg)
 		return;
 
-	// do something here to save a single or collection of finz files
+	bool saved = false;
+	set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+
+	if (selectedFins.empty()) {//idiot, selected something first for export
+		return;
+	} else if(selectedFins.size() == 1) {
+		set<int>::iterator it = selectedFins.begin();
+		DatabaseFin<ColorImage>* fin;
+		int id = dlg->mRow2Id[*it];
+		fin = dlg->mDatabase->getItem(id);
+
+		SaveFileChooserDialog *fsChooserDlg = new SaveFileChooserDialog(dlg->mDatabase,
+												fin,
+												NULL,
+												NULL,
+												dlg->mOptions,
+												dlg->mDialog,
+												SaveFileChooserDialog::saveFin);
+		saved=fsChooserDlg->run_and_respond();
+		
+		delete fin;
+
+	} else {//more than one selected
+		set<int>::iterator it;
+		vector<DatabaseFin<ColorImage>* > fins;
+		for (it = selectedFins.begin(); it != selectedFins.end(); it++) {
+			int id = dlg->mRow2Id[*it];
+			fins.push_back(dlg->mDatabase->getItem(id));
+		}
+
+		SaveFileChooserDialog *fsChooserDlg = new SaveFileChooserDialog(dlg->mDatabase,
+												NULL,
+												NULL,
+												NULL,
+												dlg->mOptions,
+												dlg->mDialog,
+												SaveFileChooserDialog::saveMultipleFinz,
+												&fins);
+		saved=fsChooserDlg->run_and_respond();
+
+		vector<DatabaseFin<ColorImage>* >::iterator finsit;
+		for (finsit = fins.begin(); finsit != fins.end(); finsit++) {
+			delete ((DatabaseFin<ColorImage>*) *finsit);
+		}
+		
+	}
+
+	if (saved)
+		delete dlg;
 
 }
 

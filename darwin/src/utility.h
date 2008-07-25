@@ -15,6 +15,9 @@
 #include <string>
 #include <ctype.h>
 #include "constants.h"
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 float round(float n);
 double round(double n);
@@ -361,6 +364,7 @@ std::string extractPath(std::string filename)
 	return filename;
 }
 
+
 inline
 void systemCopy(std::string src, std::string dest)
 {
@@ -402,6 +406,41 @@ void systemUnzip(std::string archive, std::string dest)
 	cmd += "\"" + dest + "\" ";
 	cmd += " \"" + archive + "\" ";
 	system(cmd.c_str());
+}
+
+inline
+bool fileExists(std::string filename)
+{
+	std::ifstream testFile(filename.c_str());
+	if (! testFile.fail())
+	{
+		testFile.close();
+		return true;
+	}
+
+	return false;
+}
+
+inline
+std::string generateUniqueName(std::string filename)
+{
+	if(! fileExists(filename) || filename.find_last_of(".")==std::string::npos)
+		return filename;
+
+
+	int number = 0;
+
+	std::string first_half = filename.substr(0, filename.find_last_of(".")-1);
+	std::string second_half = filename.substr(filename.find_last_of("."));
+	std::string filename2 = filename;
+
+	while (fileExists(filename2)) {
+		std::stringstream s;
+		s << first_half << "[" << (++number) << "]" << second_half;
+		filename2=s.str();
+	}
+	return filename2;
+
 }
 
 

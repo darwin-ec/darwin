@@ -18,6 +18,7 @@
 
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
+#include <vector>
 
 int getNumSaveFileChooserDialogReferences();
 
@@ -29,7 +30,8 @@ class SaveFileChooserDialog
 			saveFin = 0,
 			saveFinz,
 			exportDatabase,
-			exportDataFields
+			exportDataFields,
+			saveMultipleFinz
 		} ;
 
 		// Constructor
@@ -46,14 +48,15 @@ class SaveFileChooserDialog
 				TraceWindow *traceWin,
 				Options *o,
 				GtkWidget *parent,
-				int saveMode);
+				int saveMode,
+				std::vector<DatabaseFin<ColorImage>* > *fins = NULL);
 
 		// Destructor
 		// 	Destroys the dialog if it's open and frees
 		// 	resources.
 		~SaveFileChooserDialog();
 
-		void run_and_respond(); // replaces show
+		bool run_and_respond(); // replaces show
 
 		// GTK+ callback functions
 
@@ -101,6 +104,9 @@ class SaveFileChooserDialog
 
 		int 
 			mSaveMode; // openFinImage, openFinTrace or openDatabase
+
+		std::vector<DatabaseFin<ColorImage>* >
+			*mFins;
 
 		GtkWidget *createSaveFileChooser();
 
