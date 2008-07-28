@@ -15,8 +15,8 @@
 #include "ExportFinzDialog.h"
 
 #include "../../pixmaps/add_database.xpm"
-#include "../../pixmaps/exit.xpm"
-#include "../../pixmaps/fin.xpm"
+#include "../../pixmaps/cancel.xpm"
+#include "../../pixmaps/open_trace.xpm"
 #include "SaveFileChooserDialog.h"
 
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
@@ -43,20 +43,26 @@ set<int> selectedRows(GtkCList *clist)
 	return rows;
 }
 
+
 //----------------------- the member functions -------------------------
 
 //*******************************************************************
-ExportFinzDialog::ExportFinzDialog(Database *db, GtkWidget *parent)
+ExportFinzDialog::ExportFinzDialog(Database *db, GtkWidget *parent, 
+								   GtkWidget *clist, db_sort_t currentSort,
+								   vector<int> row2id, vector<int> id2row)
 :	mDialog(NULL),
 	mDatabase(db),
 	mParentWindow(parent),
-	mOldSort(DB_SORT_ID),
-	mNewSort(DB_SORT_ID),
+	mOldSort(currentSort),
+	mNewSort(currentSort),
+	mRow2Id(row2id),
+	mId2Row(id2row),
 	mShowAlternates(false) // for now
 
 {
 	mDBCurEntry.clear();
 	mDialog = createDialog();
+	copyCList(GTK_CLIST(clist));
 }
 
 //*******************************************************************
@@ -70,9 +76,87 @@ ExportFinzDialog::~ExportFinzDialog()
 //*******************************************************************
 void ExportFinzDialog::show()
 {
-	refreshDatabaseDisplayNew(true);
+	refreshDatabaseDisplayNew(false); // false, if copyCList() was already called
 
 	gtk_widget_show(mDialog);
+}
+
+//*******************************************************************
+void ExportFinzDialog::copyCList(GtkCList *clist)
+{
+	// this copies the CList passed in from the MainWindow, when called
+	// from there rather than elsewhere
+
+	// assume this is called AFTER createDialog() in constructor
+	
+	int 
+		i, k,
+		numEntries = mRow2Id.size();
+
+	GdkPixmap *pixmap;;
+	GdkBitmap *mask;
+			
+	gchar* *itemInfo = new gchar* [6]; // six columns in clist
+
+	for (i = 0; i < numEntries; i++)
+	{
+		itemInfo[0] = NULL;
+
+		for (k = 1; k < 6; k++)
+		{
+			gchar *lineItem = NULL;
+			gtk_clist_get_text(GTK_CLIST(clist), i, k, &lineItem);
+				
+			if (lineItem == NULL)
+				itemInfo[k] = NULL;
+			else
+			{
+				itemInfo[k] = new gchar [strlen(lineItem) + 1];
+				strcpy(itemInfo[k],lineItem);
+			}
+		}
+
+		gtk_clist_get_pixmap(
+			GTK_CLIST(clist),
+			i, //***1.95 - pos becomes row
+			0,
+			&(pixmap),
+			&(mask));
+
+		char **thumbnail = (char **) gdk_drawable_get_data(GDK_DRAWABLE(pixmap),"thumb");
+		create_gdk_pixmap_from_data(
+			GTK_WIDGET(clist),
+			&(pixmap),
+			&(mask),
+			thumbnail);
+
+		// make a copy of the thumbnail to store as data within the GTK pixmap
+		char **thumbCopy = copy_thumbnail(thumbnail);
+
+		//***1.85 - attach thumbnail copy to drawable
+		gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
+
+		// append the new data for the redisplay of the CList
+		gtk_clist_append(GTK_CLIST(mCList), itemInfo);
+
+		if (NULL != pixmap)
+			gtk_clist_set_pixmap(
+				GTK_CLIST(mCList),
+				i,
+				0,
+				pixmap,
+				mask);
+
+		for (int k = 0; k < 6; k++)
+			delete [] itemInfo[k];
+
+		if (NULL != pixmap)
+			gdk_pixmap_unref(pixmap);
+	
+		if (NULL != mask)
+			gdk_bitmap_unref(mask);
+	}
+	delete [] itemInfo; 
 }
 
 //*******************************************************************
@@ -624,14 +708,37 @@ GtkWidget* ExportFinzDialog::createDialog()
 	hbuttonbox1 = gtk_hbutton_box_new();
 	gtk_widget_show(hbuttonbox1);
 	gtk_box_pack_start(GTK_BOX(mainLeftVBox), hbuttonbox1, FALSE, TRUE, 5);
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbuttonbox1), GTK_BUTTONBOX_SPREAD);
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(hbuttonbox1), GTK_BUTTONBOX_END);
+    gtk_button_box_set_spacing(GTK_BUTTON_BOX(hbuttonbox1), 8);
+
+	// create Cancel button
+
+	mButtonCancel = gtk_button_new();
+
+	tmpBox = gtk_hbox_new(FALSE, 0);			
+	tmpIcon = create_pixmap_from_data(tmpBox, cancel_xpm);
+	gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
+	gtk_widget_show(tmpIcon);
+	tmpLabel = gtk_label_new_with_mnemonic(_("_Cancel"));
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mButtonCancel);
+	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, TRUE, TRUE, 0);
+	gtk_widget_show(tmpLabel);
+	gtk_widget_show(tmpBox);
+
+	gtk_container_add(GTK_CONTAINER(mButtonCancel), tmpBox);
+
+	gtk_widget_show(mButtonCancel);
+	//***1.99 - this button goes with the data in the new notebook page below
+	gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonCancel);
+	GTK_WIDGET_SET_FLAGS (mButtonCancel, GTK_CAN_DEFAULT);
+	gtk_tooltips_set_tip (tooltips, mButtonCancel, _("Cancel without saving any FinZ."), NULL);
 
 	// create Save button
 
 	mButtonSave = gtk_button_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
-	tmpIcon = create_pixmap_from_data(tmpBox, fin_xpm);
+	tmpIcon = create_pixmap_from_data(tmpBox, open_trace_xpm);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
 	gtk_widget_show(tmpIcon);
 	tmpLabel = gtk_label_new_with_mnemonic(_("_Save Fin(s)"));
@@ -647,6 +754,7 @@ GtkWidget* ExportFinzDialog::createDialog()
 	GTK_WIDGET_SET_FLAGS(mButtonSave, GTK_CAN_DEFAULT);
 	gtk_tooltips_set_tip(tooltips, mButtonSave, 
 	                     _("Save selected fin(s) as *.finz files."), NULL);
+
 
 	// create SaveAsCatalog button
 
@@ -669,28 +777,6 @@ GtkWidget* ExportFinzDialog::createDialog()
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonSaveAsCatalog);
 	GTK_WIDGET_SET_FLAGS (mButtonSaveAsCatalog, GTK_CAN_DEFAULT);
 	gtk_tooltips_set_tip (tooltips, mButtonSaveAsCatalog, _("Save selected fin(s) as a new catalog."), NULL);
-
-	// create Cancel button
-
-	mButtonCancel = gtk_button_new();
-
-	tmpBox = gtk_hbox_new(FALSE, 0);			
-	tmpIcon = create_pixmap_from_data(tmpBox, exit_xpm);
-	gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
-	gtk_widget_show(tmpIcon);
-	tmpLabel = gtk_label_new_with_mnemonic(_("_Cancel"));
-	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mButtonCancel);
-	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, TRUE, TRUE, 0);
-	gtk_widget_show(tmpLabel);
-	gtk_widget_show(tmpBox);
-
-	gtk_container_add(GTK_CONTAINER(mButtonCancel), tmpBox);
-
-	gtk_widget_show(mButtonCancel);
-	//***1.99 - this button goes with the data in the new notebook page below
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonCancel);
-	GTK_WIDGET_SET_FLAGS (mButtonCancel, GTK_CAN_DEFAULT);
-	gtk_tooltips_set_tip (tooltips, mButtonCancel, _("Cancel without saving any FinZ."), NULL);
 
 
 	//***1.99 - the right frame will now contain a TABBED area for the

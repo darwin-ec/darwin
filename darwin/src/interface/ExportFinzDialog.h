@@ -10,11 +10,14 @@
 #define EXPORTFINZDIALOG_H
 
 #include <set>
+#include <vector>
 #include "../CatalogSupport.h"
 
 class ExportFinzDialog {
 	public:
-		ExportFinzDialog(Database *db, GtkWidget *parent);
+		ExportFinzDialog(Database *db, GtkWidget *parent,
+				GtkWidget *clist,  db_sort_t currentSort,
+				std::vector<int> row2id, std::vector<int> id2row);
 		~ExportFinzDialog();
 
 		void show();
@@ -97,9 +100,6 @@ class ExportFinzDialog {
 		std::set<int>
 			mDBCurEntry; // supports multiple selection
 
-		//unsigned long 
-		//	mDBCurEntryOffset;
-
 		bool 
 			mShowAlternates;
 
@@ -117,7 +117,7 @@ class ExportFinzDialog {
 
 		ColorImage 
 			*mImage,
-			*mOrigImage; //***1.99
+			*mOrigImage;
 		int
 			mCurImageHeight, 
 			mCurImageWidth,
@@ -134,10 +134,11 @@ class ExportFinzDialog {
 			*mOptions;
 
 		std::string
-			mImportFromFilename, //***1.85
-			mExportToFilename;   //***1.85
+			mImportFromFilename,
+			mExportToFilename;
 
 		GtkWidget* createDialog();
+		void copyCList(GtkCList *clist);
 };
 
 #endif

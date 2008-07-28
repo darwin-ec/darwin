@@ -238,6 +238,8 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 		gtk_widget_set_sensitive(mOpenImageButton, TRUE);
 		gtk_widget_set_sensitive(mOpenFinButton, TRUE);
 		gtk_widget_set_sensitive(mQueueButton, TRUE);
+		gtk_widget_set_sensitive(mExportSubMenuItem, TRUE);
+		gtk_widget_set_sensitive(mImportFinzMenuItem, TRUE);
 	}
 	else
 	{
@@ -249,6 +251,8 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 		gtk_widget_set_sensitive(mOpenImageButton, FALSE);
 		gtk_widget_set_sensitive(mOpenFinButton, FALSE);
 		gtk_widget_set_sensitive(mQueueButton, FALSE);
+		gtk_widget_set_sensitive(mExportSubMenuItem, FALSE);
+		gtk_widget_set_sensitive(mImportFinzMenuItem, FALSE);
 	}
 	
 	// create an emergency backup of DB file, as long as it was successfully loaded
@@ -1380,99 +1384,88 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	// Import Fin (*.finz) submenu item
 
-	GtkWidget *importFinz = gtk_menu_item_new();
+	mImportFinzMenuItem = gtk_menu_item_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
 	tmpLabel = gtk_label_new(_("    Import Fin (*.finz)"));
 
-	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), importFinz);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mImportFinzMenuItem);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
 	gtk_widget_show(tmpBox);
 
-	gtk_container_add(GTK_CONTAINER(importFinz), tmpBox);
+	gtk_container_add(GTK_CONTAINER(mImportFinzMenuItem), tmpBox);
 
-	gtk_widget_show (importFinz);
+	gtk_widget_show (mImportFinzMenuItem);
 
-	gtk_container_add(GTK_CONTAINER(importSub), importFinz);
+	gtk_container_add(GTK_CONTAINER(importSub), mImportFinzMenuItem);
 
-	gtk_tooltips_set_tip (tooltips, importFinz, 
+	gtk_tooltips_set_tip (tooltips, mImportFinzMenuItem, 
 		_("Import one or more fins ...\n"
 		"(from user specified *.finz files)"), NULL);
 
 	//***1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
-		gtk_widget_set_sensitive(importFinz, FALSE);
-	mImportDBMenuItem = importDB;
+		gtk_widget_set_sensitive(mImportFinzMenuItem, FALSE);
 
 	//***************************************************************//
 
 	// new Export submenu
 
-	GtkWidget *export = gtk_menu_item_new_with_mnemonic(_("    Export"));
-	gtk_widget_show (export);
-	gtk_container_add (GTK_CONTAINER (file_menu), export);
+	mExportSubMenuItem = gtk_menu_item_new_with_mnemonic(_("    Export"));
+	gtk_widget_show (mExportSubMenuItem);
+	gtk_container_add (GTK_CONTAINER (file_menu), mExportSubMenuItem);
 
 	// if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
-		gtk_widget_set_sensitive(export, FALSE);
+		gtk_widget_set_sensitive(mExportSubMenuItem, FALSE);
 
-	GtkWidget *exportSub = gtk_menu_new ();
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (export), exportSub);
+	GtkWidget *exportSubMenu = gtk_menu_new ();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (mExportSubMenuItem), exportSubMenu);
 
 	// Export Catalog submenu item
 
-	GtkWidget *exportDB = gtk_menu_item_new();
+	mExportDBMenuItem = gtk_menu_item_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
 	tmpLabel = gtk_label_new(_("    Export Catalog"));
 
-	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), exportDB);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mExportDBMenuItem);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
 	gtk_widget_show(tmpBox);
 
-	gtk_container_add(GTK_CONTAINER(exportDB), tmpBox);
+	gtk_container_add(GTK_CONTAINER(mExportDBMenuItem), tmpBox);
 
-	gtk_widget_show (exportDB);
+	gtk_widget_show (mExportDBMenuItem);
 
-	gtk_container_add(GTK_CONTAINER(exportSub), exportDB);
+	gtk_container_add(GTK_CONTAINER(exportSubMenu), mExportDBMenuItem);
 
-	gtk_tooltips_set_tip (tooltips, exportDB, 
+	gtk_tooltips_set_tip (tooltips, mExportDBMenuItem, 
 		_("Export the currently open database ...\n"
 		"(to a user specified *.zip file)"), NULL);
 
-	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database::loaded)
-		gtk_widget_set_sensitive(exportDB, FALSE);
-	mExportDBMenuItem = exportDB;
-
 	// Export Fin (*.finz) submenu item
 
-	GtkWidget *exportFinz = gtk_menu_item_new();
+	mExportFinzMenuItem = gtk_menu_item_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
 	tmpLabel = gtk_label_new(_("    Export Fin (*.finz)"));
 
-	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), exportFinz);
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mExportFinzMenuItem);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
 	gtk_widget_show(tmpBox);
 
-	gtk_container_add(GTK_CONTAINER(exportFinz), tmpBox);
+	gtk_container_add(GTK_CONTAINER(mExportFinzMenuItem), tmpBox);
 
-	gtk_widget_show (exportFinz);
+	gtk_widget_show (mExportFinzMenuItem);
 
-	gtk_container_add(GTK_CONTAINER(exportSub), exportFinz);
+	gtk_container_add(GTK_CONTAINER(exportSubMenu), mExportFinzMenuItem);
 
-	gtk_tooltips_set_tip (tooltips, exportFinz, 
+	gtk_tooltips_set_tip (tooltips, mExportFinzMenuItem, 
 		_("Export a fin ...\n"
 		"(to a user specified *.finz file)"), NULL);
-
-	//***1.85 - if database load failed do not allow this menu option
-	if (mDatabase->status() != Database::loaded)
-		gtk_widget_set_sensitive(exportFinz, FALSE);
-	mExportDBMenuItem = exportDB; //CHECK THIS Dr. Stewman, a note from SAH
 
 	// create a separator line in submenu
 
@@ -2284,16 +2277,16 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (backup), "activate",
 	                    GTK_SIGNAL_FUNC (on_backup_database_activate),
 	                    (void *) this);
-	gtk_signal_connect (GTK_OBJECT (exportDB), "activate",
+	gtk_signal_connect (GTK_OBJECT (mExportDBMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_database_activate),
 	                    (void *) this);
 	//***1.99 - callback for exporting a Fin
-	gtk_signal_connect (GTK_OBJECT (exportFinz), "activate",
+	gtk_signal_connect (GTK_OBJECT (mExportFinzMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_finz_activate),
 	                    (void *) this);
 
 	//***1.99 - callback for importing Fin
-	gtk_signal_connect (GTK_OBJECT (importFinz), "activate",
+	gtk_signal_connect (GTK_OBJECT (mImportFinzMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_import_finz_activate),
 	                    (void *) this);
 
@@ -2686,7 +2679,13 @@ void on_export_finz_activate(
 	//Save the currently selected fin for the moment (should show dialog allowing for multiple fin selection (or all fins))
 	MainWindow *mainWin = (MainWindow *)userData;
 	/*CatalogSupport*///saveFinz(mainWin->mSelectedFin,"test.finz");
-	ExportFinzDialog *dlg = new ExportFinzDialog(mainWin->mDatabase,mainWin->mWindow);
+	ExportFinzDialog *dlg = new ExportFinzDialog(
+			mainWin->mDatabase,
+			mainWin->mWindow,
+			mainWin->mCList,
+			mainWin->mNewSort,
+			mainWin->mRow2Id,
+			mainWin->mId2Row);
 	dlg->show();
 }
 

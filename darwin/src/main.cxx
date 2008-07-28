@@ -46,6 +46,8 @@
 // Copyright (C) 2001                                                     //
 ///////////////////////////////////////////////////////////////////////////
 
+//#include <vld.h> //***2.0 - to enable Visual Leak Detector
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -508,7 +510,7 @@ int main(int argc, char *argv[])
 {
 #ifdef WIN32
 	//trying to find memory leaks - this next line
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+//	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
 #ifdef ENABLE_NLS
