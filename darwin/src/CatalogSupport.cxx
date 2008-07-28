@@ -843,6 +843,11 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	string tempdir, cmd, baseFilename, src, dest;
 	int pos;
 
+	if (archivePath.find(".finz")==string::npos) {
+		//force extention .finz -- SAH
+		archivePath+=".finz";
+	}
+
 	if(!testFileExistsAndPrompt(archivePath))
 		return;
 
