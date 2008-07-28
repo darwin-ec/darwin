@@ -31,6 +31,7 @@ using namespace std;
 static int gNumReferences = 0;
 //static string gLastDirectory = "";   // disk & path last in use
 
+static int mNumberModes = 5; //how many modes are above in the enum?
 static string gLastDirectory[] = {"","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mSaveModes
 static string gLastFileName[] = {"","","","","","","",""};    // simple name of last file "touched" -- if any
 static string gLastFolderName[] = {"","","","","","","",""};  // simple name of folder last "touched" -- if any
@@ -71,6 +72,26 @@ SaveFileChooserDialog::~SaveFileChooserDialog()
 	//delete mFin; // just a pointer to the TraceWindow::mFin, do NOT delete here
 	
 	gNumReferences--;
+}
+
+/**Clear last directory with old survey area
+This funtion should be called whenever the current survey area changes.
+It is intended to avoid problems of the user being placed in the wrong 
+"default" folder because of the gLastDirectory, gLastFileName, and gLastFolderName variables
+
+  @param string mPreviousSurveyArea A string of the previous survey area
+
+  Assumes gLastDirectory is not NULL. (Should never be)
+**/
+void SaveFileChooserDialog::clearLast(string mPreviousSurveyArea) {
+	for (int i=0; i<mNumberModes; i++) {
+		if (""!=gLastDirectory[i] && gLastDirectory[i].find(mPreviousSurveyArea)!=string::npos) {
+			gLastDirectory[i]="";
+			gLastFileName[i]="";
+			gLastFolderName[i]="";
+		}
+	}
+	return;
 }
 
 GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)

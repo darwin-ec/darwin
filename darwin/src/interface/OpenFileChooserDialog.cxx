@@ -18,6 +18,7 @@
 #include "MainWindow.h"
 #include "ErrorDialog.h"
 #include "TraceWindow.h"
+#include "SaveFileChooserDialog.h"
 
 #include "DBConvertDialog.h"
 
@@ -1125,6 +1126,10 @@ mPreview(NULL) //***1.95
 						string cat = "";
 						cat += PATH_SLASH;
 						cat += "catalog";
+
+						//Before changing the current survey area remove any "default" save locations associated with it
+						SaveFileChooserDialog::clearLast(dlg->mOptions->mCurrentSurveyArea); //SAH
+
 						dlg->mOptions->mCurrentSurveyArea = fileName.substr(0,fileName.rfind(cat));
 
 						// make sure the current Options include the survey area and database

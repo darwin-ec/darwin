@@ -21,6 +21,7 @@
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/logo_small.xpm"
+#include "SaveFileChooserDialog.h"
 
 #include <cstdio>
 
@@ -515,10 +516,13 @@ void on_createDbButtonOK_clicked(
 
 			if (databaseName.find(".db") == string::npos)
 			{
-				ErrorDialog *err = new ErrorDialog("Database Name must have \".db\" extension.");
-				err->show();
-				return; 
+				//force an ending of .db -- SAH
+				databaseName+=".db";
+				//ErrorDialog *err = new ErrorDialog("Database Name must have \".db\" extension.");
+				//err->show();
+				//return; 
 			}
+
 		}
 
 		// set full paths to new Survey Area
@@ -535,6 +539,9 @@ void on_createDbButtonOK_clicked(
 
 		if (dlg->mMainWin->mDatabase != NULL)
 			delete dlg->mMainWin->mDatabase;
+
+		//Clear default folders in SaveFileChooser (if they contain old survey area)
+		SaveFileChooserDialog::clearLast(dlg->mOptions->mCurrentSurveyArea);
 
 		// all is well, now we can create the new survey area and database
 
@@ -671,9 +678,11 @@ void on_createDbButtonOK_clicked(
 
 		if (databaseName.find(".db") == string::npos)
 		{
-			ErrorDialog *err = new ErrorDialog("Database Name must have \".db\" extension.");
-			err->show();
-			return; 
+			//force extension -- SAH (some of this really out to be extracted to a function. We have code around this block in two locations.
+			databaseName += ".db";
+			//ErrorDialog *err = new ErrorDialog("Database Name must have \".db\" extension.");
+			//err->show();
+			//return; 
 		}
 
 		// database cannot already exist
@@ -714,6 +723,9 @@ void on_createDbButtonOK_clicked(
 
 		if (dlg->mMainWin->mDatabase != NULL)
 			delete dlg->mMainWin->mDatabase;
+
+		//Clean up "default" save directories
+		SaveFileChooserDialog::clearLast(dlg->mOptions->mCurrentSurveyArea);
 
 		// save GLOBAL currentDefaultScheme and set as selected here (for this DB creation ONLY)
 

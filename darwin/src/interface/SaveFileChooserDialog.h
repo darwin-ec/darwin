@@ -26,7 +26,7 @@ class SaveFileChooserDialog
 {
 	public:
 
-		enum {
+		enum {//!!!IF you edit this, update mNumberModes in the cxx file!!!!
 			saveFin = 0,
 			saveFinz,
 			exportDatabase,
@@ -57,6 +57,8 @@ class SaveFileChooserDialog
 		~SaveFileChooserDialog();
 
 		bool run_and_respond(); // replaces show
+
+		static void clearLast(std::string mPreviousSurveyArea); //clear gLast variables if they contain previous survey areas
 
 		// GTK+ callback functions
 
