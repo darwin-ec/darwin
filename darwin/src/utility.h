@@ -371,9 +371,6 @@ void systemCopy(std::string src, std::string dest)
 	std::string command = "copy";
 	command += " \"" + src + "\"";
 	command += " \"" + dest + "\"";
-
-	std::cout << command << std::endl;
-
 	system(command.c_str());
 }
 

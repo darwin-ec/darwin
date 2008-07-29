@@ -188,20 +188,15 @@ db_opentype_t databaseOpenType(string filePath)
 */
 void copyFins(Database* from, Database *to)
 {
-	cout << "copy fins called" << endl;
 	const unsigned size = from->size();
 
 	for(unsigned i = 0; i < size; i++)
 	{
 		DatabaseFin<ColorImage>* fin = from->getItem(i);
-		cout << i << endl;
 		if(fin != NULL) {
 			to->add(fin);
-			cout << "added" << endl;
 			delete fin;
 		}
-		else
-			cout << "null" << endl;
 	}
 }
 
@@ -450,8 +445,6 @@ void extractCatalogFiles(string backupFilename, string toFolder)
 	command += quoted(toFolder) + " ";
 	command += quoted(backupFilename) + " *.db";
 
-	cout << command << endl;
-
 	system(command.c_str()); // start extraction process
 
 	// extract images referenced from database file
@@ -461,8 +454,6 @@ void extractCatalogFiles(string backupFilename, string toFolder)
 	command += quoted(toFolder) + " -x!filesToArchive.txt "; // but don't extract file list
 	command += " -x!*.db "; // and don't extract database again
 	command += quoted(backupFilename);
-
-	cout << command << endl;
 
 	system(command.c_str()); // start extraction process
 

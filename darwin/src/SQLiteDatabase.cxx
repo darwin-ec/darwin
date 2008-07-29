@@ -524,8 +524,6 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 		sqlite3_free(zErrMsg);
 	}
 
-	// cout << "list empty: " << individuals.empty() << endl;
-
 	if(! individuals.empty())
 		individual = individuals.front();
 	else {
@@ -595,8 +593,6 @@ void SQLiteDatabase::selectImageModificationsByFkImageID(std::list<DBImageModifi
 // Populates given list<DBImage> with all rows from Images table.
 //
 void SQLiteDatabase::selectAllImages(std::list<DBImage> *images) {
-
-	// cout << "select all img" << endl;
 	
 	std::string sql = "SELECT * FROM Images;";
 
@@ -614,8 +610,6 @@ void SQLiteDatabase::selectAllImages(std::list<DBImage> *images) {
 // the fkIndividualID equals the given int.
 //
 void SQLiteDatabase::selectImagesByFkIndividualID(std::list<DBImage> *images, int fkindividualid) {
-	
-	// cout << "select imgs by individ id" << endl;
 
 	stringstream sql;
 
@@ -635,8 +629,6 @@ void SQLiteDatabase::selectImagesByFkIndividualID(std::list<DBImage> *images, in
 // Returns DBImage of row with given fkIndividualID
 //
 DBImage SQLiteDatabase::selectImageByFkIndividualID(int fkindividualid) {
-
-	// cout << "select img by individ id" << endl;
 
 	DBImage img;
 	
@@ -665,8 +657,6 @@ DBImage SQLiteDatabase::selectImageByFkIndividualID(int fkindividualid) {
 //
 void SQLiteDatabase::selectAllOutlines(std::list<DBOutline> *outlines) {
 
-	// cout << "select all outlines" << endl;
-
 	std::string sql = "SELECT * FROM Outlines;";
 
 	rc = sqlite3_exec(db, sql.c_str(), callbackOutlines, outlines, &zErrMsg);
@@ -683,8 +673,6 @@ void SQLiteDatabase::selectAllOutlines(std::list<DBOutline> *outlines) {
 // the given int.
 //
 DBOutline SQLiteDatabase::selectOutlineByFkIndividualID(int fkindividualid) {
-
-	// cout << "select outline by individ id" << endl;
 	
 	DBOutline outline;
 	std::list<DBOutline> outlines = std::list<DBOutline>();
@@ -832,8 +820,6 @@ int SQLiteDatabase::insertDamageCategory(DBDamageCategory *damagecategory) {
 	sql << "(NULL, ";
 	sql << "'" << escapeString(damagecategory->name) << "', ";
 	sql << damagecategory->orderid << ");";
-
-	// cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
@@ -1100,8 +1086,6 @@ void SQLiteDatabase::updateDamageCategory(DBDamageCategory *damagecategory) {
 	sql << "Name = '" << escapeString(damagecategory->name) << "' ";
 	sql << "AND OrderID = " << damagecategory->orderid << " ";
 	sql << "WHERE ID = " << damagecategory->id << ";";
-
-	// cout << sql.str() << endl;
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
 
@@ -1427,8 +1411,6 @@ void SQLiteDatabase::deleteThumbnailByFkImageID(int id) {
 
 unsigned long SQLiteDatabase::add(DatabaseFin<ColorImage> *fin) {
 
-	// cout << "adding fin" << endl;
-	cout << "db: " << db << endl;
 	DBIndividual individual;
 	DBImage image;
 	DBOutline outline;
@@ -1819,8 +1801,6 @@ void SQLiteDatabase::sortLists() {
 //
 
 DatabaseFin<ColorImage>* SQLiteDatabase::getItemAbsolute(unsigned pos) {
-	
-	// cout << "getItemAbsolute()" << endl;
 
 	if (pos > this->mAbsoluteOffset.size())
 	       throw BoundsError();
@@ -2121,8 +2101,6 @@ void SQLiteDatabase::createEmptyDatabase(Options *o) {
 	for (int i = 0; i < mCatCategoryNames.size(); i++) {
 		cat.name = mCatCategoryNames[i];
 		cat.orderid = i;
-		cout << "inserting dc " << cat.name << endl;
-
 		insertDamageCategory(&cat);		
 	}	
 	commitTransaction();
@@ -2190,11 +2168,9 @@ SQLiteDatabase::SQLiteDatabase(Options *o, const CatalogScheme cat, bool createE
 	dbOpen = false;
 	mFilename = std::string(o->mDatabaseFileName);
 	mCurrentSort = DB_SORT_NAME;
-	
-	// cout << "SQLiteDatabase: loading db... " << o->mDatabaseFileName << endl;
 
 	if (mFilename == "NONE") {
-		// cout << "\nNO File Name specified for existing database!\n";
+		cout << "\nNO File Name specified for existing database!\n";
 		mDBStatus = fileNotFound;
 		return;
 	}
@@ -2206,8 +2182,9 @@ SQLiteDatabase::SQLiteDatabase(Options *o, const CatalogScheme cat, bool createE
 		mDBStatus = errorLoading;
 		return;
 	}
-
-	this->setSyncMode(0); // set sync mode to OFF.  Significant improvement in write speed.
+	
+	// set sync mode to OFF.  Significant improvement in write speed.
+	this->setSyncMode(0);
 
 	if(createEmptyDB)
 		createEmptyDatabase(o);
