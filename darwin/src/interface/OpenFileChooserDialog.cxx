@@ -1370,6 +1370,15 @@ mPreview(NULL) //***1.95
 			gchar *folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dlg->mDialog));
 
 			// set global last directory and blank filename so we can return there next time
+
+			string t = folder;
+			if (dlg->mOpenMode==dlg->openDatabase && t.find(gOptions->mDarwinHome)==string::npos) {
+				//do not let user escape darwin home area when selecting a database. -- SAH
+				//DB's outside of darwin make "really bad things happen" according to JHS
+				gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg->mDialog),gOptions->mDarwinHome.c_str());
+			}
+
+
 			gLastDirectory[dlg->mOpenMode] = folder;
 			gLastFileName[dlg->mOpenMode] = "";
 
