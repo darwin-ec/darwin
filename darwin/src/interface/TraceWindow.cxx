@@ -2790,10 +2790,13 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 	// TRACE Scale and Re-placement options -- for phase four
 	// ---------------------------------------------------------
 
+	//Support for moving and scaling a trace unneccessary and dropped in v2.0
+
+
 	// MOVE TRACE button
 
 	//***006PM begin additions for button to move Trace
-	tmp_toolbar_icon = create_pixmap_from_data(traceWindow, finger_xpm);
+	/*tmp_toolbar_icon = create_pixmap_from_data(traceWindow, finger_xpm);
 	mButtonSlideTrace =
 		gtk_toolbar_append_element(
 				GTK_TOOLBAR(traceToolBarTraceTools),
@@ -2816,7 +2819,7 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 	gtk_range_set_value(GTK_RANGE(mButtonScaleTrace),mNormScale);
     gtk_box_pack_start(GTK_BOX(traceHBoxTraceTools),
 				mButtonScaleTrace, TRUE, TRUE, 0);
-	gtk_widget_hide(mButtonScaleTrace);
+	gtk_widget_hide(mButtonScaleTrace);*/
 
 	// end of buttons
 
@@ -3261,12 +3264,12 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 		       (void *) this);
 
 	//***1.4 - three new callbacks
-    gtk_signal_connect(GTK_OBJECT(mButtonSlideTrace), "toggled",
+/*    gtk_signal_connect(GTK_OBJECT(mButtonSlideTrace), "toggled",
 		       GTK_SIGNAL_FUNC(on_traceButtonSlideTrace_toggled),
 		       (void *) this);
     gtk_signal_connect(GTK_OBJECT(mButtonScaleTrace), "value-changed",
 		       GTK_SIGNAL_FUNC(on_traceButtonScaleTrace_changed),
-		       (void *) this);
+		       (void *) this);*/
     gtk_signal_connect(GTK_OBJECT(mButtonTraceUnlock), "clicked",
 		       GTK_SIGNAL_FUNC(on_traceButtonTraceUnlock_clicked),
 		       (void *) this);
@@ -3698,8 +3701,8 @@ void TraceWindow::setupForLoadedFin()
 			_("Flip image and move/resize fin trace using tools below. OR unlock and retrace fin."));
 
 	gtk_widget_show(mRadioButtonMagnify);
-	gtk_widget_show(mButtonFlipHorizontally);
-	gtk_widget_show(mButtonScaleTrace);
+	//gtk_widget_show(mButtonFlipHorizontally); //Support Dropped v2.0
+	//gtk_widget_show(mButtonScaleTrace);      //Support Dropped v2.0
 	//gtk_widget_show(mButtonSlideTrace);
 
 	// hide all other image processing related buttons
@@ -3712,6 +3715,7 @@ void TraceWindow::setupForLoadedFin()
 	gtk_widget_hide(mButtonResize);
 	gtk_widget_hide(mRadioButtonCrop);
 	gtk_widget_hide(mRadioButtonRotate);
+	gtk_widget_hide(mButtonFlipHorizontally);
 
 	// HIDE the trace related buttons
 	
@@ -3720,7 +3724,9 @@ void TraceWindow::setupForLoadedFin()
 	gtk_widget_hide(mRadioButtonAddPoint);
 	gtk_widget_hide(mRadioButtonMovePoint);
 	gtk_widget_hide(mRadioButtonEraser);
-        gtk_widget_hide(mRadioButtonChopoutline);  //*** 1.5 krd
+    gtk_widget_hide(mRadioButtonChopoutline);  //*** 1.5 krd
+
+	gtk_widget_hide(mLabelPosition);
 
 	// set active tool and cursor type
 
