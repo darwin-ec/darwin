@@ -37,9 +37,9 @@ static bool gShowingPreviews = true; //***051
 #define PATH_SLASH "/"
 #endif
 
-static string gLastDirectory[] = {"","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mOpenModes
-static string gLastFileName[] = {"","","","","","","",""};    // simple name of last file "touched" -- if any
-static string gLastFolderName[] = {"","","","","","","",""};  // simple name of folder last "touched" -- if any
+static string gLastDirectory[] = {"","","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mOpenModes
+static string gLastFileName[] = {"","","","","","","","",""};    // simple name of last file "touched" -- if any
+static string gLastFolderName[] = {"","","","","","","","",""};  // simple name of folder last "touched" -- if any
 
 static gchar  *gLastTreePathStr = NULL; // GtkTree path (ex: "10:3:5") for same -- must free with g_free()
 static GtkTreePath *gLastTreePath;
@@ -180,6 +180,7 @@ mPreview(NULL) //***1.95
 				//mPreview = gtk_image_new_from_stock (GTK_STOCK_MISSING_IMAGE,GTK_ICON_SIZE_DIALOG);
 				//gtk_file_chooser_set_preview_widget_active (GTK_FILE_CHOOSER(openFCDialog), TRUE);
 				break;
+			case directlyImportFinz:
 			case openFinTrace:
 				openFCDialog = gtk_file_chooser_dialog_new (
 						_("Select a Traced Fin (*.fin, *.finz)"),
@@ -856,6 +857,61 @@ mPreview(NULL) //***1.95
 					}
 				}
 				break;
+			
+			case OpenFileChooserDialog::directlyImportFinz:
+				{
+					GSList *fileNames;
+					//gchar *fname;
+					int i, n;
+
+					fileNames = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dlg->mDialog));
+
+					n = g_slist_length(fileNames);
+					for (i = 0; i < n; i++)
+					{
+						fileName = (char *)(g_slist_nth(fileNames,i)->data);
+						g_print(fileName.c_str());
+						g_print("\n");
+
+						inFile.open(fileName.c_str());
+						if (inFile.fail())
+						{
+							g_print("Could not open selected file!\n");
+							inFile.clear();
+						}
+						else
+						{
+							inFile.close();
+
+							DatabaseFin<ColorImage> *unkFin;
+							
+							
+							if (fileName.find(".finz") != string::npos) {
+
+								unkFin = openFinz(fileName);
+								
+								if (NULL==unkFin) {
+									//Invalid file
+									g_print("Could not open selected file! Invalid format.\n");
+									dlg->mMainWin->displayStatusMessage(_("Invalid finz format. Could not open file."));
+									break;
+								}
+								
+
+								importFin(dlg->mDatabase, unkFin);
+								delete unkFin;
+							}
+							
+
+							dlg->mMainWin->displayStatusMessage(_("Fin Trace opened successfully."));
+
+						}
+						g_free(g_slist_nth(fileNames,i)->data);
+					} 
+					g_slist_free(fileNames);
+				}
+				break;
+			
 			case OpenFileChooserDialog::openFinTrace :
 
 				fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
@@ -879,6 +935,8 @@ mPreview(NULL) //***1.95
 
 						//Two types of files to open here .fin and .finz
 						if (fileName.find(".finz")!=string::npos) {//open a .finz
+							
+							inFile.close();
 
 							unkFin = /*CatelogSupport*/openFinz(fileName);
 							if (NULL==unkFin) {

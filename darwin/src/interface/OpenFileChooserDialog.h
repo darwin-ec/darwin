@@ -38,7 +38,7 @@ class OpenFileChooserDialog
 			backupDatabase, //***1.85
 			restoreDatabase,  //***1.85
 			exportDataFields, //***1.9
-			openFinz
+			directlyImportFinz
 		};
 
 		// Constructor

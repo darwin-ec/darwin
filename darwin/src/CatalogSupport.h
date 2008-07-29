@@ -52,4 +52,6 @@ std::string saveImages(DatabaseFin<ColorImage>* fin, std::string savefolder, std
 
 bool testFileExistsAndPrompt(std::string filename);
 
+void importFin(Database* db, DatabaseFin<ColorImage>* fin);
+
 #endif

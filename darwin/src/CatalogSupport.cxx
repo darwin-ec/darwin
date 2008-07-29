@@ -782,17 +782,9 @@ DatabaseFin<ColorImage>* openFinz(string archive)
 	string baseimgfilename;
 	string tempdir("");
 	tempdir += gOptions->mTempDirectory;//getenv("TEMP");
-	/*tempdir += PATH_SLASH;
-	tempdir += "darwin";*/
 	tempdir += PATH_SLASH;
 	tempdir += extractBasename(archive);
 
-	// extract finz to temp dir
-	/*string cmd("7z.exe x -aoa -o");
-	cmd += "\"" + tempdir + "\" ";
-	cmd += " \"" + filename + "\" ";
-	system(cmd.c_str());
-	cout << cmd << endl;*/
 	systemUnzip(archive, tempdir);
 
 	Options o = Options();
@@ -810,7 +802,6 @@ DatabaseFin<ColorImage>* openFinz(string archive)
 	}
 
 	DatabaseFin<ColorImage>* fin = db->getItem(0); // first and only fin
-
 	
 
 	// construct absolute file paths and open images
@@ -826,11 +817,36 @@ DatabaseFin<ColorImage>* openFinz(string archive)
 	
 	fin->mImageMods = fin->mModifiedFinImage->mImageMods;
 
-	// cout << "img mods size " << fin->mImageMods.size() << endl;
-
 	delete db;
 
 	return fin;
+}
+
+/**
+ * This method is designed to import a fin previously returned
+ * by openFinz into the database.
+ *
+ * I make no assumptions about other contexts.
+ *
+ */
+void importFin(Database* db, DatabaseFin<ColorImage>* fin)
+{
+	string dest, imgDest, origImgDest;
+
+	dest = gOptions->mCurrentSurveyArea;
+	dest += PATH_SLASH;
+	dest += "catalog";
+	dest += PATH_SLASH;
+
+	imgDest = dest + extractBasename(fin->mImageFilename);
+
+	systemCopy(fin->mImageFilename, imgDest);
+
+	origImgDest = dest + extractBasename(fin->mOriginalImageFilename);
+
+	systemCopy(fin->mOriginalImageFilename, origImgDest);
+
+	db->add(fin);
 }
 
 /*
@@ -854,17 +870,12 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	baseFilename = extractBasename(archivePath);
 
 	tempdir = gOptions->mTempDirectory;//getenv("TEMP");
-	/*tempdir += PATH_SLASH;
-	tempdir += "darwin";*/
 	tempdir += PATH_SLASH;
 	tempdir += baseFilename;
 
 	// delete and make dir
 	systemRmdir(tempdir);
 	systemMkdir(tempdir);
-
-	
-
 	
 
 	/*
@@ -880,8 +891,6 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	} else {
 		fin->mModifiedFinImage->mImageMods = fin->mImageMods;
 	}
-
-	// cout << "mOriginalImageFilename: " << fin->mOriginalImageFilename << endl;
 
 	if(fin->mOriginalImageFilename == "")
 	{

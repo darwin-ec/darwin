@@ -2672,10 +2672,6 @@ void on_export_finz_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
 {
-	// just a stub!
-
-	cout << "Exporting Fin to *.finz file (NOT FULLY INPLEMENTED YET!)" << endl;
-
 	//Save the currently selected fin for the moment (should show dialog allowing for multiple fin selection (or all fins))
 	MainWindow *mainWin = (MainWindow *)userData;
 	/*CatalogSupport*///saveFinz(mainWin->mSelectedFin,"test.finz");
@@ -2697,15 +2693,19 @@ void on_import_finz_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
 {
-	// just a stub!
+	MainWindow *mainWin = (MainWindow *) userData;
+	if (NULL == mainWin)
+		return;
+	
+	OpenFileChooserDialog *dlg = new OpenFileChooserDialog(
+				mainWin->mDatabase,
+				mainWin,
+				mainWin->mOptions,
+				OpenFileChooserDialog::directlyImportFinz);
+	dlg->run_and_respond();
+	
 
-	cout << "Importing Finz (NOT FULLY INPLEMENTED YET!)" << endl;
-
-	//Open file chooser (1+ files selected)
-
-	//foreach finz importFinz(...)
-	//openFinz
-
+	mainWin->refreshDatabaseDisplayNew(true);
 
 }
 
