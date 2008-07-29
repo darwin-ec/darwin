@@ -183,6 +183,26 @@ TraceWindow::TraceWindow(
 {
 	mWindow = createTraceWindow(fileName);
 
+	// make sure that if a _wDarwinmods.png file was loaded
+	// we pretend that the original was loaded and that the modifications
+	// were applied -- this is required so that we do NOT have a missing
+	// original file at some point down the line
+
+	if (image->mBuiltFromMods)
+	{
+		cout << "LOADED: " << fileName << endl;
+		cout << "  ORIG: " << mOriginalImage->mOriginalImageFilename << endl;
+
+		mImageMods = mOriginalImage->mImageMods; // leave mLastMod as NONE -- cannot undo these loaded mods
+		mIsFlipped = mOriginalImage->mImageMods.imageIsReversed();
+		// should the mOriginalImage->mImageMods be cleared here???
+		string temp = fileName.substr(0,fileName.rfind(PATH_SLASH)+1);
+		mImagefilename = temp + mOriginalImage->mOriginalImageFilename;
+		mOriginalImage->mOriginalImageFilename = "";
+		mNonZoomedImage->mOriginalImageFilename = "";
+		mImage->mOriginalImageFilename = "";
+	}
+
 	gNumReferences++;
 }
 

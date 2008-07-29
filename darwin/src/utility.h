@@ -428,9 +428,9 @@ std::string generateUniqueName(std::string filename)
 		return filename;
 
 
-	int number = 0;
+	int number = 1; // so we start with [2] below
 
-	std::string first_half = filename.substr(0, filename.find_last_of(".")-1);
+	std::string first_half = filename.substr(0, filename.find_last_of(".")); // JHS
 	std::string second_half = filename.substr(filename.find_last_of("."));
 	std::string filename2 = filename;
 

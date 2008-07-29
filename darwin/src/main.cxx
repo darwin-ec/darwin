@@ -46,7 +46,7 @@
 // Copyright (C) 2001                                                     //
 ///////////////////////////////////////////////////////////////////////////
 
-//#include <vld.h> //***2.0 - to enable Visual Leak Detector
+#include <vld.h> //***2.0 - to enable Visual Leak Detector
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -128,10 +128,6 @@ void readConfig(string homedir)
 		fileName += "\\surveyAreas\\default"; //***1.85
 
 		gOptions->mCurrentSurveyArea = fileName; //***1.85
-
-		//fileName += "\\catalog\\darwin.db"; //***1.85
-
-		//gOptions->mDatabaseFileName = fileName.c_str();
 
 		//***1.85 - default is now NO DATABASE
 		gOptions->mDatabaseFileName = "NONE";
@@ -389,7 +385,7 @@ void saveConfig()
 
 	gCfg->ClearList();
 
-	gCfg->addItem("DARWINHOME", gOptions->mDarwinHome); //***1.85
+	gCfg->addItem("DARWINHOME", gOptions->mDarwinHome); // info only - pgm doesn't use
 	gCfg->addItem("CurrentSurveyArea", gOptions->mCurrentSurveyArea); //***1.85
 	gCfg->addItem("DatabaseFileName", gOptions->mDatabaseFileName);
 
@@ -521,6 +517,26 @@ int main(int argc, char *argv[])
 	gtk_set_locale();
 	gtk_init(&argc, &argv);
 
+	// handle any/all command line arguments
+	// here are the possible options (DARWIN 2.0)
+	// --set-home="..."   this directly sets gOptions->mDarwinHome
+	// --help             this invokes the command line help
+	// --version          DARWIN returns the current version(s)
+	// "*.finz"           DARWIN opens as a fin viewer for this Fin ONLY
+
+	// DARWIN uses the following strategy to find its HOME path for this
+	// invocation of the program
+	// (1) if a --set-home option is found, then the specified path is used
+	// (2) else if argv[0] contains a path, then that path is used
+	// (3) else the current working directory is used
+	//
+	// (4) if a path is found in the darwin.cfg file AND it differs from any set above,
+	//     then the user is querried for clarification????
+	// (5) if the DARWINHOME and DATABASE paths in the darwin.cfg file differ
+	//     then the user is querried for clarification????
+	//
+	// The environment variable DARWINHOME is no longer used in any way.
+
 	string darwinhome(argv[0]);//first argument is absolute if double-clicked in windows; otherwise, may be relative
 	//we will overide this if argv[1]==--set-home="..."
 	int basePos = darwinhome.rfind("\\system\\bin\\darwin.exe");
@@ -537,30 +553,33 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
-	string option("");
-	string finz("");
+	vector<string> options; // so we can handle multiple command line options
+	string finz("");       // assume only one of these
 
 	for (int i=1; i<argc; i++) {
 		string argv(argv[i]);
 		if (argv.find("--")==0) {//we have an option index
-			option = argv;
+			options.push_back(argv);
 		} else if (argv.find(".finz")!=string::npos) {//we have a finz file
 			finz = argv;
 		}
 	}
 
-  
-	if (!option.empty()) 
+	string option;
+	while (!options.empty()) 
 	{
+		option = options.back();
+		options.pop_back();
+
 		if (option.find("--help")!=string::npos) 
 		{
 			cout << "Usage: darwin [option] [filename.finz]" << endl
 			     << "\t Where viable options include: " << endl
-			     << "\t --set-home=\"...\" (Sets DARWINHOME; otherwise, directory containing .exe is used)" << endl
-			     << "\t --version (Prints program version and exits)" << endl
+			     << "\t --set-home=\"...\" (Set DARWINHOME; else, use path containing .exe)" << endl
+			     << "\t --version (Print program version and exit)" << endl
+			     << "\t --help (Print this usage message and exit)" << endl
 				 << endl
-				 << "\t If a filename.finz file is given, open it in a standalone viewer; otherwise, open whole proogram" << endl;
+				 << "\t If a filename.finz is given, open Darwin as a FIN viewer only." << endl;
 			return 0;	
 		}
 
@@ -574,9 +593,6 @@ int main(int argc, char *argv[])
 			darwinhome=option.substr(option.find("=")+1);
 			//override darwinhome with user supplied path
 		}
-
-
-
 	}
 
 	gOptions = new Options();
@@ -605,8 +621,6 @@ int main(int argc, char *argv[])
   
 	gdk_rgb_init();
 
-
-
 	if (finz.empty()) { //Standard open
 		SplashWindow *splash = new SplashWindow();
 		splash->show();
@@ -622,14 +636,8 @@ int main(int argc, char *argv[])
 
 		saveConfig();
 
-	} else { //Open finz file
-		/*TraceWindow::TraceWindow(
-			MainWindow *m,
-			const string &fileName,
-			DatabaseFin<ColorImage> *fin,
-			Database *db,
-			Options *o)
-		*/
+	} else { 
+
 		DatabaseFin<ColorImage>* dbFin = openFinz(finz);
 		if (NULL!=dbFin) {
 			TraceWindow *traceWin= new TraceWindow(
@@ -641,13 +649,11 @@ int main(int argc, char *argv[])
 			traceWin->show();
 			gtk_main();
 			
-			//It appears all clean up is handeled in the TraceWindow
-			/*if (NULL!=traceWin)
-				delete traceWin; //THIS PRODUCES ERROR CURRENTLY. WHY???
-			if (NULL!=dbFin)
-				delete dbFin;
-			*/
+			// All clean up is handeled in the TraceWindow
+			// Do NOT delete traceWin or dbFin here
+			
 		} else {//bad format finz
+
 			cout << "Invalid finz format." << endl;
 			GtkWidget *dialog = gtk_dialog_new_with_buttons (
 				"Cannot open file",
@@ -669,7 +675,6 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-
 	// ugly hack from waveletUtil.h
 	destroyFilters();
 

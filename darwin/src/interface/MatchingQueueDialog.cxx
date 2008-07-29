@@ -247,7 +247,7 @@ gboolean matchingQueueIdleFunction(
 		gchar *finFileName;
 		gtk_clist_get_text(GTK_CLIST (dlg->mCList),dlg->mLastRowSelected,0,&finFileName);
 		string finFileRoot = finFileName;
-		finFileRoot = finFileRoot.substr(0,finFileRoot.length() - 4);
+		finFileRoot = finFileRoot.substr(0,finFileRoot.rfind('.')); // strip .fin or .finz
 
 		//***1.9 - break out database name to make part of results filename
 		string dbName = dlg->mOptions->mDatabaseFileName;
@@ -1196,7 +1196,6 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 				if (NULL == unkFin)
 					break; // failure of read, not a valid result file
 					
-
 				//***1.8 - two ways to retrieve original and modifed images now
 				if (string::npos == unkFin->mImageFilename.rfind("_wDarwinMods.png"))
 				{
@@ -1230,11 +1229,11 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 					{
 						// found modified fin in new file format
 						fp.close();
-						unkFin->mModifiedFinImage = new ColorImage(unkFin->mImageFilename);
+						if (NULL == unkFin->mModifiedFinImage) //***2.0 - already loaded if *.finz
+							unkFin->mModifiedFinImage = new ColorImage(unkFin->mImageFilename);
 						// name of original image extracted from modified image is without path
 						// we ASSUME it is in the tracedFins folder & want to set the
 						// original image filename to the path+filename
-						//string path =  getenv("DARWINHOME");
 						//***1.85 - everything is now relative to the current survey area
 						string path = gOptions->mCurrentSurveyArea;
 						path += PATH_SLASH;
@@ -1242,69 +1241,15 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 						path += PATH_SLASH;
 						unkFin->mOriginalImageFilename = 
 							path + unkFin->mModifiedFinImage->mOriginalImageFilename;
-						if ("" != unkFin->mOriginalImageFilename)
+						if (("" != unkFin->mOriginalImageFilename) &&
+							(NULL == unkFin->mFinImage)) //***2.0 - already loaded if *.finz
 							unkFin->mFinImage = new ColorImage(unkFin->mOriginalImageFilename);
-						// otherwise we leave it NULL for now, possibly make a copy of the
-						// modified image here ??????
-						unkFin->mImageMods = unkFin->mModifiedFinImage->mImageMods;
+						// otherwise we leave it NULL for now
+						if (unkFin->mImageMods.empty()) //***2.0 - already loaded if *.finz
+							unkFin->mImageMods = unkFin->mModifiedFinImage->mImageMods;
 					}
 				}
 
-
-
-/*
-				//***1.8 - this is now the MODIFIED image
-				unkFin->mModifiedFinImage = new ColorImage(unkFin->mImageFilename);
-					
-				//int pos = unkFin->mImageFilename.find_last_of('.');
-				//string modImgFilename = unkFin->mImageFilename.substr(0,pos) + "_wDarwinMods.ppm";
-				// do it now based on FIN file root name
-				//***1.8 - the old way
-				//int pos = unkFin->mFinFilename.rfind(".fin");
-				//string modImgFilename = unkFin->mFinFilename.substr(0,pos) + "_wDarwinMods.ppm"; 
-				//unkFin->mModifiedFinImage = new ColorImage(modImgFilename);
-
-				//***1.8 - the new way, so that modified and original images are found
-				string modImgFilename = unkFin->mImageFilename.substr(
-					0,unkFin->mImageFilename.rfind(".fin"));
-				//***1.8 - following modified to look for PNG then PPM files
-				ifstream fp;
-				modImgFilename += "_wDarwinMods";
-				fp.open((modImgFilename+".png").c_str()); // try opening PNG file
-				if (!fp.fail())
-				{
-					// found modified fin in new file format
-					fp.close();
-					unkFin->mModifiedFinImage = new ColorImage(modImgFilename+".png");
-					// name of original image extracted from modified image is without path
-					// we ASSUME it is in the tracedFins folder & want to set the
-					// original image filename to the path+filename
-					string path =  getenv("DARWINHOME");
-					path += PATH_SLASH;
-					path += "tracedFins";
-					path += PATH_SLASH;
-					unkFin->mOriginalImageFilename = path + unkFin->mModifiedFinImage->mOriginalImageFilename;
-					if ("" != unkFin->mOriginalImageFilename)
-						unkFin->mFinImage = new ColorImage(unkFin->mOriginalImageFilename);
-					// otherwise we leave it NULL for now, possibly make a copy of the
-					// modified image here ??????
-					unkFin->mImageMods = unkFin->mModifiedFinImage->mImageMods;
-				}
-				else
-				{
-					fp.clear();
-					fp.open((modImgFilename+".ppm").c_str()); // try opending PPM file
-					if (!fp.fail())
-					{
-						// found modified fin in new file format
-						fp.close();
-						unkFin->mModifiedFinImage = new ColorImage(modImgFilename+".ppm");
-					}
-					else
-						fp.clear(); // no modified file exists
-				}
-				//***1.5 & 1.8 - end of new sections
-*/
 				MatchResultsWindow *resultsWindow = new MatchResultsWindow(
 	                    unkFin,
 	                    mRes, // just a pointer

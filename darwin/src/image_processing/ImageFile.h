@@ -71,7 +71,7 @@ public:
 	// 	string filename - The name of the image file.
 	// 	
 	ImageFile(const std::string &filename);
-	ImageFile() { }
+	ImageFile(); //***2.0 - moved implementation below
 	ImageFile(unsigned nRows, unsigned nCols);
 	ImageFile(unsigned nRows, unsigned nCols, PIXEL_TYPE *data);
 
@@ -147,6 +147,8 @@ public:
 	ImageModList mImageMods; //***1.8
 	std::string mOriginalImageFilename; //***1.8
 
+	bool mBuiltFromMods; //***2.0
+
 	bool loadPNGcommentsOnly(const std::string &filename); //***1.85
 
 private:
@@ -172,7 +174,8 @@ template <class PIXEL_TYPE>
 ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 	: Image<PIXEL_TYPE>(),
 	  mNormScale(1.0f), //***1.5
-	  mOriginalImageFilename("") //***1.9
+	  mOriginalImageFilename(""), //***1.9
+	  mBuiltFromMods(false) //***2.0
 {
 	std::ifstream infile(filename.c_str(), std::ios::binary);
 
@@ -216,13 +219,27 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 }
 
 template <class PIXEL_TYPE>
+inline ImageFile<PIXEL_TYPE>::ImageFile() //***2.0 - moved here so intitialization is done properly
+	: Image<PIXEL_TYPE>(),
+	  mNormScale(1.0f), //***1.5
+	  mOriginalImageFilename(""), //***1.9
+	  mBuiltFromMods(false) //***2.0
+{ }
+
+template <class PIXEL_TYPE>
 inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols)
-	: Image<PIXEL_TYPE>(nRows, nCols)
+	: Image<PIXEL_TYPE>(nRows, nCols),
+	  mNormScale(1.0f), //***1.5
+	  mOriginalImageFilename(""), //***1.9
+	  mBuiltFromMods(false) //***2.0
 { }
 
 template <class PIXEL_TYPE>
 inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols, PIXEL_TYPE *data)
-	: Image<PIXEL_TYPE>(nRows, nCols, data)
+	: Image<PIXEL_TYPE>(nRows, nCols, data),
+	  mNormScale(1.0f), //***1.5
+	  mOriginalImageFilename(""), //***1.9
+	  mBuiltFromMods(false) //***2.0
 { }
 
 ///////////////////////////
@@ -938,6 +955,8 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 			gotOne = mImageMods.next(mod); // get next mod
 		}
 					
+		mBuiltFromMods = thumbOnly; //***2.0
+
 		mRows = temp->mRows;
 		mCols = temp->mCols;
 		mData = new PIXEL_TYPE[mRows * mCols]; // assume color image
