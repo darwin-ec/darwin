@@ -486,7 +486,8 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 					mImage = NULL;
 				}
 	  	}					//***002DB <
-		else if (mDatabase->size() == 1)        //***003MR   
+		else //if (mDatabase->size() == 1)        //***003MR 
+			//SAH -- Set modify active no matter what. It is possible to import multiple finzs and jump from 0 to X fins in a database all at once (where X>1)			
 				gtk_widget_set_sensitive(mButtonModify, TRUE); //**003MR
 
 		//***1.85 - set font as currently selected 
@@ -2706,6 +2707,7 @@ void on_import_finz_activate(
 	
 
 	mainWin->refreshDatabaseDisplayNew(true);
+	gtk_clist_select_row(GTK_CLIST(mainWin->mCList), 0, 0); //Select first menu item
 
 }
 
