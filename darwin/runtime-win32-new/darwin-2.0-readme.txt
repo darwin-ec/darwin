@@ -69,7 +69,6 @@ From the CD.
     to complete the installation of DARWIN 2.0.  You will have the option to 
     select your installation folder and create START Menu and Desktop Icons.
 
-If you have DARWIN already installed
 The created installation folder "darwinhome" contains the following ....
 
     backups        - used in backing up database
@@ -102,7 +101,8 @@ RUNNING Darwin
     versions. DARWIN may be started several ways.
 
     DARWIN creates the following START menu items.
-        runDarwin ---- this runs DARWIN 2.0
+        Backups --- A link to the DARWIN backup folder
+        Darwin ---- this runs DARWIN 2.0
 	Darwin Help -- this links to the DARWIN help (in HTML format)
 	SurveyAreas -- this is a link to DARWIN's catalog and data folders
 	UNINSTALL ---- this will uninstall DARWIN 2.0 (you have the option to 
