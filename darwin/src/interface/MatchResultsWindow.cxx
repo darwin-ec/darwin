@@ -2344,19 +2344,19 @@ void on_mrButtonSaveResults_clicked(
 
 	char fName[500];
 	//sprintf(fName, "%s%smatchQResults%smatch-for-%s.res", 
-	//		getenv("DARWINHOME"), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
+			//gOptions->mDarwinHome.c_str(), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
 	//***1.85 - match results folder is now inside current survey area
 	//sprintf(fName, "%s%smatchQResults%smatch-for-%s.res", 
-	//		gOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
+			//gOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
 	sprintf(fName, "%s%smatchQResults%s%s-DB-match-for-%s.res", 
-			mrWin->mOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, 
+		mrWin->mOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, 
 			dbName.c_str(), finFileRoot.c_str());
-
-	//cout << endl << "Saving Results as: " << fName << endl;
+	
 
 	mrWin->mResults->save(fName);
 
 	//***1.6 - more message
+	
 	mrWin->mSaveMessage += "Results File: " + dbName + "-DB-match-for-";
 	mrWin->mSaveMessage += (finFileRoot + ".res\n");
 
@@ -2465,7 +2465,7 @@ string MatchResultsWindow::saveFinIfNeeded()
 
 	//***1.6 - build message to show user about saving of images, fin, and results
 	//mSaveMessage += "Unknown Image: ";
-	//mSaveMessage += destImgShortName;
+	//mSaveMessage += extractBasename(mUnknownFin->mImageFilename);
 
 	//string copyModFilename = "";
 
@@ -2491,8 +2491,8 @@ string MatchResultsWindow::saveFinIfNeeded()
 				*/
 		
 		//***1.6 - more of message
-		mSaveMessage += " and ";
-		mSaveMessage += (finFileName + "_wDarwinMods.png"); //***1.9
+		//mSaveMessage += " and ";
+		//mSaveMessage += finFileName + "_wDarwinMods.png"; //***1.9
 	//}
 
 	mSaveMessage += "\n"; //***1.6
@@ -2514,7 +2514,7 @@ string MatchResultsWindow::saveFinIfNeeded()
 
 	//***1.6 - more message
 	mSaveMessage += "Fin Trace: ";
-	mSaveMessage += (finFileName + ".finz\n");
+	mSaveMessage += finFileName + "\n";
 
 	// return rootName;
 	return finFileName;
