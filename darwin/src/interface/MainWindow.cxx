@@ -268,6 +268,7 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 			+ "\" \"" + backupName + "\" >nul";
 		system(command.c_str());
 	}
+	mDBCurEntryOffset=0; //We have a new database, clear the offset to force image rebuilt, etc.//SAH-DB
 }
 
 //*******************************************************************
