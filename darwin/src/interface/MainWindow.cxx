@@ -887,24 +887,28 @@ void MainWindow::selectFromReorderedCListNew(std::string selectedIdPlusOffset){ 
 }
 
 //*******************************************************************
+//***SAH: This function is called on each expose event for the notebook pages with Outline,Image,and OrigImage
+//        It is also called once in mainWindowCreate()
 void MainWindow::updateCursor()
 {
-        GdkBitmap *bitmap, *mask;
+    GdkBitmap *bitmap, *mask;
 	GdkColor white = {0,0xFFFF,0xFFFF,0xFFFF};
 	GdkColor black = {0,0x0000,0x0000,0x0000};
 	
-	if (NULL != mCursor)
-		gdk_cursor_destroy(mCursor);
+	//if (NULL != mCursor)
+		//gdk_cursor_destroy(mCursor);
 
-        bitmap = gdk_bitmap_create_from_data(NULL,
-                      magnify_cursor, magnify_cursor_width,
-                      magnify_cursor_height);
-        mask = gdk_bitmap_create_from_data(NULL,
-                      magnify_mask, magnify_cursor_width,
-                      magnify_cursor_height);
-        mCursor = gdk_cursor_new_from_pixmap(
-                      bitmap, mask, &black, &white,
-                      magnify_xhot, magnify_yhot);
+	if (mCursor==NULL){
+		bitmap = gdk_bitmap_create_from_data(NULL,
+						  magnify_cursor, magnify_cursor_width,
+						  magnify_cursor_height);
+		mask = gdk_bitmap_create_from_data(NULL,
+						  magnify_mask, magnify_cursor_width,
+						  magnify_cursor_height);
+		mCursor = gdk_cursor_new_from_pixmap(
+						  bitmap, mask, &black, &white,
+						  magnify_xhot, magnify_yhot);
+	}
  
 	// I'm paranoid, what can I say?
 	if (NULL != mCursor && NULL != mDrawingAreaOutline &&
@@ -914,6 +918,11 @@ void MainWindow::updateCursor()
 	if (NULL != mCursor && NULL != mDrawingAreaImage &&
 		NULL != mDrawingAreaImage->window) //***1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaImage->window, mCursor);
+
+	if (NULL != mCursor && NULL != mDrawingAreaOrigImage &&
+		NULL != mDrawingAreaOrigImage->window) //***1.99 - notebook page may be hidden
+		gdk_window_set_cursor(mDrawingAreaOrigImage->window, mCursor);
+
 }
 
 //*******************************************************************
@@ -3458,6 +3467,7 @@ gboolean on_mainDrawingAreaImage_expose_event(
 		mainWin->mImage->bytesPerPixel() * mainWin->mImage->getNumCols()
 		);
 
+	mainWin->updateCursor();
 	return TRUE;
 }
 
@@ -3499,6 +3509,7 @@ gboolean on_mainDrawingAreaOrigImage_expose_event(
 		mainWin->mOrigImage->bytesPerPixel() * mainWin->mOrigImage->getNumCols()
 		);
 
+	mainWin->updateCursor();
 	return TRUE;
 }
 
@@ -3600,6 +3611,7 @@ gboolean on_mainDrawingAreaOutline_expose_event(
 			POINT_SIZE);
 	}
 
+	mainWin->updateCursor();
 	return TRUE;
 }
 
