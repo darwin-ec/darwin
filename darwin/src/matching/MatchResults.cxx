@@ -236,8 +236,10 @@ void MatchResults::save(std::string fileName)
 		ofstream outFile(fileName.c_str());
 
 		if (!outFile)
+		{
 			throw Error("Problem writing to file: " + fileName
 					+ "\n In MatchResults::save()");
+		}
 
 		if (mFinID != "") {
 			outFile << "Results for ID: " << mFinID << endl;

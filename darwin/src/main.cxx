@@ -46,7 +46,7 @@
 // Copyright (C) 2001                                                     //
 ///////////////////////////////////////////////////////////////////////////
 
-#include <vld.h> //***2.0 - to enable Visual Leak Detector
+// #include <vld.h> //***2.0 - to enable Visual Leak Detector
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

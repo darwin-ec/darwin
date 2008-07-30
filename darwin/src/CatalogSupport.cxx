@@ -808,6 +808,9 @@ DatabaseFin<ColorImage>* openFinz(string archive)
 	
 	fin->mImageMods = fin->mModifiedFinImage->mImageMods;
 
+	// fixes an issue with the MatchResults trying to re-save the fin
+	fin->mFinFilename = archive;
+
 	delete db;
 
 	return fin;

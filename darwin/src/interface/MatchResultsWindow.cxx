@@ -2330,6 +2330,12 @@ void on_mrButtonSaveResults_clicked(
 		finFileRoot = finFileRoot.substr(finFileRoot.find_last_of(PATH_SLASH)+1);
 		finFileRoot = finFileRoot.substr(0,finFileRoot.rfind('.'));
 	}
+	
+	// added by RJ -- needs to be tested
+	finFileRoot = extractBasename(finFileRoot);
+	int pos = finFileRoot.rfind('.');
+	if(pos != string::npos)
+		finFileRoot = finFileRoot.substr(0, pos);
 
 	//***1.9 - break out database name to make part of results filename
 	string dbName = mrWin->mOptions->mDatabaseFileName;
@@ -2397,10 +2403,14 @@ string MatchResultsWindow::saveFinIfNeeded()
 	path += "tracedFins";
 	path += PATH_SLASH;
 
-	string finFileName = path + rootName + ".fin";
+	string finFileName = path + rootName + ".finz";
+
+	finFileName = generateUniqueName(finFileName); // prevents overwriting an existing finz
+
+	saveFinz(mUnknownFin, finFileName);
 
 	// this loop prevents overwriting previous fin and associated images
-
+/*
 	int i = 1;
 	char num[8];
 	//printf("Checking: %s ", finFileName.c_str());
@@ -2451,14 +2461,15 @@ string MatchResultsWindow::saveFinIfNeeded()
 	{
 		printf("copying \"%s\" to tracedFins\n",destImgShortName.c_str()); //***1.8 - moved here
 		system(command.c_str());
-	}
+	} */
 
 	//***1.6 - build message to show user about saving of images, fin, and results
-	mSaveMessage += "Unknown Image: ";
-	mSaveMessage += destImgShortName;
+	//mSaveMessage += "Unknown Image: ";
+	//mSaveMessage += destImgShortName;
 
-	string copyModFilename = "";
+	//string copyModFilename = "";
 
+	/*
 	//***1.5 - save modified image alongside original
 	if (NULL != mUnknownFin->mModifiedFinImage)
 	{
@@ -2477,23 +2488,25 @@ string MatchResultsWindow::saveFinIfNeeded()
 				copyModFilename,
 				shortFilename,
 				mUnknownFin->mImageMods);
+				*/
 		
 		//***1.6 - more of message
 		mSaveMessage += " and ";
-		mSaveMessage += (rootName + "_wDarwinMods.png"); //***1.9
-	}
+		mSaveMessage += (finFileName + "_wDarwinMods.png"); //***1.9
+	//}
 
 	mSaveMessage += "\n"; //***1.6
 
 	string temp = mUnknownFin->mImageFilename; // save original name temporarily
 
-	//***1.9 - save the name of the modified file if it exists
+	/* //***1.9 - save the name of the modified file if it exists
 	if ("" == copyModFilename)
 		mUnknownFin->mImageFilename = copyFilename; // change filename to reflect copy name
 	else
 		mUnknownFin->mImageFilename = copyModFilename; //***1.9
 
 	mUnknownFin->save(finFileName);
+	*/
 	
 	mResults->setFinFilename(finFileName);
 
@@ -2501,7 +2514,8 @@ string MatchResultsWindow::saveFinIfNeeded()
 
 	//***1.6 - more message
 	mSaveMessage += "Fin Trace: ";
-	mSaveMessage += (rootName + ".fin\n");
+	mSaveMessage += (finFileName + ".finz\n");
 
-	return rootName;
+	// return rootName;
+	return finFileName;
 }
