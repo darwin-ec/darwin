@@ -7,6 +7,7 @@
 //                                                                       //
 //	DARWIN Software                                                      //
 //                                                                       //
+// Digital Analysis and Recognition of Whale Image on a Network          //
 // Digital Analysis to Recognize Whale Images on a Network               //
 // Digital Archive of Recognized Whale Images on a Network               //
 //                                                                       //
@@ -24,8 +25,8 @@
 //	Rachel Stanley (Expert System version)                               //
 //	Andrew Cameron (protype database)                                    //
 //	Adam Russell (major Object Oriented rewrite & Gtk GUI)               //
-//  Scott Hale (autotrace ...)                                           //
-//  R J Nowling (SQLite database)                                        // 
+//  Scott Hale (autotrace, finz file support, misc. gui/HCI ...)         //
+//  R J Nowling (SQLite database, finz file support)                     // 
 //                                                                       //
 // ... at  Eckerd College                                                //
 //	       St.Petersburg, FL                                             //
