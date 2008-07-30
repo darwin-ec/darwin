@@ -11,7 +11,7 @@
 Name "DARWIN"
 
 ;default install directory
-InstallDir "$PROGRAMFILES\darwin"
+InstallDir "$PROGRAMFILES\darwin\"
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf
@@ -75,18 +75,18 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	File /r /x *.nsi /x darwin_splash.bmp /x setup.exe *
+	File /r /x *.nsi /x darwin_splash.bmp /x setup.exe /x .svn *
 	
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
 	CreateDirectory "$SMPROGRAMS\darwin"
 	;link.lnk target.file [parameters [icon.file [icon_index_number [start_options [keyboard_shortcut [description]]]]]]
-	CreateShortCut "$SMPROGRAMS\darwin\darwin.lnk" "$INSTDIR\runDarwin.bat" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$SMPROGRAMS\darwin\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 	CreateShortCut "$SMPROGRAMS\darwin\backups.lnk" "$INSTDIR\backups\"
 	CreateShortCut "$SMPROGRAMS\darwin\survey areas.lnk" "$INSTDIR\surveyAreas\"
 	CreateShortCut "$SMPROGRAMS\darwin\uninstall.lnk" "$INSTDIR\uninstall.exe"
 	
 	;Desktop ShortCut
-	CreateShortCut "$DESKTOP\darwin.lnk" "$INSTDIR\runDarwin.bat" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$DESKTOP\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 
 	;Environmental Variable
 	;http://nsis.sourceforge.net/Setting_Environment_Variables_Examples
