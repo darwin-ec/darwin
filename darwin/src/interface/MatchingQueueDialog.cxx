@@ -1104,7 +1104,7 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 					cout << "finz, adding to queue" << endl;
 					dialog->mMatchingQueue->add(fileName);
 					cout << "updating queue list" << endl;
-					dialog->updateQueueList();
+					//dialog->updateQueueList();
 					cout << "queue list updated" << endl;
 				} 
 				else
@@ -1122,13 +1122,14 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 					else
 					{
 						dialog->mMatchingQueue->add(fileName);
-						dialog->updateQueueList();
+						//dialog->updateQueueList();
 					}
 				}
 
 				inFile.close();
 				g_free(g_slist_nth(fileNames,i)->data);
 			}
+			dialog->updateQueueList();
 			g_slist_free(fileNames);
 			break;
 		case SAVE_QUEUE:
