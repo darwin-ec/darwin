@@ -54,4 +54,6 @@ bool testFileExistsAndPrompt(std::string filename);
 
 void importFin(Database* db, DatabaseFin<ColorImage>* fin);
 
+bool isTracedFinFile(std::string fileName);
+
 #endif

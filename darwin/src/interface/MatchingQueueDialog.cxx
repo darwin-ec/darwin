@@ -15,7 +15,7 @@
 #include <string.h>
 #include "../support.h"
 #include "MatchingQueueDialog.h"
-#include "../interface/MatchResultsWindow.h"
+#include "MatchResultsWindow.h"
 #include "../image_processing/transform.h"
 #include "ErrorDialog.h"
 
@@ -195,19 +195,26 @@ gboolean matchingQueueIdleFunction(
 		// otherwise, move on to next database fin and match it to current unknown
 
 		Match *matcher;
-		//static int id = -1;
+		char fName[500];
 
 		if (-1 == /*id*/dlg->mLastRowSelected) // get the first unknown
 		{
 			matcher = dlg->mMatchingQueue->getNextUnknownToMatch();
-			//id ++;
+
 			dlg->mLastRowSelected++;
-			// move down queue list and display image of unknown fin  being matched
-			gtk_clist_select_row(GTK_CLIST(dlg->mCList), /*id*/dlg->mLastRowSelected, 0);
+
+			// if matcher is NULL it indicates a problem loading an uknown .fin or .finz
+			if (NULL == matcher)
+				cout << "Skipping row " << dlg->mLastRowSelected << "!";
+			else
+				// move down queue list and display image of unknown fin  being matched
+				gtk_clist_select_row(GTK_CLIST(dlg->mCList), dlg->mLastRowSelected, 0);
 		}
 		else // just reset the pointer to the current unknown
 			matcher = dlg->mMatchingQueue->getCurrentUnknownToMatch();
 
+		if (NULL != matcher)
+		{
 		bool categoriesToMatch[32] = 
 				{true,true,true,true,true,true,true,true,
 				 true,true,true,true,true,true,true,true,
@@ -217,12 +224,6 @@ gboolean matchingQueueIdleFunction(
 		// matcher should NEVER be NULL here, because the percentComplete below
 		// will reach 1.0 first and terminate returns to this idle function,
 		// but test just in case
-
-		if (NULL == matcher)
-		{
-			cout << "NO Matcher!";
-			return FALSE;
-		}
 
 		float percentDatabaseProcessed = matcher->matchSingleFin(
 				TRIM_OPTIMAL_TIP,
@@ -241,9 +242,6 @@ gboolean matchingQueueIdleFunction(
 		// at this point percentDatabaseProcessed == 1.0, so
 		// this unknown has been matched to entire database, so save results
 
-		char fName[500];
-		//sprintf(fName, "%s%smatchQResults%sresults-unknown-%d", 
-		//		getenv("DARWINHOME"), PATH_SLASH, PATH_SLASH, /*id*/dlg->mLastRowSelected);
 		gchar *finFileName;
 		gtk_clist_get_text(GTK_CLIST (dlg->mCList),dlg->mLastRowSelected,0,&finFileName);
 		string finFileRoot = finFileName;
@@ -254,11 +252,7 @@ gboolean matchingQueueIdleFunction(
 		dbName = dbName.substr(dbName.rfind(PATH_SLASH)+1);
 		dbName = dbName.substr(0,dbName.rfind(".db"));
 
-		//sprintf(fName, "%s%smatchQResults%smatch-for-%s.res", 
-		//		getenv("DARWINHOME"), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
 		//***1.85 - match results now go inside current survey area folder
-		//sprintf(fName, "%s%smatchQResults%smatch-for-%s.res", 
-		//		gOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, finFileRoot.c_str());
 		//***1.9 - match results now include area and database in filename
 		sprintf(fName, "%s%smatchQResults%s%s-DB-match-for-%s.res", 
 				dlg->mOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH, 
@@ -269,16 +263,22 @@ gboolean matchingQueueIdleFunction(
 		dlg->mMatchingQueue->getMatchResults()->sort(); //***1.5 - list must be sorted here, not as built
 		dlg->mMatchingQueue->getMatchResults()->save(fName);
 		dlg->mMatchingQueue->finalizeMatch();
+		}
 
 		// now get new unknown so matching can be continued
 		// NOTE: the current (*matcher) will be deleted by the call to
 		// getNextUnknownToMatch(), so don't do it here
 
 		matcher = dlg->mMatchingQueue->getNextUnknownToMatch();
-		//id++;
+		
 		dlg->mLastRowSelected++;
-		// move down queue list and display image of unknown fin  being matched
-		gtk_clist_select_row(GTK_CLIST(dlg->mCList), /*id*/dlg->mLastRowSelected, 0);
+
+		// if matcher is NULL it indicates a problem loading an uknown .fin or .finz
+		if (NULL == matcher)
+			cout << "Skipping row " << dlg->mLastRowSelected << "!";
+		else
+			// move down queue list and display image of unknown fin  being matched
+			gtk_clist_select_row(GTK_CLIST(dlg->mCList), /*id*/dlg->mLastRowSelected, 0);
 
 		float percentComplete = dlg->mMatchingQueue->matchProgress();
 
@@ -293,8 +293,6 @@ gboolean matchingQueueIdleFunction(
 
 		dlg->mMatchingQueue->summarizeMatching(); // output to console
 
-		//sprintf(fName, "%s%smatchQResults%sresults-summary", 
-		//		getenv("DARWINHOME"), PATH_SLASH, PATH_SLASH);
 		//***1.85 - match results are now inside current survey area
 		sprintf(fName, "%s%smatchQResults%sresults-summary", 
 				gOptions->mCurrentSurveyArea.c_str(), PATH_SLASH, PATH_SLASH);
@@ -649,7 +647,7 @@ void on_MQ_mCList_select_row(
 
 		string finFileName = dialog->mMatchingQueue->getItemNum(row); //***1.1
 		//DatabaseFin<ColorImage> *fin = dialog->mMatchingQueue->getItemNum(row);
-		DatabaseFin<ColorImage> *fin;
+		DatabaseFin<ColorImage> *fin = NULL;
 
 		cout << "filename " << finFileName << endl;
 		
@@ -662,10 +660,11 @@ void on_MQ_mCList_select_row(
 			fin = openFinz(finFileName);
 			//CHECK 
 			if (fin==NULL) {
-				g_print("Bad fin...");
-				dialog->mMatchingQueue->remove(dialog->mLastRowSelected);
-				dialog->updateQueueList();
-				return;
+				//g_print("Bad fin...");
+				//dialog->mMatchingQueue->remove(dialog->mLastRowSelected);
+				//dialog->updateQueueList();
+				//return;
+				///throw(Error("Fin File missing or corrupted!"));
 			}
 
 
@@ -673,8 +672,12 @@ void on_MQ_mCList_select_row(
 		else
 		{
 			cout << "opening dbfin" << endl;
-			fin = new DatabaseFin<ColorImage>(finFileName); //***1.1
+			if (isTracedFinFile(finFileName))
+				fin = new DatabaseFin<ColorImage>(finFileName); //***1.1
 		}
+
+		if (NULL == fin)
+			throw(Error("Fin File missing or corrupted!"));
 
 		if (NULL != dialog->mImage)
 			delete dialog->mImage;
@@ -1118,11 +1121,7 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 				} 
 				else
 				{ 
-					char test[sizeof(unsigned long)+1];
-					inFile.read((char*)&test, sizeof(unsigned long));
-					inFile.close();
-					test[5] = '\0';
-					if ((strncmp(test,"DFIN",4) != 0) && (strncmp(test,"NIFD",4) != 0))
+					if (!isTracedFinFile(fileName))
 					{
 						g_print("This is not a traced dolphin fin!\n");
 						//showError("This is not a traced dolphin fin!");

@@ -925,3 +925,28 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 
 	systemZip(src, archivePath);
 }
+
+
+// this returns true if file is OLD style fin file adn first 4 bytes
+// are DFIN or NIFD (the magic number)
+//
+bool isTracedFinFile(string fileName)
+{
+	ifstream infile;
+	char test[sizeof(unsigned long)+1];
+
+	infile.open(fileName.c_str());
+
+	if (!infile)
+		return false;
+	
+	infile.read((char*)&test, sizeof(unsigned long));					
+	infile.close();
+
+	test[5] = '\0';
+
+	return ((strncmp(test,"DFIN",4) == 0) || (strncmp(test,"NIFD",4) == 0));
+}
+
+
+

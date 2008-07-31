@@ -948,12 +948,12 @@ mPreview(NULL) //***1.95
 
 
 						} else {//open a .fin
-							char test[sizeof(unsigned long)+1];
-							inFile.read((char*)&test, sizeof(unsigned long));
-							inFile.close();
-							test[5] = '\0';
-							if ((strncmp(test,"DFIN",4) != 0) && (strncmp(test,"NIFD",4) != 0))
+							if (! isTracedFinFile(fileName))
+							{
 								g_print("This is not a traced dolphin fin!\n");
+								dlg->mMainWin->displayStatusMessage(_("Invalid fin format. Could not open file."));
+								break;
+							}
 							else
 							{
 

@@ -96,9 +96,15 @@ Match *MatchingQueue::getNextUnknownToMatch()
 	string tracedFinFilename = this->getItemNum(mCurrentFinID); //***1.1
 	
 	if(string::npos == tracedFinFilename.rfind(".finz"))
-		mUnknownFin = new DatabaseFin<ColorImage>(tracedFinFilename); //***1.1
+	{
+		if (isTracedFinFile(tracedFinFilename))
+			mUnknownFin = new DatabaseFin<ColorImage>(tracedFinFilename); //***1.1
+	}
 	else
 		mUnknownFin = openFinz(tracedFinFilename);
+
+	if (NULL == mUnknownFin)
+		return NULL;         //***2.0 - in case .finz or .fin file was corrupt
 
 	mMatcher = new Match(mUnknownFin, mFinDatabase, mOptions);
 	mResults = mMatcher->getMatchResults();
