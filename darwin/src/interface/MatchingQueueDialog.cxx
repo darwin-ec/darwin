@@ -660,6 +660,15 @@ void on_MQ_mCList_select_row(
 		{
 			cout << "opening finz" << endl;
 			fin = openFinz(finFileName);
+			//CHECK 
+			if (fin==NULL) {
+				g_print("Bad fin...");
+				dialog->mMatchingQueue->remove(dialog->mLastRowSelected);
+				dialog->updateQueueList();
+				return;
+			}
+
+
 		}
 		else
 		{
