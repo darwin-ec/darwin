@@ -80,13 +80,16 @@ Section "Installer Section"
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
 	CreateDirectory "$SMPROGRAMS\darwin"
 	;link.lnk target.file [parameters [icon.file [icon_index_number [start_options [keyboard_shortcut [description]]]]]]
+	SetOutPath $INSTDIR\system\bin
 	CreateShortCut "$SMPROGRAMS\darwin\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	SetOutPath $INSTDIR
 	CreateShortCut "$SMPROGRAMS\darwin\backups.lnk" "$INSTDIR\backups\"
 	CreateShortCut "$SMPROGRAMS\darwin\survey areas.lnk" "$INSTDIR\surveyAreas\"
 	CreateShortCut "$SMPROGRAMS\darwin\help.lnk" "$INSTDIR\docs\usersguide.htm"
 	CreateShortCut "$SMPROGRAMS\darwin\uninstall.lnk" "$INSTDIR\uninstall.exe"
 	
 	;Desktop ShortCut
+	SetOutPath $INSTDIR\system\bin
 	CreateShortCut "$DESKTOP\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 
 	;Environmental Variable

@@ -1247,10 +1247,10 @@ mseInfo Match::findErrorBetweenFinsOptimal(
 			// show the display of the outline registration in the dialog
 			mMatchingDialog->showOutlines(mappedContour,floatDBContour);
 
-			/*
-			char dummy;
-			cin >> dummy;
-			*/
+			// this hook is for screen capturing first alignments - JHS
+			//char dummy;
+			//cin >> dummy;
+			
 		}
 
 		// now try shortenning one or the other of the leading or trailing edges to 
