@@ -108,6 +108,7 @@ GtkWidget* ErrorDialog::createErrorDialog(string errorMsg)
   gtk_window_set_policy (GTK_WINDOW (errorDialog), TRUE, TRUE, TRUE);
   gtk_window_set_wmclass(GTK_WINDOW(errorDialog), "darwin_error", "DARWIN");
 
+  gtk_window_set_keep_above(GTK_WINDOW(errorDialog), TRUE); //***2.0 - keep on top
   gtk_window_set_modal(GTK_WINDOW(errorDialog),TRUE); //***1.85 - so focus is HERE
 
   errorVBox = GTK_DIALOG (errorDialog)->vbox;

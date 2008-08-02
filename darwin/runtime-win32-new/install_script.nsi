@@ -91,6 +91,7 @@ Section "Installer Section"
 	;Desktop ShortCut
 	SetOutPath $INSTDIR\system\bin
 	CreateShortCut "$DESKTOP\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	SetOutPath $INSTDIR
 
 	;Environmental Variable
 	;http://nsis.sourceforge.net/Setting_Environment_Variables_Examples

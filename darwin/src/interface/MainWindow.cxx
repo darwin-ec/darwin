@@ -2953,7 +2953,7 @@ void on_docs_activate(
 	cmd = "firefox ";
 	//system("firefox file:$DARWINHOME/docs/usersguide.htm&");
 #endif
-	cmd += "\"" + gOptions->mDarwinHome + PATH_SLASH + "docs" + PATH_SLASH + "usersguide.htm&\"";
+	cmd += "\"" + gOptions->mDarwinHome + PATH_SLASH + "docs" + PATH_SLASH + "usersguide.htm\" &";
 	system(cmd.c_str());
 }
 

@@ -343,25 +343,61 @@ void MatchingQueue::save(string fileName)
 
 		//string home = getenv("DARWINHOME");
 		//***1.85 - everything is now relative to the current survey area
-		string home = gOptions->mCurrentSurveyArea;
-		string shortFilename = (*it).c_str();
-		int pos = home.length();
-		if (pos >= 0)
+
+		//***2.0 - it is possible that fins may be in another survey area of the
+		// same darwin installation.  So we now save the NAME of the survey area
+		// down to the fin filename (ex: "Tampa Bay\tracedFins\aloa.fin") whereas
+		// we used to save only this (ex: "tracedFins\aloa.fin")
+		//
+		// So, the strategy is to strip less here, and then inside the load()
+		// function we will assume that the Current Survey Area is the prefix
+		// if none is specified. Otherwise, we will look in the specified
+		// Survey Area for the fin.  If neither is the correct path then
+		// the fin has been saved where we cannot recover it from the loaded
+		// match queue. -- JHS
+
+		string area = gOptions->mCurrentSurveyArea; // current survey area
+		string filename = (*it).c_str();            // entire path\filename
+		string shortFilename;
+
+		// are we in the CURRENT survey area?
+
+		int pos = filename.find(area);
+		if (string::npos != pos)
 		{
-			//string path = shortFilename.substr(0,pos);
-			shortFilename = shortFilename.substr(pos+1);
-			//cout << path << '|' << shortFilename << endl;
+			// then the fin has been added from inside the current survey area
+			filename = filename.substr(area.length()); // strip preamble
+			pos = area.rfind(PATH_SLASH);    // just want the areaName
+			area = area.substr(pos+1);       // got it
+			shortFilename = area + filename; // keep areaName\...
+			outFile << "<area> " << shortFilename;
+		}
+		else
+		{
+			string darwinHome = gOptions->mDarwinHome;
+			pos = filename.find(darwinHome);
+			if (string::npos != pos)
+			{
+				// the fin is in this DARWIN folder hierarchy
+				filename = filename.substr(darwinHome.length()); // strip preamble
+				pos = darwinHome.rfind(PATH_SLASH);    // just want DARWIN folder name
+				darwinHome = darwinHome.substr(pos+1); // got it  
+				shortFilename = darwinHome + filename; // keep darwinHome\ ...
+				outFile << "<home> " << shortFilename;
+			}
+			else
+			{
+				// fin is somewhere other than this DARWIN installation
+				outFile << "<full> " << filename; // keep full path
+			}
 		}
 
-		//outFile << *it; replaced with following
-		outFile << shortFilename; //***1.1 
 		++it;
 
-		// sloppy, i know
 		if (it != mFileNames.end())
 			outFile << endl;
 	}
-	outFile.close(); // just to be nice
+	outFile.close();
 }
 
 void MatchingQueue::load(string fileName)
@@ -391,13 +427,55 @@ void MatchingQueue::load(string fileName)
 		//string filename = getenv("DARWINHOME");
 		//***1.85 - everything is now relative to the current survey area
 		
-		string filename = gOptions->mCurrentSurveyArea;
-		filename += PATH_SLASH;
-		filename += entry;
+		//***2.0 - we now have four possible scenarios with the filenames
+		// The first TOKEN on each line is either ...
+		// MISSING, so we have an OLD match queue file and must assume
+		//    that each line is relative to the CURRENT survey area
+		// "<full>", so the entire path was saved, in which case we use it as is
+		// "<area>", a partial path beginning within the CURRENT survey area
+		//    is assumed
+		// "<home>" a partial path beginning somewhere within the current DARWIN
+		//    installation is assumed
 
-		//cout << filename << endl;
+		string thisHome = gOptions->mDarwinHome;
+		thisHome = thisHome.substr(0,thisHome.rfind(PATH_SLASH));
 
-		//mFileNames.push_back(entry); replaced with following
+		string thisArea = gOptions->mCurrentSurveyArea;
+		thisArea = thisArea.substr(0,thisArea.rfind(PATH_SLASH));
+
+		string filename;
+
+		string token = entry.substr(0,6);
+		if (token == "<area>")
+		{
+			// path relative to SOME survey area ASSUMED inside this DARWIN install
+
+			filename = gOptions->mCurrentSurveyArea;
+			filename = filename.substr(0,filename.rfind(PATH_SLASH)+1); // strip area name
+			entry = entry.substr(7); // strip token
+			filename += entry; // append saved area name + rest
+		}
+		else if (token == "<home>")
+		{
+			// path relative to a DARWIN installation, but ASSUME it is is same
+			// relative location (ex: "Program Files/darwin" & "Program Files/darwin2.0")
+			filename = gOptions->mDarwinHome;
+			filename = filename.substr(0,filename.rfind(PATH_SLASH)+1); // strip home name
+			entry = entry.substr(7); // strip token
+			filename += entry; // append saved DARWIN home name + rest
+		}
+		else if (token == "<full>")
+		{
+			// complete path, use as is
+			filename = entry.substr(7); // strip token first
+		}
+		else
+		{
+			// MISSING - an old path relative to the CURRENT survey area
+			filename = gOptions->mCurrentSurveyArea + PATH_SLASH;
+			filename += entry; // append rest
+		}
+
 		mFileNames.push_back(filename); //***1.1
 		entry = "";
 	}
