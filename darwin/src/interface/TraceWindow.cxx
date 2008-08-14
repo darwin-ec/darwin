@@ -5334,6 +5334,15 @@ void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 		return;
 	}
 
+	if (NULL != traceWin->mFin) //***2.0
+	{
+		// this means the Fin Trace was already saved, or was at least
+		// created as a DatabaseFin and was passed to the SaveFileChooserDialog,
+		// so if we are re-saving, delete the old fin and start over
+		delete traceWin->mFin;
+		traceWin->mFin = NULL;
+	}
+
 	//***008OL added the following in case Contour is done but not finalized yet
 	if (NULL == traceWin->mOutline) {
 		traceWin->mTraceLocked=true;
