@@ -443,6 +443,15 @@ std::string generateUniqueName(std::string filename)
 
 }
 
+inline
+bool isBasename(std::string path)
+{
+	if(path.find(PATH_SLASH) == std::string::npos)
+		return true;
+
+	return false;
+}
+
 
 #endif
 

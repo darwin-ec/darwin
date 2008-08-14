@@ -1238,23 +1238,34 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 					{
 						// found modified fin in new file format
 						fp.close();
-						if (NULL == unkFin->mModifiedFinImage) //***2.0 - already loaded if *.finz
+						
+						//***2.0 - already loaded if *.finz
+						if (NULL == unkFin->mModifiedFinImage)
 							unkFin->mModifiedFinImage = new ColorImage(unkFin->mImageFilename);
+						
 						// name of original image extracted from modified image is without path
 						// we ASSUME it is in the tracedFins folder & want to set the
 						// original image filename to the path+filename
 						//***1.85 - everything is now relative to the current survey area
-						string path = gOptions->mCurrentSurveyArea;
-						path += PATH_SLASH;
-						path += "tracedFins";
-						path += PATH_SLASH;
-						unkFin->mOriginalImageFilename = 
-							path + unkFin->mModifiedFinImage->mOriginalImageFilename;
+						
+						// ***2.0 - *.finz already gives us an absolute path
+						if(isBasename(unkFin->mOriginalImageFilename))
+						{
+							string path = gOptions->mCurrentSurveyArea;
+							path += PATH_SLASH;
+							path += "tracedFins";
+							path += PATH_SLASH;
+							unkFin->mOriginalImageFilename = path + unkFin->mModifiedFinImage->mOriginalImageFilename;
+						}
+
+						//***2.0 - already loaded if *.finz
 						if (("" != unkFin->mOriginalImageFilename) &&
-							(NULL == unkFin->mFinImage)) //***2.0 - already loaded if *.finz
+							(NULL == unkFin->mFinImage))
 							unkFin->mFinImage = new ColorImage(unkFin->mOriginalImageFilename);
+						
 						// otherwise we leave it NULL for now
-						if (unkFin->mImageMods.empty()) //***2.0 - already loaded if *.finz
+						//***2.0 - already loaded if *.finz
+						if (unkFin->mImageMods.empty())
 							unkFin->mImageMods = unkFin->mModifiedFinImage->mImageMods;
 					}
 				}

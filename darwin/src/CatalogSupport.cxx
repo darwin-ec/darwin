@@ -848,26 +848,29 @@ void importFin(Database* db, DatabaseFin<ColorImage>* fin)
  */
 void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 {
+	DatabaseFin<ColorImage>* modFin;
 	Options o;	
 	CatalogScheme cat;
 	string tempdir, cmd, baseFilename, src, dest;
 	int pos;
 
-	if (archivePath.find(".finz")==string::npos) {
-		//force extention .finz -- SAH
+	//force extention .finz -- SAH
+	if (archivePath.find(".finz")==string::npos)
 		archivePath+=".finz";
-	}
 
 	if(!testFileExistsAndPrompt(archivePath))
 		return;
 
+	modFin = new DatabaseFin<ColorImage>(fin);
+
+
 	baseFilename = extractBasename(archivePath);
 
-	tempdir = gOptions->mTempDirectory;//getenv("TEMP");
+	tempdir = gOptions->mTempDirectory;
 	tempdir += PATH_SLASH;
 	tempdir += baseFilename;
 
-	// delete and make dir
+	// delete and re-make dir
 	systemRmdir(tempdir);
 	systemMkdir(tempdir);
 	
@@ -879,44 +882,47 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	 * is a modified image, it means that the mod list comes from
 	 * fin->mImageMods
 	 */
-	if (fin->mModifiedFinImage == NULL) {
-		fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
-		fin->mImageMods = fin->mModifiedFinImage->mImageMods;
+	if (modFin->mModifiedFinImage == NULL) {
+		modFin->mModifiedFinImage = new ColorImage(modFin->mImageFilename);
+		modFin->mImageMods = modFin->mModifiedFinImage->mImageMods;
 	} else {
-		fin->mModifiedFinImage->mImageMods = fin->mImageMods;
+		modFin->mModifiedFinImage->mImageMods = modFin->mImageMods;
 	}
 
-	if(fin->mOriginalImageFilename == "")
-	{
-		fin->mOriginalImageFilename = extractPath(fin->mImageFilename) + PATH_SLASH + extractBasename(fin->mModifiedFinImage->mOriginalImageFilename);
-	}
+	// Original Image should be in same folder as modified image
+	if(modFin->mOriginalImageFilename == "")
+		modFin->mOriginalImageFilename = extractPath(modFin->mImageFilename) + PATH_SLASH + extractBasename(modFin->mModifiedFinImage->mOriginalImageFilename);
 
-	src = fin->mOriginalImageFilename;
-	dest = tempdir + PATH_SLASH + extractBasename(fin->mOriginalImageFilename);
+	// copy over original image
+	src = modFin->mOriginalImageFilename;
+	dest = tempdir + PATH_SLASH + extractBasename(modFin->mOriginalImageFilename);
 	systemCopy(src, dest);
-
-	fin->mOriginalImageFilename = extractBasename(fin->mOriginalImageFilename);
+	
+	// set img path name as relative
+	modFin->mOriginalImageFilename = extractBasename(modFin->mOriginalImageFilename);
 	
 	// replace ".finz" with "_wDarwinMods.png" for modified image filename
 	pos = baseFilename.rfind(".");
-	fin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
+	modFin->mImageFilename = tempdir + PATH_SLASH + baseFilename.substr(0,pos) + "_wDarwinMods.png";
 	
-	fin->mModifiedFinImage->save_wMods(fin->mImageFilename,
-		fin->mOriginalImageFilename,
-		fin->mImageMods);
+	// save copy of modified image
+	modFin->mModifiedFinImage->save_wMods(modFin->mImageFilename,
+		modFin->mOriginalImageFilename,
+		modFin->mImageMods);
 	
 	// set mod img path name as relative
-	fin->mImageFilename = extractBasename(fin->mImageFilename);	
-
+	modFin->mImageFilename = extractBasename(modFin->mImageFilename);	
+	
+	// create new database
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
 	cat.schemeName = "FinzSimple";
 	if(fin->getDamage() != "NONE")
 		cat.categoryNames.push_back("NONE");
 	cat.categoryNames.push_back(fin->getDamage());
-
+	
 	SQLiteDatabase db(&o, cat, true);
 
-	db.add(fin);
+	db.add(modFin);
 
 	db.closeStream();
 
@@ -924,6 +930,8 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string archivePath)
 	src = tempdir + PATH_SLASH + "*.*";
 
 	systemZip(src, archivePath);
+
+	delete modFin;
 }
 
 
