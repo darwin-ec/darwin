@@ -433,7 +433,8 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 			}
 
 			if (thisDBFin->getID() != dbFinID)
-				cout << "Disaster " << thisDBFin->getID() << "\n";
+				cout << "Disaster " << thisDBFin->getID() 
+				     << " " << dbFinID << "\n";
 
 			FloatContour *mappedUnknownContour = mapContour(
 					unkFin->mFinOutline->getFloatContour(),
