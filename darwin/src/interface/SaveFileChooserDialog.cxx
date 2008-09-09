@@ -285,10 +285,13 @@ void on_saveFileChooserButtonOK_clicked(
 		}
 
 		//saveFin(dlg->mFin, fileName);//SAH 2008-07-17
-		saveFinz(dlg->mFin,fileName);
-
-		if (NULL != dlg->mTraceWin)
-			dlg->mTraceWin->setSavedFinFilename(fileName);
+		if (saveFinz(dlg->mFin,fileName))
+		{
+			//***2.0JHS - reset SAVED fin filenames ONLY if saved 
+			dlg->mFin->mFinFilename = fileName; //***2.0JHS
+			if (NULL != dlg->mTraceWin)
+				dlg->mTraceWin->setSavedFinFilename(fileName);
+		}
 
 		//***1.3 - do not delete trace window here
 		//   allow us to return so we can proceed with match after saving fin, if desired

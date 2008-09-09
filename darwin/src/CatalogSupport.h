@@ -46,7 +46,7 @@ DatabaseFin<ColorImage>* openFin(std::string filename);
 bool saveFin(DatabaseFin<ColorImage>* fin, std::string filename);
 
 DatabaseFin<ColorImage>* openFinz(std::string filename);
-void saveFinz(DatabaseFin<ColorImage>* fin, std::string &filename); //***2.0 - ref param change
+bool saveFinz(DatabaseFin<ColorImage>* fin, std::string &filename); //***2.0 - ref param change
 
 std::string saveImages(DatabaseFin<ColorImage>* fin, std::string savefolder, std::string filename);
 

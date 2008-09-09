@@ -846,7 +846,7 @@ void importFin(Database* db, DatabaseFin<ColorImage>* fin)
 /*
  * Saves a fin into a finz file
  */
-void saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath)
+bool saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath) // return save status JHS
 {
 	DatabaseFin<ColorImage>* modFin;
 	Options o;	
@@ -860,7 +860,7 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath)
 		archivePath+=".finz";
 
 	if(!testFileExistsAndPrompt(archivePath))
-		return;
+		return false;
 
 	modFin = new DatabaseFin<ColorImage>(fin);
 
@@ -914,7 +914,7 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath)
 	// set mod img path name as relative
 	modFin->mImageFilename = extractBasename(modFin->mImageFilename);
 	// also set the modified image filename of the fin passed into this function - JHS
-	fin->mImageFilename =modFin->mImageFilename;
+	fin->mImageFilename = modFin->mImageFilename;
 	
 	// create new database
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
@@ -935,6 +935,8 @@ void saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath)
 	systemZip(src, archivePath);
 
 	delete modFin;
+
+	return true;
 }
 
 
