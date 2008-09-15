@@ -1011,10 +1011,14 @@ mPreview(NULL) //***1.95
 										// original image filename to the path+filename
 										//string path =  getenv("DARWINHOME");
 										//***1.85 - everything is now relative to the current survey area
-										string path = gOptions->mCurrentSurveyArea;
-										path += PATH_SLASH;
-										path += "tracedFins";
-										path += PATH_SLASH;
+										//string path = gOptions->mCurrentSurveyArea;
+										//path += PATH_SLASH;
+										//path += "tracedFins";
+										//path += PATH_SLASH;
+										//***2.0 - actually the original image must be in same place as
+										//         the *.fin file and the modified image (JHS)
+										string path = unkFin->mImageFilename;
+										path = path.substr(0,path.rfind(PATH_SLASH)+1); // includes slash
 										unkFin->mOriginalImageFilename =
 											path + unkFin->mModifiedFinImage->mOriginalImageFilename;
 										if ("" != unkFin->mOriginalImageFilename)

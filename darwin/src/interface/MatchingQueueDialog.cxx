@@ -1251,11 +1251,17 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 						// ***2.0 - *.finz already gives us an absolute path
 						if(isBasename(unkFin->mOriginalImageFilename))
 						{
-							string path = gOptions->mCurrentSurveyArea;
-							path += PATH_SLASH;
-							path += "tracedFins";
-							path += PATH_SLASH;
-							unkFin->mOriginalImageFilename = path + unkFin->mModifiedFinImage->mOriginalImageFilename;
+							// this is an OLD *.fin file with a *.pnm modified image file
+							//string path = gOptions->mCurrentSurveyArea;
+							//path += PATH_SLASH;
+							//path += "tracedFins";
+							//path += PATH_SLASH;
+							// ***2.0 - the original image MUST actually be in the same folder
+							//          as the *.fin file and the modified image (JHS)
+							string path = unkFin->mImageFilename;
+							path = path.substr(0,path.rfind(PATH_SLASH)+1); // included slash
+							unkFin->mOriginalImageFilename = 
+										path + unkFin->mModifiedFinImage->mOriginalImageFilename;
 						}
 
 						//***2.0 - already loaded if *.finz

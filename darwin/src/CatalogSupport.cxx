@@ -914,7 +914,7 @@ bool saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath) // return save 
 	// set mod img path name as relative
 	modFin->mImageFilename = extractBasename(modFin->mImageFilename);
 	// also set the modified image filename of the fin passed into this function - JHS
-	fin->mImageFilename = modFin->mImageFilename;
+	//fin->mImageFilename = modFin->mImageFilename;
 	
 	// create new database
 	o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
