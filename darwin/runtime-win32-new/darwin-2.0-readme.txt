@@ -47,8 +47,8 @@ DARWIN 2.0 now comes with a Windows setup program that will lead you through
 INSTALL and UNINSTALL.
 
 NOTE: You will need to have "Administrator" or "Power User" level privileges 
-on your Windows 2000 or Windows XP computer if you want to copy the folder 
-to "C:\Program Files" or "C:\" 
+on your Windows 2000 or Windows XP computer if you want to install DARWIN 2.0 
+in "C:\Program Files" or "C:\" 
 
 If you are UPGRADING a previous version of DARWIN, then all of your
 current configuration and data will be preserved. However, as a precaution

@@ -76,6 +76,7 @@ ColorImage::ColorImage(const std::string &filename)
 	catch (ImageFileNotFound fnf)
 	{
 		//***1.5 - image file not found
+		printf("[ImgName] %s\n",filename.c_str());
 		createDefaultImageFromXPM(fnf_xpm); // was question_xpm
 	}
 	catch (Error e)

@@ -177,6 +177,7 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 	  mOriginalImageFilename(""), //***1.9
 	  mBuiltFromMods(false) //***2.0
 {
+	printf("LoadingC: %s\n",filename.c_str());
 	std::ifstream infile(filename.c_str(), std::ios::binary);
 
 	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
@@ -246,6 +247,7 @@ inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols, PIXEL_TY
 template <class PIXEL_TYPE>
 void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 {
+	printf("LoadingL: %s\n",filename.c_str());
 	std::ifstream infile(filename.c_str(), std::ios::binary);
 
 	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
