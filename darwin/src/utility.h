@@ -19,6 +19,9 @@
 #include <sstream>
 #include <fstream>
 
+#include "Options.h"
+extern Options *gOptions;
+
 float round(float n);
 double round(double n);
 std::string quoted(std::string& s);
@@ -402,9 +405,22 @@ void systemZip(std::string path, std::string archive)
 inline
 void systemUnzip(std::string archive, std::string dest)
 {
-	std::string cmd = "7z.exe x -aoa -o";
+	// There must be a better way, but this change is to ensure
+	// that the 7z.exe program can be found when this function
+	// is used to load a FINZ file when darwin is envoked as a
+	// stand alone viewer (by "Open with" selection or by double click
+	// of a FINZ file).  gOptions->SevenZ is set to the following
+	// "set PATH=gOptions->mDarwinHome\system\bin;#PATH# & 7z"
+	// in main() which creates a two command sequence that 
+	// (1) prepends the darwin installation "system\bin"
+	// to the search path and (2) then calls the 7z.exe program
+	// Finally, we append the arguments to the call below.
+
+	//std::string cmd = ".\\7z.exe x -aoa -o";         // old code
+	std::string cmd = gOptions->SevenZ + " x -aoa -o"; //***2.0 (JHS)
 	cmd += "\"" + dest + "\" ";
 	cmd += " \"" + archive + "\" ";
+	//std::cout << cmd << std::endl;
 	system(cmd.c_str());
 }
 

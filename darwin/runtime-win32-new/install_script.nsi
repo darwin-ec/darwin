@@ -11,7 +11,7 @@
 Name "DARWIN"
 
 ;default install directory
-InstallDir "$PROGRAMFILES\darwin\"
+InstallDir "$PROGRAMFILES\darwin-2.0\"
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf
@@ -62,7 +62,7 @@ FunctionEnd
 ;BrandingText " "
 
 ;name of install file to generate (e.g. setup.exe)
-outfile setup.exe
+outfile darwin-2.0-setup.exe
 
 
 
@@ -75,22 +75,22 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	File /r /x *.nsi /x darwin_splash.bmp /x setup.exe /x .svn *
+	File /r /x *.nsi /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn *
 	
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
-	CreateDirectory "$SMPROGRAMS\darwin"
+	CreateDirectory "$SMPROGRAMS\darwin-2.0"
 	;link.lnk target.file [parameters [icon.file [icon_index_number [start_options [keyboard_shortcut [description]]]]]]
 	SetOutPath $INSTDIR\system\bin
-	CreateShortCut "$SMPROGRAMS\darwin\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$SMPROGRAMS\darwin-2.0\Run Darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 	SetOutPath $INSTDIR
-	CreateShortCut "$SMPROGRAMS\darwin\backups.lnk" "$INSTDIR\backups\"
-	CreateShortCut "$SMPROGRAMS\darwin\survey areas.lnk" "$INSTDIR\surveyAreas\"
-	CreateShortCut "$SMPROGRAMS\darwin\help.lnk" "$INSTDIR\docs\usersguide.htm"
-	CreateShortCut "$SMPROGRAMS\darwin\uninstall.lnk" "$INSTDIR\uninstall.exe"
+	CreateShortCut "$SMPROGRAMS\darwin-2.0\backups.lnk" "$INSTDIR\backups\"
+	CreateShortCut "$SMPROGRAMS\darwin-2.0\survey areas.lnk" "$INSTDIR\surveyAreas\"
+	CreateShortCut "$SMPROGRAMS\darwin-2.0\help.lnk" "$INSTDIR\docs\usersguide.htm"
+	CreateShortCut "$SMPROGRAMS\darwin-2.0\uninstall.lnk" "$INSTDIR\uninstall.exe"
 	
 	;Desktop ShortCut
 	SetOutPath $INSTDIR\system\bin
-	CreateShortCut "$DESKTOP\darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$DESKTOP\darwin-2.0.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 	SetOutPath $INSTDIR
 
 	;Environmental Variable
@@ -128,7 +128,7 @@ Section "un.Uninstaller Section"
 	
 	;Remove shortcuts
 	RMDir /r /REBOOTOK "$SMPROGRAMS\darwin"
-	Delete /REBOOTOK "$DESKTOP\darwin.lnk"
+	Delete /REBOOTOK "$DESKTOP\darwin-2.0.lnk"
 	
 	;Remove file association
 	!insertmacro APP_UNASSOCIATE "finz" "darwin.FinFile"

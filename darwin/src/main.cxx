@@ -556,6 +556,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
 	vector<string> options; // so we can handle multiple command line options
 	string finz("");       // assume only one of these
 
@@ -623,6 +624,11 @@ int main(int argc, char *argv[])
 	add_pixmap_directory(PACKAGE_SOURCE_DIR "/pixmaps");
   
 	gdk_rgb_init();
+
+	//***2.0 - create a compound command to call 7z -- first prepending current
+	// darwin system\bin to search PATH and then calling 7z -- this is necessary
+	// so 7z can be found when darwin starts as a stand alone FINZ viewer (JHS)
+	gOptions->SevenZ = "set PATH=" + gOptions->mDarwinHome + "\\system\\bin;%PATH% & 7z"; //***2.0
 
 	if (finz.empty()) { //Standard open
 		SplashWindow *splash = new SplashWindow();

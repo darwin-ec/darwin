@@ -137,6 +137,9 @@ class Options
 
 		std::string
 			mCurrentFontName; //***1.85 - font for all lists and txt fields
+
+		std::string
+			SevenZ; //***2.0 - for path update and call to 7z.exe (for stand alone viewer)
 };
 
 #endif
