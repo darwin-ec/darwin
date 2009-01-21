@@ -18,13 +18,15 @@
               </td>
               <td class="menu" width="100%" nowrap>
                 &nbsp;
-                <a href="http://darwin.eckerd.edu/?page=home.html" class="nav">Home</a> |
+                <a href="http://darwin.eckerd.edu/?page=home.html" class="nav">DARWIN Official Website</a> |
+                <a href="http://darwin-ec.googlecode.com/" class="nav">DARWIN GoogleCode Repository</a>
+				<!--  |
                 <a href="http://darwin.eckerd.edu/?page=project_info.html" class="nav">Project Info</a> |
                 <a href="http://darwin.eckerd.edu/?page=documents.html" class="nav">Documents</a> |
                 <a href="http://darwin.eckerd.edu/?page=photo_identification.html" class="nav">Photo-Identification</a> |
                 <a href="http://darwin.eckerd.edu/?page=screenshots.html" class="nav">Screenshots</a> |
                 <a href="http://darwin.eckerd.edu/?page=download.html" class="nav">Download</a> |
-                <a href="http://darwin.eckerd.edu/?page=links.html" class="nav">Links</a>
+                <a href="http://darwin.eckerd.edu/?page=links.html" class="nav">Links</a> -->
                 
 			</td>
 			<td class="menu" width="201" nowrap>
@@ -37,6 +39,7 @@
     </table>
 
     <br/>
+
           <table border="0" width="100%" cellpadding=0 cellspacing=0>
             <tr>
               <td valign="top" align="right">
@@ -60,7 +63,7 @@
                     n<br/>
                     t<br/>
                     s<br/>
-                    </td>
+                    </td> 
                   </tr>
                 </table>
               </td>
@@ -74,9 +77,8 @@
 <p><u><strong><img style="width: 200px; height: 367px; float: right;" alt="" src="usersguide.htg/darwin_splash.jpg"></strong></u>
 </p>
 
-<h1 align="center">Digital Analysis and Recognition of
-Whale Images on A Network (DARWIN)</h1>
-<h2 align="center">User's Guide (version 1.95 and later)</h2>
+<h1 align="center">Digital Analysis and Recognition of Whale Images on a Network (DARWIN)</h1>
+<h2 align="center">User's Guide (version 2.0)</h2>
 
 
 
@@ -87,56 +89,71 @@ Whale Images on A Network (DARWIN)</h1>
 
 <ul>
 
-  <li><a href="#overview">Overview</a></li>
+<li><a href="#overview">Overview</a></li>
 
+<li><a href="#install">Installation/Upgrade</a></li>
+<ul>
+  <li><a href="#install_requirements">System Requirements</a>
+  <li><a href="#install_or_upgrade">Install or Upgrade?</a>
+  <li><a href="#install_where">Where to install.</a>
+  <li><a href="#install_catalog">Converting an existing Catalog to new SQL format.</a>
+</ul>
+<li><a href="#steps">Step by Step Processes</a>
+<ul>
+  <li><a href="#mainwin_scheme">Creating a catalog scheme</a></li>
+  <li><a href="#mainwin_creating">Creating a database</a></li>
+  <li><a href="#mainwin_viewing">Viewing images or sighting data from the database</a></li>
+  <li><a href="#mainwin_exportSighting"> Exporting sighting data from the catalog</a></li>
+  <li><a href="#tracewin_adding">Adding a dorsal fin image to the database</a></li>
+  <li><a href="#tracewin_comparing">Comparing an unknown dorsal fin against images in the database</a></li>
+  <li><a href="#tracewin_queue">Creating a queue of images to match against the database</a></li>
+  <li><a href="#view_finz">Using DARWIN as a stand-alone FIN(image & traced outline) Viewer</a>
+  <li><a href="#backup_restore">Catalog Backup and Restore</a>
+  <li><a href="#export_import">Catalog Export and Import</a>
+  <li><a href="#export_import_finz">Exporting and Importing individual or multiple traced FINs</a>
+</ul>
+  <li><a href="#hints">Hints for Effective Usage</a>
+<ul>
+  <li><a href="#hint_bad_outline">Do this to help DARWIN produce better outlines?</a>
+</ul>
+<li><a href="#windows">Windows and Dialogs (in detail)</a>
+<ul>
   <li><a href="#mainwin">Main Window</a>
-    <ul>
-      <li><a href="#mainwin_scheme">Creating a catalog scheme</a></li>
-    </ul>
-
-    <ul>
-      <li><a href="#mainwin_creating">Creating a database</a></li>
-    </ul>
-
-    <ul>
-      <li><a href="#mainwin_viewing">Viewing images or sighting data from the database</a></li>
-    </ul>
-
-    <ul>
-      <li> <a href="#mainwin_exportSighting"> Exporting sighting data from the catalog</a></li>
-    </ul>
-
-  </li>
-
-  <li><a href="#tracewin">The Trace Window</a>
-    <ul>
-
-      <li><a href="#tracewin_adding">Adding a dorsal
-fin image to the database</a></li>
-
-      <li><a href="#tracewin_comparing">Comparing an
-unknown dorsal fin against images in the database</a></li>
-
-      <li><a href="#tracewin_queue">Creating a queue
-or list of images to match against the database</a></li>
-
-      <a href="#tracewin_queue"> </a>
-    </ul>
-
-  </li>
-
-  <li><a href="#matchwin">The Match Results Window</a></li>
-
+  <li><a href="#tracewin">Trace Window</a>
+  <li><a href="#matchwin">Matching Dialog</a>
+  <li><a href="#matchreswin">Match Results Window</a></li>
+  <li><a href="#matchqueuewin">Matching Queue Dialog</a>
+  <li><a href="#modify">Modify Database Window</a>
+  <li><a href="#view_image">View Image Dialog</a>
+  <li><a href="#view_trace">View Traced Outline Dialog</a>
+  <li><a href="#view_aligned_traces">View Aligned Outlines Dialog</a>
   <li><a href="#options">The Options Dialog</a>
-    <ul>
+  <ul>
+    <li><a href="#options_general">General Settings</a></li>
+    <li><a href="#options_trace">Trace Settings</a></li>
+    <li><a href="#options_fonts">Font Settings</a></li>
+  </ul>
+</ul>
+<li><a href="#details">Behind the Scenes DETAILS</a></li>
+<ul>
+  <li><a href="#details_finz">The FINZ archive format</a>
+  <li><a href="#details_sql">The SQL Catalog format</a>
+  <li><a href="#details_config">The "darwin.cfg" file</a>
+  <li><a href="#details_auto_backups">DARWIN's automatic backups "darwin.cfg.bak" and "lastLoadOf....db"</a>
+  <li><a href="#details_schemes">DEFINED and CURRENT Catalog Category Schemes</a>
+</ul>
 
-      <li><a href="#options_general">General Settings</a></li>
-
-      <li><a href="#options_trace">Trace Settings</a></li>
-
-      <li><a href="#options_fonts">Font Settings</a></li>
-
-    </ul>
+<li><a href="#faq">Frequently Asked Questions</a>
+<ul>
+  <li><a href="#what_is_finz">What is the new FINZ archive format?</a>
+  <li><a href="#how_convert_catalog">How can I move a catalog from an old installation to a new one?</a>
+  <li><a href="#how_recover_catalog">How can I recover from a corrupted catalog?</a>
+  <li><a href="#how_report_error">How do I report a problem with DARWIN?</a>
+  <li><a href="#whats_in_config">What is in the DARWIN configuration file?</a>
+  <li><a href="#whats_auto_saved">What does DARWIN automatically save (in case)?</a>
+  <li><a href="#area_or_catalog">Should I create a new Catalog within the current Survey Area or a new Survey Area AND Catalog for a separate study?</a>
+</ul>
+<li><a href="#trouble">Troubleshooting</a>
 
   </li>
 
@@ -150,7 +167,10 @@ or list of images to match against the database</a></li>
                       </td>
                     </tr>
                   </table>
-                  <br/><a name="overview">&nbsp;</a><br/>
+  <br/>
+
+<a name="overview">&nbsp;</a><br/>
+
          <table border="0" width="100%" cellpadding=0 cellspacing=0>
             <tr>
               <td valign="top" align="right">
@@ -195,23 +215,28 @@ or list of images to match against the database</a></li>
 
 </p>
 
-<p>DARWIN is a software system which allows marine scientists to
-maintain information for the
-study of various behavioral and ecological patterns of bottlenose
-dolphins, <em>Tursiops truncatus</em>.
-The software provides a graphical user interface to create and access a
-collection of digital
-dorsal fin images along with textual information which describes
-individual animals as well as
-relevant sighting data. Users may query the system with the name of a
-specific individual or the
-entire collection may be sorted and viewed based upon sighting
-location, sighting date or damage
-category. Alternatively, the researcher may compare the dorsal fin
-image of an unknown
-individual against a database of images of previously identified
-dolphins in order to identify
-those fins which it most closely resembles.
+<p>DARWIN is a software system that allows marine scientists to
+maintain collections of digital images and related observational 
+data gathered in the
+study of various behavioral and ecological patterns. It has been
+developed specifically for the study of bottlenose
+dolphins, <em>Tursiops truncatus</em>, but has been used successfully
+in studies of other related species.
+The software provides an intuitive graphical user interface and 
+runs on any Windows PC.  Users can create and access multiple
+collections of digital dorsal fin images alongside textual 
+information describing individual animals and
+relevant sighting data. Users can query the system and select
+any individual so that all of its related images and data is
+displayed by either searching the collection
+with the ID of a specific individual or by sorting the entire 
+collection with respect to date, location, 
+damage category, or other data category and then browsing the displayed 
+list of indicviduals.
+New images of individuals can be loaded so that their dorsal fins 
+can be automatically or manually traced and used to query the collection
+of known individuals in order to identify those individuals who's fins the new image
+most closely resembles.
 
 </p>
 
@@ -226,11 +251,100 @@ This transformation may be
 performed in DARWIN after the image is opened. DARWIN also provides
 image enhancement options such as contrast enhancement, image brightening
 and cropping.  These enhancements may improve the quality of the outline
-which is extracted from the image.  The modified image is used 
-for the purposes of outline extraction and matching.  Copies of
+which is extracted from the image.  The user modified image is used 
+for the purposes of outline extraction and matching, and <EM>copies</EM> of
 both the modified image and the 
-original image are saved when a fin is added to database.
+original image are saved whenever a fin is saved or is added to database.
 </p>
+
+<H2>Survey Areas, Catalogs, Databases and Fins</H2>
+
+DARWIN supports the organization of images and sighting data in several ways.
+Multiple <B><EM>survey areas</EM></B> can be created, and are appropriate
+when multiple sets of survey data exist on one computer and the survey
+areas are geographically separated.  
+The creation of a new survey area is an optional action anytime a new 
+<B><EM>catalog</EM></B> is created.  Therefore, any existing survey area 
+will contain one or more catalogs.  
+<P>
+In most essentials a <B><EM>database</EM></B> and a <B><EM>catalog</EM></B> are the same thing 
+within DARWIN.  A catalog (database) is a collection of fin images (original and modified)
+along with all associated fin outline traces and any related textual sighting data.
+However, the images are stored individually in the survey area's 
+catalog folder outside of a separate <B>"database file."</B>  This database file is
+always named with a "<EM>.db</EM>" file extension, and it contains the
+catalog category scheme for the catalog, and, for each catalog fin, the names of its modified
+image file, its traced outline, its salient feature points and all of its sighting data.
+<P>
+A single <B><EM>fin</EM></B> is a combination of two images (original and modified), a trace of the dorsal fin
+outline, a set of feature points, and a collection of textual sighting data.  Previous 
+DARWIN versions saved fins as a collection of three files in current survey area's <B><EM>traced fins</EM></B> folder.  The three files were the original image, the modified image, and a
+file containing all other information related to the fin (outline
+trace, feature points, and sighting data) and having a ".fin" extension.  Begining with DARWIN 2.0, individual fins are stored
+in files with a ".finz" extension, and these files are compressed archives containing within
+them both images and all other related information.  This newer format prevents loss of 
+images when or if fins are moved manually by the user. DARWIN 2.0 can use fins saved as
+older ".fin" files and newer ".finz" files with equal ease.
+
+<H2>DARWIN Folder Structure</H2>
+<PRE>
+The created installation folder "darwin-2.0" contains the following ....
+
+    backups        - used in backing up database
+    docs           - online user help and other documentation
+    licenses-etc   - copies of license and right to use information
+    system         - all runtime system files
+        bin            - contains executable ("darwin.exe") and GTK+ dlls
+        etc            - GTK+ and other
+        lib            - GTK+ and other runtime library files
+    surveyAreas    - contains all sighting and catalog related data
+        sample         - sample survey area (catalog, images, etc)
+            catalog       - folder for catalogs
+            fin-images    - sample dorsal fin images
+            matchQueues   - folder for queued matches 
+            matchQResults - folder for saved results of fin matches
+            sightings     - folder for sighting information (future use)
+            tracedFins    - folder for saved fin tracings
+        default        - default survey area (catalogs, sightings, data)
+            catalog       - folder for catalogs
+            matchQueues   - folder for queued matches 
+            matchQResults - folder for saved results of fin matches
+            sightings     - folder for sighting information (future use)
+            tracedFins    - folder for saved fin tracings
+    darwin-2.0-readme.txt - readme file with installation and usage info
+</PRE>
+
+<H2>Automatic Backups for EMERGENCY RESTORE</H2>
+
+Each time DARWIN runs it creates the following two backups.
+
+<PRE>system/darwin.cfg.bak</PRE>
+        This is a copy of the last successfully loaded configuration file.  If the
+        program cannot find "system/darwin.cfg" or if it is corrupted, the
+        program will automatically restore "system/darwin.cfg" from 
+        the "system/darwin.cfg.bak" file.  If this fails a new initial distribution
+        version of "system/darwin.cfg" file is created.  You may rebuild the list of
+        KNOWN databases, by opening each in turn the next time you run the
+        program.  Category naming schemes will have to be manually rebuilt
+        and saved.
+
+<PRE>system/lastLoadOf_xxx_yyy.db</PRE>
+        This is a copy of the "surveyAreas/xxx/catalog/yyy.db" database file made
+        as it was last loaded.  This copy does not contain any changes made 
+        to the database while the program was running, nor does it contain the
+		actual database images.
+<P>
+        If the "surveyAreas/xxx/catalog/yyy.db" file is lost or becomes
+        corrupted, you may attempt to manually restore the catalog (database) to 
+		its last loaded srate by manually replacing the 
+        "surveyAreas/xxx/catalog/yyy.db" file with a COPY of the
+        "system/lastLoadOf_xxx_yyy.db" file.
+<P>
+        If you have a more recent FULL BACKUP, you can accomplish the same
+        thing by using the menu option "File/Restore" in the main window.
+        FULL BACKUPS include all associated catalog images as well as the 
+        *.db file.
+
                                   </td>
                                 </tr>
                               </table>
@@ -240,7 +354,10 @@ original image are saved when a fin is added to database.
                       </td>
                     </tr>
                   </table>
-                  <br/><a name="mainwin">&nbsp;</a><br/>
+                  <br/>
+
+<a name="mainwin">&nbsp;</a><br/>
+
          <table border="0" width="100%" cellpadding=0 cellspacing=0>
             <tr>
               <td valign="top" align="right">
@@ -287,82 +404,159 @@ original image are saved when a fin is added to database.
 
 </p>
 
-<p><img style="width: 405px; height: 315px; float: right;" alt="" src="usersguide.htg/mainwin_thmb.jpg">
+<p><img style="width: 405px; height: 315px; float: right;" alt="" src="usersguide.htg/windowMain.jpg" border="3">
 The main window (<em>shown at right</em>) appears when the program is run and
-provides access to the
-database of dorsal fin images and relevant sighting data. The area at
+provides primary access to the
+database of dorsal fin images and related sighting data. The area at
 the top of the window
-provides menus and buttons for opening files, creating catalogs, setting up lists of
-images to be compared against
-the database, and changing some of the options which affect the
+provides menus allowing the user to open catalogs,
+fin images and previously saved fin files, 
+create new catalogs, create and use new catalog categorization schemes,
+perform exports and imports of fins, sighting data and full catalogs,
+perform backups or restores of the current catalog, set up queues of
+images to be compared offline against
+the database, change various options which affect the
 program's appearance and
-functionality. The scrolled area below the menu bar, provides a
+functionality, and access online help. 
+Below the menus are buttons for several of the most commonly 
+performed actions.
+</p>
+<P>The scrollable left side of the main window provides a
 list of all of the dorsal fins
-in the database, including a thumbnail image for each; the buttons above the scrolled list enable reordering
+in the database, including a thumbnail image of each. 
+The column labels above the scrolled list function as buttons and
+enable reordering
 of the list based upon that column of data.  The small text entry area
-just below the scrolled area allows a user to search for a dorsal fin by ID;
-The text areas located at the bottom left list the
-sighting data for the currently highlighted dorsal fin image in the list. A
-larger scale image of the
-currently highlighted dorsal fin is displayed in the image area to the
-right of the scrolled area. Just below the image, the outline of the
-current dorsal fin is displayed. (<em>Note that if a database is
-currently unavailable, the scrolled area will be empty and no image or
-outline will be displayed</em>.)
+at the bottom left of the window allows the user to search for a dorsal fin by 
+enering the individual's ID. Alternatively, the user may select any 
+individual fin by clicking its line with the mouse or by moving to its
+line using the <B>next</B> and <B>previous</B> buttoms at the bottom of the list.
+
+</p>
+
+<TABLE>
+<TR>
+	<TD>The right section of the window contains a tabbed notebook for
+viewing all images and textual data associated with the currently 
+selected fin. By default, the Modified Image tab is selected, as is
+seen in the Main Window displayed above.
+There are other tabs, shown to the right and below, which 
+allow viewing of the Original Image, the traced Fin Outline, and the Fin Data.
+Larger scale versions of the selected dolphin's images and fin outline may be viewed
+by clicking on the displayed image or outline.</TD>
+	<TD><TABLE><TR><TD>Original Image Tab</TD></TR><TR><TD><img style="width: 80%" alt="" src="usersguide.htg/windowMainOrigTab.jpg" border="3"></TD></TR></TABLE></TD>
+</TR>
+<TR>
+	<TD><TABLE><TR><TD>Fin Outline Tab</TD></TR><TR><TD><img style="width: 80%" alt="" src="usersguide.htg/windowMainFinOutTab.jpg" border="3"></TD></TR></TABLE></TD>
+	<TD><TABLE><TR><TD>Fin Data Tab</TD></TR><TR><TD><img style="width: 80%" alt="" src="usersguide.htg/windowMainFinDataTab.jpg" border="3"></TD></TR></TABLE></TD>
+</TR>
+</TABLE>
+
+<BR>
+<p>
+If no database is loaded, certain menu items and buttons that depend on
+access to a database are disabled, the scrolled area 
+will be empty, and there will be no images or outlines displayed.  The user
+may either create a new catalog or open an existing one in order to enable
+these inactivated operations.
 </p>
 
 <table width="100%">
   <tbody>
     <tr>
 <h3>Main Window Menus: </h3>
-<br><br>
+<br>
 <!----fileMenu----------------------------------------------------------------------------------->
 <b>The File Menu: </b>
-<p><img style="float: left;" alt="" src="usersguide.htg/mainwin_fileMenu.jpg" border="0">
+<p><img style="float: left;" alt="" src="usersguide.htg/menuFile2.jpg" border="3">
 The <b><a href="#mainwin_creating">"New Database"</a> </b>menu item opens 
-a dialog window to help users create a new database.</p>
+the <A HREF="">Create Database Dialog</A> which allows users to create a new database.</p>
 
-<p>The <b>"Open Image"</b> menu item opens a fairly standard dialog window that enables  
-import of a dorsal fin image into the program for processing (<em>either addition to or matching 
-against images in the catalog</em>). 
-Once the image has been read into the program, the image is displayed in the 
-<a href="#tracewin">trace window</a> for further processing. 
-Currently jpeg, png, bmp, and pnm files are supported. 
+<p>The <b>"Open Image"</b> menu item opens a file chooser dialog that allows 
+the user to select and open a dorsal fin image for processing. Once an image has 
+been read into the program, it is displayed in the <a href="#tracewin">trace window</a>,
+where the fin outline may be traced, sighting data may be entered, 
+and the fin may either be saved for later use, added to the current catalog, 
+or matched against known fins already in the catalog. 
+Currently, DARWIN supports the use of jpeg, png, bmp, and pnm image files with no
+restrictions on image sizes. <EM>This menu item is disabled
+when there is no currently open catalog.</EM>
 </p>
 
-<p>The <b>"Open Traced Fin"</b> menu item opens a fairly standard dialog window that enables  
-a previously traced fin image to be loaded. 
-Once the traced fin image has been read into the program, the image along with its trace
-and any sighting information are displayed in the 
-<a href="#tracewin">trace window</a> for further processing. 
-Traced fin image files are created by the Darwin software by pressing the "Save"
+<p>The <b>"Open Traced Fin"</b> menu item opens a file chooser dialog that allows  
+the user to select and load a previously saved fin. The selected <B><EM>traced fin</EM></B> will
+have its modified image, outline trace, feature points and sighting data displayed in the 
+<a href="#tracewin">trace window</a> where it is available for further processing. 
+<EM>This menu item is disabled
+when there is no currently open catalog.</EM>
+<!-- Traced fin image files have a <B>.fin</B> or <B>.finz</B> file extension, and are 
+created by the DARWIN software by pressing the "Save"
 button in the trace window and their filenames end in <b>.fin</b>.  Normally, traced fin
 files are created so that a collection of sighting images can be matched against images
-in the catalog in a batch mode.
+in the catalog in a batch mode. -->
 </p>
 
-<p>The <b>"Open Database"</b> menu item opens a fairly standard dialog window that enables  
-loading of a existing database for use by the program. Each time DARWIN runs, it will
-open the database that was in use the last time the program was used, thus if a different
-database is desired the "Open Database" menu item enables this change. 
-Database files are created by the darwin program and their filenames end in <b>.db</b>.
+<p>The <b>"Open Database"</b> menu item opens a file chooser dialog that allows 
+the user to select and load an existing database for use by the program. Each time DARWIN runs, 
+its default behavior is to open the database that was in use the last time the program was used.
+If a different database is desired, the "Open Database" menu item allow the user to make this change. 
+The <B><EM>database files</EM></B> created by the darwin program all have filenames that
+end in a <b>".db"</b> extension.
 </p>
 
-<p>The <b>"Matching Queue"</b> menu item opens a dialog window that enables the creation of a 
-queue of saved fin traces to be matched against the database. This capability allows the 
+<p>The <b>"Matching Queue"</b> menu item opens a <A HREF="">matching queue dialog</A> that allows the user to
+create a queue of saved fin traces to be matched against the database. This capability allows the 
 user to match multiple new fin images against the database in an unattended fashion, and 
 subsequently review the results of each of match at leisure.
 </p>
 
-<p>The <b>"Backup/Restore"</b> menu items initiate the backup/restoration
-of a database and all associated images. Compressed archive files (zip file) used by 
-Backup and Restore are located in the <b>backups</b> folder.  </p>
+<p>The <b>"Backup"</b> menu item initiates the backup of a catalog (database) including all of
+its associated images. Whenever a backup is initiated a compressed archive files with a ".zip" 
+extension is created in the <b>backups</b> folder.  The Actual name of this archive is constructed
+by DARWIN using a standardized naming convention. Each backup has a name with this format 
+(xxx_yyy_date[num].zip), where xxx is the name of the survey area, yyy is the name of the actual
+database file, date is the date on which the backup was created, and num is a 
+sequence number in case multiple backups were initiated on the same day.
+<EM>This menu item is disabled
+when there is no currently open catalog.</EM></p>
 
-<p>The <b>"Export/Import Catalog"</b> menu items, located underneath the Export and Import menus respectively, provide similar functions as Backup/Restore but 
-allows the user to specify the filename and location of the database file to export/import.
+<p>The <b>"Restore"</b> menu item opens a file chooser dialog that allows the user
+to select a backup archive and initiate the restoration of a catalog (database) and
+its associated images. By default, all backups are located in DARWIN's backups folder
+but the user may select an archive from any location. . NOTE: If the backup archive was
+created with a DARWIN version prior to 2.0, then the user will be prompted to perform
+a database format conversion to the new SQL database file format during the restore
+operation.</p>
+
+<p>The <strong>"Export"</strong> menu allows the user to export an entire catalog or a set of
+one or more individual fins. Individual fins may be exported to .finz files.
+<EM>This menu item is disabled
+when there is no currently open catalog.</EM></p>
+
+<p>The <b>"Export/Export Catalog"</b> submenu item initiates essentially the same action as a
+backup, except that the user is allowed to select the location and filename for the exported archive
+by using a file save dialog.
+<EM>This menu item is disabled
+when there is no currently open catalog.</EM></p>
+
+<p>The <b>"Export/Export Fin"</b> menu item opens an <A HREF="">export finz dialog</A> that
+allows the user to select one or more fins from the current database and have them each saved as
+an individual fin (.finz) file.  The fin export provides an easy way to copy a fin from one 
+database to another or to create a new database that is a subset of another database.
+<EM>This menu item is disabled
+when there is no currently open catalog.</EM></p>
+
+<p>The <strong>"Import"</strong> menu allows the user to import an entire catalog or a set of
+one or more individual fins. Individual fins may be imported from .finz files.
+</p>
+<p>The <b>"Import/Import Catalog"</b> submenu item initiates essentially the same action as a
+restore.
 </p>
 
-<p>The <strong>"Export/Import"</strong> submenus also allow the user to export and import one or more .finz files. Each .finz file represents one fin. These methods present an easy way to copy a fin from one database to another or to create a new database that is a subset of another database.
+<p>The <b>"Import/Import Fin"</b> menu item opens a <A HREF=""> file chooser dialog</A> that
+allows the user to select one or more traced fin files (.finz files) and have them added to
+the current database.  The fin import provides an easy way to copy a fin from one 
+database to another or to create a new database that is a subset of another database.
 </p>
 
 <p>The <b>"Exit"</b> menu item exits the program.
@@ -370,7 +564,7 @@ allows the user to specify the filename and location of the database file to exp
 
 <!----settingsMenu----------------------------------------------------------------------------------->
 <b>The Settings Menu: </b>
-<p><img style="width: 330px; height: 122px; float: left;" alt="" src="usersguide.htg/mainwin_settingsMenu.jpg" border="0"></p>
+<p><img style="width: 330px; height: 122px; float: left;" alt="" src="usersguide.htg/mainwin_settingsMenu.jpg" border="3"></p>
 
 <p>The <b>"Options"</b> menu item opens the <a href="#options">options dialog window</a> that enables 
 modifications of
@@ -379,23 +573,26 @@ of the trace used in the trace window) as well as modification of some of the pa
 the performance of the dorsal fin extraction. 
 </p>
 
-<p>The <b>"Catalog Scheme"</b> menu item cascades into additional menu buttons which enable
+<p>The <b>"Catalog Scheme"</b> menu item cascades into additional menu items which enable
 the creation, viewing, editing and changing of the current catalog scheme. 
 The Catalog Scheme effectively
-subdivides the catalog into categories and the software allows images to be sorted by these categories
-or for the search to be restricted to one or more categories. The default 
-is the Eckerd College scheme, which employs damage categories with names such as Leading Edge, Upper, 
-Middle, etc. to denote the area of the dorsal fin where the most significant amount of damage is located.
+subdivides the catalog into categories. The DARWIN software allows fins to be sorted 
+based on categories and searches to be restricted to selected categories. The default 
+is the Eckerd College scheme, which employs damage category names such as "Leading Edge," "Upper," 
+"Middle," and others that identify the porition of the dorsal fin where the most 
+significant damage is located.
 Click <a href="#mainwin_scheme"> here</a> for additional information on Catalog Schemes. 
 </p>
 
 <!----dataMenu----------------------------------------------------------------------------------->
 <b>The Data Menu: </b>
-<p><img style="width: 162px; height: 57px; float: left;" alt="" src="usersguide.htg/mainwin_dataMenu.jpg" border="0">
+<p><img style="width: 162px; height: 57px; float: left;" alt="" src="usersguide.htg/mainwin_dataMenu.jpg" border="3">
 
-<p>The <b>"Data"</b> menu item cascades into another button which allows the user to export textual 
-sighting data from the catalog for use in another program.  
-Selecting this menu item will open a dialog window to specify detail of the export process.  See
+<p>The <b>"Data"</b> menu item cascades into one selecion which allows the user to export textual 
+sighting data from the catalog for use in another program (such as SOCPROG) that can import 
+tab-separated spreadsheet data.
+Selecting this menu item will open a dialog window allowing the user to specify 
+all details of the export process.  See
 the section on <a href="#mainwin_exportSighting">exporting sighting data</a> for additional information.  
 </p>
 
@@ -406,22 +603,25 @@ the section on <a href="#mainwin_exportSighting">exporting sighting data</a> for
 <br/>
 <b>Main Window Buttons: </b>
 
-<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_openimage.jpg" border="0"></a>
+<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_openimage.jpg" border="3"></a>
 Enables a user to import a dorsal fin image. 
-Once the image has been read into the program, the image is displayed in the 
+Once the image has been loaded, it is displayed in the 
 <a href="#tracewin">trace window</a> for further processing. 
-Currently jpeg, png, bmp, and pnm files are supported. 
+Currently, DARWIN supports use of <B>jpeg</B>, <B>png</B>, <B>bmp</B>, and <B>pnm</B> files of any size. 
 </p>
 
 <br/>
-<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_opentrace.jpg" border="0"></a>
-Enables a user to import the trace of a dorsal fin image which has been saved. 
-Once the traced image has been read into the program, the image and its outline are displayed in the 
-<a href="#tracewin">trace window</a> for further processing.  
+<p><a href="#tracewin"><img style="width: 60px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_opentrace.jpg" border="3"></a>
+Enables a user to import the trace of a dorsal fin image which has been previously saved. 
+Once the traced image has been loaded, the image as modified previously using DARWIN and the
+fin outline are displayed in the 
+<a href="#tracewin">trace window</a> for further processing.  DARWIN 2.0 can import
+traced fin images that were 
+saved using either the old <B>.fin</B> format or the newer <B>.finz</B> format.
 </p>
 
 <br/>
-<p><a href="#tracewin_queue"><img style="width: 55px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_queue.jpg" border="0"></a>
+<p><a href="#tracewin_queue"><img style="width: 55px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_queue.jpg" border="3"></a>
 Enables the creation of a queue of saved fin traces to
 be matched against the database. This capability allows the
 user to match multiple new fin images against the database in 
@@ -430,44 +630,30 @@ review the results of each of match at leisure.
 </p>
 
 <br/>
-<p><a href="#options"><img style="width: 59px; height: 53px; float: left;" alt="" src="usersguide.htg/mainwin_options.jpg" border="0"></a>
-Enables the user to change the format of the buttons,
-modify parameters
-affecting the way the outline of the fin is identified, 
-change the color in which outlines are displayed,
-and/or change the font used in all lists.  (<a href="#options"><em>See options
-dialog</em></a>)
-</p>
-
-<br/>
-<p><img style="width: 51px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_exit.jpg">
+<p><img style="width: 51px; height: 55px; float: left;" alt="" src="usersguide.htg/mainwin_exit.jpg"
+border="3">
 Exits the program.
 </p>
 
 <br/>
 <br/>
-<p>The buttons just below the list of dorsal fin images allow
+<p>These buttons, located at the bottom of the main window, allow
 the user to quickly view individual
 images and outlines or to modify or delete entries from the database.
 </p>
 
-<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_previous.jpg">
-</p>
-
-<p> Display the image outline and sighting info of the
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_previous.jpg" border=3>
+Display the image, outline and sighting info of the
 previous fin in the list
 </p>
-
-<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_next.jpg">
-</p>
-
-<p> Display the image outline and sighting info of the next
+<br>
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_next.jpg" border=3>
+Display the image, outline and sighting info of the next
 fin in the list
-
-<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_modify.jpg">
 </p>
-
-<p> Modify sighting data for the highlighted fin or delete fin
+<BR>
+<p><img style="width: 138px; height: 34px; float: left;" alt="" src="usersguide.htg/mainwin_modify.jpg" border=3>
+Modify the sighting data for the selected (highlighted) fin or delete it
  from the database.
 </p>
 
@@ -475,171 +661,20 @@ fin in the list
 <!----hidden buttons----------------------------------------------------------------------------------->
 <b>Hidden Tools: </b>
 
-<p>When the cursor is placed over the dorsal fin image on the right, the cursor changes to a
-magnifying glass.  Clicking on the image causes a new window to appear in which the image is
-magnified.  
+<p>When the cursor is placed over either of the dorsal fin images or the trace of the fin 
+outline in the tabbed notebook view in the right pane of the main window, the cursor changes to a
+magnifying glass.  Clicking on the image causes a new viewing window to appear within
+which the image or outline is magnified.  In the view of the fin outline, there is also a view of the 
+chain code (the orientation of the fin as its outline is traversed) and a list of the locations of all
+salient features.
 </p>
 <br>
 
-<!----Creating a catalog scheme----------------------------------------------------------------------------------->
-<a name="mainwin_scheme"> <h3>Creating a Catalog Scheme:</h3> </a>
-
-<p> &nbsp;
-<table width="100%">
-  <tbody>
-    <tr>
-
-      <td align="right"><a href="#toc">top</a></td><p><img style="width: 290px; height: 281px; float: left;" alt="" src="usersguide.htg/mainwin_newScheme.jpg" border="0">
-
-
-
-<p>Catalog schemes enable a catalog of dorsal fin images to be organized into categories based on areas
-of evident damage or any other organization rationale, for that matter.  The individual category names
-will become selectable when adding images to the database, and the database can be sorted by category
-when desired.   When images from sighting data are matched against the catalog, the match can be limited
-to selected categories when desired. <br> <br>
-
-To create a new catalog scheme, select <b>"Define New Sheme"</b> from the <b>Settings->Catalog Scheme</b> menu. 
-Selecting this menu item will open a dialog window as shown at the left.  Click in the top text entry box, 
-then enter the desired name for the
-new catalog scheme.  Click in the box below that and type a category name.  Hit enter (or carriage return)
-to enter subsequent category names.  Once a catalog has been created, its catalog scheme cannot be
-changed.<br><br>
-
-The <b>View/Edit</b> menu item on the <b>Settings->Catalog Scheme</b> drop down menu opens a similar dialog
-window that allows the categories of any defined scheme to be 
-viewed or edited, with the exception of the Eckerd College Scheme which cannot be changed.  The <b>Select 
-Active</b> menu item allows selection of a different scheme to be used in the creation of a database.
-</p>
-
-    </tr>
-  </tbody>
-</table>
 
 </p>
 
-<!----Creating a databse----------------------------------------------------------------------------------->
-<a name="mainwin_creating"> <h3>Creating a database:</h3></a>
-
-<p> &nbsp; 
-<table width="100%">
-  <tbody>
-    <tr>
-
-      <td align="right"><a href="#toc">top</a></td><p><img style="width: 393px; height: 291px; float: left;" alt="" src="usersguide.htg/mainwin_newDatabase.jpg" border="0">
-
-<p>To create a new database (catalog), select <b>"New Database"</b> from the <b>File</b> menu. 
-Selecting this menu item will open a dialog window as shown at the left.  Enter the desired name for the
-new database (the name must end in .db).  A new database will be created in the default sighting area
-with the catalog scheme indicated on the drop down menu.  If you have created your own catalog scheme,
-it should appear in the drop down menu.  Once a catalog has been created, its catalog scheme cannot be
-changed.<br><br>
-
-When a new database is created, the list of fins in the main window is cleared.  To add fins to the newly
-created database see the section on <a href="#tracewin_adding"><em>adding a dorsal
-fin image to the database.</em></a> 
-</p>
 
 
-    </tr>
-  </tbody>
-</table>
-
-</p>
-
-<!----Exporting Sighting Data----------------------------------------------------------------------------------->
-<a name="mainwin_exportSighting"> <h3>Exporting Sighting Data:</h3></a>
-
-<p> &nbsp; 
-<table width="100%">
-  <tbody>
-    <tr>
-
-      <td align="right"><a href="#toc">top</a></td><p><img style="width: 275px; height: 219px; float: left;" alt="" src="usersguide.htg/mainwin_dataExport.jpg" border="0">
-
-<p>To export the sighting data for each of the individuals in the catalog, select <b>"Export Selected Data"</b>
- from the <b>Data</b> menu. 
-Selecting this menu item will open a dialog window as shown at the left.  Choose the items to be saved into
-a text file.  These items will be saved in a file called SightingDataLogForArea... as tab separated text 
-that can be imported into Excel or other off the shelf software.  The file is automatically located in the 
-sightings folder for the associated sighting area for tht data.
-</p>
-
-
-    </tr>
-  </tbody>
-</table>
-
-</p>
-
-<!----Viewing Images----------------------------------------------------------------------------------->
-<p><a name="mainwin_viewing">&nbsp;</a>
-<table width="100%">
-
-  <tbody>
-    <tr>
-      <td><h3>Viewing images or sighting data from the database:</h3></td>
-      <td align="right"><a href="#toc">top</a></td>
-    </tr>
-  </tbody>
-</table>
-
-</p>
-
-<p>There are several ways to access a particular dorsal fin in the database.
-<UL>
-	<LI>You may scroll the fin list, and then click on the name or the thumbnail
-image for the desired fin.
-	<LI>You may click the "Previous" or "Next"
-buttons, or use the Alt-P or Alt-N key combinations to move backward
-or forward to the desired fin.
-	<LI>You may enter the dolphin's
-ID Code in the provided data entry area and click the "GoTo" button to move directly
-to the desired fin.
-</UL>
-
-Once the line containing the fin of interest is
-highlighted, the image and its
-outline will be displayed to the right, and all relevant sighting data
-will be displayed in the
-lower left area of the main window.
-
-</p>
-
-<p>To view an enlarged version of the image, click on the image.
-A zoom window will appear. Three buttons on the top left of the zoom
-window provide the ability to zoom in, zoom out and to
-flip the image horizontally.
-</p>
-
-<p> </p>
-
-<p>To view information about the outline of the dorsal fin, click
-on the outline at the bottom right of
-the main window. A window will appear containing The following.
-<UL>
-	<LI>Upper Left: The extracted fin outline and 
-all automatically selected feature points (leading edge start,
-leading edge end, tip, largest notch, trailing edge end).
-	<LI>Upper Right:  The outline's chain code (its orientation at each
-point).
-	<LI>Lower Half: Additional outline
-information (<em>primarily of use to the developers of
-DARWIN for the purpose of testing</em>.)
-</UL>
-
-</p>
-
-<p>The scroll bars to the right of the main window list may be used to reveal
-the names and thumbnail images of
-fins that are farther down the list.
-
-</p>
-
-<p>The list of fins from the database may be sorted by name,
-damage category, sighting date, etc.,
-by simply clicking on the appropriate button above the list of images.
-By default, the fins are displayed in alphanumerical order by ID Code.
                                   </td>
                                 </tr>
                               </table>
@@ -649,101 +684,557 @@ By default, the fins are displayed in alphanumerical order by ID Code.
                       </td>
                     </tr>
                   </table>
-                  <br/><a name="tracewin">&nbsp;<a/><br/>
-         <table border="0" width="100%" cellpadding=0 cellspacing=0>
-            <tr>
-              <td valign="top" align="right">
-                <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
-                  <tr>
-                    <td class="title" width="100%" valign=middle align=center>
-                    t<br/>
-                    r<br/>
-                    a<br/>
-                    c<br/>
-                    e<br/>
-                    &nbsp;<br/>
-                    w<br/>
-                    i<br/>
-                    n<br/>
-                    d<br/>
-                    o<br/>
-                    w<br/>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td width="100%" bgcolor="#000000">
-                <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
-                  <tr>
-                    <td valign="top">
-                      <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
-                        <tr>
-                          <td width="100%" valign=top align=left>
+
+
+<!-- 
+*****************************************************************************************
+                  Viewing Fins     VIEWING_FINS     Viewing Fins
+*****************************************************************************************
+-->
+
+ <!-- Help Pane -->
+<a name="mainwin_viewing">&nbsp;</a>
+<table border="0" width="100%" cellpadding=0 cellspacing=0>
+  <tr>
+  <td valign="top" align="right">
+  <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+    <tr>
+    <td class="title" width="100%" valign=middle align=center>
+    V<br/>
+    i<br/>
+    e<br/>
+    w<br/>
+    i<br/>
+    n<br/>
+    g<br/>
+    &nbsp;<br/>
+    F<br/>
+    i<br/>
+    n<br/>
+    s<br/>
+    </td>
+    </tr>
+  </table>
+  </td>
+  <td width="100%" bgcolor="#000000">
+  <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+    <tr>
+    <td valign="top">
+    <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+      <tr>
+      <td width="100%" valign=top align=left>
+
+<!-- Title and link to top go here -->
+<table width="100%">
+  <tr>
+    <td><h2>Viewing images and sighting data from the catalog (database)</h2></td>
+    <td align="right"><a href="#toc">top</a></td>
+  </tr>
+</table>
+
+<!-- body of pane goes here -->
+
+<p>All fins in the currently loaded catalog are listed in a sortable
+and scrollable list on the left side of the main window.
+By default, the fins are displayed in alphanumerical order by ID Code.
+However, the fin list can be sorted at any time based on the contents of any column
+by simply clicking on the column label.  
+
+<P>
+There are several ways to access a particular dorsal fin in the database.
+<UL>
+	<LI>Scroll the fin list and click on the line containing the thumbnail
+image and textual data for the desired fin.
+	<LI>Click the "Previous" and "Next"
+buttons or use the Alt-P and Alt-N key combinations to move backward
+and forward through the list in order to reach the desired fin.
+	<LI>Enter the dolphin's
+ID Code in the provided data entry area and click the "GoTo" button to move directly
+to the desired fin.
+</UL>
+
+Once the fin of interest has been selected, the line containing it 
+will be highlighted, and its images, traced outline, and all 
+relevant sighting data will be displayed in the tabbed notebook
+pages on the right side of the main window.  Click on the individual
+tabs to view the desired image, outline or data.
+<p>
+The <B>"Modify"</B> button below the tabbed notebook pages may be clicked
+to make changes to the selected fin's entry in the catalog.  This button 
+opens a <A HREF="">Modify Database Window</A> which contains interactive data entry fields
+(allowing user changes to the textual data) and buttons for committing
+the modification to the fin entry in the database, deletion of
+the fin from the database, or cancellation of the change.
+<p>
+To view an enlarged version of either image, click on the image.
+A zoomable window will appear. Buttons on the top left of the zoomable
+window provide the ability to zoom in, zoom out and to
+flip the image horizontally.
+<p>
+To view more information about the outline of the dorsal fin, click
+on the displayed outline and a new window will appear containing 
+the following.
+<UL>
+	<LI>Upper Left: The extracted fin outline and 
+all automatically selected feature points (leading edge start,
+leading edge end, tip, largest notch, trailing edge end).
+	<LI>Upper Right:  The outline's chain code (its orientation at each
+point).
+	<LI>Lower Half: Additional outline
+information (<em>primarily of use to the developers of
+DARWIN for the purpose of testing</em>) such as
+number of points on the outline and positions of features.
+</UL>
+      </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+</table>
+<!-- end of BLANK PANE -->
+
+<!-- 
+*****************************************************************************************
+                  CatalogSchemes     CATALOG_SCHEMES     CatalogSchemes
+*****************************************************************************************
+-->
+<BR>
+
+ <!-- Catalog Category Schemes Pane -->
+<a name="mainwin_scheme">&nbsp;</a>
+<table border="0" width="100%" cellpadding=0 cellspacing=0>
+  <tr>
+  <td valign="top" align="right">
+  <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+    <tr>
+    <td class="title" width="100%" valign=middle align=center>
+    C<br/>
+    a<br/>
+    t<br/>
+    a<br/>
+    l<br/>
+    o<br/>
+    g<br/>
+    &nbsp;<br/>
+    S<br/>
+    c<br/>
+    h<br/>
+    e<br/>
+    m<br/>
+    e<br/>
+    s<br/>
+    </td>
+    </tr>
+  </table>
+  </td>
+  <td width="100%" bgcolor="#000000">
+  <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+    <tr>
+    <td valign="top">
+    <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+      <tr>
+      <td width="100%" valign=top align=left>
 
 <table width="100%">
-
-  <tbody>
-
-    <tr>
-
-      <td><h2>The
-Trace Window</h2></td>
-
-      <td align="right"><a href="#toc">top</a></td>
+        <tbody>
+        <tr>
+        <td><h2>Creating, Editing and Selecting Catalog Schemes</h2></td>
+        <td align="right"><a href="#toc">top</a></td>
+        </tr>
+      </tbody>
+      </table>
+<P>
+Catalog schemes enable a catalog of dorsal fin images to be organized into categories based on areas
+of evident damage or, for that matter, any other organizational rationale.  The individual category names
+become user selectable when adding fin images to the database, and the database can be sorted 
+and browsed by category in either the main window or the match results window.  
+When new images from sighting data are matched against the catalog, the match can be limited 
+to user selected categories as desired. <br> <br>
+<TABLE cellspacing="5" border="1" cellpadding="5">
+<TR>
+	<TD><img style="width: 354px; height: 375px; float: left;" alt="" src="usersguide.htg/dialogCatScheme.jpg" border="0"></TD>
+	<TD>
+To create a new catalog scheme, from the main window, select <b>"Define New Sheme"</b> from the <b>Settings/Catalog Scheme</b> menu. 
+This will open the dialog shown to the left.  Click in the top text entry box
+and enter the desired name for the
+new catalog scheme.  Click in the lower text entry box and type as many category names as
+desired (one on each line).  Hit enter (or carriage return) to extend the text entry box to
+the next line, and use the mouse and backspace key to edit category names as desired.
+When satisfied, click the <B>OK</B> button to add this scheme to DARWIN.  At any time, clicking
+the <B>Cancel</B> button will abandon the process without adding the new scheme.</TD>
+</TR>
+<TR>
+	<TD><img  alt="" src="usersguide.htg/schemeEdit.jpg" border="0"></TD>
+	<TD>From the main window, selecting <b>View/Edit</b> on the <b>Settings/Catalog Scheme</b> drop down menu opens the dialog to the left.  This dialog allows the user to view any defined
+	scheme by clicking on its name in the <B>Catalog Schemes</B> list.  If editing of a scheme 
+	is desired, click the <B>Edit Scheme(s)</B> button to enable editing. Then right-clicking on 
+	any scheme name allows two actions (<I>renaming the scheme or removing the scheme</I>).
+	Right-clicking on any scheme category name allows three actions (<I>renaming of a category,
+	insertion of a new category, or removal of a category</I>).  Once editing is complete, click the <B>OK</B>
+	button to commit the changes, or click <B>Cancel</B> to abandon editing.  
+	<P>
+	NOTE: The Eckerd College 
+	(default) scheme cannot be edited or removed.</TD>
+</TR>
+<TR>
+	<TD><img  alt="" src="usersguide.htg/schemeSelect.jpg" border="0"></TD>
+	<TD> From the main window, the <b>Select 
+Active</b> item on the <b>Settings/Catalog Scheme</b> drop down menu allows selection of a 
+different default scheme to be used in the creation of any new catalog. Simply select the
+scheme desired from the displayed list and click OK to make the change.  
+<P>
+NOTE: This only 
+affects new catalogs created after this selection is made.  Selection of a different
+scheme does not affect the scheme used in any existing catalog.</TD>
+</TR>
+</TABLE><p>
 
     </tr>
+  </tbody>
+</table>
+<!-- end of table body -->
+      </td>
+      </tr>
+    </table>
+    </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+</table>
+<!-- end of BLANK PANE -->
 
+<!--
+*****************************************************************************************
+                Creating Catalogs     CREATING CATALOGS     Creating Catalogs    
+*****************************************************************************************
+-->
+
+<!-- Help Pane -->
+<a name="mainwin_creating">&nbsp;</a>
+<table border="0" width="100%" cellpadding=0 cellspacing=0>
+  <tr>
+  <td valign="top" align="right">
+  <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+    <tr>
+    <td class="title" width="100%" valign=middle align=center>
+    C<br>
+    r<br>
+    e<br>
+    a<br>
+    t<br>
+    i<br>
+    n<br>
+    g<br>
+    &nbsp;<br>
+    C<br>
+    a<br>
+    t<br>
+    a<br>
+    l<br>
+    o<br>
+    g<br>
+    s<br>
+    </td>
+    </tr>
+  </table>
+  </td>
+  <td width="100%" bgcolor="#000000">
+  <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+    <tr>
+    <td valign="top">
+    <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+      <tr>
+      <td width="100%" valign=top align=left>
+
+<!-- Title and link to top go here -->
+<table width="100%">
+  <tr>
+    <td><h2>Creating a new Catalog (database)</h2></td>
+    <td align="right"><a href="#toc">top</a></td>
+  </tr>
+</table>
+
+<!-- body of pane goes here -->
+<P>
+<table width="100%">
+  <tbody>
+    <tr>
+      <img style="width: 393px; height: 291px; float: right" alt="" src="usersguide.htg/mainwin_newDatabase.jpg" border="0">
+<p>
+To create a new catalog (database), from the main window, select <b>"New Database"</b> from the <b>File</b> menu. 
+This will open the dialog window shown to the right.  There are two options available,
+and one simply clicks on the appropriate radio button to select which action is desired. 
+<UL>
+	<LI>Create a new catalog (or database) within any existing survey area
+	<LI>Create an entirely new survey area containing a new catalog
+</UL>
+
+<p>
+If creating a new catalog within a survey area, select the survey area from the pull-down list,
+select a catalog scheme from the list of defined schemes, enter the database file name for the
+new catalog in the text entry area, and click OK.  The new catalog will be created, and the
+program will return to the main window with the new catalog opened an ready for use. <I>Note that the database
+file's name must end in ".db" and the new name must differ from all existing database filenames
+within the same survey area.</I>
+<p>
+If defining a new survey area, enter the name of the new survey area, enter the name of the inital
+database file, select the catalog scheme, and click OK.
+<p>
+<I><B>Once a catalog has been created, its catalog scheme cannot be
+changed.</B></I>
+<P>
+To add fins to the newly
+created database see the section on <a href="#tracewin_adding"><em>adding a dorsal
+fin image to the database.</em></a> 
+</p>
+    </tr>
+  </tbody>
+</table>
+<!-- end of pane body -->
+      </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+</table>
+<!-- end of BLANK PANE -->
+
+
+<!--
+*****************************************************************************************
+                        Data Export     DATA_EXPORT     Data Export 
+*****************************************************************************************
+-->
+<a name="mainwin_exportSighting">&nbsp;</a>
+<table border="0" width="100%" cellpadding=0 cellspacing=0>
+  <tr>
+  <td valign="top" align="right">
+  <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+    <tr>
+    <td class="title" width="100%" valign=middle align=center>
+    D<br/>
+    a<br/>
+    t<br/>
+    a<br/>
+    &nbsp;<br/>
+    E<br/>
+    x<br/>
+    p<br/>
+    o<br/>
+    r<br/>
+    t<br/>
+    </td>
+    </tr>
+  </table>
+  </td>
+  <td width="100%" bgcolor="#000000">
+  <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+    <tr>
+    <td valign="top">
+    <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+      <tr>
+      <td width="100%" valign=top align=left>
+
+<!-- Title and link to top go here -->
+<table width="100%">
+  <tr>
+    <td><h2>Exporting Sighting Data</h2></td>
+    <td align="right"><a href="#toc">top</a></td>
+  </tr>
+</table>
+
+<!-- body of pane goes here -->
+<P>
+<table width="100%">
+  <tbody>
+    <tr>
+      <img style="width: 275px; height: 219px; float: left;" alt="" src="usersguide.htg/mainwin_dataExport.jpg" border="0">
+
+<p>To export the sighting data for each of the individuals in the catalog, from the main window,
+select <b>"Export Selected Data"</b> from the <b>Data</b> menu. 
+This will open the dialog window shown to the left.  
+<P>
+Choose the data items to be exported and click <B>OK</B>.
+<P>
+A Save File dialog will open.  Within it, simply enter a filename 
+(<I>something like "fin_data.txt"</I>) and click the <B>Save</B>
+button to save the data file.  
+<P>
+The file is created as tab-separated text and is suitable for
+import into Excel and many other spreadsheet and database programs.  The default location
+for the file is the <B>sightings</B> folder within the current survey area.  However, the user
+may select any loaction by clicking the "Browse for other folders" button, which opens a more
+detailed version of the Save File dialog.
+</p>
+
+
+    </tr>
   </tbody>
 </table>
 
 </p>
 
-<p><img style="width: 306px; height: 284px; float: right;" alt="" src="usersguide.htg/tracewin_thmb.jpg">
-The trace window (<em>shown at right</em>) appears when an
-image is opened. This window provides the
-capability to add new images to the database for the creation of an
-initial electronic catalog. It
-allows a user to query the database for a list of dorsal fins which
-most nearly resemble the newly
-opened image or to prepare a query for later submission. It also
-provides access to a number of
-image enhancement operations. The number of rows and columns in the
-image as well as the
-current magnification factor are displayed above the upper right corner
-of the image. The text
-entry boxes to the right of the image provide an opportunity to enter
-descriptive information and
-sighting data for the dorsal fin in the image.
 
-</p>
 
-Tracing is a three step process, with access to each step being given by one of
+
+
+      </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+</table>
+<!-- end of BLANK PANE -->
+
+
+<!--
+*****************************************************************************************
+                        TraceWindow     TRACE_WINDOW     TraceWindow 
+*****************************************************************************************
+-->
+
+<a name="tracewin"><BR><BR><a/>
+<table border="0" width="100%" cellpadding=0 cellspacing=0>
+  <tr>
+  <td valign="top" align="right">
+  <table border=0 cellspacing=0 bgcolor="#000000" cellpadding=4>
+    <tr>
+    <td class="title" width="100%" valign=middle align=center>
+    T<br/>
+    r<br/>
+    a<br/>
+    c<br/>
+    e<br/>
+    &nbsp;<br/>
+    W<br/>
+    i<br/>
+    n<br/>
+    d<br/>
+    o<br/>
+    w<br/>
+    </td>
+    </tr>
+  </table>
+  </td>
+  <td width="100%" bgcolor="#000000">
+  <table border=0 width="100%" bgcolor="#000000" cellpadding=2 cellspacing=0>
+    <tr>
+    <td valign="top">
+    <table border=0 width="100%" bgcolor="#E6E6E6" cellpadding=8 cellspacing=0>
+      <tr>
+      <td width="100%" valign=top align=left>
+
+<!-- Title and link to top go here -->
+<table width="100%">
+  <tbody>
+    <tr>
+      <td><h2>The Trace Window</h2></td>
+      <td align="right"><a href="#toc">top</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- pane body goes here -->
+
+<img style="width: 306px; height: 284px; float: right;" alt="" src="usersguide.htg/tracewin_thmb.jpg">
+The <B>Trace Window</B> (<em>shown at right</em>) appears whenever a new fin
+image or a previously saved fin is opened. When a new fin image is
+opened by DARWIN, the Trace Window provides the following major functionality.
+Trace Window usage normally progresses through three stages 
+(enhancing the image, tracing the fin outline, and locating the key outline features),
+and many of the following tools are available only within the appropriate stage.
+
+<UL>
+	<LI>A set of image enhancement tools.
+	<UL>
+		<LI>Flip horizontally
+		<LI>Enhance contrast
+		<LI>Enhance brightness
+		<LI>Crop
+		<LI>Undo/Redo
+	</UL>
+	<LI>Automatic detection and tracing of the fin outline.
+	<LI>A set of tools for manually tracing, erasing, or repairing the fin outline trace.
+	<UL>
+		<LI>Click trace begin and end
+		<LI>Manually trace the outline
+		<LI>Add outline point
+		<LI>Adjust oultine point position 
+		<LI>Erase outline point
+		<LI>Chop dangling end of outline
+	</UL>
+	<LI>Automatic detection of key fin outline features.
+	<LI>A tool for manual repositioning of key fin outline features.
+	<LI>A set of textual data entry areas, and drop-down menus for sighting data.
+	<LI>Support for zooming (in or out) and scrolling within the image.
+	<LI>A set of major action buttons allowing the user to ...
+	<UL>
+		<LI>Add the traced fin to the database
+		<LI>Save the traced fin in a separate fin file
+		<LI>Match the traced fin against the known fins in the database
+		<LI>Export the fin's textual data, saving it in a tab-separated text file
+		<LI>Close the Trace Window
+	</UL>
+</UL>
+
+Again, tracing is a three step process, and each step is accessed in turn by clicking on one of
 the following buttons:
 
-<p><a href="#tracewin_modify"><img style="border: 0px solid ; width: 88px; height: 49px;" alt="" src="usersguide.htg/tracewin_modify.jpg"></a> Once a
-new fin is opened, the program starts with the trace window enabled for a number of
-image enhancement options. If no modifications to the image are desired, the
-user may simply click on the "Trace Outline" button. 
-<a href="#tracewin_modify">(see details on buttons for image modification </a>)</p>
+<P><a href="#tracewin_modify"><img style="border: 0px solid ; width: 88px; height: 49px; float: left" alt="" src="usersguide.htg/tracewin_modify.jpg"></a> 
+Whenever a new fin image is opened, the trace window opens in Modify Image mode with the 
+image enhancement tools enabled.
+<a href="#tracewin_modify">(Click here for details on image enhancement operations.</a>)
+<P>
+Any image operation can be undone, but changes can only be rolled back one step.
+<P>
+The image should be cropped so that the fin occupies a significant area within the image,
+and ALL fins must be oriented so that the dolphin "swims left" before proceeding further.  Even though
+a fin may appear to be successfully traced if it faces right, the detection of significant
+outline features and the performance of the matching process will be degraded.  DARWIN
+keeps track of the "flipped" status of images, and will always display an indicator
+to inform the user that a flipped image is being displayed.
+<p>
+If the image needs no enhancement, the user may simply click on the "Trace Outline" button,
+to proceed. 
 
-<p><a href="#tracewin_trace"><img style="border: 0px solid ; width: 80px; height: 43px;" alt="" src="usersguide.htg/tracewin_trace.jpg"></a> 
-Once the user clicks this button and then clicks the first point of the
-leading edge and the last point of the trailing edge, the program attempts an
-automatic generation of the fin outline.  If the outline generation is successful, the
-outline is displayed in the trace window.  The user has the option to modify the
-outline (erase, move or delete points) or to provide a new hand sketched trace of
-the outline (<a href="#tracewin_trace">see details on buttons for tracing the outline</a>)</p>
 
-<p><a href="#tracewin_features"><img style="border: 0px solid ; width: 107px; height: 52px;" alt="" src="usersguide.htg/tracewin_locatefeatures.jpg"></a>
+<p><a href="#tracewin_trace"><img style="border: 0px solid ; width: 80px; height: 43px; float: left" alt="" src="usersguide.htg/tracewin_trace.jpg"></a> 
+Once the user clicks this button, the cursor will change to an arrow with a "*" on its tail.  The 
+user must click the first point of the leading edge and the last point of the trailing edge to
+identify the bounds of the desired fin outline trace.  
+<P>
+The program then attempts to automatically
+detect and trace the fin outline.  If the outline generation is successful, the
+outline is displayed in the trace window.  If not, the user is informed and is asked to manually
+trace the outline.  This manual trace is performed by a click and drag operation, and the
+outline need not be exact.  DARWIN will tighten the fit of the user supplied outline to the 
+fin once the user releases the mouse button.  
+<P>
+The user always has the option to modify the
+outline (add, move or delete points) or to provide a new hand sketched trace of
+the automatically generated outline. 
+(<a href="#tracewin_trace">Click here for details on tracing operations.</a>)
+
+<p><a href="#tracewin_features"><img style="border: 0px solid ; width: 107px; height: 52px; float: left" alt="" src="usersguide.htg/tracewin_locatefeatures.jpg"></a>
 After a fin is traced, the user may click the "Locate Features" button
 to have the program automatically locate the feature points (fin tip, largest
 notch, etc.). The user has the opportunity to view and reposition the
-automatically detected points on this screen. 
-(<a href="#tracewin_features">see details on repositioning feature points</a>)
+automatically detected points. 
+(<a href="#tracewin_features">Click here for details on repositioning feature points</a>)
+<P>
 If a search of the database is begun without pressing this button, the
-feature points are still generated, but the user loses the opportunity to 
+feature points are still generated, but the user will lose the opportunity to 
 confirm their location.
-</p>
 
 
 <h1>Buttons for Image Modification: the Trace Window</h1>
@@ -1014,6 +1505,7 @@ refined as described above. Click on the "Match" button to compare the
 outline of the dorsal fin
 against images in the database. 
 </p>
+<a name="matchwin">&nbsp;</a>
 <p>
 The Matching window (<em>shown at right</em>)
 will appear.  Select the categories to be searched.  Any set of specific
@@ -1027,7 +1519,7 @@ The range of points along the fin outline to be considered while
 computing the quality of the match can also be selected.  Options
 are "All Points" or "Trailing Edge Points Only." 
 Click the "Start" button to begin the matching process.
-When complete, the <a href="#matchwin">match results window</a> will
+When complete, the <a href="#matchreswin">match results window</a> will
 automatically be displayed containing a list of fins in the database,
 rank ordered by their similarity to the
 unknown fin. 
@@ -1092,7 +1584,7 @@ They may be reloaded for viewing by pressing the "View Results" button.
                       </td>
                     </tr>
                   </table>
-                  <br/><a name="matchwin">&nbsp;</a><br/>
+                  <br/><a name="matchreswin">&nbsp;</a><br/>
          <table border="0" width="100%" cellpadding=0 cellspacing=0>
             <tr>
               <td valign="top" align="right">
@@ -1341,9 +1833,11 @@ font style and size.  This can be helpful in distinguishing similar characters f
                       </td>
                     </tr>
                   </table>
-                  <br/><br/>
+
+  <br/><br/>
   <p class="cright" align=center>
         &copy; 2008 DARWIN Research Group
     </p>
+
 </body>
 </html>
