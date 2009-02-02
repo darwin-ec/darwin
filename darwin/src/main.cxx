@@ -70,11 +70,13 @@
 #include "waveletUtil.h"
 
 // trying to find memory leaks - next 3 lines
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#ifdef WIN32
-#include <crtdbg.h>
-#endif
+//***2.01 - removed from Release version
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#ifdef WIN32
+//#include <crtdbg.h>
+//#endif
+
 #include <iostream>
 #include <direct.h>
 
