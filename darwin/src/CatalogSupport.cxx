@@ -188,11 +188,11 @@ db_opentype_t databaseOpenType(string filePath)
 */
 void copyFins(Database* from, Database *to)
 {
-	const unsigned size = from->size();
+	const unsigned size = from->sizeAbsolute(); //***2.01 - absolute
 
 	for(unsigned i = 0; i < size; i++)
 	{
-		DatabaseFin<ColorImage>* fin = from->getItem(i);
+		DatabaseFin<ColorImage>* fin = from->getItemAbsolute(i); //***2.01 - absolute
 		if(fin != NULL) {
 			to->add(fin);
 			delete fin;
