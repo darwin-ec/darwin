@@ -196,6 +196,8 @@ void MatchingDialog::show(bool returning)
 	{
 		delete mMatch;
 		mMatch = new Match(mFin,mDatabase, mOptions);
+		mMatch->getMatchResults()->setFinFilename(mFin->mFinFilename); //***2.01
+		mMatch->getMatchResults()->setDatabaseFilename(mOptions->mDatabaseFileName); //***2.01
 		if (mShowingOutlines)
 			mMatch->setDisplay(this);
 		else
@@ -528,8 +530,8 @@ GtkWidget* MatchingDialog::createMatchingDialog()
 	// NOTE: These categories are currently based on the Eckerd College database
 
 	// set up categories and buttons in 5 columns
-	int catColumnHeight = 1 + (mOptions->mCatCategoryNamesMax / 5);
-	for (int catID=0; catID < mOptions->mCatCategoryNamesMax; catID++)
+	int catColumnHeight = 1 + (mDatabase->catCategoryNamesMax() / 5); //***2.01
+	for (int catID=0; catID < mDatabase->catCategoryNamesMax(); catID++) //***2.01
 	{
 		if (catID % catColumnHeight == 0)
 		{
@@ -539,16 +541,16 @@ GtkWidget* MatchingDialog::createMatchingDialog()
 			gtk_container_add(GTK_CONTAINER(hpanedTop), vbox);
 		}
 		// create a button for the next category
-		if ("NONE" == mOptions->mCatCategoryName[catID])
+		if ("NONE" == mDatabase->catCategoryName(catID)) //***2.01
 			mCategoryButton[catID] = gtk_check_button_new_with_label(_("Unspecified"));
 		else
 			mCategoryButton[catID] = gtk_check_button_new_with_label(
-				_(mOptions->mCatCategoryName[catID].c_str()));
+				_(mDatabase->catCategoryName(catID).c_str()));
 		gtk_container_add(GTK_CONTAINER(vbox), mCategoryButton[catID]);
 		gtk_widget_show(mCategoryButton[catID]);
 		// set button as active if it matches the category of the unkown
 		// selected in the TraceWindow
-		if (mOptions->mCatCategoryName[catID] == (this)->mFin->mDamageCategory)
+		if (mDatabase->catCategoryName(catID) == (this)->mFin->mDamageCategory)
 		{
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mCategoryButton[catID]),TRUE);
 			mCategoryToMatch[catID] = TRUE;
