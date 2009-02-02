@@ -93,7 +93,15 @@ bool DBConvertDialog::convert2SQLite(int degreeOfBackup)
 	// can be opened at the same time for conversion
 
 	string oldDbFilename = mDBFilename;
-	oldDbFilename = oldDbFilename.substr(0,oldDbFilename.rfind('.')) + ".olddb";
+
+	//***2.01 - change so "old" is prepended to whatever file extension exists
+	// ensuring that oldDbFilename != mDBFilename in ALL cases
+	int pos = oldDbFilename.rfind('.');                               //***2.01
+	string fileExt = oldDbFilename.substr(pos+1);                     //***2.01
+	oldDbFilename = oldDbFilename.substr(0, pos+1) + "old" + fileExt; //***2.01
+
+	//oldDbFilename = oldDbFilename.substr(0,oldDbFilename.rfind('.')) + ".olddb"; //***2.01 - replaced
+
 	string command = "move /Y "; // overwrite w/o prompt
 	command = command 
 		+ "\""

@@ -217,8 +217,14 @@ Database* convertDatabase(Options* o, string sourceFilename)
 
 	// "file.db" -> "file.olddb"
 	int pos = sourceFilename.rfind(".");
-	string newFilenameOfSourceDatabase = sourceFilename.substr(0, pos);
-	newFilenameOfSourceDatabase += ".olddb";
+
+	//***2.01 - change so "old" is prepended to whatever file extension exists
+	// ensuring that sourceFilename != newFilenameOfSourceDatabase in ALL cases
+	string fileExt = sourceFilename.substr(pos+1);                                          //***2.01
+	string newFilenameOfSourceDatabase = sourceFilename.substr(0, pos+1) + "old" + fileExt; //***2.01
+
+	//string newFilenameOfSourceDatabase = sourceFilename.substr(0, pos); //***2.01 - replaced
+	//newFilenameOfSourceDatabase += ".olddb";                            //***2.01 - replaced
 
 	// move "file.db" "file.olddb" -- renames source file
 	string mvCmd("move \"");
