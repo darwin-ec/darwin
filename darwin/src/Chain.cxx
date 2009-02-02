@@ -139,74 +139,74 @@ Chain::Chain(FloatContour *fc)
 	  mChain(NULL),
 	  mRelativeChain(NULL)
 {
-  if (NULL == fc)
-    throw EmptyArgumentError("Chain ctor");
+	if (NULL == fc)
+		throw EmptyArgumentError("Chain ctor");
 
-  mNumPoints = fc->length();
+	mNumPoints = fc->length();
 
-  vector<double> chain, relativeChain;
+	vector<double> chain, relativeChain;
 
-  // NOTE: the Chain angle at each pooint is ALWAYS the angle of 
-  // the INCOMING edge FROM the previous contour point - JHS
+	// NOTE: the Chain angle at each pooint is ALWAYS the angle of 
+	// the INCOMING edge FROM the previous contour point - JHS
  
-  if (mNumPoints > 1)
-  {
-    // initial angle of chain is angle of first point relative to (0,0)
-    chain.push_back(rtod(atan2((*fc)[0].y, (*fc)[0].x)));
-    chain.push_back(rtod(atan2((*fc)[1].y - (*fc)[0].y, (*fc)[1].x - (*fc)[0].x)));
+	if (mNumPoints > 1)
+	{
+		// initial angle of chain is angle of first point relative to (0,0)
+		//chain.push_back(rtod(atan2((*fc)[0].y, (*fc)[0].x))); //***2.1mt
+		//***2.01 - now just duplicate the first relative angle
+		chain.push_back(rtod(atan2((*fc)[1].y - (*fc)[0].y, (*fc)[1].x - (*fc)[0].x))); //***2.01 
 
-    // initial angle in relativeChain is angle change across point[0]
-	//***1.2 - I think initial angle is meaningless and the
-	// initial meaningful angle is actually angle change across point[1]
-	relativeChain.push_back(0.0); //***1.2 - added this
-	// without line above the relative chain length & indexing are off by one
-    relativeChain.push_back(chain[0] - chain[1]);
+		chain.push_back(rtod(atan2((*fc)[1].y - (*fc)[0].y, (*fc)[1].x - (*fc)[0].x)));
 
-    for (int i = 2; i < mNumPoints; i++) {
-    	chain.push_back(rtod(atan2((*fc)[i].y - (*fc)[i-1].y, (*fc)[i].x - (*fc)[i-1].x)));
-      // NOTE: the relativeChain angle at point[i] is the change
-      // in angle across point[i]. The relativeChain angle pushed
-      // here is the change in angle across the previous point,
-      // point[i-1].
+		float lastAngle = chain[1]; //***2.1mt - use this to prevent any quadrant discontinuity 
 
-		/*
-		///////////////////////// begin new //////////////////////////
-		//***1.0ER - quadrant problems must be corrected for in relative chain
-		// see the notes in updaterelativeChain() below
-		//
-		double change = chain[i-1] - chain[i];
-		if (change > 180)
-			change = change - 360;
-		else if (change < -180)
-			change = 360 - change;
-		relativeChain.push_back(change);
-		//////////////////////// end new ////////////////////////////
-		*/
-		
-		//////////////////////////// begin old ///////////////////////
-		relativeChain.push_back(chain[i-1] - chain[i]);
-		//////////////////////// end old ///////////////////////////
+		// initial angle in relativeChain is angle change across point[0]
+		//***1.2 - I think initial angle is meaningless and the
+		// initial meaningful angle is actually angle change across point[1]
+		relativeChain.push_back(0.0); //***1.2 - added this
 
-    }
-  }
-  // NOTE: there is NO useful change in angle across either
-  // the first point or the last point in fc
+		// without line above the relative chain length & indexing are off by one
+		relativeChain.push_back(chain[0] - chain[1]);
 
-  // now copy vectors to double arrays
+		for (int i = 2; i < mNumPoints; i++) 
+		{
+			double angle = rtod(atan2((*fc)[i].y - (*fc)[i-1].y, (*fc)[i].x - (*fc)[i-1].x)); //***2.01
 
-  mChain = new double[chain.size()];
-  mRelativeChain = new double[relativeChain.size()];
+			//***2.01 - prevent ANY discontinuity of greater than 180 degrees
+			if (angle - lastAngle > 180.0)
+				chain.push_back(angle - 360.0);
+			else if (angle - lastAngle < -180.0)
+				chain.push_back(angle + 360.0);
+			else
+				chain.push_back(angle);
 
-  vector<double>::iterator cIt = chain.begin();
+			lastAngle = chain[i];
 
-  for (int cnt = 0; cIt != chain.end(); cnt++, cIt++)
-    mChain[cnt] = *cIt;
+			//***2.01 - end
 
-  vector<double>::iterator rCIt = relativeChain.begin();
+			//////////////////////////// begin old ///////////////////////
+			relativeChain.push_back(chain[i-1] - chain[i]);
+			//////////////////////// end old ///////////////////////////
+		}
+	}
 
-  for (int rc = 0; rCIt != relativeChain.end(); rc++, rCIt++)
-    mRelativeChain[rc] = *rCIt;
+	// NOTE: there is NO useful change in angle across either
+	// the first point or the last point in fc
 
+	// now copy vectors to double arrays
+
+	mChain = new double[chain.size()];
+	mRelativeChain = new double[relativeChain.size()];
+
+	vector<double>::iterator cIt = chain.begin();
+
+	for (int cnt = 0; cIt != chain.end(); cnt++, cIt++)
+		mChain[cnt] = *cIt;
+
+	vector<double>::iterator rCIt = relativeChain.begin();
+
+	for (int rc = 0; rCIt != relativeChain.end(); rc++, rCIt++)
+		mRelativeChain[rc] = *rCIt;
 }
 
 
