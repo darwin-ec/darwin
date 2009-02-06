@@ -193,7 +193,10 @@ void MainWindow::show()
 		gtk_widget_set_sensitive(mButtonModify, FALSE); //***002DB
 	}
 
-	this->displayStatusMessage("Ready.");
+	//this->displayStatusMessage("Ready."); //***2.01
+	char numEntriesStr[64];
+	sprintf(numEntriesStr,"Ready: %d fins loaded",mDatabase->size());
+	this->displayStatusMessage(numEntriesStr); //***2.01 - display size too
 		
 	gtk_clist_thaw(GTK_CLIST(mCList)); //***1.85
 
