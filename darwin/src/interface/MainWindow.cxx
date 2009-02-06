@@ -79,6 +79,8 @@ MainWindow::MainWindow(Database *db, Options *o)
 	  mDatabase(db),
 	  mImage(NULL),
 	  mOrigImage(NULL), //***1.99
+	  mImageFullsize(NULL), //***2.01
+	  mOrigImageFullsize(NULL), //***2.01
 	  mCList(NULL), //***1.95
 	  mCurImageHeight(IMAGE_HEIGHT),
 	  mCurImageWidth(IMAGE_WIDTH),
@@ -120,6 +122,8 @@ MainWindow::~MainWindow()
 	
 	delete mImage;
 	delete mOrigImage; //***1.99
+	delete mImageFullsize; //***2.01
+	delete mOrigImageFullsize; //***2.01
 	delete mSelectedFin;
 	delete mDatabase;
 
@@ -3388,12 +3392,15 @@ gboolean on_mainEventBoxImage_button_press_event(
 		return FALSE;
 
    // make sure the image exists before creating the ImageViewDialog
-   if (NULL == mainWin->mSelectedFin->mFinImage)
-      mainWin->mSelectedFin->mFinImage  = new ColorImage(mainWin->mSelectedFin->mImageFilename);
+   //if (NULL == mainWin->mSelectedFin->mFinImage)
+   //   mainWin->mSelectedFin->mFinImage  = new ColorImage(mainWin->mSelectedFin->mImageFilename);
 
+	//ImageViewDialog *dlg = new ImageViewDialog(
+	//		mainWin->mSelectedFin->mIDCode,
+	//		mainWin->mSelectedFin->mFinImage);
 	ImageViewDialog *dlg = new ImageViewDialog(
 			mainWin->mSelectedFin->mIDCode,
-			mainWin->mSelectedFin->mFinImage);
+			mainWin->mImageFullsize); //***2.01 - use new fullsize image already in memory
 	dlg->show();
 
 	return TRUE;
@@ -3416,12 +3423,15 @@ gboolean on_mainEventBoxOrigImage_button_press_event(
 		return FALSE;
 
    // make sure the image exists before creating the ImageViewDialog
-   if (NULL == mainWin->mSelectedFin->mFinImage)
-      mainWin->mSelectedFin->mFinImage  = new ColorImage(mainWin->mSelectedFin->mImageFilename);
+   //if (NULL == mainWin->mSelectedFin->mFinImage)
+   //   mainWin->mSelectedFin->mFinImage  = new ColorImage(mainWin->mSelectedFin->mImageFilename);
 
+	//ImageViewDialog *dlg = new ImageViewDialog(
+	//		mainWin->mSelectedFin->mIDCode,
+	//		mainWin->mSelectedFin->mFinImage); // was reloading and using modified image - OOPS
 	ImageViewDialog *dlg = new ImageViewDialog(
 			mainWin->mSelectedFin->mIDCode,
-			mainWin->mSelectedFin->mFinImage);
+			mainWin->mOrigImageFullsize); //***2.01 - use new fullsize image already in memory
 	dlg->show();
 
 	return TRUE;
@@ -3665,6 +3675,9 @@ gboolean on_mainDrawingAreaImage_configure_event(
 	// since resizeWithBorder creates a new image, we must delete this one after it is used
 	ColorImage *tempImage = new ColorImage(mainWin->mSelectedFin->mImageFilename);
 
+	if (NULL != mainWin->mImageFullsize) //***2.01
+		delete mainWin->mImageFullsize;  //***2.01
+
 	mainWin->mImage = resizeWithBorder(		
 			tempImage,
 			//mainWin->mCurImageHeight,
@@ -3714,7 +3727,8 @@ gboolean on_mainDrawingAreaImage_configure_event(
 #endif
 
 	// delete here or memory leak results
-	delete tempImage;
+	//delete tempImage;
+	mainWin->mImageFullsize = tempImage; //***2.01 - deleted as needed above and in destructor now
 
 	mainWin->refreshImage();
 
@@ -3766,6 +3780,9 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 	// since resizeWithBorder creates a new image, we must delete this one after it is used
 	ColorImage *tempImage = new ColorImage(mainWin->mSelectedFin->mOriginalImageFilename);
 
+	if (NULL != mainWin->mOrigImageFullsize) //***2.01
+		delete mainWin->mOrigImageFullsize;  //***2.01
+
 	mainWin->mOrigImage = resizeWithBorder(		
 			tempImage,
 			mainWin->mDrawingAreaOrigImage->allocation.height, //***1.7
@@ -3779,7 +3796,8 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 	delete[] frameLabel;
 
 	// delete here or memory leak results
-	delete tempImage;
+	//delete tempImage;
+	mainWin->mOrigImageFullsize = tempImage; //***2.01 - deleted as needed above and in destructor now
 
 	mainWin->refreshOrigImage();
 

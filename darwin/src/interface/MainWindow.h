@@ -344,6 +344,8 @@ class MainWindow
 		Database *mDatabase;
 
 		ColorImage 
+			*mImageFullsize,     //***2.01
+			*mOrigImageFullsize, //***2.01
 			*mImage,
 			*mOrigImage; //***1.99
 		int
