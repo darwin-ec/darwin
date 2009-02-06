@@ -663,7 +663,7 @@ bool createArchive (Database *db, string filename)
 		command = "del " + fileListQuoted;
 		system(command.c_str());
 
-		return (0 == error);
+		return (0 == error || 1 == error); //***2.01 - non-fatal (locked files not compressed is OK, too)
 	}
 
 	return false; // archive list could not be built
