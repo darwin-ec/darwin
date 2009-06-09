@@ -122,20 +122,29 @@ SectionEnd
 
 ;Uninstall section--must start with un.
 Section "un.Uninstaller Section"
-	;Should really prompt to preserve data!!!!!
 
-	MessageBox MB_YESNO "Would you like to keep all data (image files and catelog)?" IDYES done
-		RMDir /r /REBOOTOK $INSTDIR ;remove absolutely everything
-	done:
+	;Prompt to preserve data!!!!!
 
-	;remove absolutely everything
-	;RMDir /r /REBOOTOK $INSTDIR
-	
-	Delete *
+	MessageBox MB_YESNO "Would you like to keep all data (image files and catelog)?" IDYES next
+
+		;remove data folders
+		RMDIR /r "$INSTDIR\surveyAreas"
+		RMDIR /r "$INSTDIR\backups"
+
+	next:
+
+	;remove non data files and folders
+	Delete "$INSTDIR\darwin-2.0-readme.txt"
+	Delete "$INSTDIR\fileassoc.nsh"
+	Delete "$INSTDIR\license.rtf"
+	Delete /REBOOTOK "$INSTDIR\uninstall.exe"
 	RMDIR /r "$INSTDIR\licenses-etc"
 	RMDIR /r "$INSTDIR\docs"
 	RMDIR /r "$INSTDIR\system"
 	
+	;NOTE: we NEVER remove the install folder, just in case the user forces it
+	;to some pathological place like C:\Windows
+
 	;Remove shortcuts
 	RMDir /r /REBOOTOK "$SMPROGRAMS\darwin-2.0"
 	Delete /REBOOTOK "$DESKTOP\darwin-2.0.lnk"
