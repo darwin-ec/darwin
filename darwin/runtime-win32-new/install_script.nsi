@@ -11,7 +11,10 @@
 Name "DARWIN"
 
 ;default install directory
-InstallDir "$PROGRAMFILES\darwin-2.0\"
+;InstallDir "$PROGRAMFILES\darwin-2.0\" <-- old version did not force darwin-2.0 on end of browse choice
+;leaving backslash off of end makes sure "darwin-2.0" forder is created inside user's chosen
+;folder after use of browser
+InstallDir $PROGRAMFILES\darwin-2.0
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf
@@ -75,7 +78,7 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	File /r /x *.nsi /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn *
+	File /r /x *.nsi /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn /x stuff *
 	
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
 	CreateDirectory "$SMPROGRAMS\darwin-2.0"

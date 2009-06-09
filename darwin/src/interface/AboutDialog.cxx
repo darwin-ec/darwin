@@ -168,8 +168,8 @@ GtkWidget* AboutDialog::createAboutDialog()
 
 	aboutLabelCredits = gtk_label_new (
 		  _("\n Research & Programming by:\n\n"
-		    "   John H. Stewman\n\t (Project Founder / Faculty Advisor : 1993-2007)\n"
-		    "   Kelly R. Debure\n\t (Faculty Advisor : 1997-2007)\n"
+		    "   John H. Stewman\n\t (Project Founder / Faculty Advisor : 1993-2009)\n"
+		    "   Kelly R. Debure\n\t (Faculty Advisor : 1997-2009)\n"
 			"\n"
 			"   Mark C. Allen (1994-1996)\n"
 		    "   Rachel Stanley (1994)\n"
