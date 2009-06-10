@@ -1,0 +1,42 @@
+DARWIN 2.0 Warning (6/10/2009)
+==============================
+
+It has been determined that the "darwin-2.0-setup.exe" and 
+"darwin-2.0-upgrade.exe" installers can be manipulated by a user determined 
+to install DARWIN in a non-standard location in such a way as to remove the 
+"darwin-2.0" folder that was intended to contain ALL of DARWIN's other 
+folder structure.
+
+This can result in the following folders and files being installed directly
+in one of your EXISTING folders. If thes are in the "Program Files" or
+"Windows" or "My Documents" folder without being contained inside the 
+"darwin-2.0" folder you could lose non-DARWIN related programs or data if you
+use DARWIN's uninstaller.
+
+   FOLDERS
+   -------
+   system
+   surveyAreas
+   docs
+   licenses-etc
+   backups
+
+   FILES
+   -----
+   fileassoc.nsh
+   darwin-2.0-readme.txt
+   license.rtf
+   uninstall.exe
+
+If you have ANY DOUBTS about how DARWIN was installed DO NOT use the
+"uninstall.exe" program to uninstall DARWIN.  Doing so could result in 
+loss of ALL other files in the installed loacation.  Instead, manually remove 
+the DARWIN folders and files without running the uninstall.
+
+To FIX this problem in all cases, you can download and run the 
+"darwin-2.01-upgrade.exe" installer, which will fix several minor problems
+with DARWIN itself AND will replace the "uninstall.exe" file with a SAFER
+version.
+
+If you have any questions, contact us at darwin@eckerd.edu
+
