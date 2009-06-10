@@ -65,7 +65,7 @@ FunctionEnd
 ;BrandingText " "
 
 ;name of install file to generate (e.g. setup.exe)
-outfile darwin-2.0-setup.exe
+outfile darwin-2.01-setup.exe
 
 
 
