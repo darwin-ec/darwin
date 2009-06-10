@@ -2768,7 +2768,7 @@ void on_export_database_activate(
 		return;
 	}
 		
-	if (exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename))
+	if (! exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename))
 	{
 		ErrorDialog *err = new ErrorDialog("Catalog EXPORT failed.");
 		err->show();
