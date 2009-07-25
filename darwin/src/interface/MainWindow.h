@@ -112,6 +112,10 @@ class MainWindow
 				GtkMenuItem *menuitem,
 				gpointer userData);
 
+		friend void on_export_fullSzImgs_activate( //***2.02
+				GtkMenuItem *menuitem,
+				gpointer userData);
+
 		friend void on_import_finz_activate( //***1.99
 				GtkMenuItem *menuitem,
 				gpointer userData);
@@ -310,6 +314,7 @@ class MainWindow
 			*mExportSubMenuItem,
 			*mExportDBMenuItem,
 			*mExportFinzMenuItem,
+			*mExportFullSzImgsMenuItem, //***2.02 - for generating full size modified images
 			*mImportDBMenuItem,
 			*mImportFinzMenuItem,
 			*mOpenImageButton,

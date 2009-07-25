@@ -3,7 +3,7 @@
 //
 // author: John H Stewman
 //
-//   mods: 
+//   mods: 7/25/2009 -- support for saving images (full-size)
 //
 //   date: 7/16/2008
 //
@@ -11,6 +11,11 @@
 // choose locations for other exports (finz and data).
 // This replaces the SaveFileSelectionDialog class - JHS
 //
+// In versions 2.02 and later it also supports saving of full-size, 
+// full-resolution versions of DARWIN modified images that are otherwise
+// saved as thumbnails inside the catalog folder and are rebuilt
+// as full-size images on-the-fly whenever DARWIN needs to access
+// them.  JHS 7/25/2009
 //*******************************************************************
 
 #include <gdk/gdkkeysyms.h>
@@ -31,7 +36,7 @@ using namespace std;
 static int gNumReferences = 0;
 //static string gLastDirectory = "";   // disk & path last in use
 
-static int mNumberModes = 5; //how many modes are above in the enum?
+static int mNumberModes = 6; //how many modes are above in the enum? ***2.02 - updated to 6
 static string gLastDirectory[] = {"","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mSaveModes
 static string gLastFileName[] = {"","","","","","","",""};    // simple name of last file "touched" -- if any
 static string gLastFolderName[] = {"","","","","","","",""};  // simple name of folder last "touched" -- if any
@@ -118,6 +123,43 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 
 	switch (mSaveMode) 
 	{
+	case saveFullSizeModImages: //***2.02 - new mode
+		saveFCDialog = gtk_file_chooser_dialog_new (
+				_("Enter directory for the Full-Size Image Files (*.png)"),
+				GTK_WINDOW(mParent),
+				GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+		// could do this if we had version 2.8 or later of GTK+
+		// gtk_file_chooser_set_do_overwrite_confirmation(
+		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "Image Files (*.png)");
+		gtk_file_filter_add_pattern(filter, "*.png");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+		filter = gtk_file_filter_new();
+		gtk_file_filter_set_name(filter, "All Files (*.*)");
+		gtk_file_filter_add_pattern(filter, "*.*");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+
+		// do NOT allow multiple file selections
+		gtk_file_chooser_set_select_multiple (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				FALSE);
+		
+		if (gLastDirectory[mSaveMode] == "")
+		{
+			// everything is relative to the current survey area
+			gLastDirectory[mSaveMode] = gOptions->mCurrentSurveyArea;
+			gLastDirectory[mSaveMode] += PATH_SLASH;
+			gLastDirectory[mSaveMode] += "tracedFins";
+		}
+		gtk_file_chooser_set_current_folder (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				gLastDirectory[mSaveMode].c_str());
+		gLastFileName[mSaveMode] = "";
+		break;
 	case saveMultipleFinz:
 		saveFCDialog = gtk_file_chooser_dialog_new (
 				_("Enter directory for the Traced Fin Files (*.finz)"),
@@ -324,6 +366,41 @@ void on_saveFileChooserButtonOK_clicked(
 				filename += PATH_SLASH + (*it)->mIDCode + ".finz";
 				filename = generateUniqueName(filename);
 				saveFinz(*it, filename);
+			}
+		}
+		break;
+	case SaveFileChooserDialog::saveFullSizeModImages: //***2.02
+		{
+			gchar *temp;
+
+			temp = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
+			string fileName = temp;
+			g_free(temp);
+			
+			if(dlg->mFins == NULL)
+				return;
+
+			vector<DatabaseFin<ColorImage>*>::iterator it;
+			for (it = dlg->mFins->begin(); it != dlg->mFins->end(); it++)
+			{
+				// get filename for modified image (including path)
+				string imageFilename = (*it)->mImageFilename;
+
+				cout << "Saving  " << imageFilename << endl;
+					
+				ColorImage * img = new ColorImage(imageFilename);
+
+				string saveFilename = fileName + PATH_SLASH;                             // save path
+				// strip old path and extension, prepend new path and append "_fullSize.png" 
+				imageFilename = imageFilename.substr(imageFilename.rfind(PATH_SLASH)+1); // short name
+				imageFilename = imageFilename.substr(0,imageFilename.rfind("."));        // root
+				
+				saveFilename = saveFilename + imageFilename + "_fullSize.png";  // save path and new name
+	
+				// save full-sized version in selected folder
+				img->save(saveFilename);
+				
+				delete img;
 			}
 		}
 		break;

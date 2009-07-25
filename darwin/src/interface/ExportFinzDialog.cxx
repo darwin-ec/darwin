@@ -10,6 +10,11 @@
 // a collection of several FinZ files or an actual Catalog which is a
 // SUBSET of the currently open DARWIN catalog.
 //
+// In versions 2.02 and later it also supports saving of full-size, 
+// full-resolution versions of DARWIN modified images that are otherwise
+// saved as thumbnails inside the catalog folder and are rebuilt
+// as full-size images on-the-fly whenever DARWIN needs to access
+// them.  JHS 7/25/2009
 
 #include "../thumbnail.h"
 #include "ExportFinzDialog.h"
@@ -49,7 +54,8 @@ set<int> selectedRows(GtkCList *clist)
 //*******************************************************************
 ExportFinzDialog::ExportFinzDialog(Database *db, GtkWidget *parent, 
 								   GtkWidget *clist, db_sort_t currentSort,
-								   vector<int> row2id, vector<int> id2row)
+								   vector<int> row2id, vector<int> id2row,
+								   int dialogMode) //***2.02 - new operating mode parameter
 :	mDialog(NULL),
 	mDatabase(db),
 	mParentWindow(parent),
@@ -57,7 +63,8 @@ ExportFinzDialog::ExportFinzDialog(Database *db, GtkWidget *parent,
 	mNewSort(currentSort),
 	mRow2Id(row2id),
 	mId2Row(id2row),
-	mShowAlternates(false) // for now
+	mShowAlternates(false), // for now
+	mDialogMode(dialogMode) //***2.02
 
 {
 	mDBCurEntry.clear();
@@ -593,7 +600,20 @@ GtkWidget* ExportFinzDialog::createDialog()
 	GtkWidget *tmpLabel, *tmpIcon, *tmpBox;
 	GtkWidget *leftFrame, *rightFrame;
 
-	string MainWinTitle = "DARWIN - Export FINZ";
+	//string MainWinTitle = "DARWIN - Export FINZ";
+	string MainWinTitle; //***2.02 - set title below based on mode
+	switch (mDialogMode)
+	{
+	case exportFinz:
+		MainWinTitle = "DARWIN - Export FINZ";
+		break;
+	case exportFullSizeModImages:
+		MainWinTitle = "DARWIN - Export full-size IMAGES";
+		break;
+	default:
+		MainWinTitle = "DARWIN - Dialog Unknown Mode Error";
+		break;
+	}
 	//***1.85 - set the database filename / message for the window
 	switch (mDatabase->status())
 	{
@@ -741,7 +761,10 @@ GtkWidget* ExportFinzDialog::createDialog()
 	tmpIcon = create_pixmap_from_data(tmpBox, open_trace_xpm);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
 	gtk_widget_show(tmpIcon);
-	tmpLabel = gtk_label_new_with_mnemonic(_("_Save Fin(s)"));
+	if (mDialogMode == exportFinz)
+		tmpLabel = gtk_label_new_with_mnemonic(_("_Save Fin(s)"));
+	else if (mDialogMode == exportFullSizeModImages)
+		tmpLabel = gtk_label_new_with_mnemonic(_("_Save Image(s)"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mButtonSave);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, TRUE, TRUE, 0);
 	gtk_widget_show(tmpLabel);
@@ -752,8 +775,12 @@ GtkWidget* ExportFinzDialog::createDialog()
 	gtk_widget_show(mButtonSave);
 	gtk_container_add(GTK_CONTAINER(hbuttonbox1), mButtonSave);
 	GTK_WIDGET_SET_FLAGS(mButtonSave, GTK_CAN_DEFAULT);
-	gtk_tooltips_set_tip(tooltips, mButtonSave, 
+	if (mDialogMode == exportFinz)
+		gtk_tooltips_set_tip(tooltips, mButtonSave, 
 	                     _("Save selected fin(s) as *.finz files."), NULL);
+	else if (mDialogMode == exportFullSizeModImages)
+		gtk_tooltips_set_tip(tooltips, mButtonSave, 
+	                     _("Save image(s) of selected fin(s) as *.png files."), NULL);
 
 
 	// create SaveAsCatalog button
@@ -837,8 +864,13 @@ GtkWidget* ExportFinzDialog::createDialog()
 	                    GTK_SIGNAL_FUNC (on_finzDialog_delete_event),
 	                    (void *) this);
 
-	gtk_signal_connect (GTK_OBJECT (mButtonSave), "clicked",
+	if (mDialogMode == exportFinz)
+		gtk_signal_connect (GTK_OBJECT (mButtonSave), "clicked",
 	                    GTK_SIGNAL_FUNC (on_finzDialogButtonSaveFinz_clicked),
+	                    (void *) this);
+	else if (mDialogMode == exportFullSizeModImages)
+		gtk_signal_connect (GTK_OBJECT (mButtonSave), "clicked",
+	                    GTK_SIGNAL_FUNC (on_finzDialogButtonSaveImages_clicked),
 	                    (void *) this);
 
 	gtk_signal_connect (GTK_OBJECT (mButtonSaveAsCatalog), "clicked",
@@ -1161,6 +1193,53 @@ void on_finzDialogButtonSaveFinz_clicked(
 
 	if (saved)
 		delete dlg;
+
+}
+
+//*******************************************************************
+//***2.02 - new callback to save full-size, full-resolution DARWIN modified images
+void on_finzDialogButtonSaveImages_clicked(
+		GtkButton *button,
+		gpointer userData)
+{
+	ExportFinzDialog *dlg = (ExportFinzDialog *) userData;
+
+	if (NULL == dlg)
+		return;
+
+	bool saved = false;
+	set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+
+	if (selectedFins.empty()) {//idiot, selected something first for export
+		return;
+	} else {// one or more fins selected
+		set<int>::iterator it;
+		vector<DatabaseFin<ColorImage>* > fins;
+		for (it = selectedFins.begin(); it != selectedFins.end(); it++) {
+			int id = dlg->mRow2Id[*it];
+			fins.push_back(dlg->mDatabase->getItem(id));
+		}
+
+		SaveFileChooserDialog *fsChooserDlg = new SaveFileChooserDialog(dlg->mDatabase,
+												NULL,
+												NULL,
+												NULL,
+												dlg->mOptions,
+												dlg->mDialog,
+												SaveFileChooserDialog::saveFullSizeModImages,
+												&fins);
+		saved=fsChooserDlg->run_and_respond();
+
+		vector<DatabaseFin<ColorImage>* >::iterator finsit;
+		for (finsit = fins.begin(); finsit != fins.end(); finsit++) {
+			delete ((DatabaseFin<ColorImage>*) *finsit);
+		}
+		
+	}
+
+	if (saved)
+		delete dlg;
+
 
 }
 

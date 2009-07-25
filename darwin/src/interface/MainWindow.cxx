@@ -1485,6 +1485,30 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 		_("Export a fin ...\n"
 		"(to a user specified *.finz file)"), NULL);
 
+	//***2.02 - new menu item to allow generation of FULL-SIZE modified images
+
+	// Export FullSzImgs (*FullSize.png) submenu item
+
+	mExportFullSzImgsMenuItem = gtk_menu_item_new();
+
+	tmpBox = gtk_hbox_new(FALSE, 0);
+	tmpLabel = gtk_label_new(_("    Export Images (Full-Size)"));
+
+	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), mExportFullSzImgsMenuItem);
+	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
+	gtk_widget_show(tmpLabel);
+	gtk_widget_show(tmpBox);
+
+	gtk_container_add(GTK_CONTAINER(mExportFullSzImgsMenuItem), tmpBox);
+
+	gtk_widget_show (mExportFullSzImgsMenuItem);
+
+	gtk_container_add(GTK_CONTAINER(exportSubMenu), mExportFullSzImgsMenuItem);
+
+	gtk_tooltips_set_tip (tooltips, mExportFullSzImgsMenuItem, 
+		_("Export Modified Images from Catalog ...\n"
+		"(to a user specified location)"), NULL);
+
 	// create a separator line in submenu
 
 	separator1 = gtk_menu_item_new ();
@@ -2302,6 +2326,10 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (mExportFinzMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_finz_activate),
 	                    (void *) this);
+	//***2.02 - callback for exporting Full-Size Modified Images
+	gtk_signal_connect (GTK_OBJECT (mExportFullSzImgsMenuItem), "activate",
+	                    GTK_SIGNAL_FUNC (on_export_fullSzImgs_activate),
+	                    (void *) this);
 
 	//***1.99 - callback for importing Fin
 	gtk_signal_connect (GTK_OBJECT (mImportFinzMenuItem), "activate",
@@ -2699,7 +2727,41 @@ void on_export_finz_activate(
 			mainWin->mCList,
 			mainWin->mNewSort,
 			mainWin->mRow2Id,
-			mainWin->mId2Row);
+			mainWin->mId2Row,
+			ExportFinzDialog::exportFinz); //2.02 - set operating mode
+	dlg->show();
+}
+
+//*******************************************************************
+//***2.02 - new
+//
+void on_export_fullSzImgs_activate(
+	GtkMenuItem *menuitem,
+	gpointer userData)
+{
+	// Save the modified image of the currently selected fin FULL_SIZED
+
+	MainWindow *mainWin = (MainWindow *)userData;
+
+	/*
+	// get filename for modified image (including path)
+	string imageSaveFileName = mainWin->mSelectedFin->mImageFilename;
+	// strip extension and append "_fullSize.png" 
+	imageSaveFileName = imageSaveFileName.substr(0,imageSaveFileName.rfind("."));
+	imageSaveFileName += "_fullSize.png";
+	
+	// save full-sized version in catalog folder alongside thumbnail-only version
+	mainWin->mImageFullsize->save(imageSaveFileName);
+	*/
+
+	ExportFinzDialog *dlg = new ExportFinzDialog(
+			mainWin->mDatabase,
+			mainWin->mWindow,
+			mainWin->mCList,
+			mainWin->mNewSort,
+			mainWin->mRow2Id,
+			mainWin->mId2Row,
+			ExportFinzDialog::exportFullSizeModImages); //2.02 - set operating mode
 	dlg->show();
 }
 

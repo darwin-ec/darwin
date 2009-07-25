@@ -15,9 +15,15 @@
 
 class ExportFinzDialog {
 	public:
+		//***2.02 - new enum so we can use dialog in two different modes
+		enum {
+			exportFinz=0,
+			exportFullSizeModImages 
+		};
 		ExportFinzDialog(Database *db, GtkWidget *parent,
 				GtkWidget *clist,  db_sort_t currentSort,
-				std::vector<int> row2id, std::vector<int> id2row);
+				std::vector<int> row2id, std::vector<int> id2row,
+				int dialogMode); //***2.02 -new parameter
 		~ExportFinzDialog();
 
 		void show();
@@ -72,6 +78,10 @@ class ExportFinzDialog {
 				GtkButton *button,
 				gpointer userData);
 
+		friend void on_finzDialogButtonSaveImages_clicked( //***2.02
+				GtkButton *button,
+				gpointer userData);
+
 		friend void on_finzDialogButtonSaveAsCatalog_clicked(
 				GtkButton *button,
 				gpointer userData);
@@ -102,6 +112,9 @@ class ExportFinzDialog {
 
 		bool 
 			mShowAlternates;
+
+		int
+			mDialogMode; //***2.02 - we are EITHER exporting Finz OR saving full-size images
 
 		std::vector<int> 
 			mRow2Id,
