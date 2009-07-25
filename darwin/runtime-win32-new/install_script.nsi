@@ -65,7 +65,7 @@ FunctionEnd
 ;BrandingText " "
 
 ;name of install file to generate (e.g. setup.exe)
-outfile darwin-2.01-setup.exe
+outfile darwin-2.02-setup.exe
 
 
 
@@ -78,7 +78,7 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	File /r /x *.nsi /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn /x stuff *
+	File /r /x *.nsi /x darwin_splash.bmp /x darwin-*-setup.exe /x darwin-*-upgrade.exe /x .svn /x stuff *
 	
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
 	CreateDirectory "$SMPROGRAMS\darwin-2.0"
