@@ -153,6 +153,9 @@
   <li><a href="#whats_in_config">What is in the DARWIN configuration file?</a>
   <li><a href="#whats_auto_saved">What does DARWIN automatically save (in case)?</a>
   <li><a href="#area_or_catalog">Should I create a new Catalog within the current Survey Area or a new Survey Area AND Catalog for a separate study?</a>
+  <li><a href="#mod_image_thumb_only">Why does DARWIN save images modified within the TraceWindow
+  as thumbnails only ... and how do I recover full-size versions for use outside of DARWIN?</a>
+
 </ul>
 <li><a href="#trouble">Troubleshooting</a>
 
@@ -2953,6 +2956,28 @@ in the current version of DARWIN.
   flexible creation and use of catalog subsets in various ways.  There is no <I>best</I>
   way to do this.  If you want to provide the cleanest separation between your various
   catalogs, then have only one catalog per survey area.
+  <li><a name="mod_image_thumb_only"><B>Why does DARWIN save images modified within the TraceWindow
+  as thumbnails only ... and how do I recover full-size versions for use outside of DARWIN?</B></a>
+  All images modified within DARWIN's TraceWindow are saved to disk as PNG images whenever the
+  fin is added to a catalog or is saved as a separate FINZ file.  Since version 1.85, in 
+  order to reduce memory usage, each such <I>modified</I> image has been saved as a thumbnail 
+  only.  However, this thumbnail file contains the name of the original image from which the 
+  modified image was created and a list of the sequence of image modifications performed by 
+  the user.  Whenever DARWIN loads a fin from the catalog or from a separate FINZ file the modified
+  image is loaded, and if it is a thumbnail then DARWIN locates the original image and applies 
+  all indicated modifications in order to build a full-size modified image for any subsequent use.
+  Therefore, DARWIN <B><I>always</I></B> uses full-size images.  If the user manually locates
+  a modified image (something like "ecdp_papi_123_wDarwinMods.png") using any program other
+  than DARWIN, only the thumbnail will be available.  Beginning with version 2.02, DARWIN
+  now supports export of full-size modified images of any fins stored in the catalog.  From
+  the MainWindow select "Export Images (Full Size)" from the File/Export menu.  This initiates
+  a process allowing selection of one or more fins in the database for which full-size images
+  are desired and selection / creation of a folder in which to save them.  Each image will
+  be automatically named by adding a suffix of "_fullSize" to the thumbnail file's root name
+  (so "ecdp_papi_123_wDarwinMods.png" becomes "ecdp_papi_123_wDarwinMods_fullSize.png").
+  Note that the export does not change any of the images that are actually part of the
+  catalog itself.  The export process creates a NEW collection of full-size modified image, which
+  you may now use with any other program capable of viewing or manipulating images.
 </ol>
 <!-- end of body of pane -->
 
