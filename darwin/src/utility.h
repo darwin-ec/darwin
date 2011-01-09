@@ -168,7 +168,7 @@ inline int nextPowerOfTwo(int x)
 inline
 double log2(double x)
 {
-	return (log(x) / log(2));
+	return (log(x) / log(2.0));
 }
 inline
 std::string convertTripletToHexString(
