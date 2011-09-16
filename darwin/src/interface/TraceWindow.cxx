@@ -1720,7 +1720,7 @@ void TraceWindow::traceSnapToFin(bool useCyan, int left, int top, int right, int
 	// at each ZoomRatio, create an EdgeMagImage and a contour at that scale
 	// and process with active contour
 	while (ratio <= 100 || tripNum == 1){ // if ratio > 100 take at least one trip
-		int iterations = (int)(pow(2,tripNum-1) * chunkSize);
+		int iterations = (int)(pow(2.0,tripNum-1) * chunkSize);
 
 		// resize EdgeMagImage to current scale
 		if (ratio != 100)

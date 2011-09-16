@@ -20,7 +20,7 @@
 #include "ImageMod.h"
 
 using namespace std;
-using ImageMod::ImageModType;
+//using ImageMod::ImageModType; // vc++6.0 for ImageModType returned by getType function
 
 ////////////////////////// ImageMod functions ///////////////////////
 
@@ -128,7 +128,8 @@ void ImageMod::get(ImageModType &op, int &val1, int &val2, int &val3, int &val4)
 
 }
 
-ImageModType ImageMod::getType(void)
+// ImageModType ImageMod::getType(void) // vc++6.0
+ImageMod::ImageModType ImageMod::getType(void) // vc++2011
 {
 	return op;
 }

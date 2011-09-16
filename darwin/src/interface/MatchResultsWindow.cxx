@@ -588,6 +588,7 @@ GtkWidget* MatchResultsWindow::createMatchResultsWindow()
 			   "darwin_matchresults", "DARWIN");
 	gtk_window_set_position(GTK_WINDOW(matchResultsWindow), GTK_WIN_POS_CENTER); //***1.8
 	gtk_window_set_default_size(GTK_WINDOW(matchResultsWindow), 1024, 600); //***1.7
+	gtk_window_set_keep_above(GTK_WINDOW(matchResultsWindow),TRUE); //*** 2.2 - keep above window that got us here
 
 	//***1.7 - paned window is no more, and left frame is also gone
 	//         the TOOLBAR is gone, LIST VIEW and ICON VIEW are gone
@@ -1630,15 +1631,15 @@ void on_mrButtonCancel_clicked(
 	// deleted before this class -- whole thig seems not to be needed.  It was an attempt
 	// to keep the MatchingQueueWindow ABOVE the MainWindow on return.
 	// DELETE if behavior contiunes OK.
-	/*
+	
 	MatchResultsWindow *resWin = (MatchResultsWindow*) userData;
 
 	if (resWin->mMatchingQueueDialog)
 		resWin->mMatchingQueueDialog->show();
 	
 	delete resWin;
-	*/
-	delete (MatchResultsWindow*) userData;
+	
+	//delete (MatchResultsWindow*) userData; //*** 2.2 - back to code above, for this version
 }
 
 //*******************************************************************

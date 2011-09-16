@@ -76,7 +76,11 @@ int SQLiteDatabase::callbackIndividuals(void *individuals, int argc, char **argv
 	
 	}
 	
-	((std::list<DBIndividual> *)individuals)->push_front(temp);
+	//***2.2 - push_front() reverses the order in which the Query returns the individuals
+	// and this is mucking up the AbsoluteOffset code.  Trying to fix, without breaking
+	// lots of other stuff by just appending here, instead of PREpending.  -- JHS
+	//((std::list<DBIndividual> *)individuals)->push_front(temp);
+	((std::list<DBIndividual> *)individuals)->push_back(temp);
 
 	return 0;
 }
@@ -532,6 +536,10 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 		individual.idcode = "NONE";
 		individual.fkdamagecategoryid = -1;
 	}
+
+	//***2.2 - diagnostic
+	cout << "Fin ID : " << individual.idcode << endl;
+	cout << "Fin Key: " << individual.id << endl;
 
 	return individual;
 }
@@ -1875,12 +1883,22 @@ void SQLiteDatabase::deleteFinFromLists(int id)
 	deleteEntry(&mDamageList, id);
 	deleteEntry(&mDescriptionList, id);
 
+	/*
 	for(int i = 0; i < mAbsoluteOffset.size(); i++)
+	{
+		std::cout << "absOff[" << i << "] = " << mAbsoluteOffset[i] << std::endl;
 		if(mAbsoluteOffset[i] == id)
 			toDelete = i;
-	
+	}
 	if(toDelete != -1)
-		mAbsoluteOffset.erase(mAbsoluteOffset.begin() + toDelete);
+		//mAbsoluteOffset.erase(mAbsoluteOffset.begin() + toDelete);
+		//***2.2 - this changes list back to way it was in OLD db 
+		// -- mAbsoluteOffsett[i] = i or -1 and we will build list differently at load() as well
+		mAbsoluteOffset[i] = -1; 
+	*/
+	//***2.2 - replace all of above
+	if (id < mAbsoluteOffset.size())
+		mAbsoluteOffset[id] = -1;
 }
 
 //*******************************************************************
@@ -1921,7 +1939,11 @@ void SQLiteDatabase::addFinToLists(int datapos, string name, string id, string d
 	mDescriptionList.push_back(temp.str());
 	temp.str("");
 	
-	mAbsoluteOffset.push_back(datapos);
+	//***2.2 -- make room for HOLES, unused primary Keys
+	// mAbsoluteOffset.push_back(datapos); // the way RJ did it
+	if (mAbsoluteOffset.size() <= datapos)
+		mAbsoluteOffset.resize(datapos+1,-1);
+	mAbsoluteOffset[datapos] = datapos;
 }
 
 
@@ -1950,6 +1972,9 @@ void SQLiteDatabase::loadLists() {
 		fins->pop_front();
 
 		addFinToLists(fin);
+
+		//***2.2- debugging - fins load from last to first?????
+		std::cout << "Adding [" << fin->mDataPos << "][" << fin->mIDCode <<"]\n";
 
 		delete fin;
 	}

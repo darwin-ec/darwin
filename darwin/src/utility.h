@@ -143,7 +143,7 @@ void makeVectorDyadic(
 	double powerOfTwo = 0.0;
 
 	for (int i = 0; (double)length > powerOfTwo; i++)
-		powerOfTwo = pow(2, i);
+		powerOfTwo = pow(2.0, i);
 
 	*dstLength = (int) powerOfTwo;
 
@@ -160,7 +160,7 @@ inline int nextPowerOfTwo(int x)
 	double powerOfTwo = 0.0;
 
 	for (int i = 0; (double)x > powerOfTwo; i++)
-		powerOfTwo = pow(2, i);
+		powerOfTwo = pow(2.0, i);
 
 	return (int)powerOfTwo;
 }

@@ -325,19 +325,61 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 		pos = line.find(":") + 2; // position of database filename
 		mDatabaseFile = line.substr(pos);
 
+		//***2.2 - if we can, determine if database path has just changed drive letter
+		// or some part of path that is a prefix to the SurveyArea.  If the database
+		// is in the same SurveyArea and has the same database name, then we can
+		// proceed with the building of the MatchResults
+		int p = mDatabaseFile.find("surveyAreas"); 
+		string rqdAreaAndDB = mDatabaseFile.substr(p);  // survey area and database name
+		string rqdPreamble = mDatabaseFile.substr(0,p);    // strip it to get preamble
+
+		string currentDBFile = db->getFilename();
+		p = currentDBFile.find("surveyAreas"); 
+		string currentAreaAndDB = currentDBFile.substr(p); // survey area and catalog name
+		string currentPreamble = currentDBFile.substr(0,p); // strip it to get preamble
+
 		//***1.85 - if database used in match is not currently loaded, abort quietly  
 		if (db->getFilename() != mDatabaseFile)
 		{
-			string msg = "The WRONG database is currently loaded for viewing these results ...\n\n";
-			msg += "LOADED DB:\n    " + db->getFilename() + "\n\n";
-			msg += "REQUIRED DB:\n    " + mDatabaseFile + "\n\n";
-			msg += "Please load the required database from the main window\n";
-			msg += "and then reload the desired results file.";
+			//cout << mDatabaseFile << endl;
+			//cout << rqdPreamble << "   " << rqdAreaAndDB << endl;
+			//cout << currentDBFile << endl;
+			//cout << currentPreamble << "   " << currentAreaAndDB << endl;
 
-			ErrorDialog *err = new ErrorDialog(msg);
-			err->show();
+			if (currentAreaAndDB == rqdAreaAndDB)
+			{
+				string msg = "The Survey Area and Catalog for the match results appear corrrect,\n";
+				msg += "but the path to DARWIN's home folder seems to have changed.\n";
+				msg += "Is it OK to open the indicated catalog in the current location\n";
+				msg += "as shown below?\n\n";
+				msg += (currentPreamble + rqdAreaAndDB);
 
-			return NULL;
+				cout << msg << endl;
+				//ErrorDialog *err = new ErrorDialog(msg);
+				//err->show();
+
+				//***2.2 - path possibly has to be fixed to FIN file as well
+				if ((currentDBFile != mDatabaseFile) && (currentAreaAndDB == rqdAreaAndDB))
+				{
+					//add preamble of current DARWINHOME to FINs relative location
+					p = mTracedFinFile.find("surveyAreas");
+					string currentFinAreaPlus = mTracedFinFile.substr(p);
+					mTracedFinFile = currentPreamble + currentFinAreaPlus;
+					cout << mTracedFinFile << endl;
+				}
+			}
+			else
+			{
+				string msg = "The WRONG database is currently loaded for viewing these results ...\n\n";
+				msg += "LOADED DB:\n    " + db->getFilename() + "\n\n";
+				msg += "REQUIRED DB:\n    " + mDatabaseFile + "\n\n";
+				msg += "Please load the required database from the main window\n";
+				msg += "and then reload the desired results file.";
+
+				ErrorDialog *err = new ErrorDialog(msg);
+				err->show();
+				return NULL;
+			}
 		}
 		
 		DatabaseFin<ColorImage> *unkFin;
@@ -368,7 +410,7 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 			string dbFinID = line.substr(0,pos);
 			line = line.substr(pos+1);
 
-			//cout << "dbFinID[" << dbFinID << "]";
+			cout << "dbFinID[" << dbFinID << "]"; //*** 2.2 - show for now
 
 
 			string numStr;
@@ -381,7 +423,7 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 			numStr = line.substr(0,pos);
 			line = line.substr(pos+1);
 			dbFinPosition = atoi(numStr.c_str());
-			//cout << "[" << dbFinPosition << "]";
+			cout << "[" << dbFinPosition << "]" << endl; //*** 2.2 - show for now 
 
 			pos = line.find("\t");
 			numStr = line.substr(0,pos);

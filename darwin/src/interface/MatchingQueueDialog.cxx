@@ -1276,6 +1276,8 @@ void on_mqFileChooserButtonOK_clicked(MatchingQueueDialog *dialog)
 					}
 				}
 
+				gtk_widget_hide(dialog->mDialog); // ***2.2 - to hide this behind match results window
+
 				MatchResultsWindow *resultsWindow = new MatchResultsWindow(
 	                    unkFin,
 	                    mRes, // just a pointer

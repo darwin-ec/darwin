@@ -221,11 +221,13 @@ void ContourInfoDialog::updateInfo()
  		mFinOutline->getFeaturePoint(POINT_OF_INFLECTION) //***008OOL
     );
 			
+	gtk_text_freeze(GTK_TEXT(mTextBox)); //*** 2.2 - correct display issue
 	gtk_text_insert(
 			GTK_TEXT (mTextBox),
 			NULL, NULL, NULL,
 			info,
 			strlen(info));
+	gtk_text_thaw(GTK_TEXT(mTextBox)); //*** 2.2 - correct display issue
 }
 
 
@@ -310,7 +312,8 @@ GtkWidget* ContourInfoDialog::createInfoDialog()
   gtk_widget_show(infoLabelNumLevels);
   gtk_box_pack_start(GTK_BOX(infoMidHBox), infoLabelNumLevels, FALSE, FALSE, 0);
 
-  infoSpinButtonAdj = gtk_adjustment_new(7, 1, 9, 1, 1, 1);
+  //infoSpinButtonAdj = gtk_adjustment_new(7, 1, 9, 1, 1, 1);
+  infoSpinButtonAdj = gtk_adjustment_new(7, 1, 9, 1, 1, 0); //*** 2.2 - fixes display issue
   mSpinButton = gtk_spin_button_new(GTK_ADJUSTMENT (infoSpinButtonAdj), 1, 0);
   gtk_widget_show (mSpinButton);
   gtk_box_pack_start(GTK_BOX(infoMidHBox), mSpinButton, FALSE, TRUE, 0);

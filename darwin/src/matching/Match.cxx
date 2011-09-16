@@ -53,7 +53,8 @@ Match::Match(
 	  mOptions(o), //***054
 	  mCurrentFin(0),
 	  mMatchResults(new MatchResults(unknownFin->mIDCode)),
-	  errorBetweenOutlines(meanSquaredErrorBetweenOutlineSegments) //***1.85
+	  //errorBetweenOutlines(meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++6.0
+	  errorBetweenOutlines(&Match::meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++2011
 {
 	if (NULL == unknownFin)
 		throw EmptyArgumentError("Match::Match() [*unknownFin]");
@@ -225,7 +226,8 @@ float Match::matchSingleFin(int registrationMethod, int regSegmentsUsed,
 				// shorten the leading AND trailing edges of each fin to produce a correspondence
 				// that yeilds the BEST match.  A fin Outline walking approach
 				// is used to compute the meanSqError....
-				errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85
+				//errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
+				errorBetweenOutlines = &Match::meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++2011
 				// NOTE: error function MUST be set prior to following call
 				result = Match::findErrorBetweenFinsOptimal(
 							thisDBFin, timeTaken, /*regSegmentsUsed, */
@@ -233,7 +235,8 @@ float Match::matchSingleFin(int registrationMethod, int regSegmentsUsed,
 							useFullFinError);
 				break;
 			case TRIM_OPTIMAL_TIP :
-				errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85
+				//errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
+				errorBetweenOutlines = &Match::meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++2011
 				// NOTE: error function MUST be set prior to following call
 				result = Match::findErrorBetweenFinsOptimal(
 							thisDBFin, timeTaken, /*regSegmentsUsed, */
@@ -241,7 +244,8 @@ float Match::matchSingleFin(int registrationMethod, int regSegmentsUsed,
 							useFullFinError);
 				break;
 			case TRIM_OPTIMAL_AREA : //***1.85 - new area based metric option
-				errorBetweenOutlines = areaBasedErrorBetweenOutlineSegments; //***1.85
+				//errorBetweenOutlines = areaBasedErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
+				errorBetweenOutlines = &Match::areaBasedErrorBetweenOutlineSegments; //***1.85 -- vc++2011
 				// NOTE: error function MUST be set prior to following call
 				result = Match::findErrorBetweenFinsOptimal(
 							thisDBFin, timeTaken, /*regSegmentsUsed, */

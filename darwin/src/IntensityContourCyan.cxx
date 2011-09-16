@@ -401,7 +401,12 @@ binImg->save("002c_after_and.pgm");
   	BinaryImage outline( binImg );
 
 	ecount =0;
-	for (i=0; i<1; i++) {
+#ifdef VCPP6
+	for (i=0; i<1; i++) // vc++6.0
+#else
+	for (int i=0; i<1; i++) // vc++ 2011
+#endif
+	{
 		ecount = outline.doErode(0);
 	}
 
@@ -526,7 +531,11 @@ binImg->save("002c_after_and.pgm");
 
 
 
-	i=0;
+#ifdef VCPP6
+	i=0; // vc++6.0
+#else
+	int i=0; // vc++2011
+#endif
     bool foundPoint=true;
 	bool prepend=false;
     done=false;

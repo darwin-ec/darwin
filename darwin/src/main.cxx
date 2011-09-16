@@ -48,7 +48,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #ifdef _DEBUG
-#include <vld.h> //***2.0 - to enable Visual Leak Detector
+//#include <vld.h> //***2.0 - to enable Visual Leak Detector
 #endif
 
 #ifdef HAVE_CONFIG_H

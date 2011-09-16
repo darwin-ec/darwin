@@ -26,7 +26,7 @@
 
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
-static anchorRow = -1;
+static int anchorRow = -1;
 
 using namespace std;
 

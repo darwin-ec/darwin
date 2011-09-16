@@ -1655,6 +1655,8 @@ gboolean matchingIdleFunction(
 		//***1.5 - sort the results here, ONCE, rather than as list is built
 		dlg->mMatch->getMatchResults()->sort();
 
+		gtk_widget_hide(dlg->mDialog); // ***2.2 - to hide this behind match results window
+
 		// matching is done and some match, so display results
 
 		MatchResultsWindow *resultsWindow = new MatchResultsWindow(

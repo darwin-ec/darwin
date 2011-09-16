@@ -368,6 +368,10 @@ void MainWindow::refreshDatabaseDisplay()
 					&mask,
 					fin->mThumbnailPixmap);
 
+			//***2.2 - diagnostic (ID and primary key from SQL
+			cout << "Fin ID : " << fin->getID();
+			cout << "Fin key: " << fin->mDataPos;
+
 			// make a copy of the thumbnail to store as data within the GTK pixmap
 			char **thumbCopy = copy_thumbnail(fin->mThumbnailPixmap);
 
