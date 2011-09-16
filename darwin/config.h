@@ -139,7 +139,7 @@
 #define PACKAGE "darwin"
 
 /* Version number of package */
-#define VERSION "2.02"
+#define VERSION "2.2"
 
 /* Version number for the Database Format */
 #define CURRENT_DBVERSION 3
