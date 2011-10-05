@@ -31,7 +31,7 @@
 #define FALSE 0
 #define TRUE 1
 
-#if defined(PNG_NO_STDIO)
+#if defined(PNG_NO_STDIO) 
 static void png_read_data(png_structp png_ptr, png_bytep data, png_size_t length);
 static void png_write_data(png_structp png_ptr, png_bytep data, png_size_t length);
 static void png_flush(png_structp png_ptr);
@@ -105,6 +105,7 @@ int PngLoadImage (char *pstrFileName, png_byte **ppbImageData,
 
     fread(pbSig, 1, 8, pfFile);
     if (!png_check_sig(pbSig, 8))
+    //if (png_sig_cmp(pbSig, 0, 8)) //***2.2 = Compatibilty with GTK+ 2.22
     {
         *ppbImageData = pbImageData = NULL;
         return FALSE;
@@ -173,7 +174,8 @@ int PngLoadImage (char *pstrFileName, png_byte **ppbImageData,
 
         // get width, height, bit-depth and color-type
         
-        png_get_IHDR(png_ptr, info_ptr, (unsigned long *)piWidth, (unsigned long *)piHeight, &iBitDepth,
+        //png_get_IHDR(png_ptr, info_ptr, (unsigned long *)piWidth, (unsigned long *)piHeight, &iBitDepth,
+        png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth, //***2.2 - compatibilty with GTK+ 2.22
             &iColorType, NULL, NULL, NULL);
         
         // expand images of all color-type and bit-depth to 3x8 bit RGB images
@@ -198,6 +200,10 @@ int PngLoadImage (char *pstrFileName, png_byte **ppbImageData,
             pBkgColor->red   = (unsigned char) pBackground->red;
             pBkgColor->green = (unsigned char) pBackground->green;
             pBkgColor->blue  = (unsigned char) pBackground->blue;
+			//***2.2 - compatibitly with GTK+ 2.22
+            //pBkgColor->red   = (byte) pBackground->red;
+            //pBkgColor->green = (byte) pBackground->green;
+            //pBkgColor->blue  = (byte) pBackground->blue;
         }
         else
         {
@@ -214,7 +220,8 @@ int PngLoadImage (char *pstrFileName, png_byte **ppbImageData,
         
         // get again width, height and the new bit-depth and color-type
         
-        png_get_IHDR(png_ptr, info_ptr, (unsigned long *)piWidth, (unsigned long *)piHeight, &iBitDepth,
+		//png_get_IHDR(png_ptr, info_ptr, (unsigned long *)piWidth, (unsigned long *)piHeight, &iBitDepth,
+        png_get_IHDR(png_ptr, info_ptr, piWidth, piHeight, &iBitDepth, //***2.22 - compatibilty with GTK+ 2.22
             &iColorType, NULL, NULL, NULL);
         
         

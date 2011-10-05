@@ -538,8 +538,8 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 	}
 
 	//***2.2 - diagnostic
-	cout << "Fin ID : " << individual.idcode << endl;
-	cout << "Fin Key: " << individual.id << endl;
+	//cout << "Fin ID : " << individual.idcode << endl;
+	//cout << "Fin Key: " << individual.id << endl;
 
 	return individual;
 }
@@ -1974,7 +1974,7 @@ void SQLiteDatabase::loadLists() {
 		addFinToLists(fin);
 
 		//***2.2- debugging - fins load from last to first?????
-		std::cout << "Adding [" << fin->mDataPos << "][" << fin->mIDCode <<"]\n";
+		//std::cout << "Adding [" << fin->mDataPos << "][" << fin->mIDCode <<"]\n";
 
 		delete fin;
 	}
