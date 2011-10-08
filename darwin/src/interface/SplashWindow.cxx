@@ -14,6 +14,8 @@
 
 #include "../support.h"
 #include "SplashWindow.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #include "../../pixmaps/logo.xpm"
 
 using namespace std;

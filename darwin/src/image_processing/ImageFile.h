@@ -29,6 +29,9 @@
 #define PATH_SLASH "/"
 #endif
 
+#ifndef WIN32
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+#endif
 #include <fstream>
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
@@ -43,10 +46,19 @@
 
 //  Includes for JPEG reader
 #include <stdio.h>
+#ifdef WIN32
 extern "C"{
 #include "../../jpeg-6b/src/jpeglib.h" 
 #include "../../jpeg-6b/src/jerror.h"
 }
+#else
+extern "C"{
+// this is a hack - the new Gtk+2.24 stuff is in my (JHS) home dir
+// -I$(HOME)/gtk/inst/include must be set to build / make 
+#include "jpeglib.h" 
+#include "jerror.h"
+}
+#endif
 #include <setjmp.h>
 
 #include "png.h"
@@ -189,7 +201,7 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 
 #ifdef DEBUG
 	std::cout << "Reading from: " << filename << " first bytes: "
-	     << (int)((unsigned char)firstBytes[0]) << " " <<(int)((unsigned char)firstBytes[1]) << endl;
+	     << (int)((unsigned char)firstBytes[0]) << " " <<(int)((unsigned char)firstBytes[1]) << std::endl;
 #endif
 
 	if (firstBytes[0] == 'P' && '1' <= firstBytes[1] && firstBytes[1] <= '6') {
@@ -203,7 +215,7 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 	} else if ((unsigned char)firstBytes[0] == 0xFF && (unsigned char)firstBytes[1] == 0xD8) {
 		//We probably have a JPG file
 #ifdef DEBUG
-		cout << "JPEG detected" << endl;
+		std::cout << "JPEG detected" << std::endl;
 #endif
 		infile.close ();
 		loadJPG(filename);
@@ -259,7 +271,7 @@ void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 
 #ifdef DEBUG
 	std::cout << "Reading from: " << filename << " first bytes: "
-	     << (int)((unsigned char)firstBytes[0]) << " " <<(int)((unsigned char)firstBytes[1]) << endl;
+	     << (int)((unsigned char)firstBytes[0]) << " " <<(int)((unsigned char)firstBytes[1]) << std::endl;
 #endif
 
 	mNormScale = 1.0f;  //***1.9
@@ -276,7 +288,7 @@ void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 	} else if ((unsigned char)firstBytes[0] == 0xFF && (unsigned char)firstBytes[1] == 0xD8) {
 		//We probably have a JPG file
 #ifdef DEBUG
-		cout << "JPEG detected" << endl;
+		std::cout << "JPEG detected" << std::endl;
 #endif
 		infile.close ();
 		loadJPG(filename);
@@ -325,7 +337,7 @@ bool ImageFile<PIXEL_TYPE>::save(const std::string &filename)
 		extension = filename.substr(idx + 1);
 	
 #ifdef DEBUG
-	std::cout << "Saving " << filename << " which is of type " << extension << endl;
+	std::cout << "Saving " << filename << " which is of type " << extension << std::endl;
 #endif
 	extension = lowerCase(extension);
 
@@ -363,7 +375,7 @@ bool ImageFile<PIXEL_TYPE>::save_wMods(std::string filename,
 		extension = filename.substr(idx + 1);
 	
 #ifdef DEBUG
-	std::cout << "Saving " << filename << " which is of type " << extension << endl;
+	std::cout << "Saving " << filename << " which is of type " << extension << std::endl;
 #endif
 	extension = lowerCase(extension);
 
@@ -736,17 +748,17 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 	mData = new PIXEL_TYPE[mRows * mCols];
 
 #ifdef DEBUG
-	std::cout << "Reading BMP file:" << endl
-		 << "Starting position: " << startpos << endl
-	     << numCols << " x " << numRows << endl
-	     << bitsPerPixel << " bpp" << endl;
+	std::cout << "Reading BMP file:" << std::endl
+		 << "Starting position: " << startpos << std::endl
+	     << numCols << " x " << numRows << std::endl
+	     << bitsPerPixel << " bpp" << std::endl;
 	
 	if (topDown)
 		std::cout << "Top down.";
 	else
 		std::cout << "Bottom up.";
 
-	std::cout << endl;
+	std::cout << std::endl;
 #endif
 
 	byte rgb[3];
@@ -1044,10 +1056,10 @@ bool ImageFile<PIXEL_TYPE>::saveRawPPM(const std::string &filename) const
 
 	if (!outfile) throw SaveError();
 
-	outfile <<"P6"<<endl
-		<< "#Created by: " << PACKAGE << " " << VERSION << endl
-		<< "#NormScale: " << mNormScale << endl //***1.5 - save the normalization scale
-		<< mCols << " " << mRows << endl
+	outfile <<"P6"<<std::endl
+		<< "#Created by: " << PACKAGE << " " << VERSION << std::endl
+		<< "#NormScale: " << mNormScale << std::endl //***1.5 - save the normalization scale
+		<< mCols << " " << mRows << std::endl
 		<< 255 << "\n";
 
 	if (mData[0].isColor())
@@ -1074,9 +1086,9 @@ bool ImageFile<PIXEL_TYPE>::saveRawPGM(const std::string &filename) const
 
 	if (!outfile) throw SaveError();
 
-	outfile << "P5"<<endl
-		<< "#Created by: " << (PACKAGE) << " " << (VERSION) << endl
-		<< mCols << " " << mRows << endl
+	outfile << "P5"<<std::endl
+		<< "#Created by: " << (PACKAGE) << " " << (VERSION) << std::endl
+		<< mCols << " " << mRows << std::endl
 		<< 255 << "\n";
 
 	if (mData[0].isColor()) {
@@ -1098,10 +1110,10 @@ bool ImageFile<PIXEL_TYPE>::saveAsciiPGM(const std::string &filename) const
 
 	if (!outfile) throw SaveError();
 
-	outfile << "P2"<<endl
-		<< "#Created by: " << VERSION << endl
-		<< mCols << " " << mRows << endl
-		<< 255 <<endl;
+	outfile << "P2"<<std::endl
+		<< "#Created by: " << VERSION << std::endl
+		<< mCols << " " << mRows << std::endl
+		<< 255 <<std::endl;
 	
 	for (unsigned i=0; i < mRows /*image->ReturnNumRows()*/; i++)
 		for (unsigned j=0; j < mCols /*image->ReturnNumCols()*/; j++)
@@ -1183,7 +1195,7 @@ bool ImageFile<PIXEL_TYPE>::savePNGwThumbOnly(const std::string &filename)
 	png_textp text_ptr = new png_text[MaxComments]; // make room for all comments
 	int num_text = 0;
 
-	string authorString = "DARWIN-";
+	std::string authorString = "DARWIN-";
 	authorString += VERSION;
 	authorString += " Dolphin PhotoID Software";
 	char authorBuffer[256];
@@ -1297,7 +1309,7 @@ bool ImageFile<PIXEL_TYPE>::savePNG(const std::string &filename)
 	png_textp text_ptr = new png_text[MaxComments]; // make room for all comments
 	int num_text = 0;
 
-	string authorString = "DARWIN-";
+	std::string authorString = "DARWIN-";
 	authorString += VERSION;
 	authorString += " Dolphin PhotoID Software";
 	char authorBuffer[256];

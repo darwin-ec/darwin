@@ -250,7 +250,7 @@ class Match
 
 		//***1.75 - newest method of computing error
 
-		double Match::areaBasedErrorBetweenOutlineSegments( 
+		double areaBasedErrorBetweenOutlineSegments( 
 				FloatContour *c1, // mapped unknown fin 
 				int begin1,
 				int end1,

@@ -7,6 +7,7 @@ INCLUDES = \
 
 libMatching_a_SOURCES = \
      Match.cxx Match.h \
+     AreaMatch.cxx AreaMatch.h \
      MatchResults.cxx MatchResults.h \
      MatchingQueue.cxx MatchingQueue.h
 

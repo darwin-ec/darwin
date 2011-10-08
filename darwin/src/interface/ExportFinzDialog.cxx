@@ -18,6 +18,7 @@
 
 #include "../thumbnail.h"
 #include "ExportFinzDialog.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/cancel.xpm"
@@ -33,15 +34,19 @@ using namespace std;
 
 //-------------- support function for determining selections ------------
 
-set<int> selectedRows(GtkCList *clist)
+//set<int> selectedRows(GtkCList *clist)
+set<long> selectedRows(GtkCList *clist) //***2.22 - now 64 bit arch on Mac
 {	
-	set<int> rows;
+	//set<int> rows;
+	set<long> rows; //***2.22 - now 64 bit arch on Mac
 
 	GList *p = clist->selection;
 	while (NULL != p)
 	{
 		cout << "Selected item: " << p->data  << endl;
-		rows.insert((int)p->data);
+		//rows.insert((int)p->data);
+		rows.insert((long)p->data); //***2.22 - error in cast g++4.2 complains of losing precision
+						// note p->data is gpointer (void*)
 		p = p->next;
 	}
 
@@ -328,7 +333,8 @@ void ExportFinzDialog::refreshDatabaseDisplayNew(bool sizeChanged)
 				newRow2Id(mRow2Id), 
 				newId2Row(mId2Row);
 
-			set<int>
+			//set<int>
+			set<long> //***2.22 - now 64 bi arch on Mac
 				newDBCurEntry;
 
 			unsigned i;
@@ -965,7 +971,8 @@ void on_finzCList_click_column(
 	dlg->refreshDatabaseDisplayNew(false); //***1.85 - just a sort, no change in # of fins
 
 	// make sure CList repositions itself for previously selected item to appear
-	set<int>::iterator it;
+	//set<int>::iterator it;
+	set<long>::iterator it; //***2.22 - now 64 bit arch on Mac
 	for (it = dlg->mDBCurEntry.begin(); it != dlg->mDBCurEntry.end(); it++)
 	{
 		//cout << "Selected row " << *it << endl;
@@ -1145,12 +1152,14 @@ void on_finzDialogButtonSaveFinz_clicked(
 		return;
 
 	bool saved = false;
-	set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+	//set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+	set<long> selectedFins = selectedRows(GTK_CLIST(dlg->mCList)); //***2.22 - now 64 bit arch on Mac
 
 	if (selectedFins.empty()) {//idiot, selected something first for export
 		return;
 	} else if(selectedFins.size() == 1) {
-		set<int>::iterator it = selectedFins.begin();
+		//set<int>::iterator it = selectedFins.begin();
+		set<long>::iterator it = selectedFins.begin(); //***2.22 - now 64 bit arch on Mac
 		DatabaseFin<ColorImage>* fin;
 		int id = dlg->mRow2Id[*it];
 		fin = dlg->mDatabase->getItem(id);
@@ -1167,7 +1176,8 @@ void on_finzDialogButtonSaveFinz_clicked(
 		delete fin;
 
 	} else {//more than one selected
-		set<int>::iterator it;
+		//set<int>::iterator it;
+		set<long>::iterator it; //***2.22 - now 64 bit arch on Mac
 		vector<DatabaseFin<ColorImage>* > fins;
 		for (it = selectedFins.begin(); it != selectedFins.end(); it++) {
 			int id = dlg->mRow2Id[*it];
@@ -1208,12 +1218,14 @@ void on_finzDialogButtonSaveImages_clicked(
 		return;
 
 	bool saved = false;
-	set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+	//set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+	set<long> selectedFins = selectedRows(GTK_CLIST(dlg->mCList)); //***2.22 - now 64 bit arch on Mac
 
 	if (selectedFins.empty()) {//idiot, selected something first for export
 		return;
 	} else {// one or more fins selected
-		set<int>::iterator it;
+		//set<int>::iterator it;
+		set<long>::iterator it; //***2.22 - now 64 bit arch on Mac
 		vector<DatabaseFin<ColorImage>* > fins;
 		for (it = selectedFins.begin(); it != selectedFins.end(); it++) {
 			int id = dlg->mRow2Id[*it];

@@ -16,6 +16,8 @@
 #include "../support.h"
 #include "CatalogSchemeDialog.h"
 #include "ErrorDialog.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/logo_small.xpm"
 
@@ -199,7 +201,8 @@ GtkWidget* CatalogSchemeDialog::createCatalogSchemeDialog()
 
 		for (catIDnum = 0; catIDnum < mOptions->mNumberOfDefinedCatalogSchemes; catIDnum++)
 		{
-			gchar *entry[1] = {_(mOptions->mDefinedCatalogSchemeName[catIDnum].c_str())};
+			//gchar *entry[1] = {_(mOptions->mDefinedCatalogSchemeName[catIDnum].c_str())}; //***2.22 - g++4.5 complains
+			gchar *entry[1] = {const_cast<char*>(_(mOptions->mDefinedCatalogSchemeName[catIDnum].c_str()))};
 
 			gtk_clist_append(
 				GTK_CLIST(catalogSchemeList),
@@ -613,7 +616,8 @@ void on_catSchemeCList_select_row(
 			}
 			else
 			{
-				gchar *entry[1] = {_(catSWin->mLocalCategoryName[row][catIDnum].c_str())};
+				//gchar *entry[1] = {_(catSWin->mLocalCategoryName[row][catIDnum].c_str())}; //***2.22 - gtk4.5 complains
+				gchar *entry[1] = {const_cast<char*>(_(catSWin->mLocalCategoryName[row][catIDnum].c_str()))};
 
 				gtk_clist_append(
 						GTK_CLIST(catSWin->mCategoryList),
@@ -1012,7 +1016,8 @@ void on_catSchemeComboBox_select_row(
 		}
 		else
 		{
-			gchar *entry[1] = {_(o->mDefinedCatalogCategoryName[row][catIDnum].c_str())};
+			//gchar *entry[1] = {_(o->mDefinedCatalogCategoryName[row][catIDnum].c_str())}; //***2.22 - g++4.5 complains
+			gchar *entry[1] = {const_cast<char*>(_(o->mDefinedCatalogCategoryName[row][catIDnum].c_str()))};
 
 			gtk_clist_append(
 				GTK_CLIST(catSWin->mCategoryList),

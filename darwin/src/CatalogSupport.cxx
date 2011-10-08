@@ -2,8 +2,12 @@
 
 #include "CatalogSupport.h"
 
+#ifdef WIN32
 #include <io.h>     //***1.982 - _findFirst()
 #include <direct.h> //***1.982 - _mkdir()
+#else
+#include <sys/stat.h> //***2.22 - mkdir(), stat() Mac/UNIX 
+#endif
 
 #include <set>
 #include <cctype>
@@ -89,6 +93,28 @@ Database * openDatabase(Options *o, bool create)
 	else if (SQLiteDatabase::isType(o->mDatabaseFileName))
 	{
 		// the catalog scheme will come out of the existing database
+
+/* copied this by mistake????????		
+#ifdef WIN32
+		_mkdir(path.c_str());
+		path += PATH_SLASH;
+		_mkdir(path.c_str());
+		_mkdir((path+"catalog").c_str());
+		_mkdir((path+"tracedFins").c_str());
+		_mkdir((path+"matchQueues").c_str());
+		_mkdir((path+"matchQResults").c_str());
+		_mkdir((path+"sightings").c_str());
+#else //***2.22 - for Mac / UNIX
+		mkdir(path.c_str(),777);
+		path += PATH_SLASH;
+		mkdir(path.c_str(),777);
+		mkdir((path+"catalog").c_str(),777);
+		mkdir((path+"tracedFins").c_str(),777);
+		mkdir((path+"matchQueues").c_str(),777);
+		mkdir((path+"matchQResults").c_str(),777);
+		mkdir((path+"sightings").c_str(),777);
+#endif 
+*/
 		db = new SQLiteDatabase(o, cat, create);
 	}
 	else if(OldDatabase::isType(o->mDatabaseFileName))
@@ -227,7 +253,11 @@ Database* convertDatabase(Options* o, string sourceFilename)
 	//newFilenameOfSourceDatabase += ".olddb";                            //***2.01 - replaced
 
 	// move "file.db" "file.olddb" -- renames source file
+#ifdef WIN32
 	string mvCmd("move \"");
+#else
+	string mvCmd("mv \""); //***2.22 - for Mac
+#endif
 	mvCmd += sourceFilename;
 	mvCmd += "\" \"";
 	mvCmd += newFilenameOfSourceDatabase;
@@ -366,6 +396,7 @@ void rebuildFolders(string home, string area, bool force)
 		cout << "Creating folders ..." << endl;
 
 		path = home + PATH_SLASH + "surveyAreas" + PATH_SLASH + area;
+#ifdef WIN32
 		_mkdir(path.c_str());
 		path += PATH_SLASH;
 		_mkdir(path.c_str());
@@ -374,6 +405,16 @@ void rebuildFolders(string home, string area, bool force)
 		_mkdir((path+"matchQueues").c_str());
 		_mkdir((path+"matchQResults").c_str());
 		_mkdir((path+"sightings").c_str());
+#else //***2.22 - new section for Mac / UNIX
+		mkdir(path.c_str(),777);
+		path += PATH_SLASH;
+		mkdir(path.c_str(),777);
+		mkdir((path+"catalog").c_str(),777);
+		mkdir((path+"tracedFins").c_str(),777);
+		mkdir((path+"matchQueues").c_str(),777);
+		mkdir((path+"matchQResults").c_str(),777);
+		mkdir((path+"sightings").c_str(),777);
+#endif
 	}
 	else // RESTORE
 	{
@@ -381,6 +422,7 @@ void rebuildFolders(string home, string area, bool force)
 		// database location ... ensure existance of surveyAreas\<restoreSurveyArea> and
 		// its subfolders ...
 		//    catalog, tracedFins, matchQueues, matchQResults, sightings
+#ifdef WIN32
 		struct _finddata_t c_file;
 		long hFile;
 		string path;
@@ -432,6 +474,58 @@ void rebuildFolders(string home, string area, bool force)
 			printf( "Creating missing \"sightings\" folder ...\n" );
 			_mkdir((path+"sightings").c_str());
 		}
+#else //***2.22 - Mac / UNIX
+		struct stat buffer;
+		int         status;
+
+		// status = stat("/home/cnd/mod1", &buffer); -- this is the example
+
+		string path;
+
+		// Find surveyArea\<restoreSurveyArea>
+		path = home + PATH_SLASH + "surveyAreas";
+		if( (status = stat(path.c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"SurveyAreas\" folder ...\n" );
+			mkdir(path.c_str(),777);
+		}
+
+		path += PATH_SLASH + area;
+		if( (status = stat(path.c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"%s\" SurveyArea subfolder...\n", 
+				area.c_str());
+			mkdir(path.c_str(),777);
+		}
+
+		// find subfolders and, if missing, fix them ...
+		path += PATH_SLASH;
+		if( (status = stat((path+"catalog").c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"catalog\" folder ...\n" );
+			mkdir((path+"catalog").c_str(),777);
+		}
+		if( (status = stat((path+"tracedFins").c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"tracedFins\" folder ...\n" );
+			mkdir((path+"tracedFins").c_str(),777);
+		}
+		if( (status = stat((path+"matchQueues").c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"matchQueues\" folder ...\n" );
+			mkdir((path+"matchQueues").c_str(),777);
+		}
+		if( (status = stat((path+"matchQResults").c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"matchQResults\" folder ...\n" );
+			mkdir((path+"matchQResults").c_str(),777);
+		}
+		if( (status = stat((path+"sightings").c_str(), &buffer)) == -1L )
+		{
+			printf( "Creating missing \"sightings\" folder ...\n" );
+			mkdir((path+"sightings").c_str(),777);
+		}
+#endif
 	}
 }
 
@@ -660,7 +754,11 @@ bool createArchive (Database *db, string filename)
 		db->openStream();
 
 		//***1.982 - remove "filesToArchive.txt"
+#ifdef WIN32
 		command = "del " + fileListQuoted;
+#else
+		command = "rm " + fileListQuoted;
+#endif
 		system(command.c_str());
 
 		return (0 == error || 1 == error); //***2.01 - non-fatal (locked files not compressed is OK, too)
@@ -727,7 +825,7 @@ string saveImages(DatabaseFin<ColorImage>* fin, string saveFolder, string fileNa
 #ifdef WIN32
 	string command = "copy \"";
 #else
-	string command = "cp \"";
+	string command = "cp \""; //***2.22 - for Mac
 #endif
 	command += fin->mImageFilename;
 	command += "\" \"";

@@ -113,8 +113,8 @@ class OldDatabase : public Database //***1.99 - now a derived type
                 
 		virtual void Delete(DatabaseFin<ColorImage> *Fin);
 
-		virtual bool OldDatabase::openStream();
-		virtual bool OldDatabase::closeStream();
+		virtual bool openStream();
+		virtual bool closeStream();
 
 		static bool isType(std::string filePath);
 

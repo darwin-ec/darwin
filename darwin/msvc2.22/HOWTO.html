@@ -1,0 +1,42 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>How to compile DARWIN with MSVC</title>
+<style fprolloverstyle>A:hover {color: #FF0000}
+</style>
+</head>
+
+<body>
+
+<p>How to compile DARWIN with MSVC++ (This is only tested in MSVC++ 6.0)</p>
+<ol>
+  <li>First, get gtk, glib, gdk, and extra libs for windows. (There's a link to this
+    stuff on <a href="http://www.gtk.org">www.gtk.org</a>)</li>
+  <li>Unzip those files, and put all the .dll files in c:\windows\system.<br>
+    <br>
+   Put all the .h files in C:\Program Files\Microsoft Visual Studio\VC98\Include<br>
+	(gtk .h files need to be in \gtk subdirectory, and gdk .h files in \gdk subdirectory)<br>
+    <br>
+    Put all the .lib files in C:\Program Files\Microsoft Visual Studio\VC98\Lib</li>
+  <li>If you want to test it out, try to compile a hello world type program at
+    this point.&nbsp; (Add gtk-1.3.lib, gdk-1.3.lib, and glib-1.3.lib [or
+    whatever the names of the .libs you got are] to the libraries section in the
+    link tab of the Project-&gt;Settings... dialog.)</li>
+  <li>Load the workspace in the \msvc DARWIN subdirectory.&nbsp; Edit config.h
+    and comment out the ENABLE_NLS and HAVE_SYS_UTSNAME_H lines if they
+    exist.&nbsp; If you want, edit the BUILD_ALIAS to reflect your computer (e.g
+    #define BUILD_ALIAS &quot;i586-microsoft-windows98&quot;).</li>
+  <li>You may need to add the source directories to the Directories tab in the
+    Tools-&gt;Options dialog.</li>
+  <li>Try building the project.&nbsp; You'll almost certainly get a number of
+    warnings about symbols being truncated in debug info.&nbsp; You may also
+    encounter any number of problems here, such as MSVC++'s broken variable
+    scoping rules, etc.&nbsp; You're on your own here, though.</li>
+</ol>
+
+</body>
+
+</html>

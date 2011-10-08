@@ -102,7 +102,11 @@ bool DBConvertDialog::convert2SQLite(int degreeOfBackup)
 
 	//oldDbFilename = oldDbFilename.substr(0,oldDbFilename.rfind('.')) + ".olddb"; //***2.01 - replaced
 
+#ifdef WIN32
 	string command = "move /Y "; // overwrite w/o prompt
+#else
+	string command = "mv -f "; // overwrite w/o prompt
+#endif
 	command = command 
 		+ "\""
 		+ mDBFilename

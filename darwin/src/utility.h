@@ -371,7 +371,11 @@ std::string extractPath(std::string filename)
 inline
 void systemCopy(std::string src, std::string dest)
 {
+#ifdef WIN32
 	std::string command = "copy";
+#else
+	std::string command = "cp";
+#endif
 	command += " \"" + src + "\"";
 	command += " \"" + dest + "\"";
 	system(command.c_str());
@@ -396,7 +400,7 @@ void systemRmdir(std::string path)
 inline
 void systemZip(std::string path, std::string archive)
 {
-	std::string cmd = "7z.exe a -tzip";
+	std::string cmd = "7z a -tzip"; //***2.22 - removed .exe for Mac
 	cmd += " \"" + archive + "\" ";
 	cmd += " \"" + path + "\" ";
 	system(cmd.c_str());

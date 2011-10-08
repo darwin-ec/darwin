@@ -449,7 +449,7 @@ class DatabaseFin
 			mIsAlternate(false) //***1.95
 		{
 			try {
-				string status = this->load(inFile,fileName,true);
+				std::string status = this->load(inFile,fileName,true);
 				if(status != "Loaded")
 					throw Error(status.c_str());
 			} catch (...) {
@@ -610,7 +610,7 @@ class DatabaseFin
 		//
 		friend void saveFinPlain(DatabaseFin<FIN_IMAGE_TYPE> *fin, std::string fname)
 		{
-			std::fstream outFile(fname.c_str(), ios::out);
+			std::fstream outFile(fname.c_str(), std::ios::out);
 
 			if (!outFile)
 				throw Error("writing to file " + fname);
@@ -665,7 +665,7 @@ class DatabaseFin
 		//
 		void save(const std::string &fileName)
 		{
-			std::fstream outFile(fileName.c_str(), ios::out | ios::binary);
+			std::fstream outFile(fileName.c_str(), std::ios::out | std::ios::binary);
 
 			if (!outFile)
 				throw Error("writing to file " + fileName);
@@ -674,7 +674,7 @@ class DatabaseFin
 			// information which must be stripped BEFORE saving fin in file and
 			// BEFORE calculating the record size
 
-			string shortFilename = this->mImageFilename;
+			std::string shortFilename = this->mImageFilename;
 			int pos = shortFilename.find_last_of(PATH_SLASH);
 			if (pos >= 0)
 			{
@@ -759,7 +759,7 @@ class DatabaseFin
 		//
 		void load(const std::string &fileName)
 		{
-			std::fstream inFile(fileName.c_str(), ios::in | ios::binary);
+			std::fstream inFile(fileName.c_str(), std::ios::in | std::ios::binary);
 
 			if (!inFile)
 				throw Error("reading from file " + fileName);
@@ -806,7 +806,7 @@ class DatabaseFin
 				}
                          
 				//***1.99 - do NOT depend on GLOBAL gOptions anymore
-				string path = inFilename;
+				std::string path = inFilename;
 				path = path.substr(0,path.rfind(PATH_SLASH)); // strip *.db or *.fin
 				mImageFilename = path + PATH_SLASH + line;
 

@@ -107,7 +107,8 @@ class ExportFinzDialog {
 			mOldSort, // previous sorting of CList
 			mNewSort; // current/new sorting of CList
 
-		std::set<int>
+		//std::set<int>
+		std::set<long>  //***2.22 - now 64 bit arch on Mac
 			mDBCurEntry; // supports multiple selection
 
 		bool 

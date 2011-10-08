@@ -13,6 +13,7 @@
 #include "../Error.h"
 #include "../image_processing/transform.h"
 #include "../image_processing/ImageMod.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"

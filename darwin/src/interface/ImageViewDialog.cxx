@@ -15,6 +15,7 @@
 #include "../image_processing/transform.h"
 
 #pragma warning (disable : 4305 4309)
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/magnify_cursor.xbm"
 #include "../../pixmaps/close.xpm"

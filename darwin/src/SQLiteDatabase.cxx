@@ -14,8 +14,9 @@ using namespace std;
 // Ensures that the given character array is valid, otherwise returns "NULL".
 //
 char* SQLiteDatabase::handleNull(char *in) {
-
-	return strcmp(in, "\0") != 0 ? in : "NULL";
+	char* nullStr = new char[5];
+	strcpy(nullStr,"NULL");
+	return strcmp(in, "\0") != 0 ? in : nullStr; //***2.22 - cannot return "NULL" directly g++4.1 & later
 }
 
 
@@ -538,8 +539,8 @@ DBIndividual SQLiteDatabase::selectIndividualByID(int id) {
 	}
 
 	//***2.2 - diagnostic
-	//cout << "Fin ID : " << individual.idcode << endl;
-	//cout << "Fin Key: " << individual.id << endl;
+	cout << "Fin ID : " << individual.idcode << endl;
+	cout << "Fin Key: " << individual.id << endl;
 
 	return individual;
 }
@@ -1146,6 +1147,7 @@ void SQLiteDatabase::updateImage(DBImage *image) {
 	sql << "LocationCode = '" << escapeString(image->locationcode) << "', ";
 	sql << "ShortDescription = '" << escapeString(image->shortdescription) << "' ";
 	sql << "fkIndividualID = " << image->fkindividualid << " ";
+
 	sql << "WHERE ID = " << image->id << ";";
 
 	rc = sqlite3_exec(db, sql.str().c_str(), NULL, 0, &zErrMsg);
@@ -1974,7 +1976,7 @@ void SQLiteDatabase::loadLists() {
 		addFinToLists(fin);
 
 		//***2.2- debugging - fins load from last to first?????
-		//std::cout << "Adding [" << fin->mDataPos << "][" << fin->mIDCode <<"]\n";
+		std::cout << "Adding [" << fin->mDataPos << "][" << fin->mIDCode <<"]\n";
 
 		delete fin;
 	}
@@ -2150,6 +2152,7 @@ bool SQLiteDatabase::isType(std::string filePath)
 	if (!testFile)
 	{
 		printf("\nError locating or opening database file!\n");
+		printf("%s\n",filePath.c_str()); // debug
 		return false;
 	}
 

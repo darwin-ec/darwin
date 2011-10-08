@@ -12,6 +12,7 @@
 
 #include "ErrorDialog.h"
 #include "../support.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/warning.xpm"

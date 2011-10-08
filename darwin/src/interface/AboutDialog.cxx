@@ -20,6 +20,7 @@
 
 #include "../support.h"
 #include "AboutDialog.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/logo_small.xpm"
 

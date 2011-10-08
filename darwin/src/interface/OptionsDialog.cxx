@@ -22,6 +22,7 @@
 #ifdef DEBUG
 #include <iostream>
 #endif
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/ok.xpm"
@@ -317,8 +318,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     0);
 
     mACContinuitySpinButton_adj =
-	//gtk_adjustment_new(o->mContinuityWeight, 0, 20, 0.1, 0.5, 0.5);
-	gtk_adjustment_new(o->mContinuityWeight, 0, 20, 0.1, 0.5, 0.0); //***2.22 - GTK+-2.2 page size must be 0
+	gtk_adjustment_new(o->mContinuityWeight, 0, 20, 0.1, 0.5, 0.5);
     mACContinuitySpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mACContinuitySpinButton_adj), 1,
 			    1);
@@ -328,8 +328,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     (GtkAttachOptions) (GTK_EXPAND),
 		     (GtkAttachOptions) (0), 0, 0);
 
-    //mACLinearitySpinButton_adj = gtk_adjustment_new(o->mLinearityWeight, 0, 20, 0.1, 1, 1);
-    mACLinearitySpinButton_adj = gtk_adjustment_new(o->mLinearityWeight, 0, 20, 0.1, 1, 0); //***2.22 - GTK+-2.2 page size must be 0
+    mACLinearitySpinButton_adj = gtk_adjustment_new(o->mLinearityWeight, 0, 20, 0.1, 1, 1);
     mACLinearitySpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mACLinearitySpinButton_adj), 1,
 			    1);
@@ -338,8 +337,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     1, 2, 2, 3, (GtkAttachOptions) (GTK_EXPAND),
 		     (GtkAttachOptions) (0), 0, 0);
 
-    //mACEdgeSpinButton_adj = gtk_adjustment_new(o->mEdgeWeight, 0, 20, 0.1, 1, 1);
-    mACEdgeSpinButton_adj = gtk_adjustment_new(o->mEdgeWeight, 0, 20, 0.1, 1, 0); //***2.22 - GTK+-2.2 page size must be 0
+    mACEdgeSpinButton_adj = gtk_adjustment_new(o->mEdgeWeight, 0, 20, 0.1, 1, 1);
     mACEdgeSpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mACEdgeSpinButton_adj), 1, 1);
     gtk_widget_show(mACEdgeSpinButton);
@@ -348,8 +346,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     (GtkAttachOptions) (0), 0, 0);
 
     mACIterationsSpinButton_adj =
-	//gtk_adjustment_new(o->mMaxIterations, 0, 100, 1, 10, 10);
-	gtk_adjustment_new(o->mMaxIterations, 0, 100, 1, 10, 0); //***2.22 - GTK+-2.2 page size must be 0
+	gtk_adjustment_new(o->mMaxIterations, 0, 100, 1, 10, 10);
     mACIterationsSpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mACIterationsSpinButton_adj), 1,
 			    0);
@@ -400,8 +397,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
 
     mCEGaussianStdDevSpinButton_adj =
-	//gtk_adjustment_new(o->mGaussianStdDev, 0, 2, 0.01, 0.2, 0.2);
-	gtk_adjustment_new(o->mGaussianStdDev, 0, 2, 0.01, 0.2, 0.0); //***2.22 - GTK+-2.2 page size must be 0
+	gtk_adjustment_new(o->mGaussianStdDev, 0, 2, 0.01, 0.2, 0.2);
     mCEGaussianStdDevSpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT
 			    (mCEGaussianStdDevSpinButton_adj), 1, 2);
@@ -411,8 +407,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     (GtkAttachOptions) (0), 0, 0);
 
     mCELowThresholdSpinButton_adj =
-	//gtk_adjustment_new(o->mLowThreshold, 0, 1, 0.01, 0.1, 0.1);
-	gtk_adjustment_new(o->mLowThreshold, 0, 1, 0.01, 0.1, 0.0); //***2.22 - GTK+-2.2 page size must be 0
+	gtk_adjustment_new(o->mLowThreshold, 0, 1, 0.01, 0.1, 0.1);
     mCELowThresholdSpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mCELowThresholdSpinButton_adj),
 			    1, 2);
@@ -422,8 +417,7 @@ GtkWidget *OptionsDialog::createOptionsDialog(Options *o)
 		     (GtkAttachOptions) (0), 0, 0);
 
     mCEHighThresholdSpinButton_adj =
-	//gtk_adjustment_new(o->mHighThreshold, 0, 1, 0.01, 0.1, 0.1);
-	gtk_adjustment_new(o->mHighThreshold, 0, 1, 0.01, 0.1, 0.0); //***2.22 - GTK+-2.2 page size must be 0
+	gtk_adjustment_new(o->mHighThreshold, 0, 1, 0.01, 0.1, 0.1);
     mCEHighThresholdSpinButton =
 	gtk_spin_button_new(GTK_ADJUSTMENT(mCEHighThresholdSpinButton_adj),
 			    1, 2);

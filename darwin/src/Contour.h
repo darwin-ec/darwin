@@ -153,7 +153,7 @@ class Contour
 		//!    This function frees all memory involved in the list of
 		//!    contour points and resets members to indicate EMPTY state.
 		//
-		void Contour::clear();
+		void clear();
 
 
 		//! Pops the specified number of points from the front of this Contour.

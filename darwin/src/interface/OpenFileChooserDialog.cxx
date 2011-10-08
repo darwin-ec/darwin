@@ -11,9 +11,14 @@
 
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
+/*
+#ifdef WIN32
 #include <io.h>     //***1.982 - _findFirst()
 #include <direct.h> //***1.982 - _mkdir()
-
+#else
+#include <sys/stat.h> //***2.22 - mkdir(), stat() Mac/UNIX 
+#endif
+*/
 #include "../image_processing/transform.h"
 #include "MainWindow.h"
 #include "ErrorDialog.h"

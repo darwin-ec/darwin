@@ -78,7 +78,11 @@
 //#endif
 
 #include <iostream>
+#ifdef WIN32
 #include <direct.h>
+#else
+#include <sys/param.h> //***2.22 - for MAXPATHLEN
+#endif
 
 using namespace std;
 
@@ -133,7 +137,7 @@ void readConfig(string homedir)
 		fileName += "\\surveyAreas\\default"; //***1.85
 
 		gOptions->mCurrentSurveyArea = fileName; //***1.85
-
+		
 		//***1.85 - default is now NO DATABASE
 		gOptions->mDatabaseFileName = "NONE";
 	}
@@ -151,20 +155,24 @@ void readConfig(string homedir)
 	
 	char 
 		*fileName, 
-		*homedir;
+		*homedirU;
 
-	homedir = getenv("DARWINHOME");
+	homedirU = getenv("DARWINHOME");
 	//***1.3 - in case Linux can't find DARWINHOME
-	if (NULL == homedir)
+	if (NULL == homedirU)
 	{
 		cout << "$DARWINHOME is not defined in runtime environment!\n";
 		exit(1);
 	}
 
-	gOptions->mDarwinHome = homedir; // ***1.1
+	gOptions->mDarwinHome = homedirU; // ***1.1
 
-	fileName = new char[strlen(homedir) + strlen("/.darwin") + 1];
-	sprintf(fileName, "%s/.darwin", homedir);
+	//string tempdir = getenv("temp"); //***2.22 - no predefined "temp" dir on Mac
+	gOptions->mTempDirectory = getenv("HOME");
+	gOptions->mTempDirectory += "/.darwintmp";
+
+	fileName = new char[strlen(homedirU) + strlen("/.darwin") + 1];
+	sprintf(fileName, "%s/.darwin", homedirU);
 
 	gCfg = new ConfigFile(fileName);
 
@@ -173,13 +181,13 @@ void readConfig(string homedir)
 	if (!gCfg->getItem("DatabaseFileName", gOptions->mDatabaseFileName)) 
 	{
 		//***1.85 - build and save current survey area root path
-		fileName = new char[strlen(homedir) + strlen("/surveyAreas/default") + 1];
-		sprintf(fileName, "%s/surveyAreas/default", homedir);
+		fileName = new char[strlen(homedirU) + strlen("/surveyAreas/default") + 1];
+		sprintf(fileName, "%s/surveyAreas/default", homedirU);
 
 		gOptions->mCurrentSurveyArea = fileName; //***1.85
 
-		fileName = new char[strlen(homedir) + strlen("/catalog/darwin.db") + 1];
-		sprintf(fileName, "%s/catalog/darwin.db", homedir);
+		fileName = new char[strlen(homedirU) + strlen("/catalog/darwin.db") + 1];
+		sprintf(fileName, "%s/catalog/darwin.db", homedirU);
 
 		gOptions->mDatabaseFileName = fileName;
 		delete[] fileName;
@@ -204,6 +212,8 @@ void readConfig(string homedir)
 			gOptions->mCurrentColor[i] = 0.0;
 
 		gOptions->mCurrentColor[1] = 1.0;
+
+
 	}
 
 	string toolbarType;
@@ -447,7 +457,6 @@ void saveConfig()
 		gCfg->addItem(CatNamesMax, gOptions->mDefinedCatalogCategoryNamesMax[s]);
 
 		// list of defined category names
-
 		for (int i = 0; i < gOptions->mDefinedCatalogCategoryNamesMax[s]; i++)
 		{
 			sprintf(temp,"DefinedCatalogCategoryName[%d][%d]", s, i);
@@ -548,7 +557,8 @@ int main(int argc, char *argv[])
 	if (basePos!=string::npos) {
 		darwinhome=darwinhome.substr(0,basePos);
 	} else { //try current directory...may be relative if executed from command line
-		char c_cwd[_MAX_PATH];
+#ifdef WIN32		
+		char c_cwd[_MAX_PATH];   // _MAX_PATH is only on windows
 		getcwd(c_cwd, _MAX_PATH);
 		string cwd(c_cwd);
 		darwinhome=cwd;
@@ -556,18 +566,28 @@ int main(int argc, char *argv[])
 		if (basePos!=string::npos)	{
 			darwinhome=darwinhome.substr(0,basePos);
 		}
+#else
+		char c_cwd[MAXPATHLEN]; //***2.22 - for Mac & Linux
+		getcwd(c_cwd, MAXPATHLEN);
+		string cwd(c_cwd);
+		darwinhome=cwd;
+		basePos = darwinhome.rfind("/system/bin");
+		if (basePos!=string::npos)	{
+			darwinhome=darwinhome.substr(0,basePos);
+		}
+#endif
 	}
-
 
 	vector<string> options; // so we can handle multiple command line options
 	string finz("");       // assume only one of these
 
+	//***2.22 - chaged string argv to argV -- do ont know why this worked before - JHS
 	for (int i=1; i<argc; i++) {
-		string argv(argv[i]);
-		if (argv.find("--")==0) {//we have an option index
-			options.push_back(argv);
-		} else if (argv.find(".finz")!=string::npos) {//we have a finz file
-			finz = argv;
+		string argV(argv[i]);
+		if (argV.find("--")==0) {//we have an option index
+			options.push_back(argV);
+		} else if (argV.find(".finz")!=string::npos) {//we have a finz file
+			finz = argV;
 		}
 	}
 
@@ -622,16 +642,24 @@ int main(int argc, char *argv[])
 	//***1.95 - end of new code
 #endif
 
-	add_pixmap_directory(PACKAGE_DATA_DIR "/pixmaps");
-	add_pixmap_directory(PACKAGE_SOURCE_DIR "/pixmaps");
+	//***2.22 - using strings - problems the old way with build on Mac
+	string packageDataDir(PACKAGE_DATA_DIR);
+	string packageSrcDir(PACKAGE_SOURCE_DIR);
+	packageDataDir += "/pixmaps";
+	packageSrcDir += "/pixmaps";
+	add_pixmap_directory(packageDataDir.c_str()); //***2.22 - was PACKAGE_DATA_DIR "/pixmaps"
+	add_pixmap_directory(packageSrcDir.c_str());  //***2.22 - was PACKAGE_SOURCE_DIR "/pixmaps"
   
 	gdk_rgb_init();
 
 	//***2.0 - create a compound command to call 7z -- first prepending current
 	// darwin system\bin to search PATH and then calling 7z -- this is necessary
 	// so 7z can be found when darwin starts as a stand alone FINZ viewer (JHS)
+#ifdef WIN32
 	gOptions->SevenZ = "set PATH=" + gOptions->mDarwinHome + "\\system\\bin;%PATH% & 7z"; //***2.0
-
+#else
+	gOptions->SevenZ = "export PATH=" + gOptions->mDarwinHome + "/system/bin;$PATH & 7z"; //***2.0
+#endif
 	if (finz.empty()) { //Standard open
 		SplashWindow *splash = new SplashWindow();
 		splash->show();
@@ -690,7 +718,11 @@ int main(int argc, char *argv[])
 	destroyFilters();
 
 	//SAH--Remove Temporary Directory -- just to be nice
+#ifdef WIN32
 	cmd = "rmdir /s /q \"" + gOptions->mTempDirectory + "\"";
+#else
+	cmd = "rm -r \"" + gOptions->mTempDirectory + "\""; //***2.22 - for Mac
+#endif
 	system(cmd.c_str());
 
 #ifdef TIMING_ENABLED

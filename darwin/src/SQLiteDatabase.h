@@ -181,8 +181,8 @@ private:
 	void addFinToLists(DatabaseFin<ColorImage>*);
 	void sortLists();
 	std::string nullToNone(std::string);
-	void SQLiteDatabase::deleteEntry(std::vector<std::string>*, int);
-	int SQLiteDatabase::listEntryToID(std::string);
+	void deleteEntry(std::vector<std::string>*, int);
+	int listEntryToID(std::string);
 
 
 };

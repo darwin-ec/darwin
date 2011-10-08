@@ -303,7 +303,7 @@ GtkWidget* ContourInfoDialog::createInfoDialog()
   gtk_widget_show(infoMidHBox);
   gtk_box_pack_start(GTK_BOX(infoVBox), infoMidHBox, TRUE, TRUE, 0);
 
-  infoButtonGenCoeffFiles = gtk_button_new_with_label("Generate Coefficient Files");
+  infoButtonGenCoeffFiles = gtk_button_new_with_label(_("Generate Coefficient Files"));
   gtk_widget_show(infoButtonGenCoeffFiles);
   GTK_WIDGET_SET_FLAGS(infoButtonGenCoeffFiles, GTK_CAN_DEFAULT);
   gtk_box_pack_start(GTK_BOX(infoMidHBox), infoButtonGenCoeffFiles, FALSE, FALSE, 0);

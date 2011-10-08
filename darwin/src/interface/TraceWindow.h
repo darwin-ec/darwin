@@ -62,7 +62,7 @@ class TraceWindow
 				Options *o);
 
 		//***1.4 - new version for loading single previously traced fin file into TraceWindow
-		TraceWindow::TraceWindow(
+		TraceWindow(
 				MainWindow *m,
 				const std::string &fileName,
 				DatabaseFin<ColorImage> *unkFin,
@@ -79,7 +79,7 @@ class TraceWindow
 		void show();
 
 		//***1.4 - new function to setup buttons and interface for loaded fin trace
-		void TraceWindow::setupForLoadedFin();
+		void setupForLoadedFin();
 
 		// used to reset mContour, mChain and mTraceFinalized for new tracing
 		void traceReset(); //***006PD

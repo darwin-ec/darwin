@@ -1,8 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
 ## Current version 8/10/2005
+## redone for Mac 9/27/2011 - JHS
 
-SUBDIRS = intl m4 po src
+#SUBDIRS = intl m4 po src
+SUBDIRS = src png
 EXTRA_DIST = config.rpath BUGS TODO
 
 dist-hook:
@@ -14,14 +16,14 @@ dist-hook:
 	    fi \
 	  done \
 	fi
-	if test -d msvc; then \
-	  mkdir $(distdir)/msvc; \
-	  for m in msvc/*; do \
-	    if test -f $$m; then \
-	      cp -p $$m $(distdir)/msvc; \
-	    fi \
-	  done \
-	fi
+#	if test -d msvc; then \
+#	  mkdir $(distdir)/msvc; \
+#	  for m in msvc/*; do \
+#	    if test -f $$m; then \
+#	      cp -p $$m $(distdir)/msvc; \
+#	    fi \
+#	  done \
+#	fi
 	if test -d filters; then \
 	  mkdir $(distdir)/filters; \
 	  for f in filters/*; do \

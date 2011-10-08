@@ -54,8 +54,8 @@ class Outline
 	void setLEAngle(double theta, bool compute);
 
     //***008OL next two functions moved from Chain class
-    point_t& Outline::getSavedPoint(int pointNum);
-    const point_t& Outline::getSavedPoint(int pointNum) const;
+    point_t& getSavedPoint(int pointNum);
+    const point_t& getSavedPoint(int pointNum) const;
 
     int length() { return mChain->length(); } //***008OL -- use chain length ?
 

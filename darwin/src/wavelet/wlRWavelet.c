@@ -125,7 +125,8 @@ static int _VectorFrwt(Tcl_Interp * interp, ClientData cd,
  *
  * Perform a levels-deep forward redundant transform of vector SOURCE using 
  * the filters HIPASS and LOWPASS, storing results in a matrix DEST. 
- * LENGTH is the length of the SOURCE vector & the rows in DEST.
+ * LENGTH is the length of the SOURCE vector & the rows in DEST.printf("here pow2:%d level:%d\n",pow2,level);
+
  * The transformed coefficients in DEST are stored using an overcomplete
  * representation, each row representing a level in the multiresolution
  * pyramid with coarse approximation in zeroth row and the detail signals
@@ -147,6 +148,7 @@ int WL_FrwtVector(
     dtype *hiresult, *lowresult;
     dtype *hidata, *lowdata;
     int lowoffset, hioffset;
+printf("here1\n");
 
     /* allocate memory for the extended copy of source */
     pow2 = WL_pow2(levels - 1);
@@ -162,7 +164,7 @@ int WL_FrwtVector(
 	printf("WL_FrwtVector: unable to malloc working vector\n");
 	return 0;
     }
-
+printf("here2\n");
     /* allocate memory for the lowpass & highpass filter coefficients */
     hicoefs = (dtype *) malloc((hisize * pow2) * sizeof(dtype));
     lowcoefs = (dtype *) malloc((lowsize * pow2) * sizeof(dtype));
@@ -170,11 +172,13 @@ int WL_FrwtVector(
 	printf("WL_FrwtVector: unable to malloc filter coefficients\n");
 	return 0;
     }
-
+printf("here3 %d %d %d\n",dest, &source,length);
     /* copy source to dest to support doing multiple level transforms */
     memcpy(dest[0], source, length * sizeof(dtype));
 
     for (pow2 = 1, level = 0; level < levels; level++, pow2 *= 2) {
+
+printf("here pow2:%d level:%d\n",pow2,level);
 
 	/* dilate the filters */
 	Dilate_filter(lowpass->coefs, lowcoefs, lowpass->length, level);
@@ -263,6 +267,7 @@ int WL_IrwtMatrix(dtype ** source,
     /* allocate memory for the lowpass & highpass filter coefficients */
     hicoefs = (dtype *) malloc((hisize * pow2) * sizeof(dtype));
     lowcoefs = (dtype *) malloc((lowsize * pow2) * sizeof(dtype));
+
     if ((lowcoefs == NULL) || (hicoefs == NULL)) {
 	printf("WL_IrwtMatrix: unable to malloc filter coefficients\n");
 	return 0;

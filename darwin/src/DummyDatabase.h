@@ -79,8 +79,8 @@ class DummyDatabase : public Database //***1.99 - now a derived type
                 
 		virtual void Delete(DatabaseFin<ColorImage> *Fin) {};
 
-		virtual bool DummyDatabase::openStream() {return false;};
-		virtual bool DummyDatabase::closeStream() {return false;};
+		virtual bool openStream() {return false;};
+		virtual bool closeStream() {return false;};
 
 		void setStatus(db_status_t status) { mDBStatus = status; };
 

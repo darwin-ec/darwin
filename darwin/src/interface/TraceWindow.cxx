@@ -36,6 +36,7 @@
 #include <iostream> //***06PM for debugging
 
 #pragma warning (disable : 4305 4309)
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/fin.xpm"
 #include "../../pixmaps/add_database.xpm"
@@ -3175,6 +3176,7 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 			       GTK_ACCEL_VISIBLE);
 
 	// CANCEL Button
+
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
 	tmpIcon = create_pixmap_from_data(tmpBox, cancel_xpm);

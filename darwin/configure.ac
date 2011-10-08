@@ -1,10 +1,10 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT(darwin, 0.5.1, darwin@eckerd.edu)
-AM_INIT_AUTOMAKE(darwin, 0.5.1)
-AC_CONFIG_SRCDIR([config.h])
+AC_PREREQ(2.65)
+AC_INIT([darwin],[2.22],[darwin@eckerd.edu])
+AM_INIT_AUTOMAKE(darwin, 2.22)
+#AC_CONFIG_SRCDIR([config.h])
 AC_CONFIG_HEADERS([config.h])
 
 
@@ -12,26 +12,19 @@ AC_CONFIG_HEADERS([config.h])
 AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_CXX
-AC_PROG_INSTALL
+#AC_PROG_INSTALL
 AC_PROG_RANLIB
-AC_PROG_YACC
+#AC_PROG_YACC
 # autoscan says add following wanted by ltmain.sh
-AC_PROG_LN_S
+#AC_PROG_LN_S
 #AC_PROG_LIBTOOL
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lInterface':
 AC_CHECK_LIB([Interface], [AboutDialog::AboutDialog])
-# FIXME: Replace `main' with a function in `-lMatching':
 AC_CHECK_LIB([Matching], [Match::Match])
-# FIXME: Replace `main' with a function in `-lWLC':
 AC_CHECK_LIB([WLC], [WL_SetErrorMsg])
-# JHS - following found by autoscan - mistake????
-# FIXME: Replace `main' with a function in `-lc':
-# AC_CHECK_LIB([c], [main])
-# FIXME: Replace `main' with a function in `-limage_processing':
+AC_CHECK_LIB([PNGsupport], [PngLoadImage])
 AC_CHECK_LIB([image_processing], [convColorToPixmapString])
-# FIXME: Replace `main' with a function in `-lmath':
 AC_CHECK_LIB([math], [gaussj])
 
 # Checks for header files.
@@ -55,7 +48,7 @@ AM_PATH_GTK_2_0(2.0.0, ,
             AC_MSG_ERROR(Cannot find GTK: Is pkg-config in path?))
 
 # Checks for library functions.
-AM_GNU_GETTEXT
+dnl AM_GNU_GETTEXT
 # AM_GLIB_GNU_GETTEXT
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
@@ -68,61 +61,76 @@ dnl -------------------------------------------
 dnl Copy of OLD stuff from configure.in -- JHS
 
 dnl Set PACKAGE_LOCALE_DIR in config.h.
-if test "x${prefix}" = "xNONE"; then
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, ${ac_default_prefix}/${DATADIRNAME}/locale)
-else
-  AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, ${prefix}/${DATADIRNAME}/locale)
-fi
+dnl if test "x${prefix}" = "xNONE"; then
+dnl   AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, ${ac_default_prefix}/${DATADIRNAME}/locale)
+dnl else
+dnl   AC_DEFINE_UNQUOTED(PACKAGE_LOCALE_DIR, ${prefix}/${DATADIRNAME}/locale)
+dnl fi
 
+dnl NOTE: must run "./configure datadir=/usr/local/share" to set datadir
 dnl Set PACKAGE_DATA_DIR in config.h.
 if test "x${datadir}" = 'x${prefix}/share'; then
   if test "x${prefix}" = "xNONE"; then
-    AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${ac_default_prefix}/share/${PACKAGE}")
+    AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${ac_default_prefix}/share/${PACKAGE}", 
+                       [Define location of package data])
   else
-    AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${prefix}/share/${PACKAGE}")
+    AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${prefix}/share/${PACKAGE}", 
+                       [Define location of package data])
   fi
 else
-  AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${datadir}/${PACKAGE}")
+   AC_DEFINE_UNQUOTED([PACKAGE_DATA_DIR], "${datadir}/${PACKAGE}", 
+                      [Define location of package data])
 fi
 
 dnl Set PACKAGE_SOURCE_DIR in config.h.
 packagesrcdir=`cd $srcdir && pwd`
-AC_DEFINE_UNQUOTED([PACKAGE_SOURCE_DIR], "${packagesrcdir}")
+dnl AC_DEFINE_UNQUOTED([PACKAGE_SOURCE_DIR], "${packagesrcdir}")
+AC_DEFINE_UNQUOTED([PACKAGE_SOURCE_DIR], "${packagesrcdir}", [Define location of package source])
+
+dnl Defines that need to go in config.h
+AC_DEFINE([CURRENT_DBVERSION], [3], [Version number for Database Format])
+
+dnl these are temorary for debugging autoreconf & configure (comment out later) - JHS
+AC_DEFINE_UNQUOTED([DATADIR], ${datadir}, [Data Dir])
+AC_DEFINE_UNQUOTED([PREFIX], ${prefix}, [Prefix])
+AC_DEFINE_UNQUOTED([AC_DEFAULT_PREFIX], ${ac_default_prefix}, [AC Default Prefix])
 
 dnl Set build and host info for config.h
-AC_DEFINE([BUILD_ALIAS], [$build_alias])
-AC_DEFINE_UNQUOTED([HOST_ALIAS], "$host_alias")
+dnl AC_DEFINE([BUILD_ALIAS], [$build_alias])
+dnl AC_DEFINE_UNQUOTED([HOST_ALIAS], "$host_alias")
 
-AC_DEFINE_UNQUOTED([HOST_CPU], "$host_cpu")
-AC_DEFINE_UNQUOTED([BUILD_CPU], "$build_cpu")
+dnl AC_DEFINE_UNQUOTED([HOST_CPU], "$host_cpu")
+dnl AC_DEFINE_UNQUOTED([BUILD_CPU], "$build_cpu")
 
-AC_DEFINE_UNQUOTED([HOST_OS], "$host_os")
-AC_DEFINE_UNQUOTED([BUILD_OS], "$build_os")
+dnl AC_DEFINE_UNQUOTED([HOST_OS], "$host_os")
+dnl AC_DEFINE_UNQUOTED([BUILD_OS], "$build_os")
 
-AC_DEFINE_UNQUOTED([HOST_VENDOR], "$host_vendor")
-AC_DEFINE_UNQUOTED([BUILD_VENDOR], "$build_vendor")
+dnl AC_DEFINE_UNQUOTED([HOST_VENDOR], "$host_vendor")
+dnl AC_DEFINE_UNQUOTED([BUILD_VENDOR], "$build_vendor")
 
-AC_DEFINE_UNQUOTED([TARGET_ALIAS], "$target_alias")
+dnl AC_DEFINE_UNQUOTED([TARGET_ALIAS], "$target_alias")
 
 dnl Use -Wall if we have gcc.
-changequote(,)dnl
-if test "x$GCC" = "xyes"; then
-  case " $CFLAGS " in
-  *[\ \	]-Wall[\ \	]*) ;;
-  *) CFLAGS="$CFLAGS -Wall" ;;
-  esac
-fi
-changequote([,])dnl
+dnl changequote(,)dnl
+dnl if test "x$GCC" = "xyes"; then
+dnl  case " $CFLAGS " in
+dnl  *[\ \	]-Wall[\ \	]*) ;;
+dnl  *) CFLAGS="$CFLAGS -Wall" ;;
+dnl  esac
+dnl fi
+dnl changequote([,])dnl
 
 dnl -------------------------------------------
-AC_CONFIG_FILES([po/Makefile.in 
-                 m4/Makefile 
-                 intl/Makefile
-                 src/Makefile
-                 src/image_processing/Makefile
+dnl AC_CONFIG_FILES([
+dnl              po/Makefile.in 
+dnl              m4/Makefile 
+dnl              intl/Makefile
+AC_CONFIG_FILES([src/image_processing/Makefile
                  src/interface/Makefile
                  src/matching/Makefile
                  src/math/Makefile
                  src/wavelet/Makefile
+                 src/Makefile
+                 png/Makefile
                  Makefile])
 AC_OUTPUT

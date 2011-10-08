@@ -321,9 +321,9 @@ class MatchResults {
 		void sort(mr_sort_t sortBy, int &active); 
 
 		//***1.5 - indicates whether sorted order is by error measure, so rank numbering is appropriate
-		bool MatchResults::LastSortedByError(); //***1.5
+		bool LastSortedByError(); //***1.5
 
-		void MatchResults::setRankings(); //***1.5
+		void setRankings(); //***1.5
 
 		// doesn't make a copy to save time... so DON'T DELETE
 		// THE RESULT WHEN DONE

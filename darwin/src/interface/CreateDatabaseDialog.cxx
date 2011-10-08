@@ -18,6 +18,8 @@
 #include "../support.h"
 #include "CreateDatabaseDialog.h"
 #include "ErrorDialog.h"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/logo_small.xpm"
@@ -188,7 +190,8 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 
 	for (int areaId = 0; areaId < mOptions->mNumberOfExistingSurveyAreas; areaId++)
 	{
-		gchar *entry[1] = {_(mOptions->mExistingSurveyAreaName[areaId].c_str())};
+		//gchar *entry[1] = {_(mOptions->mExistingSurveyAreaName[areaId].c_str())}; //***2.22 - gtk4.5 complains
+		gchar *entry[1] = {const_cast<char*>(_(mOptions->mExistingSurveyAreaName[areaId].c_str()))};
 
 		gtk_clist_append(
 			GTK_CLIST(createDbSurveyAreaList),
@@ -800,7 +803,8 @@ void on_createDbSurveyAreaCList_select_row(
 			string dbName = o->mExistingDatabaseName[dbId];
 			dbName = dbName.substr(dbName.find(PATH_SLASH)+1);
 
-			gchar *entry[1] = {_(dbName.c_str())};
+			//gchar *entry[1] = {_(dbName.c_str())}; //***2.22 - g++4.5 complains
+			gchar *entry[1] = {const_cast<char*>(_(dbName.c_str()))};
 
 			gtk_clist_append(
 				GTK_CLIST(createDBWin->mDatabaseList),

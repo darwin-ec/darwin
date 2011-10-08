@@ -392,8 +392,7 @@ int Outline::findTip()
 	// transform on the chain
 	double **continuousResult;
 	continuousResult = (double **) WL_Calloc2Dmem(TRANSFORM_LEVELS + 1,
-						      nextPowerOfTwo
-						      (numPoints - 1),
+						      nextPowerOfTwo(numPoints - 1),
 						      sizeof(double));
 
 	// Now perform the transformation

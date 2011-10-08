@@ -40,6 +40,7 @@
 #include "../image_processing/ImageMod.h" //***1.8
 
 #pragma warning (disable : 4305 4309)
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/about_small.xpm"
@@ -108,7 +109,11 @@ MainWindow::MainWindow(Database *db, Options *o)
 			+ "system" + PATH_SLASH + "lastLoadOf_" + area + "_"
 			+ mOptions->mDatabaseFileName.substr(
 					mOptions->mDatabaseFileName.rfind(PATH_SLASH) + 1);
+#ifdef WIN32
 		string command = "copy /Y /V \"" + mOptions->mDatabaseFileName
+#else
+		string command = "cp \"" + mOptions->mDatabaseFileName //***2.22 - for Mac
+#endif
 			+ "\" \"" + backupName + "\" >nul";
 		system(command.c_str());
 	}
@@ -271,7 +276,11 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 			+ "system" + PATH_SLASH + "lastLoadOf_" + area + "_"
 			+ mOptions->mDatabaseFileName.substr(
 					mOptions->mDatabaseFileName.rfind(PATH_SLASH) + 1);
+#ifdef WIN32
 		string command = "copy /Y /V \"" + mOptions->mDatabaseFileName
+#else
+		string command = "cp \"" + mOptions->mDatabaseFileName //***2.22 - for Mac
+#endif
 			+ "\" \"" + backupName + "\" >nul";
 		system(command.c_str());
 	}
@@ -369,8 +378,8 @@ void MainWindow::refreshDatabaseDisplay()
 					fin->mThumbnailPixmap);
 
 			//***2.2 - diagnostic (ID and primary key from SQL
-			//cout << "Fin ID : " << fin->getID();
-			//cout << "Fin key: " << fin->mDataPos;
+			cout << "Fin ID : " << fin->getID();
+			cout << "Fin key: " << fin->mDataPos;
 
 			// make a copy of the thumbnail to store as data within the GTK pixmap
 			char **thumbCopy = copy_thumbnail(fin->mThumbnailPixmap);
@@ -2759,6 +2768,7 @@ void on_export_fullSzImgs_activate(
 	*/
 
 	ExportFinzDialog *dlg = new ExportFinzDialog(
+
 			mainWin->mDatabase,
 			mainWin->mWindow,
 			mainWin->mCList,
@@ -3606,15 +3616,12 @@ gboolean on_mainEventBoxOutline_button_press_event(
 	if (NULL == mainWin->mSelectedFin)
 		return FALSE;
 
-	double outlineColor[4] = {0.0,0.05,0.65,1.0}; //***2.22 - new color - JHS
-
 	if (getNumContourInfoDialogReferences() < 1) {
 		ContourInfoDialog *dlg = new ContourInfoDialog(
 				mainWin->mSelectedFin->mIDCode,
 				//mainWin->mSelectedFin->mFinContour, removed 008OL
 				mainWin->mSelectedFin->mFinOutline, //***008OL
-				//mainWin->mOptions->mCurrentColor);
-				outlineColor);
+				mainWin->mOptions->mCurrentColor);
 		dlg->show();
 	}
 
