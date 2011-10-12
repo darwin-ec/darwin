@@ -24,6 +24,7 @@ gaussj.o gaussj.o: gaussj.cxx /usr/include/math.h \
   /usr/include/c++/4.2.1/i686-apple-darwin10/bits/gthr-default.h \
   /usr/include/pthread.h /usr/include/pthread_impl.h /usr/include/sched.h \
   /usr/include/time.h /usr/include/_structs.h \
+  /usr/include/machine/_limits.h /usr/include/i386/_limits.h \
   /usr/include/c++/4.2.1/cctype /usr/include/ctype.h \
   /usr/include/runetype.h /usr/include/c++/4.2.1/bits/stringfwd.h \
   /usr/include/c++/4.2.1/bits/postypes.h /usr/include/c++/4.2.1/cwchar \
@@ -178,6 +179,10 @@ gaussj.o gaussj.o: gaussj.cxx /usr/include/math.h \
 /usr/include/time.h:
 
 /usr/include/_structs.h:
+
+/usr/include/machine/_limits.h:
+
+/usr/include/i386/_limits.h:
 
 /usr/include/c++/4.2.1/cctype:
 
