@@ -6636,7 +6636,7 @@ _ACEOF
 
 
 
-ac_config_files="$ac_config_files src/image_processing/Makefile src/interface/Makefile src/matching/Makefile src/math/Makefile src/wavelet/Makefile src/Makefile png/Makefile Makefile"
+ac_config_files="$ac_config_files src/image_processing/Makefile src/interface/Makefile src/matching/Makefile src/math/Makefile src/wavelet/Makefile src/Makefile png/Makefile Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -7373,13 +7373,13 @@ do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "src/image_processing/Makefile") CONFIG_FILES="$CONFIG_FILES src/image_processing/Makefile" ;;
-    "src/interface/Makefile") CONFIG_FILES="$CONFIG_FILES src/interface/Makefile" ;;
-    "src/matching/Makefile") CONFIG_FILES="$CONFIG_FILES src/matching/Makefile" ;;
-    "src/math/Makefile") CONFIG_FILES="$CONFIG_FILES src/math/Makefile" ;;
-    "src/wavelet/Makefile") CONFIG_FILES="$CONFIG_FILES src/wavelet/Makefile" ;;
-    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "png/Makefile") CONFIG_FILES="$CONFIG_FILES png/Makefile" ;;
+    "src/image_processing/Makefile") CONFIG_FILES="$CONFIG_FILES src/image_processing/Makefile" ;;
+    "src/interface/Makefile") CONFIG_FILES="$CONFIG_FILES src/interface/Makefile" ;;
+    "src/matching/Makefile") CONFIG_FILES="$CONFIG_FILES src/matching/Makefile" ;;
+    "src/math/Makefile") CONFIG_FILES="$CONFIG_FILES src/math/Makefile" ;;
+    "src/wavelet/Makefile") CONFIG_FILES="$CONFIG_FILES src/wavelet/Makefile" ;;
+    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "png/Makefile") CONFIG_FILES="$CONFIG_FILES png/Makefile" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

@@ -1,14 +1,21 @@
-support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
-  /usr/include/sys/appleapiopts.h /usr/include/sys/cdefs.h \
-  /usr/include/machine/types.h /usr/include/i386/types.h \
-  /usr/include/i386/_types.h /usr/include/sys/_types.h \
-  /usr/include/machine/_types.h /usr/include/machine/endian.h \
-  /usr/include/i386/endian.h /usr/include/sys/_endian.h \
-  /usr/include/libkern/_OSByteOrder.h \
-  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/sys/_structs.h \
-  /usr/include/sys/stat.h /usr/include/Availability.h \
-  /usr/include/AvailabilityInternal.h /usr/include/string.h \
-  /usr/include/_types.h \
+support.o support.o: support.cxx ../config.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/appleapiopts.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/cdefs.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/endian.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_endian.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stdint.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/i386/OSByteOrder.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/stat.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/string.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/_types.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gtk/gtk.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdk.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkapplaunchcontext.h \
@@ -22,27 +29,30 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gtypes.h \
   /Users/johnstewman/gtk/inst/lib/glib-2.0/include/glibconfig.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gmacros.h \
-  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stddef.h \
-  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/limits.h \
-  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/syslimits.h \
-  /usr/include/limits.h /usr/include/machine/limits.h \
-  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
-  /usr/include/sys/syslimits.h \
-  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/float.h \
-  /usr/include/time.h /usr/include/_structs.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stddef.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/limits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/syslimits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/limits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/limits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_limits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/syslimits.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/float.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/time.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_limits.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/garray.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gasyncqueue.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gthread.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gerror.h \
-  /usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdarg.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stdarg.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gquark.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gutils.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gatomic.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbacktrace.h \
-  /usr/include/signal.h /usr/include/sys/signal.h \
-  /usr/include/machine/signal.h /usr/include/i386/signal.h \
-  /usr/include/i386/_structs.h /usr/include/machine/_structs.h \
-  /usr/include/mach/i386/_structs.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/signal.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/signal.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/signal.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbase64.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbitlock.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbookmarkfile.h \
@@ -132,8 +142,10 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gconverterinputstream.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gconverteroutputstream.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gcredentials.h \
-  /usr/include/unistd.h /usr/include/sys/unistd.h \
-  /usr/include/sys/select.h /usr/include/sys/_select.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/unistd.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/unistd.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/select.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/time.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gdatainputstream.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gdataoutputstream.h \
   /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gdbusaddress.h \
@@ -244,10 +256,9 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
   /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pango-tabs.h \
   /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pango-renderer.h \
   /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pango-utils.h \
-  /usr/include/stdio.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h \
   /Users/johnstewman/gtk/inst/lib/gtk-2.0/include/gdkconfig.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplay.h \
-  /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdktypes.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkevents.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkcolor.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdnd.h \
@@ -266,7 +277,6 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
   /Users/johnstewman/gtk/inst/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-enum-types.h \
   /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pangocairo.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkcursor.h \
-  /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplay.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplaymanager.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdrawable.h \
   /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkgc.h \
@@ -527,43 +537,39 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 ../config.h:
 
-/usr/include/sys/types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/types.h:
 
-/usr/include/sys/appleapiopts.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/appleapiopts.h:
 
-/usr/include/sys/cdefs.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/cdefs.h:
 
-/usr/include/machine/types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/types.h:
 
-/usr/include/i386/types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/types.h:
 
-/usr/include/i386/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h:
 
-/usr/include/sys/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h:
 
-/usr/include/machine/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_types.h:
 
-/usr/include/machine/endian.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/endian.h:
 
-/usr/include/i386/endian.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/endian.h:
 
-/usr/include/sys/_endian.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_endian.h:
 
-/usr/include/libkern/_OSByteOrder.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stdint.h:
 
-/usr/include/libkern/i386/_OSByteOrder.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/OSByteOrder.h:
 
-/usr/include/sys/_structs.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/libkern/i386/OSByteOrder.h:
 
-/usr/include/sys/stat.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/stat.h:
 
-/usr/include/Availability.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/string.h:
 
-/usr/include/AvailabilityInternal.h:
-
-/usr/include/string.h:
-
-/usr/include/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/_types.h:
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gtk/gtk.h:
 
@@ -591,27 +597,27 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gmacros.h:
 
-/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stddef.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stddef.h:
 
-/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/limits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/limits.h:
 
-/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/syslimits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/syslimits.h:
 
-/usr/include/limits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/limits.h:
 
-/usr/include/machine/limits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/limits.h:
 
-/usr/include/i386/limits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/limits.h:
 
-/usr/include/i386/_limits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_limits.h:
 
-/usr/include/sys/syslimits.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/syslimits.h:
 
-/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/float.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/float.h:
 
-/usr/include/time.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/time.h:
 
-/usr/include/_structs.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_limits.h:
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/garray.h:
 
@@ -621,7 +627,7 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gerror.h:
 
-/usr/lib/gcc/i686-apple-darwin10/4.2.1/include/stdarg.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include/stdarg.h:
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gquark.h:
 
@@ -631,19 +637,13 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbacktrace.h:
 
-/usr/include/signal.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/signal.h:
 
-/usr/include/sys/signal.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/signal.h:
 
-/usr/include/machine/signal.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/signal.h:
 
-/usr/include/i386/signal.h:
-
-/usr/include/i386/_structs.h:
-
-/usr/include/machine/_structs.h:
-
-/usr/include/mach/i386/_structs.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/signal.h:
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/glib/gbase64.h:
 
@@ -823,13 +823,13 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gcredentials.h:
 
-/usr/include/unistd.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/unistd.h:
 
-/usr/include/sys/unistd.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/unistd.h:
 
-/usr/include/sys/select.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/select.h:
 
-/usr/include/sys/_select.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/time.h:
 
 /Users/johnstewman/gtk/inst/include/glib-2.0/gio/gdatainputstream.h:
 
@@ -1051,13 +1051,11 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 
 /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pango-utils.h:
 
-/usr/include/stdio.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h:
 
 /Users/johnstewman/gtk/inst/lib/gtk-2.0/include/gdkconfig.h:
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplay.h:
-
-/Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdktypes.h:
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkevents.h:
 
@@ -1094,8 +1092,6 @@ support.o support.o: support.cxx ../config.h /usr/include/sys/types.h \
 /Users/johnstewman/gtk/inst/include/pango-1.0/pango/pangocairo.h:
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkcursor.h:
-
-/Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplay.h:
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkdisplaymanager.h:
 

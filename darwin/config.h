@@ -220,7 +220,7 @@
 #define PACKAGE_NAME "darwin"
 
 /* Define location of package source */
-#define PACKAGE_SOURCE_DIR "/Users/johnstewman/Documents/darwinDev2/darwinMac/darwin"
+#define PACKAGE_SOURCE_DIR "/Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "darwin 2.22"

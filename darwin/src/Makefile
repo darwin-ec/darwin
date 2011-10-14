@@ -110,21 +110,21 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run aclocal-1.11
 ALLOCA = 
-AMTAR = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run tar
-AUTOCONF = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run autoconf
-AUTOHEADER = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run autoheader
-AUTOMAKE = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run automake-1.11
+AMTAR = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run tar
+AUTOCONF = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run autoconf
+AUTOHEADER = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run autoheader
+AUTOMAKE = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run automake-1.11
 AWK = awk
-CC = /usr/bin/gcc-4.2 -std=gnu99
+CC = /usr/bin/gcc-4.0 -std=gnu99
 CCDEPMODE = depmode=gcc3
-CFLAGS = -arch i386 -mmacosx-version-min=10.6
-CPP = /usr/bin/gcc-4.2 -std=gnu99 -E
-CPPFLAGS = -I/Users/johnstewman/gtk/inst/include
-CXX = /usr/bin/g++-4.2
+CFLAGS = -arch i386 -I/Developer/SDKs/MacOSX10.4u.sdk/usr/include -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4
+CPP = /usr/bin/gcc-4.0 -std=gnu99 -E
+CPPFLAGS = -I/Users/johnstewman/gtk/inst/include -I/Developer/SDKs/MacOSX10.4u.sdk/usr/include
+CXX = /usr/bin/g++-4.0
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -arch i386 -ffriend-injection
+CXXFLAGS = -arch i386 -I/Developer/SDKs/MacOSX10.4u.sdk/usr/include -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -134,18 +134,18 @@ ECHO_T =
 EGREP = /usr/bin/grep -E
 EXEEXT = 
 GREP = /usr/bin/grep
-GTK_CFLAGS = -D_REENTRANT -I/Users/johnstewman/gtk/inst/include/gtk-2.0 -I/Users/johnstewman/gtk/inst/lib/gtk-2.0/include -I/Users/johnstewman/gtk/inst/include/atk-1.0 -I/Users/johnstewman/gtk/inst/include/cairo -I/Users/johnstewman/gtk/inst/include/gdk-pixbuf-2.0 -I/Users/johnstewman/gtk/inst/include/pango-1.0 -I/Users/johnstewman/gtk/inst/include/glib-2.0 -I/Users/johnstewman/gtk/inst/lib/glib-2.0/include -I/Users/johnstewman/gtk/inst/include/pixman-1 -I/Users/johnstewman/gtk/inst/include/freetype2 -I/Users/johnstewman/gtk/inst/include/libpng12  
+GTK_CFLAGS = -D_REENTRANT -I/Users/johnstewman/gtk/inst/include/gtk-2.0 -I/Users/johnstewman/gtk/inst/lib/gtk-2.0/include -I/Users/johnstewman/gtk/inst/include/atk-1.0 -I/Users/johnstewman/gtk/inst/include/cairo -I/Users/johnstewman/gtk/inst/include/gdk-pixbuf-2.0 -I/Users/johnstewman/gtk/inst/include/pango-1.0 -I/Users/johnstewman/gtk/inst/include/glib-2.0 -I/Users/johnstewman/gtk/inst/lib/glib-2.0/include -I/Users/johnstewman/gtk/inst/include/pixman-1 -I/Users/johnstewman/gtk/inst/include/freetype2 -I/Users/johnstewman/gtk/inst/include/libpng14  
 GTK_LIBS = -L/Users/johnstewman/gtk/inst/lib -lgtk-quartz-2.0 -lgdk-quartz-2.0 -latk-1.0 -lgio-2.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lm -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lglib-2.0 -lintl  
 INSTALL = /Users/johnstewman/.local/bin/install-check
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = -L/Users/johnstewman/gtk/inst/lib -L/Users/johnstewman/gtk/inst/lib -arch i386 -mmacosx-version-min=10.6 -Wl,-headerpad_max_install_names
+LDFLAGS = -L/Users/johnstewman/gtk/inst/lib -L/Users/johnstewman/gtk/inst/lib -arch i386 -L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -Wl,-headerpad_max_install_names
 LIBOBJS =  ${LIBOBJDIR}lstat$U.o
 LIBS = 
 LTLIBOBJS =  ${LIBOBJDIR}lstat$U.lo
-MAKEINFO = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/missing --run makeinfo
+MAKEINFO = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/missing --run makeinfo
 MKDIR_P = .././install-sh -c -d
 OBJEXT = o
 PACKAGE = darwin
@@ -162,11 +162,11 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 2.22
-abs_builddir = /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/src
-abs_srcdir = /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/src
-abs_top_builddir = /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin
-abs_top_srcdir = /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin
-ac_ct_CC = /usr/bin/gcc-4.2
+abs_builddir = /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/src
+abs_srcdir = /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/src
+abs_top_builddir = /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin
+abs_top_srcdir = /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin
+ac_ct_CC = /usr/bin/gcc-4.0
 ac_ct_CXX = 
 am__include = include
 am__leading_dot = .
@@ -185,7 +185,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwinMac/darwin/install-sh
+install_sh = ${SHELL} /Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -219,7 +219,7 @@ INCLUDES = \
         -I$(top_srcdir)/src/image_processing \
         -I$(top_srcdir)/src/math \
         -I$(top_srcdir)/png \
-        -D_REENTRANT -I/Users/johnstewman/gtk/inst/include/gtk-2.0 -I/Users/johnstewman/gtk/inst/lib/gtk-2.0/include -I/Users/johnstewman/gtk/inst/include/atk-1.0 -I/Users/johnstewman/gtk/inst/include/cairo -I/Users/johnstewman/gtk/inst/include/gdk-pixbuf-2.0 -I/Users/johnstewman/gtk/inst/include/pango-1.0 -I/Users/johnstewman/gtk/inst/include/glib-2.0 -I/Users/johnstewman/gtk/inst/lib/glib-2.0/include -I/Users/johnstewman/gtk/inst/include/pixman-1 -I/Users/johnstewman/gtk/inst/include/freetype2 -I/Users/johnstewman/gtk/inst/include/libpng12  
+        -D_REENTRANT -I/Users/johnstewman/gtk/inst/include/gtk-2.0 -I/Users/johnstewman/gtk/inst/lib/gtk-2.0/include -I/Users/johnstewman/gtk/inst/include/atk-1.0 -I/Users/johnstewman/gtk/inst/include/cairo -I/Users/johnstewman/gtk/inst/include/gdk-pixbuf-2.0 -I/Users/johnstewman/gtk/inst/include/pango-1.0 -I/Users/johnstewman/gtk/inst/include/glib-2.0 -I/Users/johnstewman/gtk/inst/lib/glib-2.0/include -I/Users/johnstewman/gtk/inst/include/pixman-1 -I/Users/johnstewman/gtk/inst/include/freetype2 -I/Users/johnstewman/gtk/inst/include/libpng14  
 
 darwin_SOURCES = \
         main.cxx \

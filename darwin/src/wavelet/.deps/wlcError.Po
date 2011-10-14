@@ -1,23 +1,21 @@
-wlcError.o wlcError.o: wlcError.c /usr/include/stdio.h \
-  /usr/include/_types.h /usr/include/sys/_types.h \
-  /usr/include/sys/cdefs.h /usr/include/machine/_types.h \
-  /usr/include/i386/_types.h /usr/include/secure/_stdio.h \
-  /usr/include/secure/_common.h wlcore.h
+wlcError.o wlcError.o: wlcError.c \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/cdefs.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_types.h \
+  /Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h wlcore.h
 
-/usr/include/stdio.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/stdio.h:
 
-/usr/include/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/_types.h:
 
-/usr/include/sys/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/_types.h:
 
-/usr/include/sys/cdefs.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/cdefs.h:
 
-/usr/include/machine/_types.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/machine/_types.h:
 
-/usr/include/i386/_types.h:
-
-/usr/include/secure/_stdio.h:
-
-/usr/include/secure/_common.h:
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/i386/_types.h:
 
 wlcore.h:
