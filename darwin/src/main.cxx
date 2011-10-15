@@ -102,28 +102,22 @@ void saveConfig();
 void readConfig(string homedir)
 {
 
+	//***2.22 - major rewite to clean up for Windows and Mac platforms
+
+	gOptions->mDarwinHome = homedir; // homedir should always be defined in main()
+
+	string fileName; // for configuration filename
+
 #ifdef WIN32
-
-	//***054 - program is now started on Windows Platform by darwin54.bat, 
-	//         which sets environment variable DARWINHOME prior to call
-
-	string fileName("");
-
-	//char *homedir = getenv("DARWINHOME");
-
-	gOptions->mDarwinHome = homedir; // ***1.1
 
 	string tempdir = getenv("temp");
 	gOptions->mTempDirectory = tempdir + "\\darwin";
 	
-	fileName += homedir;
-	fileName += "\\system\\darwin.cfg";
+	fileName = homedir + "\\system\\darwin.cfg";
 
 	gCfg = new ConfigFile(fileName.c_str());
 
-	//***1.85 - if no config found,  attempt to load backup copy,
-	// else immediately save a backup copy just in case problems arise later 
-
+	// if config found, then save a backup, else load the backup copy
 	if (gCfg->size() > 0)
 		gCfg->save((fileName+".bak").c_str());
 	else
@@ -132,73 +126,44 @@ void readConfig(string homedir)
 	if ((!gCfg->getItem("DatabaseFileName", gOptions->mDatabaseFileName)) ||
 		(gOptions->mDatabaseFileName == "NONE"))
 	{
-		fileName = "";
-		fileName += homedir;
-		fileName += "\\surveyAreas\\default"; //***1.85
-
-		gOptions->mCurrentSurveyArea = fileName; //***1.85
-		
-		//***1.85 - default is now NO DATABASE
+		// if no database found then set default survey area and NONE as database
+		gOptions->mCurrentSurveyArea = homedir + "\\surveyAreas\\default"; 
 		gOptions->mDatabaseFileName = "NONE";
 	}
 	else
 	{
-		//***1.85 - break out the currentSurveyArea root name
+		// if database is found, then break out the currentSurveyArea root name
 		int pos = gOptions->mDatabaseFileName.rfind("\\catalog");
 		gOptions->mCurrentSurveyArea = gOptions->mDatabaseFileName.substr(0,pos);
 	}
 
 #else
 
-	// on UNIX/Linux platform the same DARWINHOME environment variable is used
-	// its value must be set in .bashrc, .cshrc, or in a runtime shell script
-	
-	char 
-		*fileName, 
-		*homedirU;
-
-	homedirU = getenv("DARWINHOME");
-	//***1.3 - in case Linux can't find DARWINHOME
-	if (NULL == homedirU)
-	{
-		cout << "$DARWINHOME is not defined in runtime environment!\n";
-		exit(1);
-	}
-
-	gOptions->mDarwinHome = homedirU; // ***1.1
-
-	//string tempdir = getenv("temp"); //***2.22 - no predefined "temp" dir on Mac
+	//***2.22 - no predefined "temp" dir on Mac
 	gOptions->mTempDirectory = getenv("HOME");
 	gOptions->mTempDirectory += "/.darwintmp";
 
-	fileName = new char[strlen(homedirU) + strlen("/.darwin") + 1];
-	sprintf(fileName, "%s/.darwin", homedirU);
-
+	fileName = homedir + "/system/.darwinrc";
 	gCfg = new ConfigFile(fileName);
 
-	delete[] fileName;
+	// if config found, save a backup, else load backup copy
+	if (gCfg->size() > 0)
+		gCfg->save((fileName+"~").c_str());
+	else
+		gCfg->open((fileName+"~").c_str());
 
 	if (!gCfg->getItem("DatabaseFileName", gOptions->mDatabaseFileName)) 
 	{
-		//***1.85 - build and save current survey area root path
-		fileName = new char[strlen(homedirU) + strlen("/surveyAreas/default") + 1];
-		sprintf(fileName, "%s/surveyAreas/default", homedirU);
-
-		gOptions->mCurrentSurveyArea = fileName; //***1.85
-
-		fileName = new char[strlen(homedirU) + strlen("/catalog/darwin.db") + 1];
-		sprintf(fileName, "%s/catalog/darwin.db", homedirU);
-
-		gOptions->mDatabaseFileName = fileName;
-		delete[] fileName;
+		// if no database found then set default survey area and NONE as database
+		gOptions->mCurrentSurveyArea = homedir + "/surveyAreas/default";
+		gOptions->mDatabaseFileName = "NONE";
 	}
 	else
 	{
-		//***1.85 - break out the currentSurveyArea root path
+		// if database is found, then break out the currentSurveyArea root path
 		int pos = gOptions->mDatabaseFileName.rfind("/catalog");
 		gOptions->mCurrentSurveyArea = gOptions->mDatabaseFileName.substr(0,pos);
 	}
-
 
 #endif
 
@@ -207,13 +172,10 @@ void readConfig(string homedir)
 	    !gCfg->getItem("CurrentColor[2]", gOptions->mCurrentColor[2]) ||
 	    !gCfg->getItem("CurrentColor[3]", gOptions->mCurrentColor[3])) 
 	{
-
 		for (int i = 0; i < 4; i++)
 			gOptions->mCurrentColor[i] = 0.0;
 
 		gOptions->mCurrentColor[1] = 1.0;
-
-
 	}
 
 	string toolbarType;
@@ -553,11 +515,12 @@ int main(int argc, char *argv[])
 
 	string darwinhome(argv[0]);//first argument is absolute if double-clicked in windows; otherwise, may be relative
 	//we will overide this if argv[1]==--set-home="..."
+	cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
+#ifdef WIN32		
 	int basePos = darwinhome.rfind("\\system\\bin\\darwin.exe");
 	if (basePos!=string::npos) {
 		darwinhome=darwinhome.substr(0,basePos);
 	} else { //try current directory...may be relative if executed from command line
-#ifdef WIN32		
 		char c_cwd[_MAX_PATH];   // _MAX_PATH is only on windows
 		getcwd(c_cwd, _MAX_PATH);
 		string cwd(c_cwd);
@@ -567,16 +530,19 @@ int main(int argc, char *argv[])
 			darwinhome=darwinhome.substr(0,basePos);
 		}
 #else
-		char c_cwd[MAXPATHLEN]; //***2.22 - for Mac & Linux
-		getcwd(c_cwd, MAXPATHLEN);
-		string cwd(c_cwd);
-		darwinhome=cwd;
-		basePos = darwinhome.rfind("/system/bin");
-		if (basePos!=string::npos)	{
-			darwinhome=darwinhome.substr(0,basePos);
-		}
+	//***2.22 - on Mac the path is always relative
+	// so try current directory
+	char c_cwd[MAXPATHLEN]; //***2.22 - for Mac & Linux
+	getcwd(c_cwd, MAXPATHLEN);
+	string cwd(c_cwd);
+	darwinhome=cwd;
+	int basePos = darwinhome.rfind("/system/bin");
+	if (basePos!=string::npos)	{
+		darwinhome=darwinhome.substr(0,basePos);
 #endif
 	}
+
+	cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
 
 	vector<string> options; // so we can handle multiple command line options
 	string finz("");       // assume only one of these
