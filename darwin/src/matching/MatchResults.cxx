@@ -42,11 +42,19 @@ void MatchResults::setRankings()
 		return;
 			
 	list<Result>::iterator it = mResults.begin();
-	for (int i=0; i<mResults.size(); i++, it++)
+	//for (int i=0; i<mResults.size(); i++, it++)
+	for (int i = 0; it != mResults.end(); i++, it++) //***2.22 - better to limit with iterator
 	{
-		char rank[5];
+		//***2.22 - I have no idea why this worked before.  alocate 5 chars
+		// write 5 chars "%4d " AND an additional '\0' and then go back and
+		// put a '\0' in position 4.  This overwrites the char array by one position
+		//char rank[5];
+		//sprintf(rank, "%4d ",i+1);
+		//rank[4] = '\0';
+		
+		char rank[6]; //***2.22 - this fixes it
 		sprintf(rank, "%4d ",i+1);
-		rank[4] = '\0';
+
 		it->setRank(rank);
 	}
 }

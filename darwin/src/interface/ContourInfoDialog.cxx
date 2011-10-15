@@ -220,7 +220,7 @@ void ContourInfoDialog::updateInfo()
  		mFinOutline->getFeaturePoint(LE_END), //***008OOL
  		mFinOutline->getFeaturePoint(POINT_OF_INFLECTION) //***008OOL
     );
-			
+	/*		
 	gtk_text_freeze(GTK_TEXT(mTextBox)); //*** 2.2 - correct display issue
 	gtk_text_insert(
 			GTK_TEXT (mTextBox),
@@ -228,6 +228,11 @@ void ContourInfoDialog::updateInfo()
 			info,
 			strlen(info));
 	gtk_text_thaw(GTK_TEXT(mTextBox)); //*** 2.2 - correct display issue
+  */
+
+  //***2.22 - using gtkTextViw and buffer now
+  gtk_text_buffer_insert_at_cursor (mTextBuffer, info, strlen(info));
+
 }
 
 
@@ -324,10 +329,17 @@ GtkWidget* ContourInfoDialog::createInfoDialog()
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (infoScrolledWindow), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
   gtk_widget_set_usize(GTK_WIDGET(infoScrolledWindow), 300, 200);
 
-  mTextBox = gtk_text_new (NULL, NULL);
-  gtk_widget_show (mTextBox);
-  gtk_container_add (GTK_CONTAINER (infoScrolledWindow), mTextBox);
+  //***2.22 - replaced this with following
+  //mTextBox = gtk_text_new (NULL, NULL);
+  //gtk_widget_show (mTextBox);
+  //gtk_container_add (GTK_CONTAINER (infoScrolledWindow), mTextBox);
  
+  //***2.22 - gtkText is deprecated and is causing crashes with GTK+-2.22
+  mTextView = gtk_text_view_new();
+  gtk_widget_show (mTextView);
+  mTextBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mTextView));
+  gtk_container_add (GTK_CONTAINER (infoScrolledWindow), mTextView);
+
   dialog_action_area1 = GTK_DIALOG (infoDialog)->action_area;
   gtk_object_set_data (GTK_OBJECT (infoDialog), "dialog_action_area1", dialog_action_area1);
   gtk_widget_show (dialog_action_area1);
@@ -341,7 +353,8 @@ GtkWidget* ContourInfoDialog::createInfoDialog()
   tmpBox = gtk_hbox_new(FALSE, 0);
   tmpIcon = create_pixmap_from_data(tmpBox, close_xpm);
   gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
-  gtk_widget_show(tmpIcon);
+  gtk_widget_show(tmpIcon); 
+ 
   tmpLabel = gtk_label_new("");
   gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, TRUE, TRUE, 0);
   gtk_widget_show(tmpLabel);

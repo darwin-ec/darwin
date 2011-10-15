@@ -80,8 +80,12 @@ class ContourInfoDialog
 			*mDialog,
 			*mDrawingAreaContour,
 			*mDrawingAreaChain,
-			*mTextBox,
+//			*mTextBox,
+			*mTextView, //***2.22
 			*mSpinButton;
+
+		GtkTextBuffer
+			*mTextBuffer; //***2.22 - replaces mTextBox (gtkText)
 
 		Outline *mFinOutline; //***008OL
 

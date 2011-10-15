@@ -87,8 +87,12 @@ class MappedContoursDialog
 			*mDialog,
 			*mDrawingAreaContour,
 			*mDrawingAreaChain,
-			*mTextBox,
+//			*mTextBox,
+			*mTextView, //***2.22 - replaces mTextBox (GtkText)
 			*mSpinButton;
+
+		GtkTextBuffer
+			*mTextBuffer; //***2.22
 
 		//Outline *mFinOutline; //***008OL
 		FloatContour 

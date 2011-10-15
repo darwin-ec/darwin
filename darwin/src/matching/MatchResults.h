@@ -209,8 +209,7 @@ class Result {
 		std::string getLocation() const { return mLocation; }
 		std::string getRank() const { return mRank; } //***1.5
 
-		//void setRank (const std::string rank) {mRank = rank;} //***1.5
-		void setRank (const char *rank) {mRank = rank;} //***1.5
+		void setRank (const std::string rank) {mRank = rank;} //***1.5
 
 		//***1.1 - sets six indices for points used in final contour mapping
 		void setMappingControlPoints(
@@ -295,6 +294,7 @@ class MatchResults {
 			mTracedFinFile(""),
 			mDatabaseFile("")
 		{ }
+
 
 		//***008OL -- MatchResultsWindow calls constructor of this type and none existed
 		MatchResults(const MatchResults &results)
