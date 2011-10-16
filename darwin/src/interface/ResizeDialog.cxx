@@ -14,8 +14,9 @@
 #include "ResizeDialog.h"
 #include "../image_processing/transform.h"
 #include "../Error.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/ok.xpm"
 

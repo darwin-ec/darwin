@@ -13,8 +13,9 @@
 #include "../Error.h"
 #include "../image_processing/transform.h"
 #include "../image_processing/ImageMod.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"
 

@@ -29,6 +29,10 @@
 #define PATH_SLASH "/"
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #endif
@@ -48,13 +52,16 @@
 #include <stdio.h>
 #ifdef WIN32
 extern "C"{
+/***2.22 - these two macros get redifined inside jpeglib.h (jconfig.vc) */
+#undef HAVE_STDDEF_H
+#undef HAVE_STDLIB_H
 #include "../../jpeg-6b/src/jpeglib.h" 
 #include "../../jpeg-6b/src/jerror.h"
 }
 #else
 extern "C"{
 // this is a hack - the new Gtk+2.24 stuff is in my (JHS) home dir
-// -I$(HOME)/gtk/inst/include must be set to build / make 
+// -I$(HOME)/gtk/inst/include must be set to build / make for Mac
 #include "jpeglib.h" 
 #include "jerror.h"
 }
@@ -63,10 +70,6 @@ extern "C"{
 
 #include "png.h"
 #include "../../png/pngFile.h"
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
 
 #ifdef DEBUG
 #include <iostream>

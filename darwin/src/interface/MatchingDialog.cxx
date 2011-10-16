@@ -17,8 +17,9 @@
 #include "MatchResultsWindow.h"
 #include "ErrorDialog.h"
 //#include "../CatalogCategories.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/cancel.xpm"
 
 #ifdef HAVE_CONFIG_H

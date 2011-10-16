@@ -16,8 +16,9 @@
 #include "../support.h"
 #include "CatalogSchemeDialog.h"
 #include "ErrorDialog.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/logo_small.xpm"
 

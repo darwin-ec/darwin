@@ -19,8 +19,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/cancel.xpm"
 

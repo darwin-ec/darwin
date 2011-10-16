@@ -27,8 +27,9 @@
 #include "SaveFileSelectionDialog.h" //***1.4
 
 #pragma warning (disable : 4305 4309)
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/fin.xpm"
 #include "../../pixmaps/magnify_cursor.xbm"

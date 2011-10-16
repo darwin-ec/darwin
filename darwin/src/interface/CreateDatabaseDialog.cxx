@@ -18,8 +18,9 @@
 #include "../support.h"
 #include "CreateDatabaseDialog.h"
 #include "ErrorDialog.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/logo_small.xpm"

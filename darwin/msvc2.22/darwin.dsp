@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /I ".." /D "PNG_NO_STDIO" /D "VCPP6" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W1 /Gm /GX /ZI /Od /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /I ".." /D "PNG_NO_STDIO" /D "VCPP6" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

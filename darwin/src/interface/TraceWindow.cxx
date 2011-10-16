@@ -36,8 +36,9 @@
 #include <iostream> //***06PM for debugging
 
 #pragma warning (disable : 4305 4309)
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/fin.xpm"
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/addpoint.xpm"

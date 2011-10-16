@@ -8,14 +8,14 @@
 //
 //*******************************************************************
 
-
 #include "../support.h"
 #include "AlterBrightnessDialog.h"
 #include "../Error.h"
 #include "../image_processing/transform.h"
 #include "../image_processing/ImageMod.h" //***1.8
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/ok.xpm"
 #include "../../pixmaps/cancel.xpm"
 

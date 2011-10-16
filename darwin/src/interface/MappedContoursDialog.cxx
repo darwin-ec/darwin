@@ -17,8 +17,9 @@
 #include "../Chain.h" //***008OL
 #include "../utility.h"
 #include "../feature.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/close.xpm"
 #include "../waveletUtil.h"
 

@@ -129,8 +129,9 @@
 #define HAVE_STDBOOL_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
+#ifndef HAVE_STDDEF_H
 #define HAVE_STDDEF_H 1
-
+#endif
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
@@ -138,8 +139,9 @@
 /* #undef HAVE_STDIO_EXT_H */
 
 /* Define to 1 if you have the <stdlib.h> header file. */
+#ifndef HAVE_STDLIB_H
 #define HAVE_STDLIB_H 1
-
+#endif
 /* Define to 1 if you have the `stpcpy' function. */
 #define HAVE_STPCPY 1
 

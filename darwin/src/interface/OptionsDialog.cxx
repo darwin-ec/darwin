@@ -22,8 +22,9 @@
 #ifdef DEBUG
 #include <iostream>
 #endif
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/ok.xpm"
 

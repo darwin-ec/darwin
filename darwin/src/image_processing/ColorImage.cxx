@@ -10,7 +10,9 @@
 
 #include "ColorImage.h"
 #include "../utility.h"
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
+#endif
 #include "../../pixmaps/question.xpm" //***1.5
 #include "../../pixmaps/fnf.xpm" //***1.5
 
