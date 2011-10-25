@@ -124,7 +124,12 @@ int ConfigFile::size()
 bool ConfigFile::open(const string fileName)
 {
 	// keep a copy of the filename
-	int n = fileName.rfind(".bak");
+	int n;
+#ifdef WIN32
+	n = fileName.rfind(".bak");
+#else
+	n = fileName.rfind("~"); //***2.22 - for Mac version
+#endif
 	if (n == string::npos)
 		fName = fileName;
 	else

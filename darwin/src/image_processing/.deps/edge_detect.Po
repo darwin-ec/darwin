@@ -128,7 +128,7 @@ edge_detect.o edge_detect.o: edge_detect.cxx \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/ostream.tcc \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/i686-apple-darwin10/bits/basic_file.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/fstream.tcc \
-  edge_detect.h GrayImage.h ImageFile.h ../Error.h ../../config.h Image.h \
+  edge_detect.h GrayImage.h ImageFile.h ../../config.h ../Error.h Image.h \
   Matrix.h Pixel.h types.h ../utility.h ../constants.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/iostream \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/sstream \
@@ -425,9 +425,9 @@ GrayImage.h:
 
 ImageFile.h:
 
-../Error.h:
-
 ../../config.h:
+
+../Error.h:
 
 Image.h:
 

@@ -90,7 +90,7 @@ BinaryImage.o BinaryImage.o: BinaryImage.cxx BinaryImage.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/stl_deque.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/deque.tcc \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/stl_stack.h \
-  ImageFile.h \
+  ImageFile.h ../../config.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/fstream \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/istream \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/ios \
@@ -132,7 +132,7 @@ BinaryImage.o BinaryImage.o: BinaryImage.cxx BinaryImage.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/ostream.tcc \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/i686-apple-darwin10/bits/basic_file.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/fstream.tcc \
-  ../Error.h ../../config.h Image.h Matrix.h Pixel.h types.h ../utility.h \
+  ../Error.h Image.h Matrix.h Pixel.h types.h ../utility.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h \
   ../constants.h \
@@ -352,6 +352,8 @@ BinaryImage.h:
 
 ImageFile.h:
 
+../../config.h:
+
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/fstream:
 
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/istream:
@@ -435,8 +437,6 @@ ImageFile.h:
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/fstream.tcc:
 
 ../Error.h:
-
-../../config.h:
 
 Image.h:
 

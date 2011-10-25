@@ -590,6 +590,7 @@ DeleteOutlineDialog.o DeleteOutlineDialog.o: DeleteOutlineDialog.cxx \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/stl_map.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/stl_multimap.h \
   ../image_processing/GrayImage.h ../image_processing/ImageFile.h \
+  ../../config.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/fstream \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/istream \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/ios \
@@ -631,10 +632,9 @@ DeleteOutlineDialog.o DeleteOutlineDialog.o: DeleteOutlineDialog.cxx \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/ostream.tcc \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/i686-apple-darwin10/bits/basic_file.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/fstream.tcc \
-  ../image_processing/../Error.h ../../config.h \
-  ../image_processing/Image.h ../image_processing/Matrix.h \
-  ../image_processing/Pixel.h ../image_processing/types.h \
-  ../image_processing/../utility.h \
+  ../image_processing/../Error.h ../image_processing/Image.h \
+  ../image_processing/Matrix.h ../image_processing/Pixel.h \
+  ../image_processing/types.h ../image_processing/../utility.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/math.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/architecture/i386/math.h \
   ../image_processing/../constants.h \
@@ -1876,6 +1876,8 @@ TraceWindow.h:
 
 ../image_processing/ImageFile.h:
 
+../../config.h:
+
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/fstream:
 
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/istream:
@@ -1959,8 +1961,6 @@ TraceWindow.h:
 /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/bits/fstream.tcc:
 
 ../image_processing/../Error.h:
-
-../../config.h:
 
 ../image_processing/Image.h:
 
