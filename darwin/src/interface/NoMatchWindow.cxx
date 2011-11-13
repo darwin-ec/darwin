@@ -342,7 +342,7 @@ GtkWidget *NoMatchWindow::createNoMatchWindow(const string &title)
 	gtk_box_pack_start(GTK_BOX(nomatchVBoxRight), mEntryDate, FALSE,
 				FALSE, 0);
 
-	nomatchLabelRoll = gtk_label_new(_("Roll and Frame"));
+	nomatchLabelRoll = gtk_label_new(_("Roll/Frame or Lat/Long"));
 	gtk_widget_show(nomatchLabelRoll);
 	gtk_box_pack_start(GTK_BOX(nomatchVBoxRight), nomatchLabelRoll, FALSE,
 				FALSE, 3);

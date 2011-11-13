@@ -405,15 +405,15 @@ void rebuildFolders(string home, string area, bool force)
 		_mkdir((path+"matchQueues").c_str());
 		_mkdir((path+"matchQResults").c_str());
 		_mkdir((path+"sightings").c_str());
-#else //***2.22 - new section for Mac / UNIX
-		mkdir(path.c_str(),777);
+#else //***2.22 - new section for Mac / UNIX ( with permissions 777)
+		mkdir(path.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		path += PATH_SLASH;
-		mkdir(path.c_str(),777);
-		mkdir((path+"catalog").c_str(),777);
-		mkdir((path+"tracedFins").c_str(),777);
-		mkdir((path+"matchQueues").c_str(),777);
-		mkdir((path+"matchQResults").c_str(),777);
-		mkdir((path+"sightings").c_str(),777);
+		mkdir(path.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		mkdir((path+"catalog").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		mkdir((path+"tracedFins").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		mkdir((path+"matchQueues").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		mkdir((path+"matchQResults").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		mkdir((path+"sightings").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 #endif
 	}
 	else // RESTORE
@@ -487,7 +487,7 @@ void rebuildFolders(string home, string area, bool force)
 		if( (status = stat(path.c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"SurveyAreas\" folder ...\n" );
-			mkdir(path.c_str(),777);
+			mkdir(path.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 
 		path += PATH_SLASH + area;
@@ -495,7 +495,7 @@ void rebuildFolders(string home, string area, bool force)
 		{
 			printf( "Creating missing \"%s\" SurveyArea subfolder...\n", 
 				area.c_str());
-			mkdir(path.c_str(),777);
+			mkdir(path.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 
 		// find subfolders and, if missing, fix them ...
@@ -503,27 +503,27 @@ void rebuildFolders(string home, string area, bool force)
 		if( (status = stat((path+"catalog").c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"catalog\" folder ...\n" );
-			mkdir((path+"catalog").c_str(),777);
+			mkdir((path+"catalog").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 		if( (status = stat((path+"tracedFins").c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"tracedFins\" folder ...\n" );
-			mkdir((path+"tracedFins").c_str(),777);
+			mkdir((path+"tracedFins").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 		if( (status = stat((path+"matchQueues").c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"matchQueues\" folder ...\n" );
-			mkdir((path+"matchQueues").c_str(),777);
+			mkdir((path+"matchQueues").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 		if( (status = stat((path+"matchQResults").c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"matchQResults\" folder ...\n" );
-			mkdir((path+"matchQResults").c_str(),777);
+			mkdir((path+"matchQResults").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 		if( (status = stat((path+"sightings").c_str(), &buffer)) == -1L )
 		{
 			printf( "Creating missing \"sightings\" folder ...\n" );
-			mkdir((path+"sightings").c_str(),777);
+			mkdir((path+"sightings").c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
 		}
 #endif
 	}
@@ -634,7 +634,11 @@ bool testFileExistsAndPrompt(string filename)
 		}
 
 		// delete the exising archive file
+#ifdef WIN32
 		string command = "DEL /Q \"" + filename + "\" >nul";
+#else
+		string command = "rm -f \"" + filename + "\" >nul"; //***2.22 - for Mac
+#endif
 		system(command.c_str());
 	}
 

@@ -41,6 +41,70 @@
 //define a unsigned char as uchar.  Easier to type.
 typedef unsigned char uchar;
 
+//***2.22 - following section copied from Matthias Wandel's "gpsinfo.c" (JHS)
+
+#define MAX_GPS_TAG 0x1e
+
+#define TAG_GPS_LAT_REF    1
+#define TAG_GPS_LAT        2
+#define TAG_GPS_LONG_REF   3
+#define TAG_GPS_LONG       4
+#define TAG_GPS_ALT_REF    5
+#define TAG_GPS_ALT        6
+
+static const char * GpsTags[MAX_GPS_TAG+1]= {
+    "VersionID       ",//0x00  
+    "LatitudeRef     ",//0x01  
+    "Latitude        ",//0x02  
+    "LongitudeRef    ",//0x03  
+    "Longitude       ",//0x04  
+    "AltitudeRef     ",//0x05  
+    "Altitude        ",//0x06  
+    "TimeStamp       ",//0x07  
+    "Satellites      ",//0x08  
+    "Status          ",//0x09  
+    "MeasureMode     ",//0x0A  
+    "DOP             ",//0x0B  
+    "SpeedRef        ",//0x0C  
+    "Speed           ",//0x0D  
+    "TrackRef        ",//0x0E  
+    "Track           ",//0x0F  
+    "ImgDirectionRef ",//0x10  
+    "ImgDirection    ",//0x11  
+    "MapDatum        ",//0x12  
+    "DestLatitudeRef ",//0x13  
+    "DestLatitude    ",//0x14  
+    "DestLongitudeRef",//0x15  
+    "DestLongitude   ",//0x16  
+    "DestBearingRef  ",//0x17  
+    "DestBearing     ",//0x18  
+    "DestDistanceRef ",//0x19  
+    "DestDistance    ",//0x1A  
+    "ProcessingMethod",//0x1B  
+    "AreaInformation ",//0x1C  
+    "DateStamp       ",//0x1D  
+    "Differential    ",//0x1E
+};
+
+//--------------------------------------------------------------------------
+// Exif format descriptor stuff
+#define NUM_FORMATS 12
+
+#define FMT_BYTE       1 
+#define FMT_STRING     2
+#define FMT_USHORT     3
+#define FMT_ULONG      4
+#define FMT_URATIONAL  5
+#define FMT_SBYTE      6
+#define FMT_UNDEFINED  7
+#define FMT_SSHORT     8
+#define FMT_SLONG      9
+#define FMT_SRATIONAL 10
+#define FMT_SINGLE    11
+#define FMT_DOUBLE    12
+
+//***2.22 - end of new GPS section
+
 //Define Max sections of jpeg
 #define MAX_SECTIONS 40
 #define MAX_DATE_COPIES 10
@@ -120,7 +184,7 @@ typedef struct {
 typedef struct {
     unsigned short Tag;
     char * Desc;
-}TagTable_t;
+}TagTable_t;    
 
 class c_Exif
 {
@@ -132,7 +196,8 @@ public:
 	//accessor functions
 	std::string GetDate();
 	std::string GetTime();
-	
+   std::string GetLatLong();//***2.22
+
 private:
 	unsigned char * LastExifRefd;
 	unsigned char * DirWithThumbnailPtrs;
@@ -147,6 +212,12 @@ private:
 	int SectionsRead;
 	int HaveAll;
 	Section_t Sections[MAX_SECTIONS];
+
+   //***2.22 - next 4 members for GPS extraction (JHS)
+   bool GpsInfoPresent;
+   char GpsLat[31];
+   char GpsLong[31];
+   char GpsAlt[20];
 
 	// for fixing the rotation.  This is for future implemtation
 	void * OrientationPtr;
@@ -165,6 +236,10 @@ private:
 
 	void ConvertDateTime();
 	
+   //***2.22 - new function from Matthias Wandel's "gpsinfo.c" (2011 mods by JHS)
+   void ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, 
+        unsigned char * OffsetBase, unsigned ExifLength);
+
 			
 };
 

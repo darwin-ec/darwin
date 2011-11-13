@@ -1,0 +1,67 @@
+body { /*image: images/darksm.jpg;*/ background-color: #39597D; }
+
+h1, h2, h3, h4, h5, h6 {
+  color: #000000;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+a:link { color: #39597D; text-decoration: none }
+a:visited { color: #39597D; text-decoration: none }
+a:hover { color: #FF6600; text-decoration: underline }
+
+a.nav:link { color: #C6CFD9; text-decoration: none }
+a.nav:visited { color: #C6CFD9; text-decoration: none }
+a.nav:hover { color: #DDDD00; text-decoration: underline }
+
+input {
+	border: thin solid black;
+}
+
+.menu {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 110%;
+  font-weight: bold;
+  color: #000000
+}
+
+.title {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 110%;
+  color: #D6DDE4;
+  font-weight: bold
+}
+
+.news {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 130%;
+  font-weight: normal;
+  color: #000000
+}
+
+.stuff {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 120%;
+  font-weight: normal;
+  color: #000000
+}
+
+.smallStuff {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 120%;
+  font-weight: normal;
+  color: #000000
+}
+
+.cright {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: #C0C0C0
+}

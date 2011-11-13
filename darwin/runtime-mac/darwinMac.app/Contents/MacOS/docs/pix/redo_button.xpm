@@ -1,0 +1,32 @@
+/* XPM */
+static char *redo_button_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"22 21 5 1",
+"  c gray0",
+". c green",
+"X c None",
+"o c #808080",
+"O c #dedade",
+/* pixels */
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXX  XX",
+"XXXXXXO        XX . XX",
+"XXXXXO ........  .. XX",
+"XXXXO ..      ..... XX",
+"XXXO .. OOOOOo .... XX",
+"XXO .. XXXXOo ..... XX",
+"XO .. XXXXXO ...... XX",
+"XO .. XXXXXO        XX",
+"XO .. XXXXXXXXXXXXXXXX",
+"XO .. XXXXXXXXXXXXXXXX",
+"XO .. XXXXXXXXXXXXXXXX",
+"XO    XXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXX"
+};

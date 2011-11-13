@@ -807,6 +807,7 @@ void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift)//AT103 SAH
 					_("Please hand trace the fin outline below."));		
 
 				return;
+
 			}//102AT
 
 		}
@@ -2972,7 +2973,7 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 
 	// ROLL & FRAME Entry
 
-    traceLabelRoll = gtk_label_new(_("Roll and Frame"));
+    traceLabelRoll = gtk_label_new(_("Roll/Frame or Lat/Long"));
     gtk_widget_show(traceLabelRoll);
     gtk_box_pack_start(GTK_BOX(traceVBoxRight), traceLabelRoll, FALSE,
 		       FALSE, 3);
@@ -2981,6 +2982,16 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 	//***1.4 - load roll & frame from fin data if loading previously traced fin
 	if ((NULL != mFin) && (mFin->mRollAndFrame != "NONE"))
 		gtk_entry_set_text(GTK_ENTRY(mEntryRoll), mFin->mRollAndFrame.c_str());
+    else
+    { 
+      //***2.22 - set initial date entry from image file EXIF data, if available
+      // we actually loaded an image, not a FINZ file - so see if we can extract GPS data
+      c_Exif *Exif_Extractor= new c_Exif(mImagefilename.c_str());
+      string Image_LatLong = Exif_Extractor->GetLatLong();
+      delete Exif_Extractor;
+      gtk_entry_set_text(GTK_ENTRY(mEntryRoll),Image_LatLong.c_str());
+      //***2.22 - end of new GPS code
+    }
 
     gtk_widget_show(mEntryRoll);
     gtk_box_pack_start(GTK_BOX(traceVBoxRight), mEntryRoll, FALSE,

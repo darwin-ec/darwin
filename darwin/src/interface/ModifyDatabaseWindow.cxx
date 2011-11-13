@@ -331,7 +331,7 @@ GtkWidget *ModifyDatabaseWindow::createModifyDatabaseWindow(const string &title)
 	gtk_widget_show(mEntryDate);
 	gtk_box_pack_start(GTK_BOX(modifyVBoxRight), mEntryDate, FALSE, FALSE, 0);
 
-	modifyLabelRoll = gtk_label_new(_("Roll and Frame"));
+	modifyLabelRoll = gtk_label_new(_("Roll/Frame or Lat/Long"));
 	gtk_widget_show(modifyLabelRoll);
 	gtk_box_pack_start(GTK_BOX(modifyVBoxRight), modifyLabelRoll, FALSE, FALSE, 3);
 

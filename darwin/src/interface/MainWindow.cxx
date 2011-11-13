@@ -256,6 +256,7 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 	else
 	{
 		gtk_widget_set_sensitive(mOpenImageMenuItem, FALSE);
+
 		gtk_widget_set_sensitive(mOpenFinMenuItem, FALSE);
 		gtk_widget_set_sensitive(mQueueMenuItem, FALSE);
 		gtk_widget_set_sensitive(mBackupMenuItem, FALSE);
@@ -2164,7 +2165,8 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                (GtkAttachOptions) (0),
 	                (GtkAttachOptions) (0), 0, 0);
 
-	mainLabelRoll = gtk_label_new (_("Roll and Frame"));
+	//mainLabelRoll = gtk_label_new (_("Roll and Frame"));
+	mainLabelRoll = gtk_label_new (_("Roll/Frame or Lat/Long")); //***2.22 - now Lat/Long
 	gtk_widget_show (mainLabelRoll);
 	gtk_table_attach (GTK_TABLE (mainInfoTable), mainLabelRoll, 0, 1, 3, 4,
 	                (GtkAttachOptions) (0),
@@ -3033,8 +3035,8 @@ void on_docs_activate(
 	cmd = "explorer.exe ";
 	//system("explorer.exe %DARWINHOME%\\docs\\usersguide.htm&");
 #else
-	cmd = "firefox ";
-	//system("firefox file:$DARWINHOME/docs/usersguide.htm&");
+	cmd = "open "; //***2.22 - for the Mac
+	//system("open file:$DARWINHOME/docs/usersguide.htm&");
 #endif
 	cmd += "\"" + gOptions->mDarwinHome + PATH_SLASH + "docs" + PATH_SLASH + "usersguide.htm\" &";
 	system(cmd.c_str());

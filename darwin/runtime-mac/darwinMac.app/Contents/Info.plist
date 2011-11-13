@@ -1,0 +1,13 @@
+{
+	"CFBundleDocumentTypes" = (
+		{
+			"CFBundleTypeExtensions" = (
+				finz,
+			);
+			LSHandlerRank = Default;
+		},
+	);
+	CFBundleIdentifier = "";
+	"CFBundleDevelopmentRegion" = "en_US";
+	CFBundleIconFile = "darwin.icns";
+}

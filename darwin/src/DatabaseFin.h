@@ -127,7 +127,7 @@ class ItemInfo
 			std::cout << "ID Code: " << mIDCode << std::endl
 				<< "Name: " << mName << std::endl
 				<< "Date of Sighting: " << mDateOfSighting << std::endl
-				<< "Roll and Frame: " << mRollAndFrame << std::endl
+				<< "Roll/Frame or Lat/Long: " << mRollAndFrame << std::endl
 				<< "Location Code: " << mLocationCode << std::endl
 				<< "Damage Category: " << mDamageCategory << std::endl
 				<< "Short Description: " << mShortDescription << std::endl;
