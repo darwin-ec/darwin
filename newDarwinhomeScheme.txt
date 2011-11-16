@@ -1,0 +1,114 @@
+New strategy for setting and using DARWINHOME
+
+(1) At any point in the program the value of DARWINHOME is maintained in ...
+
+    gOptions->mDarwinHome
+
+(2) General strategy is this ...
+
+-- Survey areas are self contained and contain ...
+   catalog, tracedFins, matchQueues, matchQResults
+   
+-- Survey areas can be anywhere
+   each is located inside some "current" DARWINHOME
+
+   so we GROUP survey areas, each group having a single HOME
+
+   DARWINHOME is the default location for creating, opening, etc BUT ...
+
+   does NOT restrict placement 
+
+-- In the CONFIGURATION file we must save a hierarchy of
+
+   DARWINHOME
+      SURVEYAREA-1
+      SURVEYAREA-2
+
+   the last open DATABASE and the SURVEY AREA and HOME within which
+   the database is found are saved RELATIVE to each other
+
+-- In the gOptions we have to store this same hierarchy
+
+   typedef struct _SurveyAreaGroup {
+      int mNumSurveyAreas;
+      string mHomePath;
+      vector<string> mAreaName;
+   } SurveyAreaGroup;
+
+   string mDarwinHome; // the current DARWINHOME
+
+-- do we want to separate the drive from the DARWINHOME path?
+
+   -- does this only pertain to PC / Windows
+
+   if the path includes a drive letter it has "x:" a two character prefix
+   and the second char is ':'
+
+Note: paths on the Mac are like Linux paths
+
+----- darwin 2.0 way of doing things
+
+	// handle any/all command line arguments
+	// here are the possible options (DARWIN 2.0)
+	// --set-home="..."   this directly sets gOptions->mDarwinHome
+	// --help             this invokes the command line help
+	// --version          DARWIN returns the current version(s)
+	// "*.finz"           DARWIN opens as a fin viewer for this Fin ONLY
+
+	// DARWIN uses the following strategy to find its HOME path for this
+	// invocation of the program
+	// (1) if a --set-home option is found, then the specified path is used
+	// (2) else if argv[0] contains a path, then that path is used
+	// (3) else the current working directory is used
+	//
+	// (4) if a path is found in the darwin.cfg file AND it differs from any set above,
+	//     then the user is querried for clarification????
+	// (5) if the DARWINHOME and DATABASE paths in the darwin.cfg file differ
+	//     then the user is querried for clarification????
+	//
+	// The environment variable DARWINHOME is no longer used in any way.
+
+----- in darwin 2.0 these restrictions and assumptions are used
+
+-- all new catalogs MUST be created within an existing or new survey area
+-- all new survey areas MUST be created inside DARWINHOME
+-- all backups are created in the DARWINHEOM/backups folder and are automatically named
+-- all restores recreate exactly the same folder structure and catalog that was backed-up
+   -- however, no traced fins, queues or match results are backed up or restored
+-- attempts to open a ctalog (database) outside DARWINHOME were blocked in 2.0
+   -- this has been changed (I think) in 2.22
+-- the default folder for FINZ files is tracedFins within the current survey area, dtermined
+   from the currently ope catalog, but the FINZ files may be saved anywhere, and the
+   open file chooser remembers the last path used and returns to it
+-- all match results files are saved in the current survey area matchQResults folder and are
+   automatically named
+-- names of catalog and unknown fin inside match results are a mess
+   -- the finz may be in the current survey area
+   -- in a different survey area in the same DARWINHOME
+   -- in an arbitrary location
+   -- ??
+
+-- in config file 
+   -- darwinhome is full path
+   -- current survey area is full path
+   -- database is full path
+   -- we do keeplist of all known catalogs (just survey area name & database name)
+   -- we do keep list of all known survey areas (just the names)
+      -- the two items above are only used when creating new databse or importing a database
+
+   perhaps the method of handling this is the same as we need for new DARWINHOME
+
+potential problems when things get moved
+
+-- we still have multiple databases within a single catalog folder
+   -- should we change this
+   -- doing so would allow us to import a catalog into an existing survey area
+   -- doing so would make it easier to clean out orphaned images
+   -- 
+
+
+
+Strategy for determining DARWINHOME when program started
+
+1) Let user choose location for new survey area using a file chooser strategy
+2) Make all 

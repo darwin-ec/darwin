@@ -15,7 +15,16 @@ then
    # must have been clicked from Finder
    echo Run from Finder or Shortcut to darwinMac.app - using app location as DARWINHOME
 	# echo $BASH_SOURCE
-   export DARWINHOME=`echo $BASH_SOURCE | sed s/darwinMac//2`
+	home=`echo $BASH_SOURCE | sed s/darwinMac//3`
+	if [ "$home" != "$BASH_SOURCE" ]
+	then
+		# must have stripped the last even in a path containing darwinMac 3 times
+		# prevents problem of running pgm from inside installer
+		export DARWINHOME="$home"
+   else
+		# should work as previously 
+		export DARWINHOME=`echo $BASH_SOURCE | sed s/darwinMac//2`
+	fi
 else
    # must have been started from command line
    if [ -z "$DARWINHOME" ] 
