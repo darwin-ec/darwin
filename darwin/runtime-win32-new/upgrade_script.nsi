@@ -66,7 +66,7 @@ FunctionEnd
 ;BrandingText " "
 
 ;name of install file to generate (e.g. setup.exe)
-outfile darwin-2.02-upgrade.exe
+outfile darwin-2.22-upgrade.exe
 
 
 
@@ -79,7 +79,7 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	;File /r /x *.nsi /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn /x stuff *
+	;File /r /x *.nsi  /x Thumbs.db /x darwin_splash.bmp /x darwin-2.0-setup.exe /x darwin-2.0-upgrade.exe /x .svn /x stuff *
 	
 	;This is an upgrade, simply add darwin.exe and documentation
 	SetOutPath $INSTDIR\system\bin
