@@ -17,7 +17,7 @@
 
 #include "../support.h"
 #include "CreateDatabaseDialog.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 #ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #endif
@@ -466,6 +466,7 @@ void on_createDbButtonOK_clicked(
 		savedDefaultScheme,
 		selectedScheme;
 	bool 
+		dataPathSelected(false), //***2.22
 		duplicate;
 	string 
 		fullSurveyAreaName,
@@ -474,16 +475,77 @@ void on_createDbButtonOK_clicked(
 		commandArgs,
 		command;
 
+	SaveFileChooserDialog *fsChooserDlg; //***2.22
+
 	switch (dlg->mCreateMode)
 	{
 	case CreateDatabaseDialog::createNewSurveyArea :
 
 		// a survey area name must be specified
 
+		//***2.22 - here we have to determine whether to use 
+		//          1) the existing data path or
+		//          2) a new data path
+								// this backup file came from another DARWIN installation
+
+		fsChooserDlg = new SaveFileChooserDialog(NULL,
+												NULL,
+												NULL,
+												NULL,
+												dlg->mOptions,
+												dlg->mDialog,
+												SaveFileChooserDialog::chooseDataPath,
+												NULL);
+		dataPathSelected = fsChooserDlg->run_and_respond();
+
+		if (! dataPathSelected)
+		{
+			showError("You must select or create a \"darwinPhotoIdData\" folder\nwithin which to create the new Survey Area and Catalog.", NULL);
+			return; // do NOT create survey area or catalog
+		}
+
+		//***2.22 - looking for existing data path or CREATING a new one
+
+		{
+			string path = gOptions->mCurrentDataPath;
+			if (path.rfind("darwinPhotoIdData") == string::npos) // force "darwinPhotoIdData" as root folder
+			{
+				path += PATH_SLASH;
+				path += "darwinPhotoIdData";
+			}
+			gOptions->mCurrentDataPath = path; 
+			dlg->mOptions->mCurrentDataPath = path; // both should be the same, but just in case
+
+			// at this point the data path will end in "darwinPhotoIdData"
+			
+			if (dataPathExists(gOptions->mCurrentDataPath,false))
+				cout << "Found data path: ";
+			else
+				cout << "Missing data path: ";
+			cout << gOptions->mCurrentDataPath << endl;
+			if (dataPathExists(path,true))
+				cout << "Found data path: ";
+			else
+				cout << "Missing data path: ";
+			cout << path << endl;
+		}
+
+		//***2.22 - end of new code to set data path
+
+
 		if (surveyAreaName == "")
 		{
-			ErrorDialog *err = new ErrorDialog("Survey Area must have a Name.");
-			err->show();
+			//***2.22 - added dlg->mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Survey Area must have a Name.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Survey Area must have a Name.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; // must have a scheme name and at least one category
 		}
 
@@ -500,8 +562,17 @@ void on_createDbButtonOK_clicked(
 
 		if (duplicate)
 		{
-			ErrorDialog *err = new ErrorDialog("Survey Area Name must differ from an existing one.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Survey Area Name must differ from an existing one.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Survey Area Name must differ from an existing one.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; 
 		}
 
@@ -511,8 +582,17 @@ void on_createDbButtonOK_clicked(
 
 			if (databaseName == "")
 			{
-				ErrorDialog *err = new ErrorDialog("Database must have a Name.");
-				err->show();
+				//***2.22 - added mDialog
+				//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Database must have a Name.");
+				//err->show();
+				//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+				GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+									GTK_DIALOG_DESTROY_WITH_PARENT,
+									GTK_MESSAGE_ERROR,
+									GTK_BUTTONS_CLOSE,
+									"Database must have a Name.");
+				gtk_dialog_run (GTK_DIALOG (errd));
+				gtk_widget_destroy (errd);
 				return; 
 			}
 
@@ -531,7 +611,9 @@ void on_createDbButtonOK_clicked(
 
 		// set full paths to new Survey Area
 
-		fullSurveyAreaName = dlg->mOptions->mDarwinHome;
+		//***2.22 - this has to change to use the new data paths
+		//fullSurveyAreaName = dlg->mOptions->mDarwinHome;
+		fullSurveyAreaName = gOptions->mCurrentDataPath;
 		fullSurveyAreaName += PATH_SLASH;
 		fullSurveyAreaName += "surveyAreas";
 		fullSurveyAreaName += PATH_SLASH;
@@ -553,7 +635,9 @@ void on_createDbButtonOK_clicked(
 		{
 			// FORCE building of the new survey area folder structure here
 
-			rebuildFolders(dlg->mOptions->mDarwinHome, surveyAreaName, true);
+			//rebuildFolders(dlg->mOptions->mDarwinHome, surveyAreaName, true);
+			//***2.22 - now relative the the current data path, not DARWINHOME
+			rebuildFolders(dlg->mOptions->mCurrentDataPath, surveyAreaName, true);
 
 			// set full path to new database being created
 
@@ -625,7 +709,8 @@ void on_createDbButtonOK_clicked(
 
 			importCatalogFrom(dlg->mArchiveName,
 					importPath,
-					dlg->mOptions->mDarwinHome,
+					//dlg->mOptions->mDarwinHome,
+					dlg->mOptions->mCurrentDataPath, //***2.22
 					surveyAreaName);
 
 			// now, recreate the main window database from the newly imported database file
@@ -655,8 +740,17 @@ void on_createDbButtonOK_clicked(
 
 		if (dlg->mArchiveName != "")
 		{
-			ErrorDialog *err = new ErrorDialog("IMPORT into existing survey areas is NOT allowed.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"IMPORT into existing survey areas is NOT allowed.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"IMPORT into existing survey areas is NOT allowed.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; 
 		}
 
@@ -664,8 +758,17 @@ void on_createDbButtonOK_clicked(
 
 		if (surveyAreaName == "") 
 		{
-			ErrorDialog *err = new ErrorDialog("Survey Area must have a Name.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Survey Area must have a Name.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Survey Area must have a Name.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; 
 		}
 		
@@ -673,8 +776,17 @@ void on_createDbButtonOK_clicked(
 
 		if (databaseName == "")
 		{
-			ErrorDialog *err = new ErrorDialog("Database must have a Name.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Database must have a Name.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Database must have a Name..");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; 
 		}
 
@@ -702,14 +814,25 @@ void on_createDbButtonOK_clicked(
 
 		if (duplicate)
 		{
-			ErrorDialog *err = new ErrorDialog("Database Name must differ from an existing one.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Database Name must differ from an existing one.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Database Name must differ from an existing one.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; 
 		}
 
 		// all is well, now we can create the new database
 
-		fullSurveyAreaName = dlg->mOptions->mDarwinHome;
+		//***2.22 - again, here we need to use the current data path, NOT DARWINHOME
+		//fullSurveyAreaName = dlg->mOptions->mDarwinHome;
+		fullSurveyAreaName = dlg->mOptions->mCurrentDataPath;
 		fullSurveyAreaName += PATH_SLASH;
 		fullSurveyAreaName += "surveyAreas";
 		fullSurveyAreaName += PATH_SLASH;
@@ -868,4 +991,55 @@ void on_radioNewDbOnly_clicked(
 	gtk_entry_set_text(GTK_ENTRY(dlg->mNewSurveyAreaName),namePtr);
 	gtk_entry_set_editable(GTK_ENTRY(dlg->mNewSurveyAreaName), FALSE); //***1.85
 }
+
+/*
+//*******************************************************************
+//***2.22 - new callback to save new SurveyArea using a NEW or OTHER darwinDataPath
+void on_finzDialogButtonSaveImages_clicked(
+		GtkButton *button,
+		gpointer userData)
+{
+	ExportFinzDialog *dlg = (ExportFinzDialog *) userData;
+
+	if (NULL == dlg)
+		return;
+
+	bool saved = false;
+	//set<int> selectedFins = selectedRows(GTK_CLIST(dlg->mCList));
+	set<long> selectedFins = selectedRows(GTK_CLIST(dlg->mCList)); //***2.22 - now 64 bit arch on Mac
+
+	if (selectedFins.empty()) {//idiot, selected something first for export
+		return;
+	} else {// one or more fins selected
+		//set<int>::iterator it;
+		set<long>::iterator it; //***2.22 - now 64 bit arch on Mac
+		vector<DatabaseFin<ColorImage>* > fins;
+		for (it = selectedFins.begin(); it != selectedFins.end(); it++) {
+			int id = dlg->mRow2Id[*it];
+			fins.push_back(dlg->mDatabase->getItem(id));
+		}
+
+		SaveFileChooserDialog *fsChooserDlg = new SaveFileChooserDialog(dlg->mDatabase,
+												NULL,
+												NULL,
+												NULL,
+												dlg->mOptions,
+												dlg->mDialog,
+												SaveFileChooserDialog::saveFullSizeModImages,
+												&fins);
+		saved=fsChooserDlg->run_and_respond();
+
+		vector<DatabaseFin<ColorImage>* >::iterator finsit;
+		for (finsit = fins.begin(); finsit != fins.end(); finsit++) {
+			delete ((DatabaseFin<ColorImage>*) *finsit);
+		}
+		
+	}
+
+	if (saved)
+		delete dlg;
+
+
+}
+*/
 

@@ -1,5 +1,5 @@
 //*******************************************************************
-//   file: ErrorDialog.cxx
+//   file: Exif.cxx
 //
 // author: Joshua Gregory (modification of Matthias Wadel's code)
 //
@@ -334,7 +334,7 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 	unsigned ThumbnailSize = 0;
 	char IndentString[25];
 
-   unsigned a; //***2.22
+   //unsigned a; //***2.22
 
 	if (NestingLevel > 4)
 	{
@@ -373,10 +373,12 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 		Format = Get16u(DirEntry+2, MotorolaOrder);
 		Components = Get32u(DirEntry+4, MotorolaOrder);
     
-      GpsInfoPresent = true;
+      /*
+	  GpsInfoPresent = true;
       strcpy(GpsLat, "? ?");
       strcpy(GpsLong, "? ?");
       GpsAlt[0] = 0; 
+	*/
 
 		//if ((Format-1) >= NUM_FORMATS) {
 			// (-1) catches illegal zero case as unsigned underflows to positive large.
@@ -384,7 +386,7 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 		//}
 
 		ByteCount = Components * BytesPerFormat[Format];
-		int ComponentSize = BytesPerFormat[Format]; //***2.22
+		//int ComponentSize = BytesPerFormat[Format]; //***2.22
 
 		if (ByteCount > 4){
 			unsigned OffsetVal;
@@ -393,10 +395,12 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 			if (OffsetVal+ByteCount > ExifLength){
 				// Bogus pointer offset and / or bytecount value
 				continue;//remove if useless
-			}            char FmtString[21];
+			}            
+			/*
+			char FmtString[21];
             char TempString[50];
             double Values[3];
-
+			*/
 			ValuePtr = OffsetBase+OffsetVal;
 		}else{
 			// 4 bytes or less and value is in the dir entry itself
@@ -411,9 +415,11 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 		
 		switch(Tag)
 		{
-        char FmtString[21];
+        /*
+		char FmtString[21];
         char TempString[50];
         double Values[3];
+		*/
 
 		//TAG_DATETIME TAG_DATETIME_ORIGINAL
 		case TAG_DATETIME_ORIGINAL:
@@ -445,8 +451,27 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
 			}
 			break;
 
+			//***2.22 - added call here and moved GPS code into ProcessGpsInfo2() 
+			// which is a subset of the function in the jhead.c / exif.c code
+            case TAG_GPSINFO:
+                //if (ShowTags) printf("%s    GPS info dir:",IndentString);
+                {
+                    unsigned char * SubdirStart;
+                    //SubdirStart = OffsetBase + Get32u(ValuePtr);
+                    SubdirStart = OffsetBase + Get32u(ValuePtr, MotorolaOrder);
+                    if (SubdirStart < OffsetBase || SubdirStart > OffsetBase+ExifLength){
+						//ErrNonfatal("Illegal GPS directory link in Exif",0,0);
+                    }else{
+                        ProcessGpsInfo(SubdirStart, ByteCount, OffsetBase, ExifLength);
+                    }
+                    continue;
+                }
+                break;
+
+
 //***2.22 - GPS code cut from ProcessGpsInfo() --------------------------
-            case TAG_GPS_LAT_REF:
+/*
+           case TAG_GPS_LAT_REF:
                 GpsLat[0] = ValuePtr[0];
                 break;
 
@@ -484,7 +509,7 @@ void c_Exif::ProcessExifDir(unsigned char * DirStart, unsigned char * OffsetBase
                     strncpy(GpsLong+2, TempString, 29);
                 }
                 break;
-
+*/
 //***2.22 - end of GPS code cut from ProcessGpsInfo() --------------------------
 
 		}
@@ -601,23 +626,27 @@ string c_Exif::GetTime()
 //--------------------------------------------------------------------------
 void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsigned char * OffsetBase, unsigned ExifLength)
 {
-/*
     int de;
     unsigned a;
     int NumDirEntries;
 
-    NumDirEntries = Get16u(DirStart);
-
+    //NumDirEntries = Get16u(DirStart);
+    NumDirEntries = Get16u(DirStart, MotorolaOrder);
     #define DIR_ENTRY_ADDR(Start, Entry) (Start+2+12*(Entry))
 
-    if (ShowTags){
-        printf("(dir has %d entries)\n",NumDirEntries);
-    }
+    //if (ShowTags){
+   //     printf("(dir has %d entries)\n",NumDirEntries);
+    //}
 
-    ImageInfo.GpsInfoPresent = TRUE;
-    strcpy(ImageInfo.GpsLat, "? ?");
-    strcpy(ImageInfo.GpsLong, "? ?");
-    ImageInfo.GpsAlt[0] = 0; 
+    //ImageInfo.GpsInfoPresent = TRUE;
+    //strcpy(ImageInfo.GpsLat, "? ?");
+    //strcpy(ImageInfo.GpsLong, "? ?");
+    //ImageInfo.GpsAlt[0] = 0; 
+	//***2.22 - using our class members
+	GpsInfoPresent = true;
+    strcpy(GpsLat, "? ?");
+    strcpy(GpsLong, "? ?");
+    GpsAlt[0] = 0; 
 
     for (de=0;de<NumDirEntries;de++){
         unsigned Tag, Format, Components;
@@ -628,17 +657,20 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
         DirEntry = DIR_ENTRY_ADDR(DirStart, de);
 
         if (DirEntry+12 > OffsetBase+ExifLength){
-            ErrNonfatal("GPS info directory goes past end of exif",0,0);
+            //ErrNonfatal("GPS info directory goes past end of exif",0,0);
             return;
         }
 
-        Tag = Get16u(DirEntry);
-        Format = Get16u(DirEntry+2);
-        Components = Get32u(DirEntry+4);
+        //Tag = Get16u(DirEntry);
+        //Format = Get16u(DirEntry+2);
+        //Components = Get32u(DirEntry+4);
+		Tag = Get16u(DirEntry, MotorolaOrder);
+        Format = Get16u(DirEntry+2, MotorolaOrder);
+        Components = Get32u(DirEntry+4, MotorolaOrder);
 
         if ((Format-1) >= NUM_FORMATS) {
             // (-1) catches illegal zero case as unsigned underflows to positive large.
-            ErrNonfatal("Illegal number format %d for Exif gps tag %04x", Format, Tag);
+            //ErrNonfatal("Illegal number format %d for Exif gps tag %04x", Format, Tag);
             continue;
         }
 
@@ -647,11 +679,12 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
 
         if (ByteCount > 4){
             unsigned OffsetVal;
-            OffsetVal = Get32u(DirEntry+8);
+            //OffsetVal = Get32u(DirEntry+8);
+            OffsetVal = Get32u(DirEntry+8, MotorolaOrder);
             // If its bigger than 4 bytes, the dir entry contains an offset.
             if (OffsetVal+ByteCount > ExifLength){
                 // Bogus pointer offset and / or bytecount value
-                ErrNonfatal("Illegal value pointer for Exif gps tag %04x", Tag,0);
+                //ErrNonfatal("Illegal value pointer for Exif gps tag %04x", Tag,0);
                 continue;
             }
             ValuePtr = OffsetBase+OffsetVal;
@@ -666,23 +699,26 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
             double Values[3];
 
             case TAG_GPS_LAT_REF:
-                ImageInfo.GpsLat[0] = ValuePtr[0];
+                //ImageInfo.GpsLat[0] = ValuePtr[0];
+                GpsLat[0] = ValuePtr[0];
                 break;
 
             case TAG_GPS_LONG_REF:
-                ImageInfo.GpsLong[0] = ValuePtr[0];
+                //ImageInfo.GpsLong[0] = ValuePtr[0];
+                GpsLong[0] = ValuePtr[0];
                 break;
 
             case TAG_GPS_LAT:
             case TAG_GPS_LONG:
                 if (Format != FMT_URATIONAL){
-                    ErrNonfatal("Inappropriate format (%d) for Exif GPS coordinates!", Format, 0);
+                    //ErrNonfatal("Inappropriate format (%d) for Exif GPS coordinates!", Format, 0);
                 }
                 strcpy(FmtString, "%0.0fd %0.0fm %0.0fs");
                 for (a=0;a<3;a++){
                     int den, digits;
 
-                    den = Get32s(ValuePtr+4+a*ComponentSize);
+                    //den = Get32s(ValuePtr+4+a*ComponentSize);
+                    den = Get32s(ValuePtr+4+a*ComponentSize, MotorolaOrder);
                     digits = 0;
                     while (den > 1 && digits <= 6){
                         den = den / 10;
@@ -692,32 +728,34 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
                     FmtString[1+a*7] = (char)('2'+digits+(digits ? 1 : 0));
                     FmtString[3+a*7] = (char)('0'+digits);
 
-                    Values[a] = ConvertAnyFormat(ValuePtr+a*ComponentSize, Format);
+                    //Values[a] = ConvertAnyFormat(ValuePtr+a*ComponentSize, Format);
+                    Values[a] = ConvertAnyFormat(ValuePtr+a*ComponentSize, Format, MotorolaOrder);
                 }
+
 
                 sprintf(TempString, FmtString, Values[0], Values[1], Values[2]);
 
                 if (Tag == TAG_GPS_LAT){
-                    strncpy(ImageInfo.GpsLat+2, TempString, 29);
+                    //strncpy(ImageInfo.GpsLat+2, TempString, 29);
+                    strncpy(GpsLat+2, TempString, 29);
                 }else{
-                    strncpy(ImageInfo.GpsLong+2, TempString, 29);
+                    //strncpy(ImageInfo.GpsLong+2, TempString, 29);
+                    strncpy(GpsLong+2, TempString, 29);
                 }
                 break;
 
-            case TAG_GPS_ALTstring c_Exif::GetDate()
-{
-	return Date;
-}
-_REF:
-                ImageInfo.GpsAlt[0] = (char)(ValuePtr[0] ? '-' : ' ');
+            case TAG_GPS_ALT_REF:
+                //ImageInfo.GpsAlt[0] = (char)(ValuePtr[0] ? '-' : ' ');
+                GpsAlt[0] = (char)(ValuePtr[0] ? '-' : ' ');
                 break;
 
             case TAG_GPS_ALT:
-                sprintf(ImageInfo.GpsAlt + 1, "%.2fm", 
-                    ConvertAnyFormat(ValuePtr, Format));
+                //sprintf(ImageInfo.GpsAlt + 1, "%.2fm", ConvertAnyFormat(ValuePtr, Format));
+                sprintf(GpsAlt + 1, "%.2fm", ConvertAnyFormat(ValuePtr, Format, MotorolaOrder));
                 break;
         }
 
+/*
         if (ShowTags){
             // Show tag value.
             if (Tag < MAX_GPS_TAG){
@@ -737,13 +775,11 @@ _REF:
                         printf("\"");
                         for (a=0;a<ByteCount;a++){
                             int ZeroSkipped = 0;
-                            if (ValuePtr[a] >= 32){#define FMT_URATIONAL  5
-
+                            if (ValuePtr[a] >= 32){
                                 if (ZeroSkipped){
                                     printf("?");
                                     ZeroSkipped = 0;
-                                }#define FMT_URATIONAL  5
-
+                                }
                                 putchar(ValuePtr[a]);
                             }else{
                                 if (ValuePtr[a] == 0){
@@ -765,17 +801,18 @@ _REF:
                     printf("\n");
             }
         }
+		*/
     }
-*/
-
 }
+
+   
 
 //***2.22 - new function to return lat/long
 string c_Exif::GetLatLong()
 {
 	string Lat = GpsLat;
 	string Long = GpsLong;
-	return (Lat + "/" + Long);
+	return (Lat + " / " + Long);
 }
 
 

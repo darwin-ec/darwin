@@ -688,7 +688,7 @@ OpenFileChooserDialog.o OpenFileChooserDialog.o:  \
   ../Options.h ../interface/MainWindow.h ../interface/DBConvertDialog.h \
   ../interface/../Support.h ../interface/../CatalogSupport.h \
   ../interface/../Options.h ../utility.h ../image_processing/transform.h \
-  ErrorDialog.h TraceWindow.h ../image_processing/exif.h \
+  TraceWindow.h ../image_processing/exif.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/errno.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/errno.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/utime.h \
@@ -2171,8 +2171,6 @@ DataExportDialog.h:
 ../utility.h:
 
 ../image_processing/transform.h:
-
-ErrorDialog.h:
 
 TraceWindow.h:
 

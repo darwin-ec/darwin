@@ -690,15 +690,15 @@ SaveFileChooserDialog.o SaveFileChooserDialog.o:  \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/backward/backward_warning.h \
   ../image_processing/ColorImage.h ../Options.h ../Chain.h MainWindow.h \
   DataExportDialog.h ../Support.h ../image_processing/ImageMod.h \
-  ErrorDialog.h ../Error.h ../CatalogSupport.h ../interface/ErrorDialog.h \
-  ../Database.h ../SQLiteDatabase.h ../Database.h ../DatabaseFin.h \
-  ../Error.h ../Options.h ../image_processing/ColorImage.h ../sqlite3.h \
-  ../OldDatabase.h ../Database.h ../DatabaseFin.h ../Error.h ../Options.h \
+  ../CatalogSupport.h ../interface/ErrorDialog.h ../interface/GtkCompat.h \
+  ../interface/../Error.h ../Database.h ../SQLiteDatabase.h ../Database.h \
+  ../DatabaseFin.h ../Error.h ../Options.h \
+  ../image_processing/ColorImage.h ../sqlite3.h ../OldDatabase.h \
+  ../Database.h ../DatabaseFin.h ../Error.h ../Options.h \
   ../DummyDatabase.h ../Database.h ../DatabaseFin.h ../Error.h \
   ../Options.h ../interface/MainWindow.h ../interface/DBConvertDialog.h \
-  ../interface/GtkCompat.h ../interface/../Support.h \
-  ../interface/../CatalogSupport.h ../interface/../Options.h ../utility.h \
-  ../Utility.h
+  ../interface/../Support.h ../interface/../CatalogSupport.h \
+  ../interface/../Options.h ../utility.h ../Utility.h
 
 /Users/johnstewman/gtk/inst/include/gtk-2.0/gdk/gdkkeysyms.h:
 
@@ -2144,13 +2144,13 @@ DataExportDialog.h:
 
 ../image_processing/ImageMod.h:
 
-ErrorDialog.h:
-
-../Error.h:
-
 ../CatalogSupport.h:
 
 ../interface/ErrorDialog.h:
+
+../interface/GtkCompat.h:
+
+../interface/../Error.h:
 
 ../Database.h:
 
@@ -2191,8 +2191,6 @@ ErrorDialog.h:
 ../interface/MainWindow.h:
 
 ../interface/DBConvertDialog.h:
-
-../interface/GtkCompat.h:
 
 ../interface/../Support.h:
 

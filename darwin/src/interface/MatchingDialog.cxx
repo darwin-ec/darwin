@@ -15,7 +15,7 @@
 #include "../support.h"
 #include "MatchingDialog.h"
 #include "MatchResultsWindow.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 //#include "../CatalogCategories.h"
 #ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"

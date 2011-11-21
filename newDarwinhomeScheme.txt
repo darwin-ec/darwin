@@ -22,7 +22,11 @@ New strategy for setting and using DARWINHOME
 
    DARWINHOME
       SURVEYAREA-1
+         CATALOG1 // now in separately named catalog folders
+         CATALOG2
+         ...
       SURVEYAREA-2
+      ...
 
    the last open DATABASE and the SURVEY AREA and HOME within which
    the database is found are saved RELATIVE to each other
@@ -30,13 +34,53 @@ New strategy for setting and using DARWINHOME
 -- In the gOptions we have to store this same hierarchy
 
    typedef struct _SurveyAreaGroup {
-      int mNumSurveyAreas;
       string mHomePath;
-      vector<string> mAreaName;
+      vector<string> mAreaNames; // size tells # of known areas
    } SurveyAreaGroup;
 
-   string mDarwinHome; // the current DARWINHOME
+   // the following are now part of gOptions?
 
+   // this replaces the current vector of known survey areas (as strings)
+   vector<SurveyAreaGroup> mSurveyAreaGroups; // size tells # of area groups
+
+   string mDarwinHome; // the current DARWINHOME
+   string mSurveyArea; // the current Survey Area
+   string mDatabaseFileName; /// the currently open catalog (database)
+
+   // add or replace above in new setup????
+   pair<int,int> mCurrentSurveyArea; // index pair into the current Survey Area within a group <group,area>
+   
+   // list of known databases (catalogs) should be kept relative to their survey areas
+
+   PERHAPS -- While doing this should we stop allowing multipl catalogs within a single survey area?
+   I think this might make sense.
+   It is a cleaner setup.
+
+   WARNING: With all of this do we need a better (more secure) wy of saving the configuration?
+   Maybe make sure that the one opened is not clobbered on crash?
+   What do we do now to really protect this?
+   Should the Mac .darwinrc not be hidden -- make it darwinrc (visible)?
+
+   THOUGHT: Is there a way to allow IMPORT of a catalog into an existing Survey Area in a way
+   that does not risk messing up any existing catalog, or losing images through need to rename
+   as they are extracted into the catalog folder.
+
+   SHOULD multiple catalogs within the same survey area now be organized in SEPPARATE and
+   individually NAMED catalog folders???
+
+   surveyAreas
+      TampaBay
+         catalogs
+            test
+               test.db
+               ... images
+            catalogNew
+               catalogNew.db
+               ... images
+      SarasotaBay
+         catalogs
+
+            
 -- do we want to separate the drive from the DARWINHOME path?
 
    -- does this only pertain to PC / Windows
@@ -48,25 +92,56 @@ Note: paths on the Mac are like Linux paths
 
 ----- darwin 2.0 way of doing things
 
-	// handle any/all command line arguments
-	// here are the possible options (DARWIN 2.0)
-	// --set-home="..."   this directly sets gOptions->mDarwinHome
-	// --help             this invokes the command line help
-	// --version          DARWIN returns the current version(s)
-	// "*.finz"           DARWIN opens as a fin viewer for this Fin ONLY
+   --- in main()
+   // handle any/all command line arguments
+   // here are the possible options (DARWIN 2.0)
+   // --set-home="..."   this directly sets gOptions->mDarwinHome
+   // --help             this invokes the command line help
+   // --version          DARWIN returns the current version(s)
+   // "*.finz"           DARWIN opens as a fin viewer for this Fin ONLY
 
-	// DARWIN uses the following strategy to find its HOME path for this
-	// invocation of the program
-	// (1) if a --set-home option is found, then the specified path is used
-	// (2) else if argv[0] contains a path, then that path is used
-	// (3) else the current working directory is used
-	//
-	// (4) if a path is found in the darwin.cfg file AND it differs from any set above,
-	//     then the user is querried for clarification????
-	// (5) if the DARWINHOME and DATABASE paths in the darwin.cfg file differ
-	//     then the user is querried for clarification????
-	//
-	// The environment variable DARWINHOME is no longer used in any way.
+   // DARWIN uses the following strategy to find its HOME path for this
+   // invocation of the program
+   // (1) if a --set-home option is found, then the specified path is used
+   // (2) else if argv[0] contains a path, then that path is used
+   // (3) else the current working directory is used
+   //
+   // (4) if a path is found in the darwin.cfg file AND it differs from any set above,
+   //     then the user is querried for clarification????
+   // (5) if the DARWINHOME and DATABASE paths in the darwin.cfg file differ
+   //     then the user is querried for clarification????
+   //
+   // The environment variable DARWINHOME is no longer used in any way.
+
+   --- in Options class ---
+		//***1.1 - support for multiple databases, fixed home folder, multiple queues, etc
+
+      std::string mDatabaseFileName; // the CURRENT database name
+
+		// Beginning with version1.1 ...
+		// ALL database, match queue, and traced fin files are specified RELATIVE to mDarwinHome
+		// and all paths that are part of filenames inside the database, queues, etc are 
+		// RELATIVE to mDarwinHome.  This allows movement of a database folder to a new location
+		// without loss of database integrity.  Match queues, and traced fin files can be
+		// moved in a similar fashion.
+
+		std::string mDarwinHome;                        // value of %DARWINHOME% set by runDarwin.bat
+		std::string mTempDirectory; //Temporary directory
+
+		// For al versions 1.85 and later ...
+		// the following is now the root path for all relative filenames in the catalog
+		// tracedFins, matchQueues and matchQResults folders .. these folders now exist
+		// in EACH surveyArea folder created within the DARWINHOME folder
+		std::string mCurrentSurveyArea;     //***1.85 - root for all catalog, tracedFins, etc
+
+		int mNumberOfExistingSurveyAreas;                 //***1.85 number of existing survey areas
+		std::vector<std::string> mExistingSurveyAreaName; //***1.85 vector of existing survey area names
+		
+		int mNumberOfExistingDatabases;                 // number of existing databases
+		std::vector<std::string> mExistingDatabaseName; // vector of existing database names
+
+
+
 
 ----- in darwin 2.0 these restrictions and assumptions are used
 

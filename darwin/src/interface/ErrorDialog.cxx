@@ -7,7 +7,7 @@
 //         -- reformatting of code and addition of comment blocks
 //
 //*******************************************************************
-
+/*
 #include <gdk/gdkkeysyms.h>
 
 #include "ErrorDialog.h"
@@ -25,48 +25,65 @@
 using namespace std;
 
 static int gNumReferences = 0;
+*/
+
+//***2.22 - this class is GONE now
 
 //*******************************************************************
 //
 //
+/*
 int getNumErrorDialogReferences()
 {
 	return gNumReferences;
 }
-
+*/
 //***1.3 - need to add a parentWindow widget so we can make these error messages
 // MODAL and TRANSIENT_FOR the window that spawned them - JHS
 
 //*******************************************************************
 //
 //
+/*
 ErrorDialog::ErrorDialog()
 	: mDialog(createErrorDialog(""))
 {
 	gNumReferences++;
 }
-
+*/
 //*******************************************************************
 //
 //
+/*
 ErrorDialog::ErrorDialog(string errorMsg)
 	: mDialog(createErrorDialog(errorMsg))
 {
 	gNumReferences++;
 }
-
+*/
+//***2.22 -- replaces above, so we can set_transient_for(parent) to keep this above otehr window
+/*
+ErrorDialog::ErrorDialog(GtkWidget *parent, string errorMsg)
+	: mParent(parent)
+{
+	mDialog = createErrorDialog(errorMsg);
+	gNumReferences++;
+}
+*/
 //*******************************************************************
 //
 //
+/*
 ErrorDialog::ErrorDialog(Error e)
 	: mDialog(createErrorDialog(e.errorString()))
 {
 	gNumReferences++;
 }
-
+*/
 //*******************************************************************
 //
 //
+/*
 ErrorDialog::~ErrorDialog()
 {
 	if (NULL != mDialog)
@@ -74,18 +91,21 @@ ErrorDialog::~ErrorDialog()
 
 	gNumReferences--;
 }
-
+*/
 //*******************************************************************
 //
 //
+/*
 void ErrorDialog::show()
 {
 	gtk_widget_show(mDialog);
 }
+*/
 
 //*******************************************************************
 //
 //
+/*
 GtkWidget* ErrorDialog::createErrorDialog(string errorMsg)
 {
   GtkWidget *errorDialog;
@@ -112,6 +132,7 @@ GtkWidget* ErrorDialog::createErrorDialog(string errorMsg)
 
   gtk_window_set_keep_above(GTK_WINDOW(errorDialog), TRUE); //***2.0 - keep on top
   gtk_window_set_modal(GTK_WINDOW(errorDialog),TRUE); //***1.85 - so focus is HERE
+  gtk_window_set_transient_for(GTK_WINDOW(errorDialog),GTK_WINDOW(mParent)); //***2.22 - keep above other windows?
 
   errorVBox = GTK_DIALOG (errorDialog)->vbox;
   gtk_object_set_data (GTK_OBJECT (errorDialog), "errorVBox", errorVBox);
@@ -199,10 +220,11 @@ GtkWidget* ErrorDialog::createErrorDialog(string errorMsg)
 
   return errorDialog;
 }
-
+*/
 //*******************************************************************
 //
 //
+/*
 gboolean on_errorDialog_delete_event(
 		GtkWidget *widget,
 		GdkEvent *event,
@@ -215,10 +237,11 @@ gboolean on_errorDialog_delete_event(
 	
 	return TRUE;
 }
-
+*/
 //*******************************************************************
 //
 //
+/*
 void on_errorButtonOK_clicked(
 		GtkButton *button,
 		gpointer userData)
@@ -228,3 +251,4 @@ void on_errorButtonOK_clicked(
 
 	delete (ErrorDialog*)userData;
 }
+*/

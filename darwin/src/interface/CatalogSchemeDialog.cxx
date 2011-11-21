@@ -461,8 +461,17 @@ void on_catalogSchemeButtonOK_clicked(
 
 		if ((schemeName == "") || (cc == 0))
 		{
-			ErrorDialog *err = new ErrorDialog("Scheme must have a Name\nand at least one Category.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Scheme must have a Name\nand at least one Category.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Scheme must have a Name\nand at least one Category.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; // must have a scheme name and at least one category
 		}
 
@@ -504,8 +513,17 @@ void on_catalogSchemeButtonOK_clicked(
 
 		if (categoryNames.size() == 0)
 		{
-			ErrorDialog *err = new ErrorDialog("Scheme must have a Name\nand at least one Category.");
-			err->show();
+			//***2.22 - added mDialog
+			//ErrorDialog *err = new ErrorDialog(dlg->mDialog,"Scheme must have a Name\nand at least one Category.");
+			//err->show();
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(dlg->mDialog),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Scheme must have a Name\nand at least one Category.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			return; // must have a scheme name and at least one category
 		}
 

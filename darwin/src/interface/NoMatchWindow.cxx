@@ -716,7 +716,7 @@ void on_nomatchButtonAddToDatabase_clicked(GtkButton * button, gpointer userData
 	int damageIDnum = gtk_combo_box_get_active(GTK_COMBO_BOX(nomatchWin->mEntryDamage));
 	if (-1 == damageIDnum)
 	{
-		showError("You must select a Catalog Category\nBEFORE saving a fin!");
+		//showError("You must select a Catalog Category\nBEFORE saving a fin!");
 		return;
 	}
 

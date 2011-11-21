@@ -718,8 +718,8 @@ MatchResultsWindow.o MatchResultsWindow.o: MatchResultsWindow.cxx \
   ../interface/../image_processing/GrayImage.h \
   ../interface/../image_processing/ColorImage.h \
   ../interface/../interface/MainWindow.h NoMatchWindow.h ../Outline.h \
-  MappedContoursDialog.h ../Chain.h ErrorDialog.h ImageViewDialog.h \
-  ../mapContour.h ../Chain.h ../Contour.h ../FloatContour.h ../support.h \
+  MappedContoursDialog.h ../Chain.h ImageViewDialog.h ../mapContour.h \
+  ../Chain.h ../Contour.h ../FloatContour.h ../support.h \
   ../image_processing/transform.h SaveFileSelectionDialog.h \
   ../DatabaseFin.h TraceWindow.h ../image_processing/exif.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/errno.h \
@@ -2243,8 +2243,6 @@ NoMatchWindow.h:
 MappedContoursDialog.h:
 
 ../Chain.h:
-
-ErrorDialog.h:
 
 ImageViewDialog.h:
 

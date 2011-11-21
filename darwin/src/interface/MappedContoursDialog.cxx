@@ -52,6 +52,7 @@ int getNumMappedContourDialogReferences()
 //    CONSTRUCTOR
 //
 MappedContoursDialog::MappedContoursDialog(
+		GtkWidget *parent, //***2.22
 		string ident1,          // unknown fin identifier
 		FloatContour *c1,       // unknown
 		int b1, int t1, int e1, // shifted unknown feature points
@@ -59,7 +60,8 @@ MappedContoursDialog::MappedContoursDialog(
 		FloatContour *c2,       // database
 		int b2, int t2, int e2  // shifted database feature points
 )
-	: mNameUnk(ident1),
+	: mParent(parent), //***2.22
+	  mNameUnk(ident1),
 	  mNameDB(ident2),
 	  mDialog(createDialog()),
 	  mUnknownContourGC(NULL),
@@ -124,6 +126,7 @@ MappedContoursDialog::~MappedContoursDialog()
 //
 void MappedContoursDialog::show()
 {
+	gtk_window_set_transient_for(GTK_WINDOW(mDialog), GTK_WINDOW(mParent)); //***2.22
 	gtk_widget_show(mDialog);
 
 	updateGC();

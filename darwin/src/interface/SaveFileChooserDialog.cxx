@@ -21,7 +21,7 @@
 #include <gdk/gdkkeysyms.h>
 #include "../support.h"
 #include "SaveFileChooserDialog.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 #include "../CatalogSupport.h"
 #include "../Utility.h"
 
@@ -36,7 +36,7 @@ using namespace std;
 static int gNumReferences = 0;
 //static string gLastDirectory = "";   // disk & path last in use
 
-static int mNumberModes = 6; //how many modes are above in the enum? ***2.02 - updated to 6
+static int mNumberModes = 7; //how many modes are above in the enum? ***2.22 - updated to 7
 static string gLastDirectory[] = {"","","","","","","",""};   // disk & path last in use  //SAH 8 strings for 8 mSaveModes
 static string gLastFileName[] = {"","","","","","","",""};    // simple name of last file "touched" -- if any
 static string gLastFolderName[] = {"","","","","","","",""};  // simple name of folder last "touched" -- if any
@@ -259,11 +259,51 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 				FALSE);
 		
 		// return focus to "catalog" folder wih NO selected database file
-		directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+		//directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+		directory = gOptions->mCurrentDataPath + PATH_SLASH + "backups";
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (saveFCDialog), 
 				directory.c_str());
 		gLastDirectory[mSaveMode] = directory;
+		gLastFileName[mSaveMode] = "";
+		break;
+	//***2.22 - choose a data path for creating a new Survey Area
+	case chooseDataPath:
+		saveFCDialog = gtk_file_chooser_dialog_new (
+				_("Choose or Create a Darwin Data Folder (darwinPhotoIdData)"),
+				GTK_WINDOW(mParent),
+				GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+				GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				NULL);
+		// could do this if we had version 2.8 or later of GTK+
+		// gtk_file_chooser_set_do_overwrite_confirmation(
+		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
+		
+		{
+			GtkWidget *msg = gtk_label_new ("Choose or Create a Darwin Data Folder (darwinPhotoIdData) above.");
+			gtk_widget_show (msg);
+			gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(saveFCDialog), msg);
+		}
+
+		//filter = gtk_file_filter_new();
+		//gtk_file_filter_set_name(filter, "Darwin Data Folders (DarwinPhotoIdData*)");
+		//gtk_file_filter_add_pattern(filter, "DarwinPhotoIdData*");
+		//gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(saveFCDialog),filter);
+
+		// do NOT allow multiple file selections
+		gtk_file_chooser_set_select_multiple (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				FALSE);
+		
+		if (gLastDirectory[mSaveMode] == "")
+		{
+			//***1.85 - everything is now relative to the current data path
+			gLastDirectory[mSaveMode] = gOptions->mCurrentDataPath;
+		}
+		gtk_file_chooser_set_current_folder (
+				GTK_FILE_CHOOSER (saveFCDialog), 
+				gLastDirectory[mSaveMode].c_str());
 		gLastFileName[mSaveMode] = "";
 		break;
 	}
@@ -402,6 +442,18 @@ void on_saveFileChooserButtonOK_clicked(
 				
 				delete img;
 			}
+		}
+		break;
+	case SaveFileChooserDialog::chooseDataPath: //***2.22 - for multiple data path support
+		{
+			gchar *temp;
+
+			temp = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg->mDialog));
+			string fileName = temp;
+			g_free(temp);
+			
+			if (fileName != "")
+				gOptions->mCurrentDataPath = fileName;
 		}
 		break;
 	default:

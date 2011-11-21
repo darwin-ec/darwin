@@ -686,20 +686,20 @@ MainWindow.o MainWindow.o: MainWindow.cxx \
   ../image_processing/ColorImage.h ../Options.h DataExportDialog.h \
   ../Support.h ModifyDatabaseWindow.h ../image_processing/ColorImage.h \
   AboutDialog.h CatalogSchemeDialog.h ContourInfoDialog.h ../Outline.h \
-  ../Chain.h ImageViewDialog.h ErrorDialog.h ../Error.h \
-  MatchingQueueDialog.h ../matching/MatchingQueue.h ../matching/Match.h \
-  ../matching/../Chain.h ../matching/../Database.h \
-  ../matching/../DatabaseFin.h ../matching/../FloatContour.h \
-  ../matching/MatchResults.h \
+  ../Chain.h ImageViewDialog.h MatchingQueueDialog.h \
+  ../matching/MatchingQueue.h ../matching/Match.h ../matching/../Chain.h \
+  ../matching/../Database.h ../matching/../DatabaseFin.h \
+  ../matching/../FloatContour.h ../matching/MatchResults.h \
   ../matching/../image_processing/conversions.h \
   ../matching/../CatalogSupport.h ../matching/../interface/ErrorDialog.h \
-  ../matching/../Database.h ../matching/../SQLiteDatabase.h \
-  ../matching/../DatabaseFin.h ../matching/../Error.h \
-  ../matching/../Options.h ../matching/../image_processing/ColorImage.h \
-  ../matching/../sqlite3.h ../matching/../OldDatabase.h \
-  ../matching/../DummyDatabase.h ../matching/../interface/MainWindow.h \
-  ../matching/../interface/DBConvertDialog.h \
   ../matching/../interface/GtkCompat.h \
+  ../matching/../interface/../Error.h ../matching/../Database.h \
+  ../matching/../SQLiteDatabase.h ../matching/../DatabaseFin.h \
+  ../matching/../Error.h ../matching/../Options.h \
+  ../matching/../image_processing/ColorImage.h ../matching/../sqlite3.h \
+  ../matching/../OldDatabase.h ../matching/../DummyDatabase.h \
+  ../matching/../interface/MainWindow.h \
+  ../matching/../interface/DBConvertDialog.h \
   ../matching/../interface/../Support.h \
   ../matching/../interface/../CatalogSupport.h \
   ../matching/../interface/../Options.h ../matching/../utility.h \
@@ -2164,10 +2164,6 @@ ContourInfoDialog.h:
 
 ImageViewDialog.h:
 
-ErrorDialog.h:
-
-../Error.h:
-
 MatchingQueueDialog.h:
 
 ../matching/MatchingQueue.h:
@@ -2190,6 +2186,10 @@ MatchingQueueDialog.h:
 
 ../matching/../interface/ErrorDialog.h:
 
+../matching/../interface/GtkCompat.h:
+
+../matching/../interface/../Error.h:
+
 ../matching/../Database.h:
 
 ../matching/../SQLiteDatabase.h:
@@ -2211,8 +2211,6 @@ MatchingQueueDialog.h:
 ../matching/../interface/MainWindow.h:
 
 ../matching/../interface/DBConvertDialog.h:
-
-../matching/../interface/GtkCompat.h:
 
 ../matching/../interface/../Support.h:
 

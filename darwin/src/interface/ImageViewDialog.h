@@ -26,7 +26,7 @@ class ImageViewDialog
 		// 	Sets up all the gtk widgets and such, but
 		// 	doesn't show the dialog.  show() must later be
 		// 	called to do that.
-		ImageViewDialog(const std::string &name, ColorImage *image);
+		ImageViewDialog(GtkWidget *parent, const std::string &name, ColorImage *image);
 		
 		// Destructor
 		// 	Destroys the dialog if it's open and frees
@@ -72,6 +72,7 @@ class ImageViewDialog
 
 	private:
 		GtkWidget
+			*mParent, //***2.22
 			*mDialog,
 			*mDrawingArea,
 			*mLabelZoom,

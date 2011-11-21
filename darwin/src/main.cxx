@@ -102,7 +102,7 @@ void saveConfig();
 void readConfig(string homedir)
 {
 
-	//***2.22 - major rewite to clean up for Windows and Mac platforms
+	//***2.22 - major rewrite to clean up for Windows and Mac platforms
 
 	gOptions->mDarwinHome = homedir; // homedir should always be defined in main()
 
@@ -141,9 +141,9 @@ void readConfig(string homedir)
 
 	//***2.22 - no predefined "temp" dir on Mac
 	gOptions->mTempDirectory = getenv("HOME");
-	gOptions->mTempDirectory += "/.darwintmp";
+	gOptions->mTempDirectory += "/darwintmp";
 
-	fileName = homedir + "/system/.darwinrc";
+	fileName = homedir + "/system/darwinrc";
 	gCfg = new ConfigFile(fileName);
 
 	// if config found, save a backup, else load backup copy
@@ -166,6 +166,12 @@ void readConfig(string homedir)
 	}
 
 #endif
+
+	//***2.22 - new item in configuration
+	if (!gCfg->getItem("CurrentDataPath", gOptions->mCurrentDataPath))
+	{
+		// no action needed, we set this initially in main before calling readConfig()
+	}
 
 	if (!gCfg->getItem("CurrentColor[0]", gOptions->mCurrentColor[0]) ||
 	    !gCfg->getItem("CurrentColor[1]", gOptions->mCurrentColor[1]) ||
@@ -363,6 +369,7 @@ void saveConfig()
 	gCfg->ClearList();
 
 	gCfg->addItem("DARWINHOME", gOptions->mDarwinHome); // info only - pgm doesn't use
+	gCfg->addItem("CurrentDataPath", gOptions->mCurrentDataPath); //***2.22
 	gCfg->addItem("CurrentSurveyArea", gOptions->mCurrentSurveyArea); //***1.85
 	gCfg->addItem("DatabaseFileName", gOptions->mDatabaseFileName);
 
@@ -589,8 +596,44 @@ int main(int argc, char *argv[])
 
 	gOptions = new Options();
 
+	//***2.22 - new section to support multiple data areas OUTSIDE DARWINHOME
+	//
+	// NOTE and WARNING: the HOMEPATH var in Windows does NOT include the drive letter
+	// We have to prepend HOMEDRIVE to get the complete path
+	//
+	gOptions->mNumberOfExistingDataPaths = 1;
+#ifdef WIN32
+	gOptions->mCurrentDataPath = getenv("HOMEDRIVE");
+	if (NULL != getenv("HOMEPATH"))
+		gOptions->mCurrentDataPath += getenv("HOMEPATH"); // user's home
+#else
+	if (NULL != getenv("HOME"))
+		gOptions->mCurrentDataPath = getenv("HOME"); // Mac & Linux - user's home
+#endif
+	
+	if ("" != gOptions->mCurrentDataPath)
+	{
+		gOptions->mCurrentDataPath += PATH_SLASH;
+		gOptions->mCurrentDataPath +=  "Documents"; // user's Documents folder
+		gOptions->mCurrentDataPath += PATH_SLASH;
+		gOptions->mCurrentDataPath += "darwinPhotoIdData"; // new standard folder name
+	}
+	else
+		gOptions->mCurrentDataPath = gOptions->mDarwinHome; // OLD way - application folder
+
+	//showError(darwinhome+"\n"+gOptions->mCurrentDataPath);
+
+	// read configuration AFTER setting default darwinhome and data path
+
 	readConfig(darwinhome);
-	cout << "DARWINHOME=" << gOptions->mDarwinHome << endl;
+	//cout << "DARWINHOME=" << gOptions->mDarwinHome << endl;
+
+	gOptions->mExistingDataPaths.push_back(gOptions->mCurrentDataPath); // push first data path
+
+	//cout << "DataHome: " << gOptions->mCurrentDataPath << endl;
+	//showError(gOptions->mDarwinHome+"\n"+gOptions->mCurrentDataPath);
+
+	//***2.22 - end of new multiple data path code (for now)
 
 	//SAH
 	//Create Temporary Directory

@@ -707,7 +707,7 @@ MatchingQueueDialog.o MatchingQueueDialog.o: MatchingQueueDialog.cxx \
   ../interface/../Database.h ../interface/../DatabaseFin.h \
   ../interface/../matching/Match.h ../interface/../Options.h \
   ../interface/MainWindow.h ../interface/MatchingQueueDialog.h \
-  ../image_processing/transform.h ErrorDialog.h
+  ../image_processing/transform.h
 
 ../../config.h:
 
@@ -2180,5 +2180,3 @@ MainWindow.h:
 ../interface/MatchingQueueDialog.h:
 
 ../image_processing/transform.h:
-
-ErrorDialog.h:

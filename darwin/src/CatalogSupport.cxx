@@ -94,27 +94,6 @@ Database * openDatabase(Options *o, bool create)
 	{
 		// the catalog scheme will come out of the existing database
 
-/* copied this by mistake????????		
-#ifdef WIN32
-		_mkdir(path.c_str());
-		path += PATH_SLASH;
-		_mkdir(path.c_str());
-		_mkdir((path+"catalog").c_str());
-		_mkdir((path+"tracedFins").c_str());
-		_mkdir((path+"matchQueues").c_str());
-		_mkdir((path+"matchQResults").c_str());
-		_mkdir((path+"sightings").c_str());
-#else //***2.22 - for Mac / UNIX
-		mkdir(path.c_str(),777);
-		path += PATH_SLASH;
-		mkdir(path.c_str(),777);
-		mkdir((path+"catalog").c_str(),777);
-		mkdir((path+"tracedFins").c_str(),777);
-		mkdir((path+"matchQueues").c_str(),777);
-		mkdir((path+"matchQResults").c_str(),777);
-		mkdir((path+"sightings").c_str(),777);
-#endif 
-*/
 		db = new SQLiteDatabase(o, cat, create);
 	}
 	else if(OldDatabase::isType(o->mDatabaseFileName))
@@ -346,7 +325,8 @@ bool backupCatalog(Database *db)
 	
 	string backupPath, backupFilename, fileList, command;
 
-	backupPath = gOptions->mDarwinHome;//getenv("DARWINHOME");
+	//backupPath = gOptions->mDarwinHome;//getenv("DARWINHOME");
+	backupPath = gOptions->mCurrentDataPath; //***2.22
 	backupPath = backupPath 
 		+ PATH_SLASH 
 		+ "backups" 
@@ -379,6 +359,106 @@ bool backupCatalog(Database *db)
 
 	return createArchive(db, backupFilename);
 }
+
+
+//***2.22 - new function to support multiple data areas OUTSIDE DARWINHOME
+//          dataPath should terminate in "darwinData" and may be anywhere
+//
+bool dataPathExists (string dataPath, bool forceCreate)
+{
+	bool exists = true; // assume true -- dataPath does exist
+
+	string 
+		areas = dataPath + PATH_SLASH + "surveyAreas",
+		backups = dataPath + PATH_SLASH + "backups";
+
+#ifdef WIN32
+
+	struct _finddata_t c_file;
+	long hFile;
+
+	if (forceCreate)
+		printf( "Creating Data Path folder(s) ...\n" );
+
+	// Find or create dataPath
+	if (hFile = _findfirst(dataPath.c_str(), &c_file ) == -1L)
+	{
+		if (forceCreate)
+			_mkdir(dataPath.c_str());
+		else
+			exists = false;
+	}
+	_findclose( hFile );
+		
+	// Find or create dataPath/surveyAreas
+	if (exists)
+	{
+		if (hFile = _findfirst(areas.c_str(), &c_file ) == -1L)
+		{
+			if (forceCreate)
+				_mkdir(areas.c_str());
+			else
+				exists = false;
+		}
+		_findclose( hFile );
+	}
+	
+	// Find or create dataPath/backups
+	if (exists)
+	{
+		if (hFile = _findfirst(backups.c_str(), &c_file ) == -1L)
+		{
+			if (forceCreate)
+				_mkdir(backups.c_str());
+			else
+				exists = false;
+		}
+		_findclose( hFile );
+	}
+
+#else // Mac & Linux
+
+	struct stat buffer;
+	int         status;
+
+	// status = stat("/home/cnd/mod1", &buffer); -- this is the example
+
+	// Find dataPath
+	if ( (status = stat(dataPath.c_str(), &buffer)) == -1L )
+	{
+		if (forceCreate)
+			mkdir(dataPath.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		else
+			exists = false;
+	}
+
+	if (exists)
+	{
+		if ( (status = stat(areas.c_str(), &buffer)) == -1L )
+		{
+			if (forceCreate)
+				mkdir(areas.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+			else
+				exists = false;
+		}
+	}
+
+	if (exists)
+	{
+		if ( (status = stat(backups.c_str(), &buffer)) == -1L )
+		{
+			if (forceCreate)
+				mkdir(backups.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+			else
+				exists = false;
+		}
+	}
+
+#endif
+
+	return exists;
+}
+
 
 //
 // This builds/rebuilds the folder structure of a Survey Area as needed

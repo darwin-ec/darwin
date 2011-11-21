@@ -21,7 +21,7 @@
 */
 #include "../image_processing/transform.h"
 #include "MainWindow.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 #include "TraceWindow.h"
 #include "SaveFileChooserDialog.h"
 
@@ -144,7 +144,8 @@ mPreview(NULL) //***1.95
 						GTK_FILE_CHOOSER (openFCDialog),
 						FALSE);
 
-				directory = gOptions->mDarwinHome;
+				//directory = gOptions->mDarwinHome;
+				directory = gOptions->mCurrentDataPath; //***2.22 - should this be HOME
 
 				if ("" != gLastDirectory[mOpenMode])
 				{
@@ -295,7 +296,8 @@ mPreview(NULL) //***1.95
 						FALSE);
 
 				// return focus to "catalog" folder wih NO selected database file
-				directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+				//directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+				directory = gOptions->mCurrentDataPath + PATH_SLASH + "backups"; //***2.22
 				gtk_file_chooser_set_current_folder (
 						GTK_FILE_CHOOSER (openFCDialog),
 						directory.c_str());
@@ -326,7 +328,8 @@ mPreview(NULL) //***1.95
 						FALSE);
 
 				// return focus to "catalog" folder wih NO selected database file
-				directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+				//directory = gOptions->mDarwinHome + PATH_SLASH + "backups";
+				directory = gOptions->mCurrentSurveyArea + PATH_SLASH + "backups"; //***2.22
 				gtk_file_chooser_set_current_folder (
 						GTK_FILE_CHOOSER (openFCDialog),
 						directory.c_str());
@@ -1100,7 +1103,8 @@ mPreview(NULL) //***1.95
 				line2 = line2.substr(0,pos); // strip "surveyAreas"
 				restoreHome = line2; // save DARWINHOME for restore
 
-				if (restoreHome != dlg->mOptions->mDarwinHome)
+				//if (restoreHome != dlg->mOptions->mDarwinHome)
+				if (restoreHome != dlg->mOptions->mCurrentDataPath) //***2.22
 				{
 					// this backup file came from another DARWIN installation
 					GtkWidget *msgDialog = gtk_message_dialog_new(GTK_WINDOW(dlg->mDialog),
@@ -1163,6 +1167,8 @@ mPreview(NULL) //***1.95
 				//***1.982 - update current Survey Area indicator in global Options
 				gOptions->mCurrentSurveyArea =
 					restoreHome + PATH_SLASH + "surveyAreas" + PATH_SLASH + restoreSurveyArea;
+				//***2.22 - update current Data Path indicator in global Options
+				gOptions->mCurrentDataPath = restoreHome;
 
 				// now restart this dialog so we can OPEN the new database
 				gtk_widget_destroy(dlg->mDialog);
@@ -1198,6 +1204,12 @@ mPreview(NULL) //***1.95
 						SaveFileChooserDialog::clearLast(dlg->mOptions->mCurrentSurveyArea); //SAH
 
 						dlg->mOptions->mCurrentSurveyArea = fileName.substr(0,fileName.rfind(cat));
+
+						//***2.22 - dig data path out of database filename path
+						string surv = "";
+						surv += PATH_SLASH;
+						surv += "surveyAreas";
+						dlg->mOptions->mCurrentDataPath = fileName.substr(0,fileName.rfind(surv));
 
 						// make sure the current Options include the survey area and database
 						// filename of the new database ... if not, then add them to the list
@@ -1380,13 +1392,15 @@ mPreview(NULL) //***1.95
 
 			// set global last directory and blank filename so we can return there next time
 
+			//***2.22 - no longer enforce restriction below - JHS
+			/*
 			string t = folder;
 			if (dlg->mOpenMode==dlg->openDatabase && t.find(gOptions->mDarwinHome)==string::npos) {
 				//do not let user escape darwin home area when selecting a database. -- SAH
 				//DB's outside of darwin make "really bad things happen" according to JHS
 				gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg->mDialog),gOptions->mDarwinHome.c_str());
 			}
-
+			*/
 
 			gLastDirectory[dlg->mOpenMode] = folder;
 			gLastFileName[dlg->mOpenMode] = "";
@@ -1403,7 +1417,6 @@ mPreview(NULL) //***1.95
 		//
 		void OpenFileChooserDialog::run_and_respond()
 		{
-
 			gint response = gtk_dialog_run (GTK_DIALOG (mDialog));
 
 			switch (response)

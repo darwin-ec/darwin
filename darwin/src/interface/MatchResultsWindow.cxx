@@ -19,7 +19,7 @@
 #include "MatchResultsWindow.h"
 #include "NoMatchWindow.h"
 #include "MappedContoursDialog.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 #include "ImageViewDialog.h"
 #include "../mapContour.h"
 #include "../support.h"
@@ -1832,14 +1832,16 @@ gboolean on_eventBoxUnknown_button_press_event(
 		if (NULL == resWin->mUnknownImageOriginal)
 			return FALSE;
 
-		dlg = new ImageViewDialog(_("Unknown Fin"), resWin->mUnknownImageOriginal);
+		//***2.22 - added resWin->mWindow below - so dialog is set transient for this window
+		dlg = new ImageViewDialog(resWin->mWindow, _("Unknown Fin"), resWin->mUnknownImageOriginal);
 	}
 	else
 	{
 		if (NULL == resWin->mUnknownImageModOriginal)
 			return FALSE;
 
-		dlg = new ImageViewDialog(_("Unknown Fin"), resWin->mUnknownImageModOriginal);
+		//***2.22 - added resWin->mWindow below - so dialog is set transient for this window
+		dlg = new ImageViewDialog(resWin->mWindow, _("Unknown Fin"), resWin->mUnknownImageModOriginal);
 	}
 
 	dlg->show();
@@ -1880,14 +1882,16 @@ gboolean on_eventBoxSelected_button_press_event(
 		if (NULL == resWin->mSelectedImageOriginal)
 			return FALSE;
 
-		dlg = new ImageViewDialog(_("Selected Fin"), resWin->mSelectedImageOriginal);
+		//***2.22 - added resWin->mWindow below - so dialog is set transient for this window
+		dlg = new ImageViewDialog(resWin->mWindow, _("Selected Fin"), resWin->mSelectedImageOriginal);
 	}
 	else
 	{
 		if (NULL == resWin->mSelectedImageModOriginal)
 			return FALSE;
 
-		dlg = new ImageViewDialog(_("Selected Fin"), resWin->mSelectedImageModOriginal);
+		//***2.22 - added resWin->mWindow below - so dialog is set transient for this window
+		dlg = new ImageViewDialog(resWin->mWindow, _("Selected Fin"), resWin->mSelectedImageModOriginal);
 	}
 
 	dlg->show();
@@ -1918,6 +1922,7 @@ gboolean on_eventBoxOutlines_button_press_event(
 				uBegin,uTip,uEnd,dbBegin,dbTip,dbEnd);
 
 	MappedContoursDialog *dlg = new MappedContoursDialog(
+				resWin->mWindow, //***2.22
 				resWin->mUnknownFin->getID(),
 				resWin->mUnknownContour,
 				uBegin,uTip,uEnd,

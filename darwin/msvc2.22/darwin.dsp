@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /GX /O2 /I "..\gtk\include\\" /I "..\gtk\lib\glib-2.0\include" /I "..\gtk\lib\gtk-2.0\include" /I "..\png\libpng\include" /I "..\png\zlib1\include" /I ".." /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /D "VCPP6" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /c
+# ADD CPP /nologo /MD /GX /O2 /Ob1 /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /I ".." /D "PNG_NO_STDIO" /D "VCPP6" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib iconv.lib intl.lib atk-1.0.lib pango-1.0.lib gdk_pixbuf-2.0.lib gobject-2.0.lib glib-2.0.lib gdk-win32-2.0.lib jpeg.lib gtk-win32-2.0.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /entry:"mainCRTStartup" /subsystem:console /incremental:yes /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrtd.lib" /nodefaultlib:"msvcr7ld.dll ntdll.dll" /libpath:"..\gtk\lib" /libpath:"..\png\libpng\lib" /libpath:"..\png\zlib1\lib" /libpath:"..\gtk-2.22\lib" /libpath:"..\jpeg-6b\lib" /libpath:"..\gtk-2.22\libpng14\lib" /libpath:"..\gtk-2.22\zlib\lib"
+# ADD LINK32 zdll.lib libpng.lib gthread-2.0.lib gmodule-2.0.lib Ws2_32.lib intl.lib atk-1.0.lib pango-1.0.lib gdk_pixbuf-2.0.lib gobject-2.0.lib glib-2.0.lib gdk-win32-2.0.lib jpeg.lib gtk-win32-2.0.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /entry:"mainCRTStartup" /subsystem:console /incremental:yes /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"..\gtk-2.22\lib" /libpath:"..\gtk-2.22\libpng14\lib" /libpath:"..\gtk-2.22\zlib\lib" /libpath:"..\jpeg-6b\lib"
 # SUBTRACT LINK32 /verbose /pdb:none /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "darwin - Win32 Debug"
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W1 /Gm /GX /ZI /Od /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /I ".." /D "PNG_NO_STDIO" /D "VCPP6" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /Gm /GX /ZI /Od /I "..\gtk-2.22\include" /I "..\gtk-2.22\include\gtk-2.0" /I "..\gtk-2.22\include\atk-1.0" /I "..\gtk-2.22\include\gdk-pixbuf-2.0" /I "..\gtk-2.22\include\glib-2.0" /I "..\gtk-2.22\include\libpng14" /I "..\gtk-2.22\lib\glib-2.0\include" /I "..\gtk-2.22\lib\gtk-2.0\include" /I "..\gtk-2.22\include\cairo" /I "..\gtk-2.22\include\pango-1.0" /I ".." /D "PNG_NO_STDIO" /D "VCPP6" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

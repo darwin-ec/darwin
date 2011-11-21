@@ -687,11 +687,10 @@ CreateDatabaseDialog.o CreateDatabaseDialog.o: CreateDatabaseDialog.cxx \
   ../DummyDatabase.h ../Database.h ../DatabaseFin.h ../Error.h \
   ../Options.h ../interface/MainWindow.h ../interface/DBConvertDialog.h \
   ../interface/../Support.h ../interface/../CatalogSupport.h \
-  ../interface/../Options.h ../utility.h ErrorDialog.h \
-  ../../pixmaps/ok.xpm ../../pixmaps/cancel.xpm \
-  ../../pixmaps/logo_small.xpm SaveFileChooserDialog.h ../DatabaseFin.h \
-  TraceWindow.h ../image_processing/ColorImage.h \
-  ../image_processing/exif.h \
+  ../interface/../Options.h ../utility.h ../../pixmaps/ok.xpm \
+  ../../pixmaps/cancel.xpm ../../pixmaps/logo_small.xpm \
+  SaveFileChooserDialog.h ../DatabaseFin.h TraceWindow.h \
+  ../image_processing/ColorImage.h ../image_processing/exif.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/errno.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/sys/errno.h \
   /Developer/SDKs/MacOSX10.4u.sdk/usr/include/utime.h \
@@ -2169,8 +2168,6 @@ DataExportDialog.h:
 ../interface/../Options.h:
 
 ../utility.h:
-
-ErrorDialog.h:
 
 ../../pixmaps/ok.xpm:
 

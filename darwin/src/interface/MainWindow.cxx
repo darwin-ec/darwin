@@ -24,7 +24,7 @@
 #include "CatalogSchemeDialog.h" //***1.4
 #include "ContourInfoDialog.h"
 #include "ImageViewDialog.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 #include "MatchingQueueDialog.h"
 #include "OpenFileSelectionDialog.h"
 #include "OpenFileChooserDialog.h" //***1.4
@@ -40,8 +40,9 @@
 #include "../image_processing/ImageMod.h" //***1.8
 
 #pragma warning (disable : 4305 4309)
+#ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
+#endif
 #include "../../pixmaps/add_database.xpm"
 #include "../../pixmaps/about_small.xpm"
 #include "../../pixmaps/exit.xpm"
@@ -291,21 +292,21 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 //*******************************************************************
 void MainWindow::refreshImage()
 {
-	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaImage->window)) // notebook page is visible
+	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaImage->window)) // notebook page is visible
 		on_mainDrawingAreaImage_expose_event(mDrawingAreaImage, NULL, (void *) this);
 }
 
 //*******************************************************************
 void MainWindow::refreshOrigImage()
 {
-	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaOrigImage->window)) // notebook page is visible
+	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaOrigImage->window)) // notebook page is visible
 		on_mainDrawingAreaOrigImage_expose_event(mDrawingAreaOrigImage, NULL, (void *) this);
 }
 
 //*******************************************************************
 void MainWindow::refreshOutline()
 {
-	if (TRUE == GDK_IS_DRAWABLE(mDrawingAreaOutline->window)) // notebook page is visible
+	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaOutline->window)) // notebook page is visible
 		on_mainDrawingAreaOutline_expose_event(mDrawingAreaOutline, NULL, (void *) this);
 }
 
@@ -2708,15 +2709,33 @@ void on_backup_database_activate(
 
 	if (! backupCatalog(mainWin->mDatabase))
 	{
-		ErrorDialog *err = new ErrorDialog("Database backup failed.");
-		err->show();
+		//***2.22 - added mainWin->mWindow
+		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Database backup failed.");
+		//err->show();
+		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Database backup failed.");
+		gtk_dialog_run (GTK_DIALOG (errd));
+		gtk_widget_destroy (errd);
 	}
 
 	// must check here to ensure database reopened correctly
 	if (! mainWin->mDatabase->isOpen())
 	{
-		ErrorDialog *err = new ErrorDialog("Database failed to reopen");
-		err->show();
+		//***2.22 - added mainWin->mWindow
+		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Database failed to reopen");
+		//err->show();
+		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Database failed to reopen.");
+		gtk_dialog_run (GTK_DIALOG (errd));
+		gtk_widget_destroy (errd);
 	}
 
 	// reopen main window in front of the console window
@@ -2848,14 +2867,32 @@ void on_export_database_activate(
 		
 	if (! exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename))
 	{
-		ErrorDialog *err = new ErrorDialog("Catalog EXPORT failed.");
-		err->show();
+		//***2.22 - added mainWin->mWindow
+		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Catalog EXPORT failed.");
+		//err->show();
+		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Catalog EXPORT failed.");
+		gtk_dialog_run (GTK_DIALOG (errd));
+		gtk_widget_destroy (errd);
 	}
 
 	if (! mainWin->mDatabase->isOpen())
 	{
-		ErrorDialog *err = new ErrorDialog("Catalog failed to reopen");
-		err->show();
+		//***2.22 - added mainWin->mWindow
+		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Catalog failed to reopen");
+		//err->show();
+		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Catalog failed to reopen.");
+		gtk_dialog_run (GTK_DIALOG (errd));
+		gtk_widget_destroy (errd);
 	}
 }
 
@@ -3480,6 +3517,7 @@ gboolean on_mainEventBoxImage_button_press_event(
 	//		mainWin->mSelectedFin->mIDCode,
 	//		mainWin->mSelectedFin->mFinImage);
 	ImageViewDialog *dlg = new ImageViewDialog(
+			mainWin->mWindow, //***2.22 - so dialog will be set transient for this window
 			mainWin->mSelectedFin->mIDCode,
 			mainWin->mImageFullsize); //***2.01 - use new fullsize image already in memory
 	dlg->show();
@@ -3511,6 +3549,7 @@ gboolean on_mainEventBoxOrigImage_button_press_event(
 	//		mainWin->mSelectedFin->mIDCode,
 	//		mainWin->mSelectedFin->mFinImage); // was reloading and using modified image - OOPS
 	ImageViewDialog *dlg = new ImageViewDialog(
+			mainWin->mWindow, //***2.22 - so dialog will be set transient for this window
 			mainWin->mSelectedFin->mIDCode,
 			mainWin->mOrigImageFullsize); //***2.01 - use new fullsize image already in memory
 	dlg->show();
@@ -3620,6 +3659,7 @@ gboolean on_mainEventBoxOutline_button_press_event(
 
 	if (getNumContourInfoDialogReferences() < 1) {
 		ContourInfoDialog *dlg = new ContourInfoDialog(
+				mainWin->mWindow, //***2.22
 				mainWin->mSelectedFin->mIDCode,
 				//mainWin->mSelectedFin->mFinContour, removed 008OL
 				mainWin->mSelectedFin->mFinOutline, //***008OL

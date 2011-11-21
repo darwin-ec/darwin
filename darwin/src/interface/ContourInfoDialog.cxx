@@ -50,11 +50,13 @@ int getNumContourInfoDialogReferences()
 //    CONSTRUCTOR
 //
 ContourInfoDialog::ContourInfoDialog(
+		GtkWidget *parent, //***2.22
 		string name,
 		Outline *oL, //***08OL - replaced Contour
 		double outlineColor[4]
 )
 	: mName(name),
+	  mParent(parent), //***2.22
 	  mDialog(createInfoDialog()),
 	  mFinOutline(new Outline(oL)), //***1.3 - make a copy now
 	  mContourGC(NULL),
@@ -107,6 +109,7 @@ ContourInfoDialog::~ContourInfoDialog()
 //
 void ContourInfoDialog::show()
 {
+	gtk_window_set_transient_for(GTK_WINDOW(mDialog), GTK_WINDOW(mParent)); //***2.22
 	gtk_widget_show(mDialog);
 
 	updateGC();

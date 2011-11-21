@@ -723,8 +723,17 @@ void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift)//AT103 SAH
 		//Check that the first point is further left than the second (otherwise we crash)
 		//that is that [0].x < [1].x
 		if ((*mContour)[0].x>=(*mContour)[1].x) {
-			ErrorDialog *errDiag = new ErrorDialog("Please click the start of the leading edge first and the end of the trailing edge second.\n\nNote: the dolphin must swim to your left.");//103AT
-			errDiag->show();//103AT
+			//***2.22 - added mWindow
+			//ErrorDialog *errDiag = new ErrorDialog(mWindow, "Please click the start of the leading edge first and the end of the trailing edge second.\n\nNote: the dolphin must swim to your left.");//103AT
+			//errDiag->show();//103AT
+			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+			GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mWindow),
+								GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_MESSAGE_ERROR,
+								GTK_BUTTONS_CLOSE,
+								"Please click the start of the leading edge first and the end of the trailing edge second.\n\nNote: the dolphin must swim to your left.");
+			gtk_dialog_run (GTK_DIALOG (errd));
+			gtk_widget_destroy (errd);
 			
 			//remove current marks
 			traceReset();
@@ -791,8 +800,17 @@ void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift)//AT103 SAH
 				refreshImage();//102AT
 			} else {
 				delete (IntensityContourCyan*)trace; //***1.96 - must free memory since autotrace failed (JHS)
-				ErrorDialog *errDiag = new ErrorDialog("Auto trace could not determine the fin outline.\n\nPlease trace outline by hand.");//101AT
-				errDiag->show();//101AT
+				//***2.22 - added mWindow
+				//ErrorDialog *errDiag = new ErrorDialog(mWindow,"Auto trace could not determine the fin outline.\n\nPlease trace outline by hand.");//101AT
+				//errDiag->show();//101AT
+				//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+				GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mWindow),
+									GTK_DIALOG_DESTROY_WITH_PARENT,
+									GTK_MESSAGE_ERROR,
+									GTK_BUTTONS_CLOSE,
+									"Auto trace could not determine the fin outline.\n\nPlease trace outline by hand.");
+				gtk_dialog_run (GTK_DIALOG (errd));
+				gtk_widget_destroy (errd);
 
 				//remove contour
 				traceReset();
@@ -807,6 +825,7 @@ void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift)//AT103 SAH
 					_("Please hand trace the fin outline below."));		
 
 				return;
+
 
 			}//102AT
 
@@ -4506,8 +4525,17 @@ gboolean on_traceEventBox_button_release_event(GtkWidget * widget,
 				if (traceWin->mContour->length() < 100)
 				{
 					traceWin->traceReset();
-					ErrorDialog *errDialog = new ErrorDialog("This outline trace is too short to\nprocess further.  Please retrace.");
-					errDialog->show();
+					//***2.22 - added traceWin->mWindow
+					//ErrorDialog *errDialog = new ErrorDialog(traceWin->mWindow,"This outline trace is too short to\nprocess further.  Please retrace.");
+					//errDialog->show();
+					//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+					GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(traceWin->mWindow),
+										GTK_DIALOG_DESTROY_WITH_PARENT,
+										GTK_MESSAGE_ERROR,
+										GTK_BUTTONS_CLOSE,
+										"This outline trace is too short to\nprocess further.  Please retrace.");
+					gtk_dialog_run (GTK_DIALOG (errd));
+					gtk_widget_destroy (errd);
 				}
 				else
 				{

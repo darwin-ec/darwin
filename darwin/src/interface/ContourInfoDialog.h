@@ -36,6 +36,7 @@ class ContourInfoDialog
 		//
 		// 	  Simply uses existing Outline - does NOT make copy.
 		ContourInfoDialog(
+				GtkWidget *parent, //***2.22
 				std::string name,
 				Outline *oL, //***008OL
 				double outlineColor[4]);
@@ -77,6 +78,7 @@ class ContourInfoDialog
 		std::string mName;
 		
 		GtkWidget
+			*mParent, //***2.22
 			*mDialog,
 			*mDrawingAreaContour,
 			*mDrawingAreaChain,

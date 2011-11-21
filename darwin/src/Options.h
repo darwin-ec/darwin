@@ -32,12 +32,18 @@ class Options
 			mHighThreshold(0.85f),
 			mLowThreshold(0.15f),
 			mGaussianStdDev(1.5f),
-			mDatabaseFileName("darwin.db"),
+			mNumberOfExistingDataPaths(0),   //***2.22
+			mNumberOfExistingSurveyAreas(0), //***2.22
+			mNumberOfExistingDatabases(0),   //***2.22
+			//mDatabaseFileName("darwin.db"),
+			mDatabaseFileName(""), //***2.22 - default is now NO default database
 #ifdef WIN32
-			mCurrentSurveyArea("surveyAreas\\default"),
+			//mCurrentSurveyArea("surveyAreas\\default"),
 #else
-			mCurrentSurveyArea("surveyAreas/default"),
+			//mCurrentSurveyArea("surveyAreas/default"),
 #endif
+			mCurrentSurveyArea(""), //***2.22 - default is now NO default survey area
+			mCurrentDataPath(""), //***2.22 - NO default data path - figure out from $HOME or $HOMEPATH
 			mNumberOfDefinedCatalogSchemes(0), //***1.4 - none is default
 			mHideIDs(true) //***1.65
 		{
@@ -52,7 +58,7 @@ class Options
 			mDataFieldName.push_back("ID Code");
 			mDataFieldName.push_back("Name");
 			mDataFieldName.push_back("Date of Sighting");
-			mDataFieldName.push_back("Roll and Frame");
+			mDataFieldName.push_back("Roll/Frame or Lat/Long"); //***2.22 - added Lat/Long
 			mDataFieldName.push_back("Location Code");
 			mDataFieldName.push_back("Damage Category");
 			mDataFieldName.push_back("Description");
@@ -112,7 +118,11 @@ class Options
 		std::string mDarwinHome;                        // value of %DARWINHOME% set by runDarwin.bat
 		std::string mTempDirectory; //Temporary directory
 
-		// For al versions 1.85 and later ...
+		int mNumberOfExistingDataPaths;             //***2.22
+		std::string mCurrentDataPath;         //***2.22 - current home for data OUTSIDE DARWINHOME
+		std::vector<std::string> mExistingDataPaths; //***2.22 - new homes for data OUTSIDE DARWINHOME
+
+		// For all versions 1.85 and later ...
 		// the following is now the root path for all relative filenames in the catalog
 		// tracedFins, matchQueues and matchQResults folders .. these folders now exist
 		// in EACH surveyArea folder created within the DARWINHOME folder

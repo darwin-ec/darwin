@@ -17,7 +17,7 @@
 #include "MatchingQueueDialog.h"
 #include "MatchResultsWindow.h"
 #include "../image_processing/transform.h"
-#include "ErrorDialog.h"
+//#include "ErrorDialog.h"
 
 #ifdef WIN32
 #define PATH_SLASH "\\"

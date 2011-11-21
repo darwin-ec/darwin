@@ -32,7 +32,8 @@ class SaveFileChooserDialog
 			exportDatabase,
 			exportDataFields,
 			saveMultipleFinz,
-			saveFullSizeModImages //***2.02
+			saveFullSizeModImages, //***2.02
+			chooseDataPath //***2.22
 		} ;
 
 		// Constructor

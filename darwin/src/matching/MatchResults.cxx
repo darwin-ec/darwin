@@ -384,8 +384,16 @@ DatabaseFin<ColorImage> *MatchResults::load(Database *db, std::string fileName)
 				msg += "Please load the required database from the main window\n";
 				msg += "and then reload the desired results file.";
 
-				ErrorDialog *err = new ErrorDialog(msg);
-				err->show();
+				//ErrorDialog *err = new ErrorDialog(msg);
+				//err->show();
+				//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+				GtkWidget *errd = gtk_message_dialog_new (NULL,
+										GTK_DIALOG_DESTROY_WITH_PARENT,
+										GTK_MESSAGE_ERROR,
+										GTK_BUTTONS_CLOSE,
+										msg.c_str());
+				gtk_dialog_run (GTK_DIALOG (errd));
+				gtk_widget_destroy (errd);
 				return NULL;
 			}
 		}

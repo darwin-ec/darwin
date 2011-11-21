@@ -30,6 +30,7 @@ class MappedContoursDialog
 		// Constructor
 		// 	  Uses existing FloatContours - does NOT make copies.
 		MappedContoursDialog(
+				GtkWidget *parent, //***2.22
 				std::string ident1,
 				FloatContour *c1,
 				int b1, int t1, int e1,
@@ -84,6 +85,7 @@ class MappedContoursDialog
 			mNameDB;
 		
 		GtkWidget
+			*mParent, //***2.22
 			*mDialog,
 			*mDrawingAreaContour,
 			*mDrawingAreaChain,

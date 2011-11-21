@@ -38,8 +38,9 @@ int getNumImageViewDialogReferences()
 }
 
 //*******************************************************************
-ImageViewDialog::ImageViewDialog(const string &name, ColorImage *image)
+ImageViewDialog::ImageViewDialog(GtkWidget *parent, const string &name, ColorImage *image)
 	: //mDialog(createViewDialog(name)),
+	  mParent(parent), //***2.22
 	  mNonZoomedImage(new ColorImage(image)),
 	  mImage(new ColorImage(image)),
 	  mFlippedImage(NULL),    //***1.75
@@ -66,7 +67,10 @@ ImageViewDialog::~ImageViewDialog()
 //*******************************************************************
 void ImageViewDialog::show()
 {
-	gtk_widget_show(mDialog);
+	//***2.22 - following keeps dialog above parent
+	gtk_window_set_transient_for(GTK_WINDOW(mDialog), GTK_WINDOW(mParent)); //***2.22
+	
+	gtk_widget_show(mDialog);	
 	updateCursor();
 
 	gtk_widget_set_usize(
@@ -253,10 +257,13 @@ GtkWidget* ImageViewDialog::createViewDialog(const string &title)
   accel_group = gtk_accel_group_new ();
 
   viewDialog = gtk_dialog_new();
+  gtk_window_set_modal(GTK_WINDOW(viewDialog), FALSE); //***2.22
+  //GTK_WINDOW(viewDialog)->type = WINDOW_DIALOG; //***2.22?
   gtk_object_set_data (GTK_OBJECT (viewDialog), "viewDialog", viewDialog);
   gtk_window_set_title(GTK_WINDOW (viewDialog), title.c_str());
   gtk_window_set_policy (GTK_WINDOW (viewDialog), TRUE, TRUE, TRUE);
   gtk_window_set_wmclass(GTK_WINDOW(viewDialog), "darwin_imageview", "DARWIN");
+
   //***1.8 - set size based on smaller of image size or 800x600
   int 
 	height = (600 < mNonZoomedImage->mRows) ? 600 : mNonZoomedImage->mRows, 

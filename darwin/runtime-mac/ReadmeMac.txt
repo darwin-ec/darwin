@@ -79,9 +79,10 @@ click "Open."
 There are additional images of the same 10 dolphins in the folder named
 ".../surveyArea/sample/fin-images/"
 
-All of the DARWIN folders are currently located within a single folder system
-having DARWINHOME as its root folder.  DARWINHOME is currently within the 
-application itself, specifically the "darwinMac.app/Content/MacOS/" folder.
+All of the DARWIN folders were traditionally located within a single folder 
+system having DARWINHOME as its root folder.  DARWINHOME was always within the 
+application itself.  There is a remnant of this folder structure within the 
+"darwinMac.app/Content/MacOS/" folder.
 
 There are these folders within DARWINHOME
 
@@ -108,9 +109,14 @@ There are these folders within DARWINHOME
             tracedFins    - folder for saved fin tracings
     darwinMac-readme.txt  - another readme file
 
-From within DARWIN you can create new SURVEY AREAs as desired.  Creating a 
-new SURVEY AREA will create an additional collection of folders similar
-to the "sample" SURVEY AREA shown above.
+From within DARWIN you can now create a DATA PATH to any location.  All 
+DATA PATHs must end in a folder named "DarwinPhotoIdData" and may be
+created manually, or from the File Save Dialog during any "Create New 
+Database" or "Import Catalog" operation.
+
+New SURVEY AREAs may be created as desired.  Creating a new SURVEY AREA 
+will create an additional collection of folders similar to the "sample" 
+SURVEY AREA shown above.
 
 Within a given SURVEY AREA you may create as many CATALOGs as desired.
 Each CATALOG has its own database file (*.db) and collection of images. All
@@ -132,10 +138,6 @@ those matches are saved in the "matchQResults" folder.
 
 When sighting data is Exported, the default location for saving the file
 is in the "sightings" folder.
-
-In the future, DARWIN will provide a more flexible placement of all of the
-data, but the basic arrangement of folders within a single SURVEY AREA will
-remain the same.
 
 ===============================
 Reporting Issues - Getting Help
