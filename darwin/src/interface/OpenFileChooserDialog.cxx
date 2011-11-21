@@ -129,6 +129,7 @@ mPreview(NULL) //***1.95
 				filter = gtk_file_filter_new();
 				gtk_file_filter_set_name(filter, "Image Files (*.jpg *.bmp *.png *.ppm *.pgm)");
 				gtk_file_filter_add_pattern(filter, "*.jpg");
+				gtk_file_filter_add_pattern(filter, "*.JPG"); //***2.22
 				gtk_file_filter_add_pattern(filter, "*.bmp");
 				gtk_file_filter_add_pattern(filter, "*.png");
 				gtk_file_filter_add_pattern(filter, "*.ppm");
