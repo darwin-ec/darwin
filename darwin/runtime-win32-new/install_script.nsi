@@ -14,7 +14,8 @@ Name "DARWIN"
 ;InstallDir "$PROGRAMFILES\darwin-2.0\" <-- old version did not force darwin-2.0 on end of browse choice
 ;leaving backslash off of end makes sure "darwin-2.0" forder is created inside user's chosen
 ;folder after use of browser
-InstallDir $PROGRAMFILES\darwin-2.0
+;InstallDir $PROGRAMFILES\darwin-2.0 <-- no longer, since problems here with Windows 7 & Vista
+InstallDir C:\darwinPhotoId\darwin-2.0
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf

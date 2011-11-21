@@ -15,6 +15,7 @@ Name "DARWIN"
 ;leaving backslash off of end makes sure "darwin-2.0" forder is created inside user's chosen
 ;folder after use of browser
 InstallDir $PROGRAMFILES\darwin-2.0
+;InstallDir C:\darwinPhotoId\darwin-2.0 <-- this is used in the installer, but hold for now on updater
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf
