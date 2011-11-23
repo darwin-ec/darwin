@@ -26,8 +26,16 @@ Database* convertDatabase(Options* o, std::string sourceFilename);
 Database* duplicateDatabase(Options* o, Database* sourceDatabase, std::string targetFilename);
 
 //***2.22 - new function to support multiple data areas OUTSIDE DARWINHOME
-//          dataPath should terminate in "darwinData" and may be anywhere
-bool dataPathExists (std::string dataPath, bool forceCreate);
+//          dataPath should terminate in "darwinPhotoIdData" and may be anywhere
+bool dataPathExists (std::string dataPath, bool forceCreate); //***2.22
+
+//***2.22 - new function to see if file exists without opening file
+//          as done in utility.h (fileExists(fname)
+bool filespecFound(std::string path); //***2.22
+
+//***2.22 - new function to move defualt and sample survey areas data OUTSIDE 
+//          DARWINHOME the first time DARWIN runs
+void moveAreasAndBackups(bool force); //***2.22
 
 void rebuildFolders(std::string home, std::string area, bool force);
 void extractCatalogFiles(std::string backupFilename, std::string toFollder);

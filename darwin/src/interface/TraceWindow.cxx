@@ -114,6 +114,8 @@ static double duration; //***1.95
 extern ofstream timingOutFile; //***1.95
 #endif
 
+static int refreshCount = 0; //***2.22 - debugging contour refresh problem
+
 static int gNumReferences = 0;
 
 int getNumTraceWindowReferences()
@@ -192,8 +194,8 @@ TraceWindow::TraceWindow(
 
 	if (image->mBuiltFromMods)
 	{
-		cout << "LOADED: " << fileName << endl;
-		cout << "  ORIG: " << mOriginalImage->mOriginalImageFilename << endl;
+		//cout << "LOADED: " << fileName << endl;
+		//cout << "  ORIG: " << mOriginalImage->mOriginalImageFilename << endl;
 
 		mImageMods = mOriginalImage->mImageMods; // leave mLastMod as NONE -- cannot undo these loaded mods
 		mIsFlipped = mOriginalImage->mImageMods.imageIsReversed();
@@ -1984,7 +1986,12 @@ int TraceWindow::zoomPointSize()
 
 void TraceWindow::refreshImage()
 {
-	on_traceDrawingArea_expose_event(NULL, NULL, (void *)this);
+	gtk_widget_queue_draw_area(this->mDrawingArea,
+		                        0,0,
+                              this->mDrawingArea->allocation.width,
+                              this->mDrawingArea->allocation.height);
+	//gdk_window_invalidate_rect (GTK_WINDOW(this->mWindow), NULL, TRUE);
+	//on_traceDrawingArea_expose_event(NULL, NULL, (void *)this);
 }
 
 
@@ -5324,17 +5331,14 @@ void on_traceButtonMatch_clicked(GtkButton * button, gpointer userData)
 
 		newFin->mImageMods.first(mod);
 		mod.get(op, v1, v2, v3, v4);
-		cout << "ImgMod: " << (int)op << " " << v1 << " " << v2 << " " << v3 << " " << v4 << endl;
+		//cout << "ImgMod: " << (int)op << " " << v1 << " " << v2 << " " << v3 << " " << v4 << endl;
 
 		while (newFin->mImageMods.next(mod))
 		{
 			mod.get(op, v1, v2, v3, v4);
-			cout << "ImgMod: " << (int)op << " " << v1 << " " << v2 << " " << v3 << " " << v4 << endl;
+			//cout << "ImgMod: " << (int)op << " " << v1 << " " << v2 << " " << v3 << " " << v4 << endl;
 		}
 	}
-
-
-
 
 
 	MatchingDialog *dlg = new MatchingDialog(

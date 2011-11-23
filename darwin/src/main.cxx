@@ -55,6 +55,8 @@
 #include <config.h>
 #endif
 
+#include <glib.h> //***2.22 for threads
+
 #include <gtk/gtk.h>
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
@@ -127,7 +129,8 @@ void readConfig(string homedir)
 		(gOptions->mDatabaseFileName == "NONE"))
 	{
 		// if no database found then set default survey area and NONE as database
-		gOptions->mCurrentSurveyArea = homedir + "\\surveyAreas\\default"; 
+		//gOptions->mCurrentSurveyArea = homedir + "\\surveyAreas\\default";
+		gOptions->mCurrentSurveyArea = "NONE"; //***2.22 - set below based on current data path
 		gOptions->mDatabaseFileName = "NONE";
 	}
 	else
@@ -155,7 +158,8 @@ void readConfig(string homedir)
 	if (!gCfg->getItem("DatabaseFileName", gOptions->mDatabaseFileName)) 
 	{
 		// if no database found then set default survey area and NONE as database
-		gOptions->mCurrentSurveyArea = homedir + "/surveyAreas/default";
+		//gOptions->mCurrentSurveyArea = homedir + "/surveyAreas/default";
+		gOptions->mCurrentSurveyArea = "NONE"; //***2.22 - set below based on current data path
 		gOptions->mDatabaseFileName = "NONE";
 	}
 	else
@@ -171,6 +175,14 @@ void readConfig(string homedir)
 	if (!gCfg->getItem("CurrentDataPath", gOptions->mCurrentDataPath))
 	{
 		// no action needed, we set this initially in main before calling readConfig()
+	}
+
+	//***2.22 - NOW set the current survey area based on the current data path
+	if ("NONE" == gOptions->mCurrentSurveyArea)
+	{		
+		// this happens when NO database found
+		gOptions->mCurrentSurveyArea = gOptions->mCurrentDataPath + PATH_SLASH 
+					+ "surveyAreas" + PATH_SLASH + "default";
 	}
 
 	if (!gCfg->getItem("CurrentColor[0]", gOptions->mCurrentColor[0]) ||
@@ -487,6 +499,9 @@ void saveConfig()
 //
 int main(int argc, char *argv[])
 {
+	//g_thread_init(NULL); //***2.22
+	//gdk_threads_init(); //***2.22
+
 #ifdef WIN32
 	//trying to find memory leaks - this next line
 //	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
@@ -498,6 +513,7 @@ int main(int argc, char *argv[])
 #endif
 
 	gtk_set_locale();
+
 	gtk_init(&argc, &argv);
 
 	// handle any/all command line arguments
@@ -522,7 +538,7 @@ int main(int argc, char *argv[])
 
 	string darwinhome(argv[0]);//first argument is absolute if double-clicked in windows; otherwise, may be relative
 	//we will overide this if argv[1]==--set-home="..."
-	cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
+	//cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
 #ifdef WIN32		
 	int basePos = darwinhome.rfind("\\system\\bin\\darwin.exe");
 	if (basePos!=string::npos) {
@@ -549,7 +565,7 @@ int main(int argc, char *argv[])
 #endif
 	}
 
-	cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
+	//cout << "DH: " << darwinhome << endl; //***2.22 - diagnostic
 
 	vector<string> options; // so we can handle multiple command line options
 	string finz("");       // assume only one of these
@@ -628,6 +644,33 @@ int main(int argc, char *argv[])
 	readConfig(darwinhome);
 	//cout << "DARWINHOME=" << gOptions->mDarwinHome << endl;
 
+
+	//***2.22 - new - MOVE data OUT of Application folders
+	// if this is the first time DARWIN has run, then the "firstTime.txt" file
+	// exists in the system folder.  If so, then check whether gOptions->mCurrentDataPath
+	// exists.  If NOT, then force CREATE gOptions->mCurrentDataPath and MOVE the 
+	// surveyAreas and backups folders from the Application folder (gOptions->mDarwinHome)
+	// to gOptions->mCurrentDataPath
+	string firstTime = darwinhome + PATH_SLASH + "system" + PATH_SLASH + "firstTime.txt";
+	if (filespecFound(firstTime))
+	{
+		if (! filespecFound(gOptions->mCurrentDataPath))
+		{
+			moveAreasAndBackups(true); // MOVE surveyAreas and backups folders OUT of application
+			// change current survey area to "default" in the current data path folder
+			gOptions->mCurrentSurveyArea = gOptions->mCurrentDataPath + PATH_SLASH 
+					+ "surveyAreas" + PATH_SLASH + "default";
+		}
+		string command = "";
+#ifdef WIN32
+		command += "del ";
+#else
+		command += "rm -f \"";
+#endif
+		command += firstTime + "\""; // put filenames in quotes in case of spaces in path
+		system(command.c_str());    // remove the "system/firstTime.txt" file
+	}
+
 	gOptions->mExistingDataPaths.push_back(gOptions->mCurrentDataPath); // push first data path
 
 	//cout << "DataHome: " << gOptions->mCurrentDataPath << endl;
@@ -680,7 +723,9 @@ int main(int argc, char *argv[])
 		MainWindow *mainWin = new MainWindow(db, gOptions);
 		splash->mwDone(mainWin); //***1.85 - notify splash we are done & splash shows main window
 
+		gdk_threads_enter(); //***2.22
 		gtk_main(); //***1.85
+		gdk_threads_leave(); //***2.22
 
 		saveConfig();
 
@@ -695,7 +740,10 @@ int main(int argc, char *argv[])
 					   NULL, //Database
 					   gOptions);
 			traceWin->show();
+			
+			//gdk_threads_enter(); //***2.22
 			gtk_main();
+			//gdk_threads_leave(); //***2.22
 			
 			// All clean up is handeled in the TraceWindow
 			// Do NOT delete traceWin or dbFin here

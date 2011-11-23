@@ -3894,7 +3894,7 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 			path + 
 			mainWin->mImage->mOriginalImageFilename; // short name
 
-	cout << "ORIG: " << mainWin->mSelectedFin->mOriginalImageFilename << endl;
+	//cout << "ORIG: " << mainWin->mSelectedFin->mOriginalImageFilename << endl;
 
 	delete mainWin->mOrigImage;
 

@@ -148,7 +148,7 @@ int WL_FrwtVector(
     dtype *hiresult, *lowresult;
     dtype *hidata, *lowdata;
     int lowoffset, hioffset;
-printf("here1\n");
+//printf("here1\n");
 
     /* allocate memory for the extended copy of source */
     pow2 = WL_pow2(levels - 1);
@@ -164,7 +164,7 @@ printf("here1\n");
 	printf("WL_FrwtVector: unable to malloc working vector\n");
 	return 0;
     }
-printf("here2\n");
+//printf("here2\n");
     /* allocate memory for the lowpass & highpass filter coefficients */
     hicoefs = (dtype *) malloc((hisize * pow2) * sizeof(dtype));
     lowcoefs = (dtype *) malloc((lowsize * pow2) * sizeof(dtype));
@@ -172,13 +172,13 @@ printf("here2\n");
 	printf("WL_FrwtVector: unable to malloc filter coefficients\n");
 	return 0;
     }
-printf("here3 %d %d %d\n",dest, &source,length);
+//printf("here3 %d %d %d\n",dest, &source,length);
     /* copy source to dest to support doing multiple level transforms */
     memcpy(dest[0], source, length * sizeof(dtype));
 
     for (pow2 = 1, level = 0; level < levels; level++, pow2 *= 2) {
 
-printf("here pow2:%d level:%d\n",pow2,level);
+//printf("here pow2:%d level:%d\n",pow2,level);
 
 	/* dilate the filters */
 	Dilate_filter(lowpass->coefs, lowcoefs, lowpass->length, level);

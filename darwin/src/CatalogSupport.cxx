@@ -460,6 +460,85 @@ bool dataPathExists (string dataPath, bool forceCreate)
 }
 
 
+//***2.22 - new function to see if file or folder exists without opening file
+//          as done in utility.h (fileExists(fname)
+//
+bool filespecFound(string path)
+{
+	bool found(true);
+
+#ifdef WIN32
+	struct _finddata_t c_file;
+	long hFile;
+
+	if( (hFile = _findfirst(path.c_str(), &c_file )) == -1L )
+		found = false;
+	_findclose( hFile );
+#else
+	struct stat buffer;
+	int         status;
+
+	if( (status = stat(path.c_str(), &buffer)) == -1L )
+		found = false;
+#endif
+	return found;
+}
+
+//***2.22 - new data move function for first time run of DARWIN
+//
+// This is called the FIRST time DARWIN runs.  It moves the surveyAreas
+// and backups folders from indside the Application (DARWINHOME) to the
+// gOptions->mCurrentDataPath folder.  It checks to make sure nothing
+// that exists is overwritten, just in case this is an upgrade and the
+// normal installer was used.  The parameter force indicates whether or
+// not to blindly overwrite the destination.
+//
+void moveAreasAndBackups(bool force)
+{
+	string 
+		home = gOptions->mDarwinHome,
+		pathTo = gOptions->mCurrentDataPath,
+		areas = home + PATH_SLASH + "surveyAreas",
+		backups = home + PATH_SLASH + "backups",
+		copy,
+		command;
+
+	if (force) 
+	{				
+		// create the new data path folder and move the entire surveyAreas
+		// folder from the Application (DARWINHOME) to the data path folder
+
+#ifdef WIN32
+
+		_mkdir(pathTo.c_str()); // create the data path folder
+		copy = "move /Y \"";
+
+#else //***2.22 - new section for Mac / UNIX ( with permissions 777)
+
+		mkdir(pathTo.c_str(),(S_IRWXU | S_IRWXG | S_IRWXO));
+		copy = "mv -f \"";
+
+#endif
+
+		command = copy + areas + "\" \"";
+		command += pathTo + "\"";
+		system(command.c_str()); // copy survey areas out of application
+
+		command = copy + backups + "\" \"";
+		command += pathTo + "\"";
+		system(command.c_str()); // copy backups out of application
+
+	}
+	else // do not force OVERWRITE
+	{
+		// unsure what to do here -- data path probably exists, 
+		// so assume files are there and should not be replaced?
+
+		// should surveyAreas and backups be REMOVED from application?
+	}
+}
+
+
 //
 // This builds/rebuilds the folder structure of a Survey Area as needed
 // during restore and import catalog operations.  The force parameter
@@ -608,6 +687,7 @@ void rebuildFolders(string home, string area, bool force)
 #endif
 	}
 }
+
 
 //
 // This performs file extraction from a zipped archive for both the 
@@ -804,11 +884,12 @@ bool createArchive (Database *db, string filename)
 		
 	string 
 		command, 
-		fileList = gOptions->mDarwinHome;//getenv("DARWINHOME");
+		//fileList = gOptions->mDarwinHome;//getenv("DARWINHOME");
+		fileList = gOptions->mTempDirectory; //***2.22 - move location to TEMP
 
 	fileList = fileList 
-		+ PATH_SLASH 
-		+ "backups" 
+		//+ PATH_SLASH 
+		//+ "backups" 
 		+ PATH_SLASH
 		+ "filesToArchive.txt";
 
