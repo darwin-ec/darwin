@@ -23,7 +23,9 @@ LicenseForceSelection checkbox
 
 ;To check for a registry values of previous install location use the following.
 ;Will override definstdir if string exists and is valid
-InstallDirRegKey HKLM Software\darwin InstallLocation
+; we do NOT want to do this with v2.22 and later - since thre is no logical upgade yet
+; use the InstallDir set above and do NOT check registry
+;InstallDirRegKey HKLM Software\darwin InstallLocation
 
 
 

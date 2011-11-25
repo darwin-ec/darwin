@@ -629,8 +629,16 @@ int main(int argc, char *argv[])
 	
 	if ("" != gOptions->mCurrentDataPath)
 	{
+		string myhome = gOptions->mCurrentDataPath;
 		gOptions->mCurrentDataPath += PATH_SLASH;
 		gOptions->mCurrentDataPath +=  "Documents"; // user's Documents folder
+		if (! filespecFound(gOptions->mCurrentDataPath))
+		{
+			// this must be a Windows XP platform with a "My Documents" foler
+			gOptions->mCurrentDataPath = myhome + PATH_SLASH + "My Documents";
+			if (! filespecFound(gOptions->mCurrentDataPath))
+				showError("no Documents or My Documents folder found.");
+		}
 		gOptions->mCurrentDataPath += PATH_SLASH;
 		gOptions->mCurrentDataPath += "darwinPhotoIdData"; // new standard folder name
 	}
