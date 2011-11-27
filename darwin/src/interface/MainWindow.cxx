@@ -1250,7 +1250,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	GtkWidget *opendb = gtk_menu_item_new();
 	tmpBox = gtk_hbox_new(FALSE, 0);
-	tmpLabel = gtk_label_new_with_mnemonic(_("    Open _Database     Ctrl-D"));
+	tmpLabel = gtk_label_new_with_mnemonic(_("    Open _Database      Ctrl-D"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), opendb);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1280,7 +1280,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	tmpIcon = create_pixmap_from_data(tmpBox, matching_queue_small_xpm);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
 	gtk_widget_show(tmpIcon);
-	tmpLabel = gtk_label_new_with_mnemonic(_("Matching _Queue    Ctrl-Q"));
+	tmpLabel = gtk_label_new_with_mnemonic(_("Matching _Queue     Ctrl-Q"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), matching_queue);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1314,7 +1314,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	GtkWidget *backup = gtk_menu_item_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);
-	tmpLabel = gtk_label_new_with_mnemonic(_("    _Backup                 Ctrl-B"));
+	tmpLabel = gtk_label_new_with_mnemonic(_("    _Backup                  Ctrl-B"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), backup);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1644,7 +1644,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	//tmpIcon = create_pixmap_from_data(tmpBox, options_small_xpm);
 	//gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
 	//gtk_widget_show(tmpIcon);
-	tmpLabel = gtk_label_new_with_mnemonic(_("_View/Edit                      Ctrl-V"));
+	tmpLabel = gtk_label_new_with_mnemonic(_("_View/Edit                    Ctrl-V"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), catalog_view);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1669,7 +1669,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	//tmpIcon = create_pixmap_from_data(tmpBox, options_small_xpm);
 	//gtk_box_pack_start(GTK_BOX(tmpBox), tmpIcon, FALSE, FALSE, 0);
 	//gtk_widget_show(tmpIcon);
-	tmpLabel = gtk_label_new_with_mnemonic(_("Select _Active               Ctrl-A"));
+	tmpLabel = gtk_label_new_with_mnemonic(_("Set Default                  Ctrl-A"));
 	gtk_label_set_mnemonic_widget(GTK_LABEL(tmpLabel), catalog_select);
 	gtk_box_pack_start(GTK_BOX(tmpBox), tmpLabel, FALSE, FALSE, 0);
 	gtk_widget_show(tmpLabel);
@@ -1680,8 +1680,8 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show(catalog_select);
 	gtk_container_add(GTK_CONTAINER (catalog_menu), catalog_select);
 	gtk_tooltips_set_tip(tooltips, catalog_select, 
-	                     _("Select the currently active Catalog Scheme.\n"
-						   "This affects the organization of any NEW database created."),
+	                     _("Set the Default Catalog Scheme\n"
+						   "for any NEW database created."),
 	                     NULL);
 	gtk_widget_add_accelerator(catalog_select, "activate", accel_group,
 	                           GDK_A, GDK_CONTROL_MASK,

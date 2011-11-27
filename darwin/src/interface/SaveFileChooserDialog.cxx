@@ -281,7 +281,7 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 		//    GTK_FILE_CHOOSER(saveFCDialog),TRUE);
 		
 		{
-			GtkWidget *msg = gtk_label_new ("Choose or Create a Darwin Data Folder (darwinPhotoIdData) above.");
+			GtkWidget *msg = gtk_label_new ("   Choose or Create a Darwin Data Folder (darwinPhotoIdData)\n   ... then click Save to create the catalog.");
 			gtk_widget_show (msg);
 			gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(saveFCDialog), msg);
 		}
@@ -296,10 +296,17 @@ GtkWidget* SaveFileChooserDialog::createSaveFileChooser (void)
 				GTK_FILE_CHOOSER (saveFCDialog), 
 				FALSE);
 		
-		if (gLastDirectory[mSaveMode] == "")
+		//***2.22 - always go to parent folder of darwinPhotoIdData on mCurrentDataPath
+		//if (gLastDirectory[mSaveMode] == "") //***2.22 
 		{
 			//***1.85 - everything is now relative to the current data path
-			gLastDirectory[mSaveMode] = gOptions->mCurrentDataPath;
+			int pos;
+			string where = gOptions->mCurrentDataPath;
+			pos = where.rfind(PATH_SLASH);
+			if (pos != string::npos)
+				where = where.substr(0,pos);
+			//gLastDirectory[mSaveMode] = gOptions->mCurrentDataPath;
+			gLastDirectory[mSaveMode] = where;
 		}
 		gtk_file_chooser_set_current_folder (
 				GTK_FILE_CHOOSER (saveFCDialog), 

@@ -88,7 +88,7 @@ void ImageViewDialog::show()
 //*******************************************************************
 void ImageViewDialog::updateCursor()
 {
-        GdkBitmap *bitmap, *mask;
+	GdkBitmap *bitmap, *mask;
 	GdkColor white = {0,0xFFFF,0xFFFF,0xFFFF};
 	GdkColor black = {0,0x0000,0x0000,0x0000};
 	

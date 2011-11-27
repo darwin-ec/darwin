@@ -98,6 +98,8 @@ class TraceWindow
 
 		ImageModList& theImageMods(); //***1.8 - ref to list so it can be accessed/modified
 
+		GtkWidget * getWindow(); //***2.22
+
 		// GTK+ callback functions
 
 		friend gboolean on_traceWindow_delete_event(

@@ -123,6 +123,12 @@ int getNumTraceWindowReferences()
 	return gNumReferences;
 }
 
+//***2.22 - needed to set_transient_for parent in DeleteTraceDialog
+GtkWidget * TraceWindow::getWindow()
+{
+	return mWindow;
+}
+
 TraceWindow::TraceWindow(
 		MainWindow *m,
 		const string &fileName,
@@ -5361,8 +5367,14 @@ void on_traceButtonMatch_clicked(GtkButton * button, gpointer userData)
 //
 void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 {
-	if (getNumSaveFileChooserDialogReferences() >= 1)
-		return;
+	//***2.22 - removed this test sinc e the save dialog is MODAL anyway, and some
+	// strange occurrence is preventing the dilaog opening on Mac and PC.
+	// Problem showed up at MarMam19 workshop.  The only way it could occur is for
+	// this function call to return a value 1 or greater or for the userData
+	// to be NULL (which would indicate a failure of the event queueing
+	// process in GTK over which we have no control
+	//	if (getNumSaveFileChooserDialogReferences() >= 1)
+	//		return;
 
 	TraceWindow *traceWin = (TraceWindow *) userData;
 

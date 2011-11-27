@@ -213,7 +213,7 @@ GtkWidget* CatalogSchemeDialog::createCatalogSchemeDialog()
 		gtk_clist_thaw(GTK_CLIST (catalogSchemeList));
 
 		//***1.95 - message about editablity of Schemes
-		mEditMessage = gtk_label_new(_("\nSchemes are Read Only!\n\nClick Edit Scheme(s)\nto allow Editing!"));
+		mEditMessage = gtk_label_new(_("\n\n\nClick Edit Scheme(s)\nto allow Editing!"));
 		gtk_widget_show(mEditMessage);
 		gtk_box_pack_start(GTK_BOX(catalogSchemeVBox), mEditMessage, FALSE, FALSE, 0);
 

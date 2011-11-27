@@ -731,9 +731,9 @@ int main(int argc, char *argv[])
 		MainWindow *mainWin = new MainWindow(db, gOptions);
 		splash->mwDone(mainWin); //***1.85 - notify splash we are done & splash shows main window
 
-		gdk_threads_enter(); //***2.22
+		//gdk_threads_enter(); //***2.22
 		gtk_main(); //***1.85
-		gdk_threads_leave(); //***2.22
+		//gdk_threads_leave(); //***2.22
 
 		saveConfig();
 

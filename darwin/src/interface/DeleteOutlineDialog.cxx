@@ -47,13 +47,16 @@ int getNumDeleteOutlineDialogReferences()
 //    CONSTRUCTOR
 //
 DeleteOutlineDialog::DeleteOutlineDialog (TraceWindow *t, Contour **c)
-	:mDialog(createDeleteOutlineDialog()),
-	mTraceWin (t),
-	mContour(c)
+	//:mDialog(createDeleteOutlineDialog()), //***2.22
+	: mTraceWin (t),
+	  mContour(c)
 {
 
 	if (NULL == t)
 		throw EmptyArgumentError("DeleteOutlineDialog ctor");
+
+	mDialog = createDeleteOutlineDialog(); //***2.22 - so we can set transient for parent
+
 	gNumReferences++;
 }
 
@@ -121,6 +124,7 @@ GtkWidget* DeleteOutlineDialog::createDeleteOutlineDialog()
 	//***1.4TW - force answer to question about existing outline BEFORE alowing any more
 	// interaction with TraceWindow using PENCIL
 	gtk_window_set_modal(GTK_WINDOW(delete_outline_dialog), TRUE); //***1.4TW
+	gtk_window_set_transient_for(GTK_WINDOW(delete_outline_dialog),GTK_WINDOW(mTraceWin->getWindow()));
 	gtk_object_set_data (GTK_OBJECT (delete_outline_dialog),
 				"delete_outline_dialog",
 				delete_outline_dialog);
