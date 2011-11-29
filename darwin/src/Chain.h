@@ -3,6 +3,7 @@
 //
 // author: Adam Russell
 //
+//
 //   mods: J H Stewman (7/22/2005)
 //         -- reformatting of code and addition of comment blocks
 //         -- changes to incorporate Outline CLASS in project
