@@ -81,10 +81,32 @@ There are additional images of the same 10 dolphins in the folder named
 
 All of the DARWIN folders were traditionally located within a single folder 
 system having DARWINHOME as its root folder.  DARWINHOME was always within the 
-application itself.  There is a remnant of this folder structure within the 
-"darwinMac.app/Content/MacOS/" folder.
+application itself.  This has been changed in version 2.22, and you may now 
+create any data location for use with DARWIN.  However, there is a remnant 
+of the original folder structure within the "darwinMac.app/Content/MacOS/" 
+folder until you run the application the first time.
 
-There are these folders within DARWINHOME
+==============
+Run First Time
+==============
+
+When you run the darwinMac.app the first time, it will automatically create
+the following folder structure in your Documents folder.
+
+    darwinPhotoIdData
+        surveyAreas
+	    default
+	    sample
+        backups
+
+The two survey areas have the same internal folders and sample data shown 
+in the next section.  These are MOVED out of the application folder so
+they will not be accidentally lost if you remove the application from 
+your Mac.
+
+=========================
+Folders within DARWINHOME (the application MacOS folder)
+=========================
 
     backups        - used in backing up database
     docs           - online user help and other documentation
@@ -109,8 +131,12 @@ There are these folders within DARWINHOME
             tracedFins    - folder for saved fin tracings
     darwinMac-readme.txt  - another readme file
 
-From within DARWIN you can now create a DATA PATH to any location.  All 
-DATA PATHs must end in a folder named "DarwinPhotoIdData" and may be
+=============
+Other details 
+=============
+
+From within DARWIN you can now create a DATA FOLDER in any location.  All 
+DATA FOLDERs must end in a folder named "DarwinPhotoIdData" and may be
 created manually, or from the File Save Dialog during any "Create New 
 Database" or "Import Catalog" operation.
 
@@ -153,6 +179,3 @@ John Stewman
 Kelly Debure
 (and host of student researchers and programmers)
 DARWIN has been in constant development since 1993 and is free software.
-
-
- 

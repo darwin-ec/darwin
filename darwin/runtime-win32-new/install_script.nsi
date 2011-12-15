@@ -15,7 +15,7 @@ Name "DARWIN"
 ;leaving backslash off of end makes sure "darwin-2.0" forder is created inside user's chosen
 ;folder after use of browser
 ;InstallDir $PROGRAMFILES\darwin-2.0 <-- no longer, since problems here with Windows 7 & Vista
-InstallDir C:\darwinPhotoId\darwin-2.0
+InstallDir C:\darwinPhotoId\darwin-2.22
 
 ;license to display (.txt or .rtf), .txt must use windows EOL (\r\n)
 ;LicenseData license.rtf
@@ -81,22 +81,23 @@ Section "Installer Section"
 	
 	
 	;better idea, add the directory recursively
-	File /r /x *.nsi /x Thumbs.db /x darwin_splash.bmp /x darwin-*-setup.exe /x darwin-*-upgrade.exe /x .svn /x stuff *
+	File /r /x *.nsi /x Thumbs.db /x darwin_splash.bmp /x darwin-*-setup.exe /x darwin-*-upgrade.exe /x .DS_Store /x .svn /x stuff *
 	
 	;Add some Start Menu shortcuts ($SMPROGRAMS)
-	CreateDirectory "$SMPROGRAMS\darwin-2.0"
+	CreateDirectory "$SMPROGRAMS\darwin-2.22"
 	;link.lnk target.file [parameters [icon.file [icon_index_number [start_options [keyboard_shortcut [description]]]]]]
 	SetOutPath $INSTDIR\system\bin
-	CreateShortCut "$SMPROGRAMS\darwin-2.0\Run Darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$SMPROGRAMS\darwin-2.22\Run Darwin.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 	SetOutPath $INSTDIR
-	CreateShortCut "$SMPROGRAMS\darwin-2.0\backups.lnk" "$INSTDIR\backups\"
-	CreateShortCut "$SMPROGRAMS\darwin-2.0\survey areas.lnk" "$INSTDIR\surveyAreas\"
-	CreateShortCut "$SMPROGRAMS\darwin-2.0\help.lnk" "$INSTDIR\docs\usersguide.htm"
-	CreateShortCut "$SMPROGRAMS\darwin-2.0\uninstall.lnk" "$INSTDIR\uninstall.exe"
+	;Survey Areas and Backups are now moved after install - so do not create shortcuts
+	;CreateShortCut "$SMPROGRAMS\darwin-2.22\backups.lnk" "$INSTDIR\backups\"
+	;CreateShortCut "$SMPROGRAMS\darwin-2.22\survey areas.lnk" "$INSTDIR\surveyAreas\"
+	CreateShortCut "$SMPROGRAMS\darwin-2.22\help.lnk" "$INSTDIR\docs\usersguide.htm"
+	CreateShortCut "$SMPROGRAMS\darwin-2.22\uninstall.lnk" "$INSTDIR\uninstall.exe"
 	
 	;Desktop ShortCut
 	SetOutPath $INSTDIR\system\bin
-	CreateShortCut "$DESKTOP\darwin-2.0.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
+	CreateShortCut "$DESKTOP\darwin-2.22.lnk" "$INSTDIR\system\bin\darwin.exe" "" "$INSTDIR\system\bin\darwin.exe" 0
 	SetOutPath $INSTDIR
 
 	;Environmental Variable
@@ -109,9 +110,9 @@ Section "Installer Section"
 	;Write the uninstaller and add to Add/Remove Programs before we finish
 	WriteUninstaller $INSTDIR\uninstall.exe
 	WriteRegStr HKLM "Software\darwin" "InstallLocation" "$INSTDIR"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Darwin" \
-                 "DisplayName" "DARWIN -- Fin Recognition Software"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Darwin" \
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Darwin2.22" \
+                 "DisplayName" "DARWIN-2.22 -- Fin Recognition Software"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Darwin2.22" \
                  "UninstallString" "$INSTDIR\uninstall.exe"
 SectionEnd
 
@@ -130,7 +131,9 @@ Section "un.Uninstaller Section"
 	next:
 
 	;remove non data files and folders
-	Delete "$INSTDIR\darwin-2.0-readme.txt"
+	Delete "$INSTDIR\darwin*.txt"
+	;Delete "$INSTDIR\darwin-2.0-readme.txt"
+	;Delete "$INSTDIR\darwin-2.0-warning.txt"
 	Delete "$INSTDIR\fileassoc.nsh"
 	Delete "$INSTDIR\license.rtf"
 	Delete /REBOOTOK "$INSTDIR\uninstall.exe"
@@ -142,8 +145,8 @@ Section "un.Uninstaller Section"
 	;to some pathological place like C:\Windows
 
 	;Remove shortcuts
-	RMDir /r /REBOOTOK "$SMPROGRAMS\darwin-2.0"
-	Delete /REBOOTOK "$DESKTOP\darwin-2.0.lnk"
+	RMDir /r /REBOOTOK "$SMPROGRAMS\darwin-2.22"
+	Delete /REBOOTOK "$DESKTOP\darwin-2.22.lnk"
 	
 	;Remove file association
 	!insertmacro APP_UNASSOCIATE "finz" "darwin.FinFile"
@@ -153,5 +156,3 @@ Section "un.Uninstaller Section"
 	DeleteRegKey HKLM "Software\darwin"
 
 SectionEnd
-
-
