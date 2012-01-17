@@ -232,9 +232,12 @@ bool ImageModList::first(ImageMod &mod)
 void ImageModList::add(ImageMod mod)
 {
 	modList.push_back(mod);
-	it = modList.begin();
-	--it;
-	--it;
+	//it = modList.begin();
+	//--it;
+	//--it;
+	it = modList.end(); //***2.25
+	--it; //***2.25
+	
 }
 
 bool ImageModList::remove()
