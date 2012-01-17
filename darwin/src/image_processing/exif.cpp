@@ -116,6 +116,8 @@ c_Exif::c_Exif(const char *FileName)
 	DateTime[0] = 'X'; //***1.8 - must be initialized to something that is NOT a number
 	strcpy(GpsLat,"? ?");   //***2.22
 	strcpy(GpsLong,"? ?");  //***2.22
+	GpsLatD = 0.0; //***2.25
+	GpsLongD = 0.0; //***2.25
 	if (ReadJpegFile(FileName)==false)
 	{
 		//error processing here
@@ -738,10 +740,12 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
                 if (Tag == TAG_GPS_LAT){
                     //strncpy(ImageInfo.GpsLat+2, TempString, 29);
                     strncpy(GpsLat+2, TempString, 29);
-                }else{
+					GpsLatD = Values[0] + (Values[1] + Values[2]/60.0)/60.0; //***2.25
+				}else{
                     //strncpy(ImageInfo.GpsLong+2, TempString, 29);
                     strncpy(GpsLong+2, TempString, 29);
-                }
+					GpsLongD = Values[0] + (Values[1] + Values[2]/60.0)/60.0; //***2.25
+				}
                 break;
 
             case TAG_GPS_ALT_REF:
@@ -810,9 +814,13 @@ void c_Exif::ProcessGpsInfo(unsigned char * DirStart, int ByteCountUnused, unsig
 //***2.22 - new function to return lat/long
 string c_Exif::GetLatLong()
 {
-	string Lat = GpsLat;
-	string Long = GpsLong;
-	return (Lat + " / " + Long);
+	//string Lat = GpsLat;
+	//string Long = GpsLong;
+	//return (Lat + " / " + Long);
+	//***2.25 - we now return values as degrees and fractions (not deg,min,sec)
+	char LLStr[80];
+	sprintf(LLStr,"%10.5f / %10.5f",GpsLatD,GpsLongD); 
+	return LLStr;
 }
 
 

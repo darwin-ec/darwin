@@ -218,6 +218,9 @@ private:
    char GpsLat[31];
    char GpsLong[31];
    char GpsAlt[20];
+   //***2.25 - floating point versions of Lat/Long
+   double GpsLatD;
+   double GpsLongD;
 
 	// for fixing the rotation.  This is for future implemtation
 	void * OrientationPtr;
