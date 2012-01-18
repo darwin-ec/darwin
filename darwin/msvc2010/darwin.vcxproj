@@ -67,7 +67,7 @@
       <AdditionalDependencies>zdll.lib;libpng.lib;gthread-2.0.lib;gmodule-2.0.lib;Ws2_32.lib;intl.lib;atk-1.0.lib;pango-1.0.lib;gdk_pixbuf-2.0.lib;gobject-2.0.lib;glib-2.0.lib;gdk-win32-2.0.lib;jpeg.lib;gtk-win32-2.0.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/darwin.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>G:\darwin\darwinSVN2\trunk\darwin\jpeg-6b\lib;..\gtk-2.22\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\jpeg-6b\lib;..\gtk-2.22\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcr71d.lib msvcr71.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/darwin.pdb</ProgramDatabaseFile>
