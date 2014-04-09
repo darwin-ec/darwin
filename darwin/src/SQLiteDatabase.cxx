@@ -7,6 +7,8 @@
 
 using namespace std;
 
+static char nullStr[] = "NULL"; //***2.25 - used instead of dynamically allocated previously
+
 //#include "SQLiteDatabase.cpp" -- all code already included below -- JHS
 
 // *****************************************************************************
@@ -14,8 +16,9 @@ using namespace std;
 // Ensures that the given character array is valid, otherwise returns "NULL".
 //
 char* SQLiteDatabase::handleNull(char *in) {
-	char* nullStr = new char[5];
-	strcpy(nullStr,"NULL");
+	//***2.25 - this approach caused memory leak so now we return pointer to static char array
+	//char* nullStr = new char[5];
+	//strcpy(nullStr,"NULL");
 	return strcmp(in, "\0") != 0 ? in : nullStr; //***2.22 - cannot return "NULL" directly g++4.1 & later
 }
 
@@ -295,7 +298,6 @@ int SQLiteDatabase::callbackPoints(void *points, int argc, char **argv, char **a
 
 		else if(! strcmp(azColName[i], "OrderID"))
 			temp.orderid = atoi(handleNull(argv[i]));
-
 	}
 
 	((std::list<DBPoint> *) points)->push_back(temp);

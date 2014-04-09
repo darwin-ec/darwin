@@ -86,6 +86,10 @@
 #include <sys/param.h> //***2.22 - for MAXPATHLEN
 #endif
 
+#ifdef _DEBUG
+//#include <vld.h> //***2.0 - to enable Visual Leak Detector
+#endif
+
 using namespace std;
 
 static ConfigFile *gCfg = NULL;

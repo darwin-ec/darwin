@@ -1,0 +1,386 @@
+DARWIN Developer Documentation/Setup -- J H Stewman 4/8/2014
+============================================================
+
+This is for current setup on Mac running Windows 7 under Parallels and
+using Visual C++ 2010 Express (finalized and used to create and modify
+version 2.22, late 2011 and early 2012).
+
+NOTE: Up until early 2012 we were still using Microsoft Visual Studio 6
+as the Windows compiler and used it under Windows XP and Windows 7.  
+However, some update/change in Windows 7 seems to have made the use of 
+Visual Studio 6 impossible (it crashes regularly).  So, I created
+and have successfully used project/solution files for development
+using Microsoft Visual C++ 2010 Express.
+
+NOTE: On the Mac side the compiler is gcc/g++ 4.1 which came with
+Xcode.  I am still looking for notes on how I acquired Gtk+ 2.22 and 
+ported it to the Mac.  Since all executables and libraries were added
+to the working copy of DARWIN and are part of the folder/file hierarchy
+managed using SVN and our GoogleCode repository, this may not be an issue
+for now.  All files needed are downloaded from Google when one checks out
+a working copy.
+
+The following processes and packages are documented here.  My hope is to 
+explain everything that would be needed to create a Developer environment
+for DARWIN -- from scratch.  Also, I hope to explain how to build
+executables on both Windows/PC and Mac, and how to create the installers
+for both platforms.
+
+JHS
+
+--------------------------------------------------------------------------
+
+Development Environments
+------------------------
+
+Windows XP & Windows 7
+++++++++++++++++++++++
+Compiler: Microsoft Visual C++ 2010 Express
+SVN: Tortoise SVN (1.7.0)
+Mem Leak Detection: Visual Leak Detector (2.2.3)
+Installer creation: NSIS (2.4.6)
+
+Mac OSX 10.6.8
+++++++++++++++
+Editor: Gedit 
+  Mac Installer: gedit-2.30.2.dmg (Mac Downloads folder)
+Compiler: g++4.1 (came with Xcode?)
+SVN: SCPlugin-0.8.2-SVN.1.6.9.dmg (Mac Downloads folder)
+DMG creation: Mac Disk Utility App (Part of Mac OSX)
+
+Common Packages used in creating DARWIN
+---------------------------------------
+7zip & 7z (all compression related tasks DARWIN performs)
+  Installer for Mac: p7zip_9.20.1_src_all.tar (Mac Downloads folder)
+  Requires building on Mac (I think)
+Gtk+ 2.22 (all user interfaces)
+   (includes supporting packages Pango, GDK, ....)
+   Have Installer: gtk+-bundle-2.22.1-20101227-win32.zip 
+                     (Downloads Win7 on Mac)
+   On Mac: gtk-osx-build-setup.sh (Mac Downloads folder)
+           This required a build of gtk on top of Mac Cairo GUI
+	   This used jhbuild to create library which then links all Gtk+
+	      function calls to equivalents in the Cairo GUI
+	   See my gtk folder on Mac for built executables
+jpeg-6b (code to manage jpeg image files)
+   The Independent JPEG Group's JPEG software release 6b of 27-Mar-1998
+   All source is in "src/jpeg-6b" folder
+   jpeg.lib and libjpeg.a built separately from main DARWIN build
+jhead-2.90 (code to extract Exif data)
+   Source: jhead-latest.tar.gz (Mac Downloads folder)
+   see exif.cpp & exif.h in "src/imageprocessing" folder - minor
+      mods by JHS to get to lat/long GPS data
+libpng (code to manage png image files)
+   Copyright: 1998-2007 Glenn Randers-Pehrson
+   All source found in "src/png" folder
+   libpng.lib built separately from main DARWIN build
+   uses zlib1.dll for compression tasks under windows 
+      (found in same folders)
+sqlite3 (for managing DARWIN database)
+   Source files (sqlite3.c & sqlite3.h) added to our source by RJ when 
+   DARWIN 2.0 was changed to use an SQL database file format.  See
+   the src folder.
+wavelet (code for multi-scale wavelet decomposition of the fin outline
+   to support tip and other feature detection.  All source found in 
+   "src/wavelet" folder.  Acquired from ????
+....
+jhbuild (used to acquire and build Gtk+ for OSX)
+   see my Source/jhbuild folder on Mac
+
+
+File/folder structure of developer environment
+++++++++++++++++++++++++++++++++++++++++++++++
+darwin-ec
+  darwin
+    autom4te.cache (for autoconf, automake, etc)
+    filters
+    gtk (old -obsolete- gtk package)
+    gtk2.22 (current gtk package)
+    intl (part of gtk support)
+    jpeg-6b (jpeg file management library)
+    m4 (for make, etc)
+    msvc (old -obsolete- Visual Studio 6 projects, etc)
+    msvc2.22 (Visual Studio 6 projects using Gtk+ 2.22
+    msvc2010 (new -current- Visual C++ 2010 projects/solutions)
+    oldGTK+-2.4Binaries4Win32 (old -obsolete- Gtk runtime package)
+    pixmaps (icon images, etc)
+    png (PNG image file support)
+    po (part of Gtk support)
+    runtime-mac (all files for final Mac runtime)
+    runtime-win32-new (all files for final Win32 runtime)
+    src (all of our source code)
+
+Tools necessary for Windows Development of DARWIN
+-------------------------------------------------
+NOTE: These tools must be installed separately from the DARWIN subversion 
+controlled working copy of the code.
+
+Microsoft Visual C++ 2010
+  Hopefully, this is still available.  I have an installer, but it is
+  web based and may not link correctly to packageas anymore.  If not, then
+  not sure what direction to head.
+Tortoise SVN
+  Subversion based version control.
+  Have installer: TortoiseSVN-1.7.0-RC1-win32-svn-1.7.0-dev.msi 
+                  (Downloads Win7 on Mac)
+Visual Leak Detector
+  Used to track down memory leaks.
+  Have installer: vld-2.2.3-setup.exe (Downloads Win7 on Mac)
+Git
+  Not sure why this is installed.  May have to do with version control.
+  Have installer: Git-1.7.9-preview20120201.exe (Downloads Win7 on Mac)
+  Mac Installer: git-1.7.6.1-i386-snow-leopard.dmg (Mac Downloads folder)
+NSIS
+  Used to create the software installer and updater.
+  Have installer: nsis-2.46-setup.exe (Downloads Win on Mac)
+
+Basic process to modifying DARWIN (Windows)
+-------------------------------------------
+[1] "Check out" or "Update" a current working copy of the software from 
+the DARWIN Google code repository.
+
+  Initial Checkout:
+     1 - Create a place to put all of your work.  For example,
+     "C:\DarwinDev" would work fine.
+     
+     2 - Right click on your DarwinDev folder & select "SVN Checkout."
+
+     3 - The window that opens should be filled out as follows
+     URL of Repository: https://darwin-ec.googlecode.com/svn/trunk
+     Checkout Directory: C:\DarwinDev\darwin-ec
+       (this should be the path to the folder you created in step 1 with
+       darwin-ec tagged onto the end.  "darwin-ec" is the root of
+       the DARWIN Subversion managed code repository.
+     Checkout Depth should be "Fully recursive"
+     Revision should be "Head Revision"
+     Now, simply click OK
+
+     4 - As the DARWIN working copy downloads you will see the progress
+     onscreen.
+
+     5 - Once this process is complete you may modify, build and test
+     new DARWIN code as you desire.  No changes are made to the master copy
+     on the Google Code site until you Commit changes.  This will require
+     that you be added to the developers list on the Google Code site, and
+     that you have a password for submitting changes.  Dr Debure and 
+     Dr Stewman can create this access if needed.
+
+  Updating an existing Working Copy:
+     1 - Right click on the "darwin-ec" folder and select "SVN Update."
+     This will cause any revisions committed by others during the time 
+     you were working on your code to be downloaded and merged with your 
+     working copy.
+
+     2 - If this step creates any conflicts.  It is up to you to resolve 
+     them in your working copy, before "Committing" your modified code.
+
+[2] Making modifications
+  This simply involves using Microsoft Visual C++ 2010 Express to create any
+  new code or modify old code.  You can build a solution from your working
+  copy at any time.  
+  
+[3] You can test it by setting up a DARWIN runtime folder.
+
+  Important darwin "Project Properties" Settings
+  -- Debugging Working Directory: "c:\darwinhome4\system\bin"
+     This causes all dll references to be found correctly
+     It also means that the "darwinhome-win32-new" folder must be 
+     copied to "c:\" and then renamed "darwinhome4" -- otherwise runtime 
+     link errors will cause DARWIN to terminate, when you attempt to run it.
+  -- If you name this new runtime folder differently, then any commit
+     to the SVN repository will change the project for all developers.
+     This is a PROBLEM we should solve.
+
+  -- The first time you run DARWIN, it will prompt you for the location
+     of its data folders.  By default it will create a folder named 
+     "darwinPhotoIdData" in your Documents folder.  This is fine.  That
+     folder will contain the "surveyAreas" and "backups" folders DARWIN 
+     uses to store all data.
+  
+Creating an installer (Windows)
+-------------------------------
+The script for creating an installer is "install_script.nsi" located in the
+"runtime-win32-new" folder.  If changes are needed to the install methods,
+you will have to read the docs on the NSIS program and then edit this script.
+Otherwise, simply right-click on the script file and select the "Compile
+NSIS Script" option.  It will create a new installer called
+"darwin-2.22-setup.exe" 
+
+NOTE: The version number on the installer is set by the script not by the
+version number in the config.h file in the source code.  So, if you want to 
+change the version from 2.22, you must edit the script.
+
+===============================================
+Now for the Mac 
+===============================================
+
+Setting up the Mac OSX Developer environment.
+
+[1] Download and build Xcode, mainly to get gcc/g++ (I am using
+  gcc/g++ version 4.2.1 currently.
+
+[2] Download and install X11.  Has nice support for multiple terminals.
+
+[3] Download and install Gedit or some other nice code editor.
+
+[4] Download and build GTK+ for OSX???
+  This requires jhbuild and some other stuff -- hope to find some notes on 
+  how this went for me in 2011. 
+  NOTE: This may not be necessary, as the prebuilt Gtk+-2.22 code is already
+  part of the SVN managed working copy you checked out from Google Code.
+
+Building DARWIN under Linux/OSX
+
+[1] The process of creating a Makefile using autoconf, automake, 
+  ./configure, etc., is a horror show.  I hope the existing files 
+  are sufficient for now.  However, if you create new source files, the
+  Makefile.am files in each source folder need to be edited to include the
+  new filenames.  Otherwise these new files will be skipped during the
+  build.  If any Makefile.am changes are made, then you must use
+  autoconf, automake and ./configure to create a new Makefile.
+
+  NOTE (WARNING): There are issues that I worked around manually, that
+  I cannot find notes on. If the current Makefile ceases to work properly,
+  then I will have to dredge out the books and figure it all out again.
+
+  I ADVISE --- DO NOT work on a Mac version of the software for now.  Work
+  only on the Windows/PC side.  Once we have a stable change to add to DARWIN,
+  I will figure out how to do it properly.
+
+[2] If using the current Makfile, simply onpen a terminal window, cd to the
+darwin-ec/darwin folder, and type "make".  If errors occur, correct code
+using your editor, and run make again.
+
+[3] Once a successful build is achieved, you can test the DARWIN Mac
+executable by taking these steps.
+
+  1 - Copy the "darwin" executable from the "darwin-ec/darwin" folder, to the 
+  appropriate bin folder in the "darwinMac.app"
+     Mac Apps are essentially specially organized folders called "Packages"
+     
+     The darwinMac.app has this layout.
+
+     darwinMac.app
+        Contents
+	   Info.plist (property list for app - includes app icon)
+	   MacOS
+              darwinMac (this script sets up the environment based on how you
+	         start DARWIN (double-click icon, command line, etc) and then
+	         calls "system/bin/darwin" -- NOTE: this must have the same
+		 name as the root name of the app package.
+	      darwinMac-readme.txt
+	      darwinMac.old (older version of darwinMac)
+              Docs (the DARWIN help files)
+	      license.rtf (our license)
+              licenses-etc (licenses on other free software we have used)
+	      system
+	         bin
+		   7z
+		   darwin (this is the executable you built using make)
+		   Codecs
+		 darwinrc (the equiv of config.sys on the PC)
+		 etc
+		 lib (all supporting libraries - gtk, ...)
+	   Resources (icons and splash screen)
+        
+  So the long and short of it is this.
+
+  1 - Place the darwinMac.app package somewhere convenient (on the Desktop,
+  or in your own Application folder will do).
+
+  2 - Copy the "darwin" executable into the folder named 
+  "darwinMac.app/Contents/MacOS/system/bin"
+
+  3 - Then to run DARWIN either (a) double-click the darwinMac.app icon or 
+  (b) open a terminal window, cd to the folder containing the App and type 
+  "darwinMac.app/Contents/MacOS/darwinMac"
+
+  4 - If this is the first time DARWIN runs it should create a data folder
+  for DARWIN's use.
+
+Creating the installer for the Mac 
+----------------------------------
+This is done using the "Disk Utility" app that is part of OSX.  There is a 
+"darwinMac2.22Installer" folder that contains everything needed EXCEPT the 
+newly created "darwin" executable.  Copy it from "darwin-ec/darwin" to 
+"darwinMac2.22Installer/darwinMac.app/Contents/MacOS/system/bin" as you
+did when testing.  Now ...
+
+(a) Open the Disk Utility
+(b) Click the "New Image" icon at the top of the window.
+(c) Find and click the "darwinMac2.22Installer" folder
+(d) Set the "Save As" window to darwinMac2.22Insttaller.dmg"
+(e) and click "Create"
+
+To install using this Disk Image, you simply copy it to a Mac, double-click
+it, copy the "darwinMac.app" somewhere convenient, and use away.
+
+
+++++++++++
+doing it on new Windows 7 PC
+++++++++++
+
+[1] Install Visual Leak Detector
+    -- vld.codeplex.com/releases 
+    -- downloaded and installed v2.2.3 
+       (last stable version prior to Windows 8 support)
+       vld-2.2.3-setup.exe
+    -- let installer set env variables as needed
+
+[2] Install Tortoise SVN
+    -- tortoisesvn.net/downloads.html
+    -- downloaded and installed v1.8.5.25224 (64bit)
+       (newest stable version)
+       TortoiseSVN-1.8.5.25224-x64-svn-1.8.8.msi
+
+[3] Install NSIS
+    -- nsis.sourceforge.net
+    -- Downloaded and installed v2.46 (same as on my Mac)
+       (newer version shows few changes)
+       nsis-2.46-setup.exe
+
+[4] Install Microsoft Visual C++ 2010 Express
+    -- www.microsoft.com/express or www.visualstudio.com/downloads
+       vc_web.exe
+
+[5] Run Microsoft Update to install updates
+    -- Security update for Visual Studio 2010 Redistributable
+    -- .NET Framework 4.5.1
+
+[6] Check out Working Copy of DARWIN
+    -- create folder d:\darwinDev2
+    -- check out darwin-ec (Root level, fully recursive)
+       From: https://darwin-ec.googlecode.com/svn/trunk
+       To: d:\DarwinDev2\darwin-ec
+    -- successful checkout
+
+[7] Run test compilation
+    -- warnings about /editandcontinue flag
+       and jpeg.lib and vc60.pdb lack of debug info (linked w/o info)
+    -- darwin ececutable was created
+
+[8] Run Debug test
+    -- copied all files and folders from runtime-win32-new to c:\darwinhome4
+    -- ran executable
+       - complained of lacking system.cfg, but used default settings fine
+       - moved data folders as it shouold after creating darwinPhotoIdData
+         folder in my Documents folder
+       - complained of no catalog
+       - used FILE/OPEN DATABASE option to open Sample catalog
+       - on second run, the catalog opened correctly
+
+[10]Try using Visual Leak Detector
+    -- uncomment the #include <vld.h> statement in main.cpp
+    -- build darwin
+       - error with redefinition of INT32 in jpeglib file jmorecfg.h
+       - added a protection to the jmorecfg.h to prevent redefinition
+       - build again
+       - runs fine
+
+[11]do a commit
+    -- works
+
+[12]create an installer
+    -- works
+
+

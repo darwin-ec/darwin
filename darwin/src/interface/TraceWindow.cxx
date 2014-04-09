@@ -1767,7 +1767,8 @@ void TraceWindow::traceSnapToFin(bool useCyan, int left, int top, int right, int
 			    this->refreshImage();
 			}		    
 		} // end for (i=0; i< iterations)
-		delete smallEdgeMagImage;
+		if (smallEdgeMagImage != EdgeMagImage) //***2.25 delete only the images created by resizeNN() above
+			delete smallEdgeMagImage;
 
 		// scale repositioned contour to next larger scale for more repositioning
 		ratio *= 2;  // double ratio for next level		
@@ -1784,6 +1785,8 @@ void TraceWindow::traceSnapToFin(bool useCyan, int left, int top, int right, int
 	// features such as glare spots may cause outline points to bunch and wrap
 	// during active contour process
 	mContour->removeKnots(spacing); //***005CM
+
+	delete EdgeMagImage; //***2.25 - same as temp - must be deleted, else memory leak
 
 	delete smallContour;  
 }
