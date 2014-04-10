@@ -377,10 +377,22 @@ doing it on new Windows 7 PC
        - build again
        - runs fine
 
-[11]do a commit
-    -- works
+[11]do an update & commit
+    -- works with the exception that the Visual C++ solution and project 
+       files in the msvc2010 folder have conflicts from computer to conputer.
+       Seems the unique identifying number Visual C++ assigns is machine 
+       specific.  For now, SVN still manages thes files, and they can
+       be downloaded and used as part of the working copy checked out from
+       the GoogleCode site.  However, commits from one developer can
+       create problems for another.  Just revert these files back if
+       a conflict arrises after an update.
 
 [12]create an installer
-    -- works
+    -- move darwin.exe into the "runtime-win32-new\system\bin" folder
+    -- remove the current "darwin-2.22-setup.exe" file from the 
+       "runtime-win32-new" folder
+    -- right click on the install_script.nsi file, and select the
+       "Compile NSIS Script" option
+    -- works fine - creates darwin-2.22-setup.exe
 
 
