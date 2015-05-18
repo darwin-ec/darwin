@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darwin", "darwin.vcxproj", "{1682A8F5-E6BA-F3DA-D3B0-831E7790D435}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "darwin", "darwin.vcxproj", "{6D1B0564-1A07-FADB-CFEE-C59DAEBE3635}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1682A8F5-E6BA-F3DA-D3B0-831E7790D435}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1682A8F5-E6BA-F3DA-D3B0-831E7790D435}.Debug|Win32.Build.0 = Debug|Win32
-		{1682A8F5-E6BA-F3DA-D3B0-831E7790D435}.Release|Win32.ActiveCfg = Release|Win32
+		{6D1B0564-1A07-FADB-CFEE-C59DAEBE3635}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6D1B0564-1A07-FADB-CFEE-C59DAEBE3635}.Debug|Win32.Build.0 = Debug|Win32
+		{6D1B0564-1A07-FADB-CFEE-C59DAEBE3635}.Release|Win32.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
