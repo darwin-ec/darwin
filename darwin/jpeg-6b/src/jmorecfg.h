@@ -157,9 +157,7 @@ typedef short INT16;
 
 /* INT32 must hold at least signed 32-bit values. */
 
-/* #ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
-/* replaced line above with line below - JHS - 9/27/2012 - problem with DARWIN, VLD.h & redefined INT32 */
-#if !defined(XMD_H) && !defined(_WIN32)
+#ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
 typedef long INT32;
 #endif
 
