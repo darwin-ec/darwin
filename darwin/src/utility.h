@@ -22,8 +22,8 @@
 #include "Options.h"
 extern Options *gOptions;
 
-float round(float n);
-double round(double n);
+//float round(float n);
+//double round(double n);
 std::string quoted(std::string& s);
 std::string upperCase(std::string& s);
 std::string lowerCase(std::string& s);
@@ -33,7 +33,7 @@ double rtod(double angle_radians);
 double dtor(double angle_degrees);
 double distance(double x1, double y1, double x2, double y2);
 int nextPowerOfTwo(int x);
-double log2(double x);
+//double log2(double x);
 std::string convertTripletToHexString(unsigned char a, unsigned char b, unsigned char c);
 std::string convertCharToHexString(unsigned char a);
 void freePixmapString(char **pix, int numRows);
@@ -43,11 +43,11 @@ void freePixmapString(char **pix, int numRows);
 // 	with 0.0.
 void makeVectorDyadic(const double *src, int length, double **dst, int *dstLength);
 
-inline
-float round(float n) { return n + 0.5; }
-
-inline
-double round(double n) { return n + 0.5; }
+//inline
+//float round(float n) { return n + 0.5; }
+//
+//inline
+//double round(double n) { return n + 0.5; }
 
 // make a quoted "s" version of the string s
 inline
@@ -165,11 +165,12 @@ inline int nextPowerOfTwo(int x)
 	return (int)powerOfTwo;
 }
 
-inline
-double log2(double x)
-{
-	return (log(x) / log(2.0));
-}
+//inline
+//double log2(double x)
+//{
+//	return (log(x) / log(2.0));
+//}
+
 inline
 std::string convertTripletToHexString(
 		unsigned char a,

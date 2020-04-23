@@ -10,9 +10,9 @@
 
 /*! @file AboutDialog.cxx */
 
-#ifdef _DEBUG
-#include <vld.h> //***2.0 - to enable Visual Leak Detector
-#endif
+//#ifdef _DEBUG
+//#include <vld.h> // 2.0 - to enable Visual Leak Detector
+//#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
