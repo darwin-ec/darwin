@@ -25,6 +25,26 @@ using namespace std;
 // number of currently open AlterBrightnessDialog widgets
 static int gNumReferences = 0;
 
+gboolean on_alter_brightness_delete_event(
+			GtkWidget *widget,
+			GdkEvent *event,
+			gpointer userData);
+
+void on_alter_brightness_button_ok_clicked(
+  GtkButton *button,
+  gpointer userData);
+
+void on_alter_brightness_button_cancel_clicked(
+  GtkButton *button,
+  gpointer userData);
+
+void on_alter_brightness_slider_moved(
+  GtkButton *button,
+  gpointer userData);
+
+void on_alter_brightness_button_reset_clicked(
+  GtkButton *button,
+  gpointer userData);
 
 //*******************************************************************
 //
@@ -119,7 +139,7 @@ void AlterBrightnessDialog::updateBrightness(int increment)
 //
 // GtkWidget* AlterBrightnessDialog::createAlterBrightnessDialog()
 //
-//    Friend function to create GTK Widget for AlterBrightnessDialog
+//    function to create GTK Widget for AlterBrightnessDialog
 //
 GtkWidget* AlterBrightnessDialog::createAlterBrightnessDialog()
 {
@@ -261,7 +281,7 @@ GtkWidget* AlterBrightnessDialog::createAlterBrightnessDialog()
 //
 // gboolean on_alter_brightness_delete_event(...)
 //
-//    Friend function to process "delete" events
+//    function to process "delete" events
 //  
 gboolean on_alter_brightness_delete_event(
 	GtkWidget *widget,
@@ -285,7 +305,7 @@ gboolean on_alter_brightness_delete_event(
 //
 // void on_alter_brightness_button_ok_clicked(...)
 //
-//    Friend function to process "OK button" events
+//    function to process "OK button" events
 //
 void on_alter_brightness_button_ok_clicked(
 	GtkButton *button,
@@ -311,7 +331,7 @@ void on_alter_brightness_button_ok_clicked(
 //
 // void on_alter_brightness_button_cancel_clicked(...)
 //
-//    Friend function to process "CANCEL button" events.  Brightness
+//    function to process "CANCEL button" events.  Brightness
 //    adjustment is reset to zero.
 //
 void on_alter_brightness_button_cancel_clicked(
@@ -333,7 +353,7 @@ void on_alter_brightness_button_cancel_clicked(
 //
 // void on_alter_brightness_slider_moved(...)
 //
-//    Friend function to process "change of brightness" events. Adjustment
+//    function to process "change of brightness" events. Adjustment
 //    amount is set to slider value.
 //
 void on_alter_brightness_slider_moved(
@@ -353,7 +373,7 @@ void on_alter_brightness_slider_moved(
 //
 // void on_alter_brightness_button_reset_clicked(...)
 //
-//    Friend function to handle "reset brightness alteration button" events.
+//    function to handle "reset brightness alteration button" events.
 //    Adjustment and slider widget are reset to zero.
 //
 void on_alter_brightness_button_reset_clicked(

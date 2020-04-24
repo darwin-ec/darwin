@@ -27,6 +27,36 @@
 
 #include "DBConvertDialog.h"
 
+void on_fileChooserPreviewCheckButton_toggled(
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+
+gboolean on_fileChooserDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+gboolean on_fileChooserPreview_update( //***1.95
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_fileChooserButtonOK_clicked(
+		OpenFileChooserDialog *dialog);
+
+void on_fileChooserButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_openFileChooserFileSelections_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_openFileChooserDirectory_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void openFileChooser_run_and_respond(MainWindow *win);
+
 using namespace std;
 
 static const int IMAGE_WIDTH = 300;

@@ -30,6 +30,63 @@ static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
 static int anchorRow = -1;
 
+void on_finzButtonFindNow_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_finzCList_click_column(
+		GtkCList *clist,
+		gint column,
+		gpointer userData);
+
+void on_finzCList_select_row(
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_finzCList_select_first_row(
+		GtkCList *clist,
+		gpointer userData);
+
+gboolean on_finzCList_button_release_event(
+		GtkCList *clist,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_finzCList_select_last_row(
+		GtkCList *clist,
+		gpointer userData);
+
+void on_finzCList_unselect_row(
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_finzDialog_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_finzDialogButtonSaveFinz_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_finzDialogButtonSaveImages_clicked( //***2.02
+		GtkButton *button,
+		gpointer userData);
+
+void on_finzDialogButtonSaveAsCatalog_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_finzDialogButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
 using namespace std;
 
 
@@ -894,7 +951,7 @@ GtkWidget* ExportFinzDialog::createDialog()
 	return mDialog;
 }
 
-//------------------------- the friend functions -----------------------
+//------------------------- the functions -----------------------
 //*******************************************************************
 //***1.85 - new
 //

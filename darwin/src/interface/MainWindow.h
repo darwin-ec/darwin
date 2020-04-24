@@ -70,6 +70,7 @@ class MainWindow
 		void resetTitleButtonsAndBackupOnDBLoad(); //***1.85 - called after load or import of DB
 
 		// GTK+ callback functions
+		// Note these function headers are also at the top of MainWindow.cxx
 
 		friend gboolean on_mainWindow_delete_event(
 				GtkWidget *widget,

@@ -27,6 +27,18 @@ using namespace std;
 // number of currently existing DeleteOutlineDialog widgets
 static int gNumReferences = 0;
 
+gboolean on_delete_outline_delete_event(
+						GtkWidget *widget,
+						GdkEvent *event,
+						gpointer userData);
+		
+void on_delete_outline_ok_button_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_delete_outline_cancel_button_clicked(
+				GtkButton *button,
+				gpointer userData);
 
 //*******************************************************************
 //
@@ -225,7 +237,7 @@ GtkWidget* DeleteOutlineDialog::createDeleteOutlineDialog()
 //
 // gboolean on_delete_outline_delete_event (...)
 //
-//    Friend function to handle "delete" events
+//    function to handle "delete" events
 //
 gboolean on_delete_outline_delete_event (GtkWidget *widget,
                         		GdkEvent *event,
@@ -245,7 +257,7 @@ gboolean on_delete_outline_delete_event (GtkWidget *widget,
 //
 // void on_delete_outline_ok_button_clicked(...)
 //
-//    Friend function to process"OK" events
+//    function to process"OK" events
 //
 void on_delete_outline_ok_button_clicked(
         GtkButton *button,
@@ -264,7 +276,7 @@ void on_delete_outline_ok_button_clicked(
 //
 // void on_delete_outline_cancel_button_clicked(...)
 //
-//    Friend function to process "cancel" event
+//    function to process "cancel" event
 //
 void on_delete_outline_cancel_button_clicked(
         GtkButton *button,

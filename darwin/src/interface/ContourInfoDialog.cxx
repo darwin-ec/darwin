@@ -30,7 +30,28 @@ static const float CHAIN_POINTS_DISTANCE = 3.0; //***005CI
 
 static int gNumReferences = 0;
 
+gboolean on_infoDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
 
+gboolean on_infoContourDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+gboolean on_infoChainDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_infoButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_infoButtonGenCoeffFiles_clicked(
+		GtkButton *button,
+		gpointer userData);
 //*******************************************************************
 //
 // int getNumContourInfoDialogReferences()
@@ -407,7 +428,7 @@ GtkWidget* ContourInfoDialog::createInfoDialog()
 //
 // gboolean on_infoDialog_delete_event(...)
 //
-//    Friend function to process infoDialog delete events.
+//    function to process infoDialog delete events.
 //
 gboolean on_infoDialog_delete_event(
 	GtkWidget *widget,
@@ -429,7 +450,7 @@ gboolean on_infoDialog_delete_event(
 //
 // gboolean on_infoContourDrawingArea_expose_event(...)
 //
-//    Friend function to process ContourDrawingArea expose events.
+//    function to process ContourDrawingArea expose events.
 //
 gboolean on_infoContourDrawingArea_expose_event(
 	GtkWidget *widget,
@@ -615,7 +636,7 @@ gboolean on_infoContourDrawingArea_expose_event(
 //
 // gboolean on_infoChainDrawingArea_expose_event(...)
 //
-//    Friend function to process ChainDrawingArea_expose events.
+//    function to process ChainDrawingArea_expose events.
 //
 gboolean on_infoChainDrawingArea_expose_event(
 	GtkWidget *widget,
@@ -680,7 +701,7 @@ gboolean on_infoChainDrawingArea_expose_event(
 //
 // void on_infoButtonOK_clicked(...)
 //
-//    Friend function to process "OK" button click events.
+//    function to process "OK" button click events.
 //
 void on_infoButtonOK_clicked(
 	GtkButton *button,
@@ -699,7 +720,7 @@ void on_infoButtonOK_clicked(
 //
 // void on_infoButtonGenCoeffFiles_clicked(...)
 //
-//    Friend function to process "GenCoeffFiles" button click events.
+//    function to process "GenCoeffFiles" button click events.
 //
 void on_infoButtonGenCoeffFiles_clicked(
 	GtkButton *button,

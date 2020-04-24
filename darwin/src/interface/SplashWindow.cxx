@@ -19,6 +19,14 @@
 #endif
 #include "../../pixmaps/logo.xpm"
 
+gboolean on_splashWindow_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+gboolean splashWindow_timeout(
+		gpointer userData);
+
 using namespace std;
 
 //static const int SPLASH_TIMEOUT_MILLISECS = 2000; moved to header

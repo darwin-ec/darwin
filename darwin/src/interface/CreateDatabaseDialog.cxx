@@ -33,7 +33,44 @@ using namespace std;
 // number of currently open CreateDatabaseDialog widgets
 static int gNumReferences = 0; 
 
+gboolean on_createDbDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
 
+gboolean on_createDbButtonCNX_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_createDbButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_createDbSurveyAreaCList_select_row(
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+// following two callbacks probably NOT needed
+
+void on_createDbDatabaseNameEntry_changed(
+		GtkEntry *etnry,
+		gpointer userData);
+
+void on_createDbSurveyAreaNameEntry_changed(
+		GtkEntry *entry,
+		gpointer userData);
+
+void on_radioNewSurveyAreaAndDb_clicked(
+		GtkRadioButton *entry,
+		gpointer userData);
+
+void on_radioNewDbOnly_clicked(
+		GtkRadioButton *entry,
+		gpointer userData);
+		
 //*******************************************************************
 //
 // getNumCreateDatabaseDialogReferences()
@@ -104,7 +141,7 @@ void CreateDatabaseDialog::show()
 //
 // GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 //
-//    Friend function to create the GTK Widget for the AboutDialog.
+//    function to create the GTK Widget for the AboutDialog.
 //
 GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 {
@@ -405,7 +442,7 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 //
 // gboolean on_createDbDialog_delete_event()
 //
-//    Friend function to process "delete" events.
+//    function to process "delete" events.
 //
 gboolean on_createDbDialog_delete_event(
 		GtkWidget *widget,
@@ -424,7 +461,7 @@ gboolean on_createDbDialog_delete_event(
 //
 // gboolean on_createDbButtonCNX_clicked()
 //
-//    Friend function to process "delete" events.
+//    function to process "delete" events.
 //
 gboolean on_createDbButtonCNX_clicked(
 		GtkButton *button,
@@ -443,7 +480,7 @@ gboolean on_createDbButtonCNX_clicked(
 //
 // void on_createDbButtonOK_clicked()
 //
-//    Friend function to process "OK button" events
+//    function to process "OK button" events
 //
 void on_createDbButtonOK_clicked(
 		GtkButton *button,
@@ -890,7 +927,7 @@ void on_createDbButtonOK_clicked(
 //
 // void on_createDbCList_select_row()
 //
-//    Friend function to process "scheme selection" events
+//    function to process "scheme selection" events
 //
 void on_createDbSurveyAreaCList_select_row(
 	GtkCList *clist,

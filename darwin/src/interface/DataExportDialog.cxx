@@ -20,6 +20,42 @@ static int gNumReferences = 0;
 
 using namespace std;
 
+void on_mDataFieldButton_toggled(
+				GtkButton *button,
+				gpointer userData);
+
+void on_dataFieldCheckButtonAll_clicked(
+			GtkButton *button,
+			gpointer userData);
+
+void on_dataFieldCheckButtonClear_clicked(
+			GtkButton *button,
+			gpointer userData);
+
+void on_dataFieldOrigImgButton_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_dataFieldModImgButton_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_radioOutToFile_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_radioOutToPrinter_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_data_export_CNX_button_clicked(
+			GtkButton *button,
+			gpointer userData);
+
+void on_data_export_OK_button_clicked(
+			GtkButton *button,
+			gpointer userData);
+
 //*******************************************************************
 
 int getNumDataExportDialogReferences()

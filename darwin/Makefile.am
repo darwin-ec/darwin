@@ -4,7 +4,7 @@
 ## redone for Mac 9/27/2011 - JHS
 
 #SUBDIRS = intl m4 po src
-SUBDIRS = src png
+SUBDIRS = png src
 EXTRA_DIST = config.rpath BUGS TODO
 
 dist-hook:

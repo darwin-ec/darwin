@@ -24,6 +24,19 @@
 #define PATH_SLASH "/"
 #endif
 
+gboolean on_saveFileSelection_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_saveButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_saveButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
 using namespace std;
 
 static int gNumReferences = 0;

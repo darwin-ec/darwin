@@ -31,6 +31,27 @@
 #define PATH_SLASH "/"
 #endif
 
+gboolean on_saveFileChooser_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_saveFileChooserButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_saveFileChooserButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_saveFileChooserFileSelections_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_saveFileChooserDirectory_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
 using namespace std;
 
 static int gNumReferences = 0;

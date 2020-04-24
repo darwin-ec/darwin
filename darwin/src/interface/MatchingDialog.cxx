@@ -30,6 +30,93 @@
 #include <iostream>
 #endif
 
+gboolean on_mMatchDialogDrawingAreaOutlines_expose_event(
+				GtkWidget *widget,
+				GdkEventExpose *event,
+				gpointer userData);
+
+gboolean on_matchingDialog_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_matchingButtonStartStop_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_matchingButtonPauseContinue_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mCategoryButton_toggled(
+		GtkButton *button,
+		gpointer userData);
+void on_categoryCheckButtonAll_clicked(
+		GtkButton *button,
+		gpointer userData);
+void on_categoryCheckButtonClear_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_matchingButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mButtonShowHide_toggled(
+		GtkButton *button,
+		gpointer userData);
+
+gboolean matchingIdleFunction(
+		gpointer userData);
+
+void on_radioOriginal_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimFixed_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimOptimalTotal_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimOptimalTip_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimOptimalArea_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimOptimalInOut_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrimOptimalInOutTip_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioAllPoints_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioTrailingOnly_clicked( //***1.5 - new callback
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioLeadToTipOnly_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioLeadToNotchOnly_clicked(
+		GtkObject *object,
+		gpointer userData);
+
+void on_radioLeadThenTrail_clicked(
+		GtkObject *object,
+		gpointer userData);
+
 using namespace std;
 
 static int gNumReferences = 0;

@@ -38,6 +38,42 @@
 #define PATH_SLASH "/"
 #endif
 
+gboolean on_nomatchWindow_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+gboolean on_nomatchDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_primaryAlternateCheckButton_toggled( //***1.95
+		GtkButton *button,
+		gpointer userData);
+
+void on_nomatchButtonAddToDatabase_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_nomatchButtonDeleteFin_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_nomatchButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+		
+gboolean on_n_mDrawingArea_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+gboolean on_n_mScrolledWindow_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
 using namespace std;
 static const string ERROR_MSG_NO_IDCODE = "You must enter an ID Code before\n"
                                            "you can add a fin to the database.";

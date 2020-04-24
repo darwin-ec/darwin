@@ -24,6 +24,37 @@
 #include "../../pixmaps/zoom_out.xpm"
 #include "../../pixmaps/Hflip.xpm"    //***1.75
 
+gboolean on_viewDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_viewButtonZoomIn_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_viewButtonZoomOut_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_viewButtonFlipHorizontally_clicked( //***1.75 - new
+		GtkButton * button,
+		gpointer userData);
+
+gboolean on_viewEventBox_button_press_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+gboolean on_viewDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_viewButtonClose_clicked(
+		GtkButton *button,
+		gpointer userData);
+
 using namespace std;
 
 static const int MAX_ZOOM = 1600;

@@ -20,6 +20,40 @@
 #include "ErrorDialog.h"
 #include "TraceWindow.h"
 
+gboolean on_fileSelectionDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_filePreviewCheckButton_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+gboolean on_fileDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_fileSelectionEntry_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_directoryList_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_fileListCell_changed(
+		GtkWidget *widget,
+		gpointer userData);
+
+void on_fileButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_fileButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
 using namespace std;
 
 static const int IMAGE_WIDTH = 300;

@@ -18,6 +18,26 @@
 
 static int gNumReferences = 0;
 
+void on_mActionButton_toggled(
+				GtkButton *button,
+				gpointer userData);
+
+void on_radioConvert2SQLite_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_radioConvert2MySQL_toggled(
+			GtkButton *button,
+			gpointer userData);
+
+void on_dbConvert_CNX_button_clicked(
+			GtkButton *button,
+			gpointer userData);
+
+void on_dbConvert_OK_button_clicked(
+			GtkButton *button,
+			gpointer userData);
+
 using namespace std;
 
 //*******************************************************************

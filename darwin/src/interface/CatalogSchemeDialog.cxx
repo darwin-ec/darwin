@@ -29,6 +29,60 @@ using namespace std;
 // number of currently open AboutDialog widgets
 static int gNumReferences = 0; 
 
+gboolean on_catalogSchemeDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+gboolean on_catalogSchemeButtonCancel_clicked( //***1.95
+		GtkWidget *button,
+		gpointer userData);
+
+void on_catalogSchemeButtonAllowEdit_clicked( //***1.95
+		GtkWidget *button,
+		gpointer userData);
+
+void on_categoryRename_activate( //***1.95
+		GtkMenuItem *item,
+		gpointer userData);
+
+void on_categoryInsert_activate( //***1.95
+		GtkMenuItem *item,
+		gpointer userData);
+
+void on_categoryRemove_activate( //***1.95
+		GtkMenuItem *item,
+		gpointer userData);
+
+void on_schemeRename_activate( //***1.95
+		GtkMenuItem *item,
+		gpointer userData);
+
+void on_schemeRemove_activate( //***1.95
+		GtkMenuItem *item,
+		gpointer userData);
+
+void on_catalogSchemeButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_catSchemeCList_select_row(
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_catSchemeCategoryList_select_row( //***1.95
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_catSchemeComboBox_select_row(
+		GtkComboBox *cbox,
+		gpointer userData);
 
 //*******************************************************************
 //
@@ -102,7 +156,7 @@ void CatalogSchemeDialog::show()
 //
 // GtkWidget* CatalogSchemeDialog::createCatalogSchemeDialog()
 //
-//    Friend function to create the GTK Widget for the AboutDialog.
+//    function to create the GTK Widget for the AboutDialog.
 //
 GtkWidget* CatalogSchemeDialog::createCatalogSchemeDialog()
 {
@@ -370,7 +424,7 @@ GtkWidget* CatalogSchemeDialog::createCatalogSchemeDialog()
 //
 // gboolean on_catalogSchemeButtonAllowEdit_clicked()
 //
-//    Friend function to process "edit" events.
+//    function to process "edit" events.
 //
 void on_catalogSchemeButtonAllowEdit_clicked(
 		GtkWidget *button,
@@ -394,7 +448,7 @@ void on_catalogSchemeButtonAllowEdit_clicked(
 //
 // gboolean on_catalogSchemeButtonCancel_clicked()
 //
-//    Friend function to process "cancel" events.
+//    function to process "cancel" events.
 //
 gboolean on_catalogSchemeButtonCancel_clicked(
 		GtkWidget *button,
@@ -413,7 +467,7 @@ gboolean on_catalogSchemeButtonCancel_clicked(
 //
 // gboolean on_catalogSchemeDialog_delete_event()
 //
-//    Friend function to process "delete" events.
+//    function to process "delete" events.
 //
 gboolean on_catalogSchemeDialog_delete_event(
 		GtkWidget *widget,
@@ -433,7 +487,7 @@ gboolean on_catalogSchemeDialog_delete_event(
 //
 // void on_catalogSchemeButtonOK_clicked()
 //
-//    Friend function to process "OK button" events
+//    function to process "OK button" events
 //
 void on_catalogSchemeButtonOK_clicked(
 		GtkButton *button,
@@ -595,7 +649,7 @@ void on_catalogSchemeButtonOK_clicked(
 //
 // void on_catSchemeCList_select_row()
 //
-//    Friend function to process "scheme selection" events
+//    function to process "scheme selection" events
 //
 void on_catSchemeCList_select_row(
 	GtkCList *clist,
@@ -701,7 +755,7 @@ void on_catSchemeCList_select_row(
 //
 // void on_catSchemeCategoryList_select_row()
 //
-//    Friend function to process "scheme selection" events
+//    function to process "scheme selection" events
 //
 void on_catSchemeCategoryList_select_row(
 	GtkCList *clist,
@@ -1002,7 +1056,7 @@ void on_schemeRemove_activate( //***1.95
 //
 // void on_catSchemeComboBox_select_row()
 //
-//    Friend function to process "category selection" events
+//    function to process "category selection" events
 //
 void on_catSchemeComboBox_select_row(
 	GtkComboBox *cbox,

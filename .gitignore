@@ -1,3 +1,5 @@
+src/darwin
+
 # Prerequisites
 *.d
 
@@ -68,3 +70,8 @@ dlldata.c
 
 # Visual Studio cache/options directory
 .vs/
+
+# Deps
+.deps/
+
+autom4te.cache

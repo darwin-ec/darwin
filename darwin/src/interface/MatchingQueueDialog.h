@@ -127,7 +127,6 @@ class MatchingQueueDialog
 			MatchingQueueDialog *dlg
 			);
 
-
 	private:
 		GtkWidget
 			*mDialog,

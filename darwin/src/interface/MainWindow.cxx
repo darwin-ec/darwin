@@ -74,6 +74,213 @@ static const int IMAGE_WIDTH = 400, IMAGE_HEIGHT = 300; //***1.7 - these were 30
 static const int POINT_SIZE = 1;
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
+
+gboolean on_mainWindow_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_open_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_open_fin_trace_activate( //***1.4
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_open_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_new_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_restore_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_backup_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_import_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_export_database_activate( //***1.85
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_export_finz_activate( //***1.99
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_export_fullSzImgs_activate( //***2.02
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_import_finz_activate( //***1.99
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_matching_queue_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_exit_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_options_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_catalog_new_activate( //***1.4
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_catalog_view_activate( //***1.4
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_catalog_select_activate( //***1.4
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_exportData_select_activate( //***1.9
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_about_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_docs_activate(
+		GtkMenuItem *menuitem,
+		gpointer userData);
+
+void on_mainButtonOpen_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonOpenTrace_clicked( //***1.5 - new callback
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonMatchingQueue_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonOptions_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonExit_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainCList_click_column(
+		GtkCList *clist,
+		gint column,
+		gpointer userData);
+
+void on_mainCList_select_row(
+		GtkCList *clist,
+		gint row,
+		gint column,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_mainButtonPrev_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonNext_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonModify_clicked(	//***002DB
+		GtkButton *button,
+		gpointer userData);
+
+void on_mainButtonFindNow_clicked(	//***1.85
+		GtkButton *button,
+		gpointer userData);
+
+gboolean on_mainEventBoxImage_button_press_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+//***1.99 - create a popup containing the Original Image
+gboolean on_mainEventBoxOrigImage_button_press_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+gboolean on_mainDrawingAreaImage_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+//***1.99 - so we can display original image as well as modified
+gboolean on_mainDrawingAreaOrigImage_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+gboolean on_mainEventBoxOutline_button_press_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+gboolean on_mainDrawingAreaOutline_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+gboolean on_mainDrawingAreaOutline_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+gboolean on_mainDrawingAreaImage_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+//***1.99 - so we can display original image as well as modified
+gboolean on_mainDrawingAreaOrigImage_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+//***1.85 -  so the database can be changed from the CreateDatabaseDialog callback
+void on_createDbButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+//***1.95 - so main clist can show ALL images or ONLY primary images
+void on_mainButtonShowAllImages_toggled(
+		GtkButton *button,
+		gpointer userData);
+
+//***1.85 -  so the database can be changed from the OpenFileChooserDialog callback
+void on_fileChooserButtonOK_clicked(
+		OpenFileChooserDialog *dlg);
+
+//***1.85 -  so the database can be changed from the ModifyDatabase callback
+void on_m_questionButtonYes_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+//***1.9 -  so the database can be changed from the ModifyDatabase callback
+void on_modifyButtonSave_clicked(
+		GtkButton * button, 
+		gpointer userData);
+
+
 //*******************************************************************
 MainWindow::MainWindow(Database *db, Options *o)
 	: mDBCurEntry(0),

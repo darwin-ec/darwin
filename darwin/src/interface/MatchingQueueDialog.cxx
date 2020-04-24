@@ -38,6 +38,88 @@ static GtkTreePath *gLastTreePath;
 
 static int gNumReferences = 0;
 
+gboolean matchingQueueIdleFunction(
+			gpointer userData);
+			
+gboolean on_matchingQueueDialog_delete_event(
+	GtkWidget *widget,
+	GdkEvent *event,
+	gpointer userData
+	);
+
+void on_MQ_mCList_select_row(
+	GtkCList *clist,
+	gint row,
+	gint column,
+	GdkEvent *event,
+	gpointer userData
+	);
+
+gboolean on_matchingQueueDrawingArea_expose_event(
+	GtkWidget *widget,
+	GdkEventExpose *event,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonAdd_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonRemove_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonRunMatch_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonViewResults_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonSaveList_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonLoadList_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+void on_matchingQueueButtonCancel_clicked(
+	GtkButton *button,
+	gpointer userData
+	);
+
+//***1.4 - new functions for FileChooser
+
+void on_mqFileChooserButtonOK_clicked(
+	MatchingQueueDialog *dialog
+	);
+
+void on_mqFileChooserButtonCancel_clicked(
+	MatchingQueueDialog *dialog
+	);
+
+void on_mqFileChooserFileSelections_changed(
+	GtkWidget *widget,
+	gpointer userData
+	);
+
+void on_mqFileChooserDirectory_changed(
+	GtkWidget *widget,
+	gpointer userData
+	);
+
+void mqFileChooser_run_and_respond(
+	MatchingQueueDialog *dlg
+	);
+
 //*******************************************************************
 //
 // a LOCAL utility used to copy matchQResults files to "old" folder

@@ -43,6 +43,51 @@
 #define PATH_SLASH "/"
 #endif
 
+gboolean on_modifyWindow_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+gboolean on_modifyDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_modifyButtonSave_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_modifyButtonDeleteFin_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_modifyButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+gboolean on_m_questionDialog_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_m_questionButtonYes_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_m_questionButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+gboolean on_m_mDrawingArea_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+gboolean on_m_mScrolledWindow_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
 using namespace std;
 
 static const string ERROR_MSG_NO_IDCODE = "You must enter an ID Code!";

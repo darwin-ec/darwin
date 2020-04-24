@@ -28,6 +28,52 @@
 #include "../../pixmaps/cancel.xpm"
 #include "../../pixmaps/ok.xpm"
 
+gboolean on_optionsDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_colorButtonChoose_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+void on_optionsButtonOK_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+void on_optionsButtonCancel_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+gboolean on_colorSelectionDialog_delete_event(
+        GtkWidget *widget,
+        GdkEvent *event,
+        gpointer userData);
+
+void on_colorSelectOKButton_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+void on_colorSelectCancelButton_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+void on_colorSelectHelpButton_clicked(
+        GtkButton *button,
+        gpointer userData);
+
+void on_fontSelectButton_clicked( //***1.85
+        GtkButton *button,
+        gpointer userData);
+
+void on_fontSelectDialog_OK_Button_clicked( //***1.85
+        GtkButton *button,
+        gpointer userData);
+
+void on_fontSelectDialog_CNX_Button_clicked( //***1.85
+        GtkButton *button,
+        gpointer userData);
+
 using namespace std;
 
 static int gNumReferences = 0;

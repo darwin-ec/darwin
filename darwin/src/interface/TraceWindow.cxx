@@ -91,6 +91,182 @@
 #include "../IntensityContour.h" //101AT
 #include "../IntensityContourCyan.h" //103AT SAH
 
+float normalizeContour(Contour *c);
+
+gboolean on_traceWindow_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_traceButtonUndo_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonRedo_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonFlipHorizontally_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonFlipVertically_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonEnhanceContrast_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonAlterBrightness_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonDespeckle_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonSmooth_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonResize_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceRadioButtonMagnify_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonAutoTrace_toggled(//103AT SAH
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonPencil_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonAddPoint_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonMovePoint_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+
+void on_traceRadioButtonMoveFeature_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+		void on_traceRadioButtonChopoutline_toggled(
+						GtkToggleButton * togglebutton,
+							gpointer userData);
+
+void on_traceRadioButtonEraser_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonCrop_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceRadioButtonRotate_toggled(
+		GtkToggleButton *togglebutton,
+		gpointer userData);
+
+void on_traceButtonImageOK_clicked(
+		GtkButton * button,
+		gpointer userData);
+
+void on_traceButtonTraceOK_clicked(
+		GtkButton * button,
+		gpointer userData);
+
+void on_traceButtonFeaturePointsOK_clicked(
+		GtkButton * button,
+		gpointer userData);
+
+void on_traceButtonImageMod_clicked(
+		GtkButton * button,
+		gpointer userData);
+
+void on_traceButtonSlideTrace_toggled(
+		GtkButton * button,
+		gpointer userData);
+
+gboolean on_traceButtonScaleTrace_changed(
+		GtkRange *range,
+		gpointer userData);
+
+void on_traceButtonTraceUnlock_clicked(
+		GtkButton * button,
+		gpointer userData);
+
+
+gboolean on_traceEventBox_button_press_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+gboolean on_traceEventBox_button_release_event(
+		GtkWidget *widget,
+		GdkEventButton *event,
+		gpointer userData);
+
+gboolean on_traceEventBox_motion_notify_event(
+		GtkWidget *widget,
+		GdkEventMotion  *event,
+		gpointer userData);
+
+gboolean on_traceDrawingArea_expose_event(
+		GtkWidget *widget,
+		GdkEventExpose *event,
+		gpointer userData);
+
+void on_traceButtonDumpData_clicked( //***1.96a - new callback
+		GtkButton * button, 
+		gpointer userData);
+
+void on_traceButtonMatch_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonSave_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonAddToDatabase_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_traceButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+gboolean on_questionDialog_delete_event(
+		GtkWidget *widget,
+		GdkEvent *event,
+		gpointer userData);
+
+void on_questionButtonYes_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+void on_questionButtonCancel_clicked(
+		GtkButton *button,
+		gpointer userData);
+
+gboolean on_mDrawingArea_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
+gboolean on_mScrolledWindow_configure_event(
+		GtkWidget *widget,
+		GdkEventConfigure *event,
+		gpointer userData);
+
 using namespace std;
 
 extern Options *gOptions;

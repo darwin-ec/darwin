@@ -44,6 +44,121 @@ static const int FIN_IMAGE_HEIGHT = 300; // was 240
 static const int POINT_SIZE = 1;
 static const int TABLE_COLS = 4; // was 3 prior to version 1.0
 
+gboolean on_matchResultsWindow_delete_event(
+						GtkWidget *widget,
+						GdkEvent *event,
+						gpointer userData);
+
+void on_mrRadioButtonIcons_toggled(
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+
+void on_mrButtonAltID_toggled( //***1.6 - to hide or show real ID's
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+
+void on_mrButtonShowInfo_toggled( //***1.6 - to hide or show info
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+	
+void on_mrRadioButtonList_toggled(
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+
+void on_mMRCList_click_column(
+				GtkCList *clist,
+				gint column,
+				gpointer userData);
+
+void on_mMRCList_select_row(
+				GtkCList *clist,
+				gint row,
+				gint column,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_mMRButtonPrev_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_mMRButtonNext_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_mMRButtonSlideShow_clicked( //***1.85 - new
+				GtkButton *button,
+				gpointer userData);
+
+void on_mrButtonFinsMatch_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_mrButtonNoMatch_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_mMRButtonSelectedMod_clicked( //***1.2 - new
+				GtkButton *button,
+				gpointer userData);
+
+void on_mMRButtonUnknownMod_clicked( //***1.2 - new
+				GtkButton *button,
+				gpointer userData);
+
+void on_mMRButtonUnknownMorph_clicked( //***1.2 - new
+				GtkButton *button,
+				gpointer userData);
+
+void on_mrButtonReturnToMatchingDialog_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+void on_mrButtonSaveResults_clicked( //***1.4 - new
+				GtkButton *button,
+				gpointer userData);
+
+void on_mrButtonCancel_clicked(
+				GtkButton *button,
+				gpointer userData);
+
+gboolean on_eventBoxSelected_button_press_event(
+				GtkWidget *widget,
+				GdkEventButton *event,
+				gpointer userData);
+
+gboolean on_mDrawingAreaSelected_expose_event(
+				GtkWidget *widget,
+				GdkEventExpose *event,
+				gpointer userData);
+
+gboolean on_eventBoxUnknown_button_press_event(
+				GtkWidget *widget,
+				GdkEventButton *event,
+				gpointer userData);
+
+gboolean on_mDrawingAreaUnknown_expose_event(
+				GtkWidget *widget,
+				GdkEventExpose *event,
+				gpointer userData);
+
+gboolean on_eventBoxOutlines_button_press_event(
+				GtkWidget *widget,
+				GdkEventButton *event,
+				gpointer userData);
+
+gboolean on_mDrawingAreaOutlines_expose_event(
+				GtkWidget *widget,
+				GdkEventExpose *event,
+				gpointer userData);
+
+void on_finRadioButton_toggled(
+				GtkToggleButton *togglebutton,
+				gpointer userData);
+
+gboolean matchResultsSlideShowTimer(
+				gpointer userData);
+
+
 using namespace std;
 
 //*******************************************************************

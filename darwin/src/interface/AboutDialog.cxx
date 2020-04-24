@@ -37,6 +37,14 @@
 //
 static int gNumAboutDialogReferences = 0; 
 
+gboolean on_aboutDialog_delete_event(
+				GtkWidget *widget,
+				GdkEvent *event,
+				gpointer userData);
+
+void on_aboutButtonOK_clicked(
+		GtkButton *button,
+		gpointer userData);
 
 //*******************************************************************
 //

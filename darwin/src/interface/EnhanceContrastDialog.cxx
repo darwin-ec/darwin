@@ -23,6 +23,31 @@ using namespace std;
 
 static int gNumReferences = 0;
 
+gboolean on_enhance_contrast_delete_event(
+			GtkWidget *widget,
+			GdkEvent *event,
+			gpointer userData);
+
+void on_enhance_contrast_button_ok_clicked(
+	GtkButton *button,
+	gpointer userData);
+
+void on_enhance_contrast_button_cancel_clicked(
+	GtkButton *button,
+	gpointer userData);
+
+void on_enhance_contrast_minSlider_moved(
+	GtkButton *button,
+	gpointer userData);
+
+void on_enhance_contrast_maxSlider_moved(
+	GtkButton *button,
+	gpointer userData);
+
+void on_enhance_contrast_button_reset_clicked(
+	GtkButton *button,
+	gpointer userData);
+
 //*******************************************************************
 //
 //

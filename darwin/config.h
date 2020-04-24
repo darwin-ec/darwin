@@ -129,9 +129,8 @@
 #define HAVE_STDBOOL_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
-#ifndef HAVE_STDDEF_H
 #define HAVE_STDDEF_H 1
-#endif
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
 
@@ -139,9 +138,8 @@
 /* #undef HAVE_STDIO_EXT_H */
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#ifndef HAVE_STDLIB_H
 #define HAVE_STDLIB_H 1
-#endif
+
 /* Define to 1 if you have the `stpcpy' function. */
 #define HAVE_STPCPY 1
 
@@ -222,7 +220,7 @@
 #define PACKAGE_NAME "darwin"
 
 /* Define location of package source */
-#define PACKAGE_SOURCE_DIR "/Users/johnstewman/Documents/darwinDev2/darwin-ec/darwin"
+#define PACKAGE_SOURCE_DIR "/Users/adamrussell/Documents/Projects/darwin-ec/darwin"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "darwin 2.22"
@@ -257,7 +255,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "2.25"
+#define VERSION "2.22"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
