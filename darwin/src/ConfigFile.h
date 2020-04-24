@@ -94,14 +94,7 @@ class ConfigItem
 		//    RETURN: true if there's a match, false otherwise
 		//
 		bool equals (std::string desc) {
-			std::string tmpDesc, test;
-
-			test = upperCase (desc);
-			tmpDesc = upperCase (itemDesc);
-			if (test == tmpDesc)
-				return true;
-
-			return false;
+			return caseInsensitiveStringCompare(desc, itemDesc);
 		}
 
 		// Incicates whether item has been changed (is dirty)

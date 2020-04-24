@@ -25,8 +25,8 @@ extern Options *gOptions;
 //float round(float n);
 //double round(double n);
 std::string quoted(std::string& s);
-std::string upperCase(std::string& s);
-std::string lowerCase(std::string& s);
+/* std::string upperCase(std::string& s);
+std::string lowerCase(std::string& s); */
 int byteStringToInt (unsigned char* byteString, int length);
 int byteSwap (int num);
 double rtod(double angle_radians);
@@ -60,7 +60,7 @@ std::string quoted(std::string& s)
 }
 
 // Make an uppercase copy of s
-inline
+/*inline
 std::string upperCase(std::string& s) {
 	char* buf = new char[s.length()];
 	s.copy (buf, s.length());
@@ -71,10 +71,10 @@ std::string upperCase(std::string& s) {
 	std::string r (buf, s.length());
 	delete buf;
 	return r;
-}
+}*/
 
 // Make a lowercase copy of s
-inline
+/* inline
 std::string lowerCase(std::string& s) {
 	char* buf = new char[s.length()];
 	s.copy (buf, s.length());
@@ -85,6 +85,15 @@ std::string lowerCase(std::string& s) {
 	std::string r (buf, s.length());
 	delete buf;
 	return r;
+} */
+
+inline
+bool caseInsensitiveStringCompare(const std::string& str1, const std::string& str2) {
+    std::string str1Cpy(str1);
+    std::string str2Cpy(str2);
+    std::transform(str1Cpy.begin(), str1Cpy.end(), str1Cpy.begin(), ::tolower);
+    std::transform(str2Cpy.begin(), str2Cpy.end(), str2Cpy.begin(), ::tolower);
+    return str1Cpy == str2Cpy;
 }
 
 inline

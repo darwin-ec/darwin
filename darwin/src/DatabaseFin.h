@@ -1,4 +1,4 @@
-//*******************************************************************
+//                                            *
 //   file: DatabaseFin.h
 //
 // author: Adam Russell
@@ -10,7 +10,7 @@
 //            ASSUMPTION: if image filename contains any slashes it is
 //            presumed to be an UNKNOWN
 //
-//*******************************************************************
+//                                            *
 
 //
 // 0.3.1-DB: Addendum : New DatabaseFin Data structure
@@ -51,13 +51,13 @@
 
 #include "image_processing/ColorImage.h"
 #include "image_processing/GrayImage.h"
-#include "FloatContour.h" //***008OL
-#include "Outline.h"      //***008OL - JHS addition
-#include "Chain.h"        //***008OL 
+#include "FloatContour.h" //  008OL
+#include "Outline.h"      //  008OL - JHS addition
+#include "Chain.h"        //  008OL 
 #include "image_processing/conversions.h"
-#include "Options.h" //***1.85
+#include "Options.h" //  1.85
 #include "utility.h"
-#pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
+#pragma warning(disable:4786) //  1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 #include <fstream>
 
@@ -65,7 +65,7 @@
 #include <config.h>
 #endif
 
-//***054 - slash direction Windows/Linux
+//  054 - slash direction Windows/Linux
 #ifdef WIN32
 #define PATH_SLASH "\\"
 #else
@@ -76,11 +76,11 @@ const int DATABASEFIN_THUMB_HEIGHT = 25, DATABASEFIN_THUMB_WIDTH = 25;
 
 extern Options *gOptions;
 
-//*******************************************************************
+//                                            *
 //
 // CLASS ItemInfo
 //
-//*******************************************************************
+//                                            *
 
 class ItemInfo 
 {
@@ -142,35 +142,35 @@ class ItemInfo
 		std::string mDamageCategory;
 		std::string mShortDescription;
 
-		bool mIsAlternate; //***1.95
+		bool mIsAlternate; //  1.95
 };
 
-//*******************************************************************
+//                                            *
 //
 // CLASS DatabaseFin
 //
-//*******************************************************************
+//                                            *
 
 template <class FIN_IMAGE_TYPE>
 class DatabaseFin
 {
 	public:
 
-		//**************************************************************************
+		//                                                **
 		//
 		// no sense in having this unless we set member values
 		//
 		DatabaseFin(){}
 
-		//**************************************************************************
+		//                                                **
 		//
 		// called from numerous places in ...
 		//   TraceWindow.cxx, ModifyDatabaseWindow.cxx, and 
 		//   NoMatchWindow.cxx
 		//
 		DatabaseFin(
-			const std::string filename, //***001DB
-			Outline *outline, //***008OL
+			const std::string filename, //  001DB
+			Outline *outline, //  008OL
 			const std::string &idcode,
 			const std::string &name,
 			const std::string &dateOfSighting,
@@ -179,8 +179,8 @@ class DatabaseFin
 			const std::string &damageCategory,
 			const std::string &shortDescription
 		) :
-			mImageFilename(filename), //***001DB
-			mFinOutline(new Outline(outline)), //***006DF,008OL
+			mImageFilename(filename), //  001DB
+			mFinOutline(new Outline(outline)), //  006DF,008OL
 			mIDCode(idcode),
 			mName(name),
 			mDateOfSighting(dateOfSighting),
@@ -190,23 +190,23 @@ class DatabaseFin
 			mShortDescription(shortDescription),
 			mThumbnailPixmap(NULL),
 			mThumbnailRows(0),
-			mLeft(true), //***1.4
-			mFlipped(false), //***1.4
-			mXmin(0.0), //***1.4
-			mXmax(0.0), //***1.4
-			mYmin(0.0), //***1.4
-			mYmax(0.0), //***1.4
-			mScale(1.0), //***1.4
-			mModifiedFinImage(NULL), //***1.5
-			mFinFilename(""), //***1.6
-			mIsAlternate(false) //***1.95
+			mLeft(true), //  1.4
+			mFlipped(false), //  1.4
+			mXmin(0.0), //  1.4
+			mXmax(0.0), //  1.4
+			mYmin(0.0), //  1.4
+			mYmax(0.0), //  1.4
+			mScale(1.0), //  1.4
+			mModifiedFinImage(NULL), //  1.5
+			mFinFilename(""), //  1.6
+			mIsAlternate(false) //  1.95
 
 		{
-			//***1.5 - need some way to CATCH error thrown when image file
+			//  1.5 - need some way to CATCH error thrown when image file
 			//         does not exist or is unsupported type  --
 			//         program now crashes when database image is misplaced or misnamed
 
-			mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //***001DB
+			mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //  001DB
 			FIN_IMAGE_TYPE *thumb = resizeWithBorderNN(
 					mFinImage,
 					DATABASEFIN_THUMB_HEIGHT,
@@ -216,14 +216,14 @@ class DatabaseFin
 		}
 
 					
-		//***1.99 - new constructor used by SQLlite database code
-		//**************************************************************************
+		//  1.99 - new constructor used by SQLlite database code
+		//                                                **
 		//
 		// Added. Called in Database::getFin().
 		//
 		DatabaseFin(
-			const std::string filename, //***001DB
-			Outline *outline, //***008OL
+			const std::string filename, //  001DB
+			Outline *outline, //  008OL
 			const std::string &idcode,
 			const std::string &name,
 			const std::string &dateOfSighting,
@@ -235,8 +235,8 @@ class DatabaseFin
 			char **pixmap,
 			int rows
 		) :
-			mImageFilename(filename), //***001DB
-			mFinOutline(new Outline(outline)), //***006DF,008OL
+			mImageFilename(filename), //  001DB
+			mFinOutline(new Outline(outline)), //  006DF,008OL
 			mIDCode(idcode),
 			mName(name),
 			mDateOfSighting(dateOfSighting),
@@ -247,21 +247,21 @@ class DatabaseFin
 			mThumbnailPixmap(pixmap),
 			mThumbnailRows(rows),
 			mDataPos(datapos),
-			mLeft(true), //***1.4
-			mFlipped(false), //***1.4
-			mXmin(0.0), //***1.4
-			mXmax(0.0), //***1.4
-			mYmin(0.0), //***1.4
-			mYmax(0.0), //***1.4
-			mScale(1.0), //***1.4
-			mModifiedFinImage(NULL), //***1.5
-			mFinFilename(""), //***1.6
+			mLeft(true), //  1.4
+			mFlipped(false), //  1.4
+			mXmin(0.0), //  1.4
+			mXmax(0.0), //  1.4
+			mYmin(0.0), //  1.4
+			mYmax(0.0), //  1.4
+			mScale(1.0), //  1.4
+			mModifiedFinImage(NULL), //  1.5
+			mFinFilename(""), //  1.6
 			mFinImage(NULL),
-			mIsAlternate(false) //***1.99
+			mIsAlternate(false) //  1.99
 		{
 			// let's see what happens... -- rjn
 			/*
-			mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //***001DB
+			mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //  001DB
 			FIN_IMAGE_TYPE *thumb = resizeWithBorderNN(
 					mFinImage,
 					DATABASEFIN_THUMB_HEIGHT,
@@ -273,17 +273,17 @@ class DatabaseFin
 
 
 		/*
-		//**************************************************************************
+		//                                                **
 		//
 		// don't think this is ever called
 		//
 		DatabaseFin(
-			std::string filename,        //***001DB
-			Outline *outline,            //***008OL
+			std::string filename,        //  001DB
+			Outline *outline,            //  008OL
 			const ItemInfo *iteminfo
 		) :
-			mImageFilename(filename),          //***001DB
-			mFinOutline(new Outline(outline)), //***008OL
+			mImageFilename(filename),          //  001DB
+			mFinOutline(new Outline(outline)), //  008OL
 			mIDCode(iteminfo->mIDCode),
 			mName(iteminfo->mName),
 			mDateOfSighting(iteminfo->mDateOfSighting),
@@ -295,7 +295,7 @@ class DatabaseFin
 			mThumbnailRows(0)
 		{
 			
-			mFinImage=new FIN_IMAGE_TYPE(filename); //***001DB
+			mFinImage=new FIN_IMAGE_TYPE(filename); //  001DB
 			FIN_IMAGE_TYPE *thumb = resizeWithBorderNN(
 					mFinImage,
 					DATABASEFIN_THUMB_HEIGHT,
@@ -305,17 +305,17 @@ class DatabaseFin
 		}
 		*/
       
-		//**************************************************************************
+		//                                                **
 		//
 		// called ONLY from Match.cxx and MatchResultsWindow.cxx
 		//
 		DatabaseFin(const DatabaseFin<FIN_IMAGE_TYPE> *fin)
 			:
-			mImageFilename(fin->mImageFilename),        //***001DB
-			mFinImage(NULL),                            //*** major change JHS
-			mModifiedFinImage(NULL), //***1.5
-			mDataPos(fin->mDataPos),                    //***001DB
-			mFinOutline(new Outline(fin->mFinOutline)), //***006DF,008OL
+			mImageFilename(fin->mImageFilename),        //  001DB
+			mFinImage(NULL),                            //   major change JHS
+			mModifiedFinImage(NULL), //  1.5
+			mDataPos(fin->mDataPos),                    //  001DB
+			mFinOutline(new Outline(fin->mFinOutline)), //  006DF,008OL
 			mIDCode(fin->mIDCode),
 			mName(fin->mName),
 			mDateOfSighting(fin->mDateOfSighting),
@@ -325,23 +325,23 @@ class DatabaseFin
 			mShortDescription(fin->mShortDescription),
 			mThumbnailPixmap(new char*[fin->mThumbnailRows]),
 			mThumbnailRows(fin->mThumbnailRows),
-			mLeft(fin->mLeft), //***1.4
-			mFlipped(fin->mFlipped), //***1.4
-			mXmin(fin->mXmin), //***1.4
-			mXmax(fin->mXmax), //***1.4
-			mYmin(fin->mYmin), //***1.4
-			mYmax(fin->mYmax), //***1.4
-			mScale(fin->mScale), //***1.4
-			mFinFilename(fin->mFinFilename), //***1.6
-			mOriginalImageFilename(fin->mOriginalImageFilename), //***1.8
-			mImageMods(fin->mImageMods), //***1.8
-			mIsAlternate(fin->mIsAlternate) //***1.95
+			mLeft(fin->mLeft), //  1.4
+			mFlipped(fin->mFlipped), //  1.4
+			mXmin(fin->mXmin), //  1.4
+			mXmax(fin->mXmax), //  1.4
+			mYmin(fin->mYmin), //  1.4
+			mYmax(fin->mYmax), //  1.4
+			mScale(fin->mScale), //  1.4
+			mFinFilename(fin->mFinFilename), //  1.6
+			mOriginalImageFilename(fin->mOriginalImageFilename), //  1.8
+			mImageMods(fin->mImageMods), //  1.8
+			mIsAlternate(fin->mIsAlternate) //  1.95
 		{
-			//***1.5 - just set pointer to original copy from TraceWindow
-			//***1.8 - we actually create a COPY of the modified image here
+			//  1.5 - just set pointer to original copy from TraceWindow
+			//  1.8 - we actually create a COPY of the modified image here
 			if (NULL != fin->mModifiedFinImage)
 				mModifiedFinImage = new ColorImage(fin->mModifiedFinImage);
-			//***1.8 - and we create a COPY of the original image here
+			//  1.8 - and we create a COPY of the original image here
 			if (NULL != fin->mFinImage)
 				mFinImage = new ColorImage(fin->mFinImage);
 
@@ -353,15 +353,15 @@ class DatabaseFin
 		}
 
 		/*
-		//**************************************************************************
+		//                                                **
 		//
 		// don't know if called at all
 		//
 		DatabaseFin(const DatabaseFin<FIN_IMAGE_TYPE> &fin)
 			:
-			mImageFilename (fin.mImageFilename), //***001DB
-			mFinImage(new FIN_IMAGE_TYPE(fin.mImageFilename)), //***001DB
-			mFinOutline(new Outline(fin.mFinOutline)), //***006DF,008OL
+			mImageFilename (fin.mImageFilename), //  001DB
+			mFinImage(new FIN_IMAGE_TYPE(fin.mImageFilename)), //  001DB
+			mFinOutline(new Outline(fin.mFinOutline)), //  006DF,008OL
 			mIDCode(fin.mIDCode),
 			mName(fin.mName),
 			mDateOfSighting(fin.mDateOfSighting),
@@ -379,19 +379,19 @@ class DatabaseFin
 		}
 		*/
 
-		//**************************************************************************
+		//                                                **
 		//
 		// called ONLY from MatchingQueue.cxx 
 		//
-		//***1.4 - now also from OpenFileChooserDialog.cxx when loading single fin trace
+		//  1.4 - now also from OpenFileChooserDialog.cxx when loading single fin trace
 		//
 		DatabaseFin(
 				const std::string &fileName
 		) :
-			mFinImage(NULL),     //***1.1
-			mModifiedFinImage(NULL), //***1.5
-			mImageFilename (""), //***1.1 - fileName is name of fin trace file NOT image
-			mFinOutline(NULL),   //***008OL
+			mFinImage(NULL),     //  1.1
+			mModifiedFinImage(NULL), //  1.5
+			mImageFilename (""), //  1.1 - fileName is name of fin trace file NOT image
+			mFinOutline(NULL),   //  008OL
 			mIDCode(""),
 			mName(""),
 			mDateOfSighting(""),
@@ -401,15 +401,15 @@ class DatabaseFin
 			mShortDescription(""),
 			mThumbnailPixmap(NULL),
 			mThumbnailRows(0),
-			mLeft(true), //***1.4
-			mFlipped(false), //***1.4
-			mXmin(0.0), //***1.4
-			mXmax(0.0), //***1.4
-			mYmin(0.0), //***1.4
-			mYmax(0.0), //***1.4
-			mScale(1.0), //***1.4
-			mFinFilename(""), //***1.6 - gets set to fileName in load if process succeeds
-			mIsAlternate(false) //***1.95
+			mLeft(true), //  1.4
+			mFlipped(false), //  1.4
+			mXmin(0.0), //  1.4
+			mXmax(0.0), //  1.4
+			mYmin(0.0), //  1.4
+			mYmax(0.0), //  1.4
+			mScale(1.0), //  1.4
+			mFinFilename(""), //  1.6 - gets set to fileName in load if process succeeds
+			mIsAlternate(false) //  1.95
 		{
 			try {
 				this->load(fileName);
@@ -418,17 +418,17 @@ class DatabaseFin
 			}
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		// called ONLY from Database.h getItem(pos) member function
 		//
 		DatabaseFin(
 			std::fstream &inFile,
-			std::string fileName //***1.99 needed to allow opening db without gOptions
+			std::string fileName //  1.99 needed to allow opening db without gOptions
 		) :
 			mFinImage(NULL),
-			mModifiedFinImage(NULL), //***1.5
-			mFinOutline(NULL), //***008OL
+			mModifiedFinImage(NULL), //  1.5
+			mFinOutline(NULL), //  008OL
 			mIDCode(""),
 			mName(""),
 			mDateOfSighting(""),
@@ -438,15 +438,15 @@ class DatabaseFin
 			mShortDescription(""),
 			mThumbnailPixmap(NULL),
 			mThumbnailRows(0),
-			mLeft(true), //***1.4
-			mFlipped(false), //***1.4
-			mXmin(0.0), //***1.4
-			mXmax(0.0), //***1.4
-			mYmin(0.0), //***1.4
-			mYmax(0.0), //***1.4
-			mScale(1.0), //***1.4
-			mFinFilename(""), //***1.4
-			mIsAlternate(false) //***1.95
+			mLeft(true), //  1.4
+			mFlipped(false), //  1.4
+			mXmin(0.0), //  1.4
+			mXmax(0.0), //  1.4
+			mYmin(0.0), //  1.4
+			mYmax(0.0), //  1.4
+			mScale(1.0), //  1.4
+			mFinFilename(""), //  1.4
+			mIsAlternate(false) //  1.95
 		{
 			try {
 				std::string status = this->load(inFile,fileName,true);
@@ -457,18 +457,18 @@ class DatabaseFin
 			}
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		~DatabaseFin()
 		{
-			if(mFinImage != NULL)     //***001DB
+			if(mFinImage != NULL)     //  001DB
 				delete mFinImage;
 
-			if(mModifiedFinImage != NULL)     //***001DB
+			if(mModifiedFinImage != NULL)     //  001DB
 				delete mModifiedFinImage;
 
-			if(mFinOutline != NULL)   //***006DF,008OL
-   				delete mFinOutline;   //***008OL
+			if(mFinOutline != NULL)   //  006DF,008OL
+   				delete mFinOutline;   //  008OL
 
 			try {
 				freePixmapString(mThumbnailPixmap, mThumbnailRows);
@@ -478,19 +478,19 @@ class DatabaseFin
 		}
 
 		/*
-		//**************************************************************************
+		//                                                **
 		//
-		//***1.85 - this is never used probably needs to be recoded anyway - JHS
+		//  1.85 - this is never used probably needs to be recoded anyway - JHS
 
 		DatabaseFin<FIN_IMAGE_TYPE>& operator=(const DatabaseFin<FIN_IMAGE_TYPE> &fin)
 		{
 			if (*this == fin)
 				return *this;
 			
-			mImageFilename = fin.mImagefilename;            //***001DB
-			mDataPos = fin.mDataPos;                        //***001DB
-			mFinImage = new FIN_IMAGE_TYPE(mImageFilename); //***001DB
-			mFinOutline = new Outline(fin.mFinOutline);     //***006DF,008OL
+			mImageFilename = fin.mImagefilename;            //  001DB
+			mDataPos = fin.mDataPos;                        //  001DB
+			mFinImage = new FIN_IMAGE_TYPE(mImageFilename); //  001DB
+			mFinOutline = new Outline(fin.mFinOutline);     //  006DF,008OL
 			mIDCode = fin.mIDCode;
 			mName = fin.mName;
 			mDateOfSighting = fin.mDateOfSighting;
@@ -500,8 +500,8 @@ class DatabaseFin
 			mShortDescription = fin.mShortDescription;
 			mThumbnailPixmap = new char*[fin.mThumbnailRows];
 			mThumbnailRows = fin.mThumbnailRows;
-			mNormScale = fin.mNormScale; //***1.6
-			mFinFilename = fin.mFinFilename; //***1.6
+			mNormScale = fin.mNormScale; //  1.6
+			mFinFilename = fin.mFinFilename; //  1.6
 
 			for (int i = 0; i < fin.mThumbnailRows; i++) 
 			{
@@ -512,18 +512,18 @@ class DatabaseFin
 			return *this;
 		}
 		*/
-		//**************************************************************************
+		//                                                **
 		//
 		unsigned int getSizeInBytes() const
 		{
 			unsigned size =
-				sizeof(unsigned long)            // For Data position    //***001DB
-				+ mImageFilename.length() + 1    // Size of filename //***001DB
-				//+ mModifiedImageFilename.length() + 1    // Size of filename //***1.8
+				sizeof(unsigned long)            // For Data position    //  001DB
+				+ mImageFilename.length() + 1    // Size of filename //  001DB
+				//+ mModifiedImageFilename.length() + 1    // Size of filename //  1.8
 				+ sizeof(unsigned int)           // For # of contour points
 				+ mFinOutline->length() * 2 * sizeof(float) // for the float contour point coords
-				+ 5 * sizeof(int)                // For feature point indices ***006DF
-				//+ 2                              //***1.4 - for left and flipped ('1' or '0') 
+				+ 5 * sizeof(int)                // For feature point indices   006DF
+				//+ 2                              //  1.4 - for left and flipped ('1' or '0') 
 				+ mIDCode.length() + 1           // idcode + newline char
 				+ mName.length() + 1             // ditto pretty much
 				+ mDateOfSighting.length() + 1
@@ -541,56 +541,56 @@ class DatabaseFin
 			return size;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		std::string getName() const
 		{
 			return mName;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getID() const  		//***002DB
+		std::string getID() const  		//  002DB
 		{
 			return mIDCode;
 		}
 		
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getDate() const		//***002DB
+		std::string getDate() const		//  002DB
 		{
 			return mDateOfSighting;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getRoll() const		//***002DB
+		std::string getRoll() const		//  002DB
 		{
 			return mRollAndFrame;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getLocation() const		//***002DB
+		std::string getLocation() const		//  002DB
 		{
 			return mLocationCode;
 		}
 		
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getDamage() const		//***002DB
+		std::string getDamage() const		//  002DB
 		{
 			return mDamageCategory;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		std::string getShortDescription() const	//***002DB
+		std::string getShortDescription() const	//  002DB
 		{
 			return mShortDescription;
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		std::string getDescription()
 		{
@@ -604,9 +604,9 @@ class DatabaseFin
 		}
 
 
-		//**************************************************************************
+		//                                                **
 		//
-		//***008OL strictly for debugging - JHS
+		//  008OL strictly for debugging - JHS
 		//
 		friend void saveFinPlain(DatabaseFin<FIN_IMAGE_TYPE> *fin, std::string fname)
 		{
@@ -615,18 +615,18 @@ class DatabaseFin
 			if (!outFile)
 				throw Error("writing to file " + fname);
       
-			outFile << fin->mDataPos << ' ';                 //***001DB
+			outFile << fin->mDataPos << ' ';                 //  001DB
 			
-			outFile << fin->mImageFilename.c_str() << '\n'; //***001DB                                                    //***001DB
+			outFile << fin->mImageFilename.c_str() << '\n'; //  001DB                                                    //  001DB
 	
-			unsigned int numPoints = fin->mFinOutline->length(); //***008OL
-			outFile << numPoints <<'\n'; //***008OL
+			unsigned int numPoints = fin->mFinOutline->length(); //  008OL
+			outFile << numPoints <<'\n'; //  008OL
 
 			FloatContour *fc = fin->mFinOutline->getFloatContour();
 
 			// save the normalized, evenly spaced float contour
 			for (unsigned i = 0; i < numPoints; i++) {
-				outFile << (*fc)[i].x << ' ' << (*fc)[i].y << '\n'; //***008OL
+				outFile << (*fc)[i].x << ' ' << (*fc)[i].y << '\n'; //  008OL
 			}
 
 			int TipPos, BeginLE, EndLE, EndTE, NotchPos;
@@ -655,9 +655,9 @@ class DatabaseFin
 			outFile.close();
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		//***008OL new version of save(fileName) 
+		//  008OL new version of save(fileName) 
 		// This is ONLY called when saving a single traced fin in a stand alone file
 		// This strips any path info from the image filename, assuming that the file
 		// being created and the image file copy referenced inside it are in the same
@@ -670,7 +670,7 @@ class DatabaseFin
 			if (!outFile)
 				throw Error("writing to file " + fileName);
       
-			//***1.1 - assume that the filename for the image file contains path
+			//  1.1 - assume that the filename for the image file contains path
 			// information which must be stripped BEFORE saving fin in file and
 			// BEFORE calculating the record size
 
@@ -681,9 +681,9 @@ class DatabaseFin
 				shortFilename = shortFilename.substr(pos+1);
 			}
 			this->mImageFilename = shortFilename;
-			//***1.1 end
+			//  1.1 end
 
-			//***1.99 - assignment of magic number moved here from calling contexts
+			//  1.99 - assignment of magic number moved here from calling contexts
 			this->mDataPos = 0x4E494644; // DO NOT CHANGE MAGIC # - it is "DFIN" in hex
 
 			this->save(outFile);
@@ -691,9 +691,9 @@ class DatabaseFin
 			outFile.close();
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
-		//***008OL - This is the current version of save()
+		//  008OL - This is the current version of save()
 		// note that this saves slightly different information
 		// than void save(std::string fileName)..
 		// [it doesn't put the string DBFIN at the top]
@@ -701,22 +701,22 @@ class DatabaseFin
 		void save(std::fstream &outFile)
 		{
 			try {
-				outFile.write((char*)&mDataPos,sizeof(unsigned long));                 //***001DB
+				outFile.write((char*)&mDataPos,sizeof(unsigned long));                 //  001DB
 			
-				outFile.write((char*)mImageFilename.c_str(), mImageFilename.length()); //***001DB
-				//outFile.write((char*)mModifiedImageFilename.c_str(), mModifiedImageFilename.length()); //***1.8
-				outFile.put('\n');                                                     //***001DB
+				outFile.write((char*)mImageFilename.c_str(), mImageFilename.length()); //  001DB
+				//outFile.write((char*)mModifiedImageFilename.c_str(), mModifiedImageFilename.length()); //  1.8
+				outFile.put('\n');                                                     //  001DB
 	
-				unsigned int numPoints = mFinOutline->length(); //***008OL
-  				outFile.write((char*)&numPoints, sizeof(int)); //***008OL
+				unsigned int numPoints = mFinOutline->length(); //  008OL
+  				outFile.write((char*)&numPoints, sizeof(int)); //  008OL
 
 				FloatContour *fc = mFinOutline->getFloatContour();
 
 				// save the normalized, evenly spaced float contour
 				for (unsigned i = 0; i < numPoints; i++) 
 				{
-					outFile.write((char *)&((*fc)[i].x), sizeof(float)); //***008OL
-					outFile.write((char *)&((*fc)[i].y), sizeof(float)); //***008OL
+					outFile.write((char *)&((*fc)[i].x), sizeof(float)); //  008OL
+					outFile.write((char *)&((*fc)[i].y), sizeof(float)); //  008OL
 				}
 
 				int TipPos, BeginLE, EndLE, EndTE, NotchPos;
@@ -742,7 +742,7 @@ class DatabaseFin
 	
 				outFile.write((char*)descTemp.c_str(), descTemp.length());
 
-				//saveFinPlain(this,"c:\\finPlain.txt"); //***008OL for debugging - JHS
+				//saveFinPlain(this,"c:\\finPlain.txt"); //  008OL for debugging - JHS
 
 			} catch (...) {
 				throw;
@@ -750,9 +750,9 @@ class DatabaseFin
 		}
 
 
-		//**************************************************************************
+		//                                                **
 		//
-		//***008OL new version of load(filename) - shell opens file
+		//  008OL new version of load(filename) - shell opens file
 		// and calls load(inFile) below
 		// this is only called when reading single fin from stand alone file
 		// in the MatchingQueue code or elsewhere.
@@ -770,9 +770,9 @@ class DatabaseFin
 		}
 
 
-		//**************************************************************************
+		//                                                **
 		//
-		//***008OL This is the current version of load
+		//  008OL This is the current version of load
 		// the fromDBfile paramter indicates that this databaseFin is being
 		// loaded from the database (true) or being loaded from a stand alone
 		// file (false).  The latter is the case when fins have been saved 
@@ -790,7 +790,7 @@ class DatabaseFin
                           
 				inFile.getline(line,255);
 
-				//***1.95 - test for <alt> tag on end of file name.
+				//  1.95 - test for <alt> tag on end of file name.
 				// <alt> indicates that this is an ALTERNATE image/fin for a given
 				// dolphin.  The tag is stripped and the filed in the fin object is
 				// set to indicate the status of the fin/image
@@ -805,19 +805,19 @@ class DatabaseFin
 					line[pos] = '\0';
 				}
                          
-				//***1.99 - do NOT depend on GLOBAL gOptions anymore
+				//  1.99 - do NOT depend on GLOBAL gOptions anymore
 				std::string path = inFilename;
 				path = path.substr(0,path.rfind(PATH_SLASH)); // strip *.db or *.fin
 				mImageFilename = path + PATH_SLASH + line;
 
 															  
-/*				//***054
+/*				//  054
 				// new code to combine relative path with simple filename
 				// EXCEPT in cases where fin is being loaded from stand alone file
 				if (fromDBfile)
 				{
 					//mImageFilename = getenv("DARWINHOME");
-					mImageFilename = gOptions->mCurrentSurveyArea; //***1.85
+					mImageFilename = gOptions->mCurrentSurveyArea; //  1.85
 					mImageFilename += PATH_SLASH;
 					mImageFilename += "catalog";
 					mImageFilename += PATH_SLASH;
@@ -825,17 +825,17 @@ class DatabaseFin
 				}
 				else
 				{
-					//***1.1 - assume the database fin in stand alone file MUST be
+					//  1.1 - assume the database fin in stand alone file MUST be
 					// in the "tracedFin" folder - JHS  
 					//mImageFilename = getenv("DARWINHOME");
-					mImageFilename = gOptions->mCurrentSurveyArea; //***1.85
+					mImageFilename = gOptions->mCurrentSurveyArea; //  1.85
 					mImageFilename += PATH_SLASH;
 					mImageFilename += "tracedFins";
 					mImageFilename += PATH_SLASH;
 					mImageFilename += line;
 				}
 */                          
-				//************************
+				//                
 				// Major change here
 				// The constructors will no longer load the image of the fin
 				// They will ALL set the mFinImage member to NULL
@@ -846,7 +846,7 @@ class DatabaseFin
 				//
 				// this should reduce the disk reads during matching
 				// JHS 3/29/2005
-				//************************
+				//                
 
 				unsigned int numPoints;
 				inFile.read((char*)&numPoints, sizeof(unsigned int));
@@ -861,32 +861,32 @@ class DatabaseFin
 					newContour->addPoint(xTemp, yTemp);
 				}
 
-				if(mFinOutline) //***008OL
-					delete mFinOutline; //***008OL
+				if(mFinOutline) //  008OL
+					delete mFinOutline; //  008OL
                              
-				mFinOutline = new Outline(newContour); //***008OL
+				mFinOutline = new Outline(newContour); //  008OL
 
-				//***1.0LK - newContour is COPIED in Outline so we must delete it here
+				//  1.0LK - newContour is COPIED in Outline so we must delete it here
 				delete newContour;
 
 				int TipPos, BeginLE, EndLE, EndTE, NotchPos;
       
 				inFile.read((char*)&TipPos, sizeof(int));
-				mFinOutline->setFeaturePoint(TIP,TipPos); //***008OL
+				mFinOutline->setFeaturePoint(TIP,TipPos); //  008OL
 			
 				inFile.read((char*)&BeginLE, sizeof(int));
-				mFinOutline->setFeaturePoint(LE_BEGIN,BeginLE); //***008OL
+				mFinOutline->setFeaturePoint(LE_BEGIN,BeginLE); //  008OL
 			
 				inFile.read((char*)&EndLE, sizeof(int));
-				mFinOutline->setFeaturePoint(LE_END,EndLE); //***008OL
+				mFinOutline->setFeaturePoint(LE_END,EndLE); //  008OL
 			
 				inFile.read((char*)&NotchPos, sizeof(int));
-				mFinOutline->setFeaturePoint(NOTCH,NotchPos); //***008OL
+				mFinOutline->setFeaturePoint(NOTCH,NotchPos); //  008OL
 			
 				inFile.read((char*)&EndTE, sizeof(int));
-				mFinOutline->setFeaturePoint(POINT_OF_INFLECTION,EndTE); //***008OL
+				mFinOutline->setFeaturePoint(POINT_OF_INFLECTION,EndTE); //  008OL
 
-				mFinOutline->setLEAngle(0.0,true); //***008OL
+				mFinOutline->setLEAngle(0.0,true); //  008OL
 		
 				this->readPixmap(inFile);
                              
@@ -919,25 +919,25 @@ class DatabaseFin
 		}
   
 
-		//**************************************************************************
+		//                                                **
 		//
 		void loadOldDB(std::fstream &inFile) 
 		{ 
-			//***005DB stub for future
+			//  005DB stub for future
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		//          //////////////////// Members //////////////////////////
 		//
-		//**************************************************************************
+		//                                                **
 
 		// mFinImage gets created from mImageFilename as needed.
 
 		FIN_IMAGE_TYPE *mFinImage;
-		std::string mImageFilename; //***001DB
+		std::string mImageFilename; //  001DB
   
-		Outline *mFinOutline; //***008OL
+		Outline *mFinOutline; //  008OL
 
 		std::string mIDCode;
 		std::string mName;
@@ -946,26 +946,26 @@ class DatabaseFin
 		std::string mLocationCode;
 		std::string mDamageCategory;
 		std::string mShortDescription;
-		unsigned long mDataPos;     //***001DB
+		unsigned long mDataPos;     //  001DB
 		char **mThumbnailPixmap;
 		int mThumbnailRows;
 
-		//***1.4 - new members for tracking image modifications during tracing
+		//  1.4 - new members for tracking image modifications during tracing
 		bool mLeft, mFlipped;              // left side or flipped internally to swim left
 		double mXmin, mYmin, mXmax, mYmax; // internal cropping bounds
 		double mScale;                     // image to Outline scale change
 		FIN_IMAGE_TYPE *mModifiedFinImage;      // modified fin image from TraceWin, ...
 
-		ImageModList mImageMods;    //***1.8 - for list of image modifications
- 		std::string mOriginalImageFilename; //***1.8 - filename of original unmodified image
+		ImageModList mImageMods;    //  1.8 - for list of image modifications
+ 		std::string mOriginalImageFilename; //  1.8 - filename of original unmodified image
 
-		std::string mFinFilename;   //***1.6 - for name of fin file if fin saved outside DB
+		std::string mFinFilename;   //  1.6 - for name of fin file if fin saved outside DB
 
-		bool mIsAlternate; //***1.95 - allow designation of primary and alternate fins/images
+		bool mIsAlternate; //  1.95 - allow designation of primary and alternate fins/images
 
 	private:
 		
-		//**************************************************************************
+		//                                                **
 		//
 		void writePixmap(std::fstream &outFile)
 		{
@@ -984,7 +984,7 @@ class DatabaseFin
 			outFile.write(pixTemp.c_str(), pixTemp.length());
 		}
 
-		//**************************************************************************
+		//                                                **
 		//
 		void readPixmap(std::fstream &inFile)
 		{

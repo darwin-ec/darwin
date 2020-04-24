@@ -228,7 +228,7 @@ int MatchResults::findRank()
 
 		string rID = r->getIdCode();
 
-		if (lowerCase(rID) == lowerCase(mFinID))
+		if (caseInsensitiveStringCompare(rID, mFinID))
 			return i + 1;
 	}
 	

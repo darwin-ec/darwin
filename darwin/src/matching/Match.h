@@ -47,7 +47,7 @@
 #define LEAD_TO_NOTCH_ONLY          300
 #define LEAD_THEN_TRAIL             400
 
-//***1.85 constant to pass when parameter for midpoint between begin and end
+// 1.85 constant to pass when parameter for midpoint between begin and end
 // of error calculation limits is to be ignored -- this is required so that the
 // prototypes of all error finding functions are the same -- so the error 
 // function can be passed into the mapping function as a function pointer
@@ -63,21 +63,21 @@
 // when cleaning up.  So, it always assumes that the MatchResults
 // has been fetched, and will be cleaned up externally.
 
-//***005CM mseInfo struct added
+// 005CM mseInfo struct added
 // Addendum to the comments above: The float/double return parameters from 
 // the private MSE functions have been changed to return a *mseInfo* struct
 // (declared below)to facilitate the passing of the two Contours being 
 // matched back to the MatchResultsWindow
 
-/***1.4 - replaced with class below
+/* 1.4 - replaced with class below
 typedef struct {
   double error;
   FloatContour *c1,*c2;
-  int b1,t1,e1,b2,t2,e2; //***1.1 - indices for shifted begin, tip & end points on contours
+  int b1,t1,e1,b2,t2,e2; // 1.1 - indices for shifted begin, tip & end points on contours
 } mseInfo;
 */
 
-//***1.4 - new class instead of struct, this way all members intialized
+// 1.4 - new class instead of struct, this way all members intialized
 class mseInfo 
 {
 	public :
@@ -115,13 +115,13 @@ class Match
 		Match(
 			DatabaseFin<ColorImage> *unknownFin,
 			Database *db,
-			Options *o);      //***054
+			Options *o);      // 054
 
 		~Match();
 
 		// Compares the unknown fin against all those in the
 		// database, and returns results.
-		//MatchResults* matchFin(); //***1.85 removed
+		//MatchResults* matchFin(); // 1.85 removed
 		
 		// A variant on the previous function.  This one compares
 		// the unknown fin to a single fin in the database at a time.
@@ -148,9 +148,9 @@ class Match
 		int mCurrentFin;
 		MatchResults *mMatchResults;
 
-		MatchingDialog *mMatchingDialog; //***043MA
+		MatchingDialog *mMatchingDialog; // 043MA
 
-		Options *mOptions; //***054
+		Options *mOptions; // 054
 
 		int
 			mUnknownTipPosition,
@@ -166,7 +166,7 @@ class Match
 			mUnknownEndLEPoint,
 			mUnknownEndTEPoint;
 
-		mseInfo findErrorBetweenFins( //***005CM
+		mseInfo findErrorBetweenFins( // 005CM
 				DatabaseFin<ColorImage> *dbFin,
 				float &timeTaken);
 
@@ -176,50 +176,50 @@ class Match
 				const Chain *chain2,
 				int index2);
 
-		mseInfo meanSquaredErrorBetweenOutlines( //***005CM
+		mseInfo meanSquaredErrorBetweenOutlines( // 005CM
 				FloatContour *c1,
 				int start1,
 				int end1,
-				FloatContour *c2, //***005CM
+				FloatContour *c2, // 005CM
 				int start2,
 				int end2);
 
 		//----------- new stuff JHS ----------
 
-		//***1.85 - removed
+		// 1.85 - removed
 		//mseInfo findErrorBetweenFinsJHS( 
 		//		DatabaseFin<ColorImage> *dbFin,
 		//		float &timeTaken,
 		//		int regSegmentsUsed,
-		//		bool useFullFinError); //***055ER
+		//		bool useFullFinError); // 055ER
 
-		//***1.85 - new member function pointer
+		// 1.85 - new member function pointer
 		double (Match::*errorBetweenOutlines)(FloatContour*,int,int,int,FloatContour*,int,int,int);
 
 		double meanSquaredErrorBetweenOutlineSegments( 
 				FloatContour *c1, // mapped unknown fin 
 				int start1,
-				int mid1, //***1.85 not used here but makes prototype same as area based approach
+				int mid1, // 1.85 not used here but makes prototype same as area based approach
 				int end1,
 				FloatContour *c2, // envenly spaced database fin
 				int start2,
-				int mid2, //***1.85 not used here but makes prototype same as area based approach
+				int mid2, // 1.85 not used here but makes prototype same as area based approach
 				int end2);
 
-		double areaBasedErrorBetweenOutlineSegments_OLD( //***1.85 - new, calls external function
+		double areaBasedErrorBetweenOutlineSegments_OLD( // 1.85 - new, calls external function
 				FloatContour *c1, // mapped unknown fin 
 				int begin1,
 				int end1,
-				FloatContour *c2, // envenly spaced database fin //***0005CM
+				FloatContour *c2, // envenly spaced database fin // 0005CM
 				int begin2,
 				int end2);
 
-		double areaBasedErrorBetweenOutlineSegments( //***1.85 - new, calls external function
+		double areaBasedErrorBetweenOutlineSegments( // 1.85 - new, calls external function
 				FloatContour *c1, // mapped unknown fin 
 				int begin1,
 				int mid1,
 				int end1,
-				FloatContour *c2, // envenly spaced database fin //***0005CM
+				FloatContour *c2, // envenly spaced database fin // 0005CM
 				int begin2,
 				int mid2,
 				int end2);
@@ -228,7 +228,7 @@ class Match
 				FloatContour *c1, // mapped unknown fin 
 				int begin1,
 				int end1,
-				FloatContour *c2, // envenly spaced database fin //***0005CM
+				FloatContour *c2, // envenly spaced database fin // 0005CM
 				int begin2,
 				int end2);
 
@@ -236,7 +236,7 @@ class Match
 				FloatContour *c1, // mapped unknown fin 
 				int begin1,
 				int end1,
-				FloatContour *c2, // envenly spaced database fin //***0005CM
+				FloatContour *c2, // envenly spaced database fin // 0005CM
 				int begin2,
 				int end2);
 
@@ -244,11 +244,11 @@ class Match
 				DatabaseFin<ColorImage> *dbFin,
 				float &timeTaken,
 				//int regSegmentsUsed,
-				bool moveTip, //***1.1
-				bool moveEndsInAndOut, //***1.1
-				bool useFullFinError); //***055ER
+				bool moveTip, // 1.1
+				bool moveEndsInAndOut, // 1.1
+				bool useFullFinError); // 055ER
 
-		//***1.75 - newest method of computing error
+		// 1.75 - newest method of computing error
 
 		double areaBasedErrorBetweenOutlineSegments( 
 				FloatContour *c1, // mapped unknown fin 
@@ -264,10 +264,10 @@ class Match
 				DatabaseFin<ColorImage> *dbFin,
 				float &timeTaken);
 
-		mseInfo meanSquaredErrorBetweenOutlines_Original( //***005CM
+		mseInfo meanSquaredErrorBetweenOutlines_Original( // 005CM
 				FloatContour *c1,
 				int tip1,
-				FloatContour *c2, //***0005CM
+				FloatContour *c2, // 0005CM
 				int tip2);
 };
 

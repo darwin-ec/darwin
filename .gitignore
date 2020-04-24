@@ -1,4 +1,4 @@
-src/darwin
+*.tmp
 
 # Prerequisites
 *.d
@@ -75,3 +75,4 @@ dlldata.c
 .deps/
 
 autom4te.cache
+darwin/src/darwin

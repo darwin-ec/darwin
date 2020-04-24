@@ -1,21 +1,21 @@
-//*******************************************************************
+//                                            *
 //   file: MatchResults.h
 //
 // author: Adam Russell
 //
 //   mods: J H Stewman (2006 & 2007)
 //
-//*******************************************************************
+//                                            *
 
 #ifndef MATCHRESULTS_H
 #define MATCHRESULTS_H
 
 #include "../image_processing/conversions.h"
 #include "../Database.h"
-#pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
+#pragma warning(disable:4786) //  1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 #include <list>
-#include "../FloatContour.h" //***005CM
+#include "../FloatContour.h" //  005CM
 
 // original sizes - should be 128x128 and 64x64 when revised later
 // const int MATCHRESULTS_THUMB_HEIGHT = 60, MATCHRESULTS_THUMB_WIDTH = 60;
@@ -30,11 +30,11 @@ class Result {
 	public:
 	
 		Result(
-			FloatContour *unknown, //***005CM
-			FloatContour *db, //***005CM
-			std::string filename,	//***001DB
-			char **thumbnailPixmap, //***1.0
-			int thumbnailRows, //***1.0
+			FloatContour *unknown, //  005CM
+			FloatContour *db, //  005CM
+			std::string filename,	//  001DB
+			char **thumbnailPixmap, //  1.0
+			int thumbnailRows, //  1.0
 			int position,
 			std::string error,
 			std::string idcode,
@@ -43,15 +43,15 @@ class Result {
 			std::string date,
 			std::string location
 		) :	
-			mFilename(filename), //***001DB
+			mFilename(filename), //  001DB
 			mPosition(position),
 			mError(error),
 			mIdCode(idcode),
 			mName(name),
 			mDamage(damage),
 			mLocation(location),
-			mRank(""), //***1.5
-			mUnkShiftedLEBegin(0), //***1.1 - following indices set to defaults by constructor
+			mRank(""), //  1.5
+			mUnkShiftedLEBegin(0), //  1.1 - following indices set to defaults by constructor
 			mUnkShiftedTip(0),
 			mUnkShiftedTEEnd(0),
 			mDBShiftedLEBegin(0), 
@@ -59,23 +59,23 @@ class Result {
 			mDBShiftedTEEnd(0)
 
 		{
-			unknownContour = new FloatContour(*unknown); //***1.3 - Mem Leak - make copies now
-			dbContour = new FloatContour(*db);           //***1.3 - Mem Leak - make copies now
+			unknownContour = new FloatContour(*unknown); //  1.3 - Mem Leak - make copies now
+			dbContour = new FloatContour(*db);           //  1.3 - Mem Leak - make copies now
 
 			// MAJOR change JHS
 			// removed reloading of image and recreation of thumbnail here
 /*
-			ColorImage *temp = new ColorImage(filename); //***001DB
+			ColorImage *temp = new ColorImage(filename); //  001DB
 						convColorToPixmapString(
-						temp,   //***001DB
+						temp,   //  001DB
 						MATCHRESULTS_THUMB_HEIGHT,
 						MATCHRESULTS_THUMB_WIDTH,
 						mThumbnailPixmap,
 						mThumbnailRows);
-			delete temp;  //***001DB
+			delete temp;  //  001DB
 */
 
-			//***1.0
+			//  1.0
 			if (NULL == thumbnailPixmap) 
 			{
 				mThumbnailPixmap = NULL;
@@ -99,7 +99,7 @@ class Result {
 			}
 		}
 
-/***1.1 - this form of constructor is never used - JHS
+/* 1.1 - this form of constructor is never used - JHS
 		Result(
 			int position,
 			std::string error,
@@ -122,16 +122,16 @@ class Result {
 
 		Result(const Result& r)
 		: 
-      		mFilename(r.mFilename),   //***001DB
+      		mFilename(r.mFilename),   //  001DB
 			mPosition(r.mPosition),
 			mError(r.mError),
 			mIdCode(r.mIdCode),
 			mName(r.mName),
 			mDamage(r.mDamage),
 			mLocation(r.mLocation),
-			mRank(r.mRank), //***1.5
-			unknownContour(new FloatContour(*r.unknownContour)), //***1.3 - Mem Leak - make copies now
-			dbContour(new FloatContour(*r.dbContour)),           //***1.3 - Mem Leak - make copies now
+			mRank(r.mRank), //  1.5
+			unknownContour(new FloatContour(*r.unknownContour)), //  1.3 - Mem Leak - make copies now
+			dbContour(new FloatContour(*r.dbContour)),           //  1.3 - Mem Leak - make copies now
 			mUnkShiftedLEBegin(r.mUnkShiftedLEBegin), 
 			mUnkShiftedTip(r.mUnkShiftedTip), 
 			mUnkShiftedTEEnd(r.mUnkShiftedTEEnd),
@@ -158,10 +158,10 @@ class Result {
 		{
 			if (NULL != mThumbnailPixmap)
 				freePixmapString(mThumbnailPixmap, mThumbnailRows);
-			//***1.3 - cannot delete the contours here - don't remember why
+			//  1.3 - cannot delete the contours here - don't remember why
 			// they are (probably) just pointers to contours managed elsewhere
 			
-			//***1.3 - MemLeak - must delete copies now
+			//  1.3 - MemLeak - must delete copies now
 			if (NULL != unknownContour)
 				delete unknownContour;
 			if (NULL != dbContour)
@@ -180,9 +180,9 @@ class Result {
 			mName = r.mName;
 			mDamage = r.mDamage;
 			mLocation = r.mLocation;
-			mRank = r.mRank; //***1.5
-			unknownContour = r.unknownContour; //***005CM
-			dbContour = r.dbContour; //***005CM
+			mRank = r.mRank; //  1.5
+			unknownContour = r.unknownContour; //  005CM
+			dbContour = r.dbContour; //  005CM
 
 			if (NULL == r.mThumbnailPixmap) {
 				mThumbnailPixmap = NULL;
@@ -207,11 +207,11 @@ class Result {
 		std::string getIdCode() const { return mIdCode; }
 		std::string getDamage() const { return mDamage; }
 		std::string getLocation() const { return mLocation; }
-		std::string getRank() const { return mRank; } //***1.5
+		std::string getRank() const { return mRank; } //  1.5
 
-		void setRank (const std::string rank) {mRank = rank;} //***1.5
+		void setRank (const std::string rank) {mRank = rank;} //  1.5
 
-		//***1.1 - sets six indices for points used in final contour mapping
+		//  1.1 - sets six indices for points used in final contour mapping
 		void setMappingControlPoints(
 				int unkLEBegin, int unkTip, int unkTEEnd,
 				int dbLEBegin, int dbTip, int dbTEEnd)
@@ -224,7 +224,7 @@ class Result {
 			mDBShiftedTEEnd = dbTEEnd;
 		}
 
-		//***1.1 - gets six indices for points used in final contour mapping
+		//  1.1 - gets six indices for points used in final contour mapping
 		void getMappingControlPoints(
 				int &unkLEBegin, int &unkTip, int &unkTEEnd,
 				int &dbLEBegin, int &dbTip, int &dbTEEnd)
@@ -237,7 +237,7 @@ class Result {
 			dbTEEnd = mDBShiftedTEEnd;
 		}
 		
-		//***005CM - contours used in final match
+		//  005CM - contours used in final match
 		FloatContour 
 			*unknownContour,
 			*dbContour;
@@ -247,7 +247,7 @@ class Result {
 
 	private:
 	
-		std::string mFilename;    //***001DB - image file for database fin
+		std::string mFilename;    //  001DB - image file for database fin
 		int mPosition;            // position (index) of database fin in database file
 
 		std::string
@@ -257,9 +257,9 @@ class Result {
 			mDamage,
 			mDate,
 			mLocation,
-			mRank; //***1.5
+			mRank; //  1.5
 		
-		//***1.1 - new members to track three point correspondences for final mapping in match
+		//  1.1 - new members to track three point correspondences for final mapping in match
 
 		int 
 			mUnkShiftedLEBegin, 
@@ -296,7 +296,7 @@ class MatchResults {
 		{ }
 
 
-		//***008OL -- MatchResultsWindow calls constructor of this type and none existed
+		//  008OL -- MatchResultsWindow calls constructor of this type and none existed
 		MatchResults(const MatchResults &results)
 		: 
 			mLastSortBy(results.mLastSortBy),
@@ -307,7 +307,7 @@ class MatchResults {
 			mDatabaseFile(results.mDatabaseFile)
 		{ }
 
-		//***1.0LK - fixing memory leak
+		//  1.0LK - fixing memory leak
 		~MatchResults()
 		{
 			mResults.clear();
@@ -321,10 +321,10 @@ class MatchResults {
 
 		void sort(mr_sort_t sortBy, int &active); 
 
-		//***1.5 - indicates whether sorted order is by error measure, so rank numbering is appropriate
-		bool LastSortedByError(); //***1.5
+		//  1.5 - indicates whether sorted order is by error measure, so rank numbering is appropriate
+		bool LastSortedByError(); //  1.5
 
-		void setRankings(); //***1.5
+		void setRankings(); //  1.5
 
 		// doesn't make a copy to save time... so DON'T DELETE
 		// THE RESULT WHEN DONE
@@ -341,12 +341,12 @@ class MatchResults {
 
 		int findRank();
 
-		//***1.1 - the following functions used in MatchQueue context
+		//  1.1 - the following functions used in MatchQueue context
 
-		void setFinFilename(std::string fname) //***1.1
+		void setFinFilename(std::string fname) //  1.1
 		{	mTracedFinFile = fname; }
 
-		void setDatabaseFilename(std::string fname) //***1.1
+		void setDatabaseFilename(std::string fname) //  1.1
 		{	mDatabaseFile = fname; }
 
 		DatabaseFin<ColorImage> *load(Database *db, std::string fileName);
@@ -362,8 +362,8 @@ class MatchResults {
 		// following is used by save() to write info into saved results of 
 		// MatchQueue initiated match
 
-		std::string mTracedFinFile; //***1.1 - "" or file containing saved unknown DatabaseFin
-		std::string mDatabaseFile; //***1.1 - "" or database file matched by MatchQueue
+		std::string mTracedFinFile; //  1.1 - "" or file containing saved unknown DatabaseFin
+		std::string mDatabaseFile; //  1.1 - "" or database file matched by MatchQueue
 };
 
 #endif

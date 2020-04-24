@@ -1,4 +1,4 @@
-//*******************************************************************
+//                                            *
 //   file: ImageFile.h
 //
 // author: Adam Russel
@@ -17,7 +17,7 @@
 // 	  dynamically allocates the data array itself rather than using
 // 	  base class routines.
 //
-//*******************************************************************
+//                                            *
 
 //#define DEBUG
 #ifndef IMAGEFILE_H
@@ -37,7 +37,7 @@
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #endif
 #include <fstream>
-#pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
+#pragma warning(disable:4786) //  1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 
 #include "../Error.h"
@@ -46,13 +46,13 @@
 #include "../utility.h"
 
 #include "ImageMod.h"
-#include "transform.h" //***1.95
+#include "transform.h" //  1.95
 
 //  Includes for JPEG reader
 #include <stdio.h>
 #ifdef WIN32
 extern "C"{
-/***2.22 - these two macros get redifined inside jpeglib.h (jconfig.vc) */
+/  2.22 - these two macros get redifined inside jpeglib.h (jconfig.vc) */
 #undef HAVE_STDDEF_H
 #undef HAVE_STDLIB_H
 #include "../../jpeg-6b/src/jpeglib.h" 
@@ -86,11 +86,11 @@ public:
 	// 	string filename - The name of the image file.
 	// 	
 	ImageFile(const std::string &filename);
-	ImageFile(); //***2.0 - moved implementation below
+	ImageFile(); //  2.0 - moved implementation below
 	ImageFile(unsigned nRows, unsigned nCols);
 	ImageFile(unsigned nRows, unsigned nCols, PIXEL_TYPE *data);
 
-	//***1.5 - new generic load
+	//  1.5 - new generic load
 	void load(const std::string &filename);
 
 	// save
@@ -105,7 +105,7 @@ public:
 	// 		  successful.
 	bool save(const std::string &filename);
 
-	//***1.8 - used to initiate saving modified image, with modification list
+	//  1.8 - used to initiate saving modified image, with modification list
 	//         and original image filename inside PGM file as comments
 	bool save_wMods(std::string filename,
 					std::string originalFilename,
@@ -155,16 +155,16 @@ public:
 	using Image<PIXEL_TYPE>::mCols;
 	using Image<PIXEL_TYPE>::mInitialized;
 
-	//***1.5 - new member to allow access to scale value stored in comment field
+	//  1.5 - new member to allow access to scale value stored in comment field
 	// of *-withDarwinMods.ppm" file -- this scale is the ratio of the modified
 	// image scale and the Normalized fin outline scale
-	float mNormScale; //***1.5
-	ImageModList mImageMods; //***1.8
-	std::string mOriginalImageFilename; //***1.8
+	float mNormScale; //  1.5
+	ImageModList mImageMods; //  1.8
+	std::string mOriginalImageFilename; //  1.8
 
-	bool mBuiltFromMods; //***2.0
+	bool mBuiltFromMods; //  2.0
 
-	bool loadPNGcommentsOnly(const std::string &filename); //***1.85
+	bool loadPNGcommentsOnly(const std::string &filename); //  1.85
 
 private:
 
@@ -181,21 +181,21 @@ private:
 	bool saveRawPGM(const std::string &filename) const;
 	bool saveAsciiPGM(const std::string &filename) const;
 	bool savePNG(const std::string &filename);
-	bool savePNGwThumbOnly(const std::string &filename); //***1.95
+	bool savePNGwThumbOnly(const std::string &filename); //  1.95
 
 };
 
 template <class PIXEL_TYPE>
 ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 	: Image<PIXEL_TYPE>(),
-	  mNormScale(1.0f), //***1.5
-	  mOriginalImageFilename(""), //***1.9
-	  mBuiltFromMods(false) //***2.0
+	  mNormScale(1.0f), //  1.5
+	  mOriginalImageFilename(""), //  1.9
+	  mBuiltFromMods(false) //  2.0
 {
 	//printf("LoadingC: %s\n",filename.c_str());
 	std::ifstream infile(filename.c_str(), std::ios::binary);
 
-	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
+	if (!infile) throw ImageFileNotFound(filename); //  1.5 - passing filename now
 
 	//printf("LoadingC: %s\n",filename.c_str());
 
@@ -235,27 +235,27 @@ ImageFile<PIXEL_TYPE>::ImageFile(const std::string &filename)
 }
 
 template <class PIXEL_TYPE>
-inline ImageFile<PIXEL_TYPE>::ImageFile() //***2.0 - moved here so intitialization is done properly
+inline ImageFile<PIXEL_TYPE>::ImageFile() //  2.0 - moved here so intitialization is done properly
 	: Image<PIXEL_TYPE>(),
-	  mNormScale(1.0f), //***1.5
-	  mOriginalImageFilename(""), //***1.9
-	  mBuiltFromMods(false) //***2.0
+	  mNormScale(1.0f), //  1.5
+	  mOriginalImageFilename(""), //  1.9
+	  mBuiltFromMods(false) //  2.0
 { }
 
 template <class PIXEL_TYPE>
 inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols)
 	: Image<PIXEL_TYPE>(nRows, nCols),
-	  mNormScale(1.0f), //***1.5
-	  mOriginalImageFilename(""), //***1.9
-	  mBuiltFromMods(false) //***2.0
+	  mNormScale(1.0f), //  1.5
+	  mOriginalImageFilename(""), //  1.9
+	  mBuiltFromMods(false) //  2.0
 { }
 
 template <class PIXEL_TYPE>
 inline ImageFile<PIXEL_TYPE>::ImageFile(unsigned nRows, unsigned nCols, PIXEL_TYPE *data)
 	: Image<PIXEL_TYPE>(nRows, nCols, data),
-	  mNormScale(1.0f), //***1.5
-	  mOriginalImageFilename(""), //***1.9
-	  mBuiltFromMods(false) //***2.0
+	  mNormScale(1.0f), //  1.5
+	  mOriginalImageFilename(""), //  1.9
+	  mBuiltFromMods(false) //  2.0
 { }
 
 ///////////////////////////
@@ -265,7 +265,7 @@ void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 	//printf("LoadingL: %s\n",filename.c_str());
 	std::ifstream infile(filename.c_str(), std::ios::binary);
 
-	if (!infile) throw ImageFileNotFound(filename); //***1.5 - passing filename now
+	if (!infile) throw ImageFileNotFound(filename); //  1.5 - passing filename now
 
 	//printf("LoadingL: %s\n",filename.c_str());
 
@@ -277,8 +277,8 @@ void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 	     << (int)((unsigned char)firstBytes[0]) << " " <<(int)((unsigned char)firstBytes[1]) << std::endl;
 #endif
 
-	mNormScale = 1.0f;  //***1.9
-	mOriginalImageFilename = ""; //***1.9
+	mNormScale = 1.0f;  //  1.9
+	mOriginalImageFilename = ""; //  1.9
 
 	if (firstBytes[0] == 'P' && '1' <= firstBytes[1] && firstBytes[1] <= '6') {
 		//We probably have a PNM file
@@ -301,7 +301,7 @@ void ImageFile<PIXEL_TYPE>::load(const std::string &filename)
 		infile.close();
 		loadPNG(filename); // this will reopen and close file
 
-		//***1.9 - if we are going to load and rebuild the modified image
+		//  1.9 - if we are going to load and rebuild the modified image
 		// from the original image here is the place to do it
 
 		// load PNG file comments only
@@ -342,7 +342,8 @@ bool ImageFile<PIXEL_TYPE>::save(const std::string &filename)
 #ifdef DEBUG
 	std::cout << "Saving " << filename << " which is of type " << extension << std::endl;
 #endif
-	extension = lowerCase(extension);
+
+	transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
 	if ("ppm" == extension)
 		saveRawPPM(filename);
@@ -380,14 +381,14 @@ bool ImageFile<PIXEL_TYPE>::save_wMods(std::string filename,
 #ifdef DEBUG
 	std::cout << "Saving " << filename << " which is of type " << extension << std::endl;
 #endif
-	extension = lowerCase(extension);
+	transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
 	if ("png" == extension)
 	{
 		mImageMods = theMods;                      // set so savePNG() can access them
 		mOriginalImageFilename = originalFilename; // set so savePNG() can access them
 		//savePNG(filename);
-		savePNGwThumbOnly(filename); //***1.95 - test thumbnail only
+		savePNGwThumbOnly(filename); //  1.95 - test thumbnail only
 	}
 	else
 		throw UnsupportedImageFormat("save_wMods() called without PGM file extension");
@@ -435,11 +436,11 @@ bool ImageFile<PIXEL_TYPE>::loadJPG(const std::string &filename)
      We also need to add code to override error_exit. See commented code below */
   cinfo.err = jpeg_std_error(&jerr);
   
-  /*jerr.pub.error_exit = my_error_exit; /** for now exit(1) if error on read */
+  /*jerr.pub.error_exit = my_error_exit; // for now exit(1) if error on read */
   /* Establish the setjmp return context for my_error_exit to use. 
   if (setjmp(jerr.setjmp_buffer)) {
-    /* If we get here, the JPEG code has signaled an error.
-     * We need to clean up the JPEG object, close the input file, and return.     
+    // If we get here, the JPEG code has signaled an error.
+    // We need to clean up the JPEG object, close the input file, and return.     
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);
     return 0;
@@ -461,7 +462,7 @@ bool ImageFile<PIXEL_TYPE>::loadJPG(const std::string &filename)
   (void) jpeg_start_decompress(&cinfo);
   row_stride = cinfo.output_width * cinfo.output_components;
 #ifdef DEBUG
-  std::cout << "outComponents: " << cinfo.output_components << std::endl; //***1.95
+  std::cout << "outComponents: " << cinfo.output_components << std::endl; //  1.95
 #endif
   /* Make a one-row-high sample array that will go away when done with image */
   buffer = (*cinfo.mem->alloc_sarray)
@@ -487,7 +488,7 @@ bool ImageFile<PIXEL_TYPE>::loadJPG(const std::string &filename)
 			throw Error("This JPEG image is neither grayscale nor true color.\n"
 				            "DARWIN cannot handle this image format.");
 		//curRowR += 3;
-		curRowR += cinfo.output_components; //***1.95
+		curRowR += cinfo.output_components; //  1.95
 	}
 	r++;
   }
@@ -526,7 +527,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNM(std::ifstream& infile)
 	while (infile.peek() == '#') //If there's a comment
 	{
 		infile.getline (junk,255,'\n'); //ignore the line
-		//***1.5 - new code to grab scale if found in a comment line
+		//  1.5 - new code to grab scale if found in a comment line
 		std::string num = junk;
 		if (num.substr(0,11) == "#NormScale:")
 		{
@@ -643,8 +644,8 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 		startpos,
 		bitsPerPixel;
 
-	byte map[256][4];    //***1.95 - in case we need a color table
-	unsigned char pixID; //***1.95
+	byte map[256][4];    //  1.95 - in case we need a color table
+	unsigned char pixID; //  1.95
 
 	// read start pos of image
 	infile.seekg(10, std::ios::beg);
@@ -723,10 +724,10 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 	// Check to see if this is a nice easy kind of BMP
 	// to read.  If not, tell the calling function this
 	// wasn't a successful read.
-	if ((bitsPerPixel != 24) && (bitsPerPixel != 8)) //***1.95 add support for 256 color images
+	if ((bitsPerPixel != 24) && (bitsPerPixel != 8)) //  1.95 add support for 256 color images
 		throw UnsupportedImageFormat("readBMP()");
 
-	if (bitsPerPixel == 8) //***1.95
+	if (bitsPerPixel == 8) //  1.95
 	{
 		// build color map
 		for (int i = 0; i < colorsUsed; i++)
@@ -744,7 +745,7 @@ bool ImageFile<PIXEL_TYPE>::loadBMP(std::ifstream& infile)
 	}
 
 	// skip to the bitmap mData
-	infile.seekg(startpos, std::ios::beg); //***1.95 moved from above previous check
+	infile.seekg(startpos, std::ios::beg); //  1.95 moved from above previous check
 
 	mRows = numRows;
 	mCols = numCols;
@@ -862,7 +863,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 		&comment, &num_comments);
 
 	// if it is a thumbnail only, then modified image must be rebuilt from original
-	bool thumbOnly = false; //***1.95 
+	bool thumbOnly = false; //  1.95 
 
 	// code to grab scale, original name and image modifications if found on comment lines
 	mImageMods.clear();
@@ -912,7 +913,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 					*(ppbImageData+(i*mCols*3+j*3+2)));
 			}
 	}
-	else //***1.95 - all new code below, to build modified image from original
+	else //  1.95 - all new code below, to build modified image from original
 	{
 		// this PNG file contains only a thumbnail, so the modified image must
 		// be rebuilt from the original and the sequence of image mods
@@ -972,7 +973,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 			gotOne = mImageMods.next(mod); // get next mod
 		}
 					
-		mBuiltFromMods = thumbOnly; //***2.0
+		mBuiltFromMods = thumbOnly; //  2.0
 
 		mRows = temp->mRows;
 		mCols = temp->mCols;
@@ -980,7 +981,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 	
 		memcpy(mData,temp->mData,mRows*mCols*3);
 	
-		delete temp; //***1.95
+		delete temp; //  1.95
 	}
 
 	delete [] comment;
@@ -1015,7 +1016,7 @@ bool ImageFile<PIXEL_TYPE>::loadPNGcommentsOnly(const std::string &filename)
 	mImageMods.clear();
 	mOriginalImageFilename = "";
 
-	if (rval) //***1.93 - comments were really read from PNG file
+	if (rval) //  1.93 - comments were really read from PNG file
 	{
 		for (int iC = 0; iC < num_comments; iC++)
 		{
@@ -1061,7 +1062,7 @@ bool ImageFile<PIXEL_TYPE>::saveRawPPM(const std::string &filename) const
 
 	outfile <<"P6"<<std::endl
 		<< "#Created by: " << PACKAGE << " " << VERSION << std::endl
-		<< "#NormScale: " << mNormScale << std::endl //***1.5 - save the normalization scale
+		<< "#NormScale: " << mNormScale << std::endl //  1.5 - save the normalization scale
 		<< mCols << " " << mRows << std::endl
 		<< 255 << "\n";
 
@@ -1126,7 +1127,7 @@ bool ImageFile<PIXEL_TYPE>::saveAsciiPGM(const std::string &filename) const
 	return true;
 }
 
-//***1.95 - new function to write PNG file (with Thumnail & xformations ONLY)
+//  1.95 - new function to write PNG file (with Thumnail & xformations ONLY)
 
 template <class PIXEL_TYPE>
 bool ImageFile<PIXEL_TYPE>::savePNGwThumbOnly(const std::string &filename)
@@ -1267,7 +1268,7 @@ bool ImageFile<PIXEL_TYPE>::savePNGwThumbOnly(const std::string &filename)
 	int success = PngSaveImage (name, data, colsWide, rowsTall, bkgColor, text_ptr, num_text);
 
 	if (mImageMods.size() > 0)
-		delete modBuffer; //***1.9 - wait until buffer use is complete, THEN delete it
+		delete modBuffer; //  1.9 - wait until buffer use is complete, THEN delete it
 
 	delete data;
 	delete [] text_ptr;
@@ -1276,7 +1277,7 @@ bool ImageFile<PIXEL_TYPE>::savePNGwThumbOnly(const std::string &filename)
 }
 
 
-//***1.8 - new function to reformat data and write PNG file
+//  1.8 - new function to reformat data and write PNG file
 
 template <class PIXEL_TYPE>
 bool ImageFile<PIXEL_TYPE>::savePNG(const std::string &filename)
@@ -1375,7 +1376,7 @@ bool ImageFile<PIXEL_TYPE>::savePNG(const std::string &filename)
 	int success = PngSaveImage (name, data, mCols, mRows, bkgColor, text_ptr, num_text);
 
 	if (mImageMods.size() > 0)
-		delete modBuffer; //***1.9 - wait until buffer use is complete, THEN delete it
+		delete modBuffer; // 1.9 - wait until buffer use is complete, THEN delete it
 
 	delete data;
 	delete [] text_ptr;

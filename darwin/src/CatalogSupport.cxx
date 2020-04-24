@@ -1,5 +1,4 @@
 // DatabaseSupport.cxx
-
 #include "CatalogSupport.h"
 
 #ifdef WIN32
@@ -716,7 +715,6 @@ void extractCatalogFiles(string backupFilename, string toFolder)
 	command += quoted(backupFilename);
 
 	system(command.c_str()); // start extraction process
-
 }
 
 //
@@ -735,7 +733,6 @@ bool restoreCatalogFrom(string backupFilename,
 
 	return true;
 }
-
 
 //
 // This will be eventually simplified to use a common archiver
@@ -1208,7 +1205,6 @@ bool saveFinz(DatabaseFin<ColorImage>* fin, string &archivePath) // return save 
 	return true;
 }
 
-
 // this returns true if file is OLD style fin file adn first 4 bytes
 // are DFIN or NIFD (the magic number)
 //
@@ -1229,6 +1225,3 @@ bool isTracedFinFile(string fileName)
 
 	return ((strncmp(test,"DFIN",4) == 0) || (strncmp(test,"NIFD",4) == 0));
 }
-
-
-

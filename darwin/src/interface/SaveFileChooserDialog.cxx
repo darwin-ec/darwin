@@ -23,7 +23,7 @@
 #include "SaveFileChooserDialog.h"
 //#include "ErrorDialog.h"
 #include "../CatalogSupport.h"
-#include "../Utility.h"
+#include "../utility.h"
 
 #ifdef WIN32
 #define PATH_SLASH "\\"

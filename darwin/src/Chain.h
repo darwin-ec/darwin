@@ -1,4 +1,4 @@
-//*******************************************************************
+//                                            *
 //   file: Chain.h
 //
 // author: Adam Russell
@@ -8,13 +8,13 @@
 //         -- reformatting of code and addition of comment blocks
 //         -- changes to incorporate Outline CLASS in project
 //
-//*******************************************************************
+//                                            *
 
 
 #ifndef CHAIN_H
 #define CHAIN_H
 
-#include "Point.h" //***006FC point_t definition
+#include "Point.h" // 006FC point_t definition
 #include "Contour.h"
 #include "FloatContour.h"
 
@@ -26,8 +26,8 @@
 class Chain
 {
 	public:
-		Chain(FloatContour *contour);  //***006OL
-		Chain(const Chain* c);         //***006OL
+		Chain(FloatContour *contour);  //  006OL
+		Chain(const Chain* c);         //  006OL
 		Chain(const Chain &c);
 		~Chain();
 
@@ -39,7 +39,7 @@ class Chain
 		const double* getData() const;
 		double* getRelativeData();
 		const double* getRelativeData() const;
-		double getRadius() const;	//***006DF
+		double getRadius() const;	//  006DF
 
 		// These return absolute angles
 		double& operator[](int angleNum);
@@ -90,7 +90,7 @@ class Chain
 };
 
 
-//*******************************************************************
+//                                            *
 //
 // inline double& Chain::operator[](int angleNum)
 //
@@ -107,7 +107,7 @@ inline double& Chain::operator[](int angleNum)
 }
 
 
-//*******************************************************************
+//                                            *
 //
 // inline const double& Chain::operator[](int angleNum)
 //
@@ -124,7 +124,7 @@ inline const double& Chain::operator[](int angleNum) const
 }
 
 
-//*******************************************************************
+//                                            *
 //
 // inline double& Chain::operator()(int angleNum)
 //
@@ -141,7 +141,7 @@ inline double& Chain::operator()(int angleNum)
 }
 
 
-//*******************************************************************
+//                                            *
 //
 // inline const double& Chain::operator()(int angleNum)
 //
@@ -160,7 +160,7 @@ inline const double& Chain::operator()(int angleNum) const
 
 #endif
 
-/***008OL numerous removals due to incorporation of Outline CLASS
+/* 008OL numerous removals due to incorporation of Outline CLASS
  *
  * Chain(Contour *contour, double radius); removed 008OL
  * Chain(FloatContour *contour, double radius); removed 008OL
@@ -170,7 +170,7 @@ inline const double& Chain::operator()(int angleNum) const
  * 
  * double mRadius; 008OL removed
  * point_t *mSavedPoints; replaced by following
- * FloatContour *mChainPoints;  //***006DF removed - 008OL JHS
+ * FloatContour *mChainPoints;  //  006DF removed - 008OL JHS
  * FloatContour* getChainPoints(); 008OL removed JHS
  * const FloatContour* getChainPoints() const; 008OL removed JHS
  * 

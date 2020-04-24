@@ -489,6 +489,7 @@ bool ColorPixel::setCMKY(byte c, byte m, byte y, byte k) {//I don't know what it
 	mRed=255-(c+k);
 	mGreen=255-(m+k);
 	mBlue=255-(y+k);
+	return true;
 }
 
 

@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 #include "GtkCompat.h"
-#include "../Support.h"
+#include "../support.h"
 
 #include "../CatalogSupport.h" // includes all Database types
 #include "../Options.h"

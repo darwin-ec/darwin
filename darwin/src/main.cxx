@@ -62,7 +62,7 @@
 #include <string>
 
 #include "CatalogSupport.h" //SAH
-#include "Interface/TraceWindow.h" //SAH
+#include "interface/TraceWindow.h" //SAH
 #include "ConfigFile.h"
 #include "support.h"
 #include "interface/MainWindow.h"
@@ -107,9 +107,7 @@ void saveConfig();
 //
 void readConfig(string homedir)
 {
-
 	//***2.22 - major rewrite to clean up for Windows and Mac platforms
-
 	gOptions->mDarwinHome = homedir; // homedir should always be defined in main()
 
 	string fileName; // for configuration filename
@@ -162,8 +160,8 @@ void readConfig(string homedir)
 	if (!gCfg->getItem("DatabaseFileName", gOptions->mDatabaseFileName)) 
 	{
 		// if no database found then set default survey area and NONE as database
-		//gOptions->mCurrentSurveyArea = homedir + "/surveyAreas/default";
-		gOptions->mCurrentSurveyArea = "NONE"; //***2.22 - set below based on current data path
+		// gOptions->mCurrentSurveyArea = homedir + "/surveyAreas/default";
+		gOptions->mCurrentSurveyArea = "NONE"; // 2.22 - set below based on current data path
 		gOptions->mDatabaseFileName = "NONE";
 	}
 	else

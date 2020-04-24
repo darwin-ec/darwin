@@ -1,4 +1,4 @@
-//*******************************************************************
+//                      *
 //   file: MainWindow.cxx
 //
 // author: Adam Russell
@@ -7,9 +7,9 @@
 //         -- reformatting of code and addition of comment blocks
 //         -- corrected mnemonic & accelerator code in main window menus
 //
-//*******************************************************************
+//                      *
 
-#include <time.h> //***1.85
+#include <time.h> // 1.85
 #include <set>
 
 #include <gdk/gdkkeysyms.h>
@@ -21,23 +21,23 @@
 
 #include "ModifyDatabaseWindow.h"
 #include "AboutDialog.h"
-#include "CatalogSchemeDialog.h" //***1.4
+#include "CatalogSchemeDialog.h" // 1.4
 #include "ContourInfoDialog.h"
 #include "ImageViewDialog.h"
 //#include "ErrorDialog.h"
 #include "MatchingQueueDialog.h"
 #include "OpenFileSelectionDialog.h"
-#include "OpenFileChooserDialog.h" //***1.4
-#include "SaveFileChooserDialog.h" //***1.99
+#include "OpenFileChooserDialog.h" // 1.4
+#include "SaveFileChooserDialog.h" // 1.99
 #include "OptionsDialog.h"
-#include "CreateDatabaseDialog.h" //***1.85 
-#include "DataExportDialog.h" //***1.9
-#include "ExportFinzDialog.h" //***1.99
-#include "../CatalogSupport.h" //***1.99
+#include "CreateDatabaseDialog.h" // 1.85 
+#include "DataExportDialog.h" // 1.9
+#include "ExportFinzDialog.h" // 1.99
+#include "../CatalogSupport.h" // 1.99
 
-#include "../thumbnail.h" //***1.85
+#include "../thumbnail.h" // 1.85
 
-#include "../image_processing/ImageMod.h" //***1.8
+#include "../image_processing/ImageMod.h" // 1.8
 
 #pragma warning (disable : 4305 4309)
 #ifndef WIN32
@@ -59,8 +59,8 @@
 #include "../../pixmaps/options.xpm"
 #include "../../pixmaps/options_small.xpm"
 #include "../../pixmaps/previous.xpm"
-#include "../../pixmaps/fin.xpm" //***1.5
-#include "../../pixmaps/magnify.xpm" //***1.9
+#include "../../pixmaps/fin.xpm" // 1.5
+#include "../../pixmaps/magnify.xpm" // 1.9
 
 #include "../image_processing/transform.h"
 
@@ -70,7 +70,7 @@
 
 using namespace std;
 
-static const int IMAGE_WIDTH = 400, IMAGE_HEIGHT = 300; //***1.7 - these were 300 x 250
+static const int IMAGE_WIDTH = 400, IMAGE_HEIGHT = 300; // 1.7 - these were 300 x 250
 static const int POINT_SIZE = 1;
 static const char *NONE_SUBSTITUTE_STRING = _("(Not Entered)");
 
@@ -84,43 +84,43 @@ void on_open_activate(
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_open_fin_trace_activate( //***1.4
+void on_open_fin_trace_activate( // 1.4
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_open_database_activate( //***1.85
+void on_open_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_new_database_activate( //***1.85
+void on_new_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_restore_database_activate( //***1.85
+void on_restore_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_backup_database_activate( //***1.85
+void on_backup_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_import_database_activate( //***1.85
+void on_import_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_export_database_activate( //***1.85
+void on_export_database_activate( // 1.85
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_export_finz_activate( //***1.99
+void on_export_finz_activate( // 1.99
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_export_fullSzImgs_activate( //***2.02
+void on_export_fullSzImgs_activate( // 2.02
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_import_finz_activate( //***1.99
+void on_import_finz_activate( // 1.99
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
@@ -136,19 +136,19 @@ void on_options_activate(
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_catalog_new_activate( //***1.4
+void on_catalog_new_activate( // 1.4
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_catalog_view_activate( //***1.4
+void on_catalog_view_activate( // 1.4
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_catalog_select_activate( //***1.4
+void on_catalog_select_activate( // 1.4
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
-void on_exportData_select_activate( //***1.9
+void on_exportData_select_activate( // 1.9
 		GtkMenuItem *menuitem,
 		gpointer userData);
 
@@ -164,7 +164,7 @@ void on_mainButtonOpen_clicked(
 		GtkButton *button,
 		gpointer userData);
 
-void on_mainButtonOpenTrace_clicked( //***1.5 - new callback
+void on_mainButtonOpenTrace_clicked( // 1.5 - new callback
 		GtkButton *button,
 		gpointer userData);
 
@@ -200,11 +200,11 @@ void on_mainButtonNext_clicked(
 		GtkButton *button,
 		gpointer userData);
 
-void on_mainButtonModify_clicked(	//***002DB
+void on_mainButtonModify_clicked(	// 002DB
 		GtkButton *button,
 		gpointer userData);
 
-void on_mainButtonFindNow_clicked(	//***1.85
+void on_mainButtonFindNow_clicked(	// 1.85
 		GtkButton *button,
 		gpointer userData);
 
@@ -213,7 +213,7 @@ gboolean on_mainEventBoxImage_button_press_event(
 		GdkEventButton *event,
 		gpointer userData);
 
-//***1.99 - create a popup containing the Original Image
+// 1.99 - create a popup containing the Original Image
 gboolean on_mainEventBoxOrigImage_button_press_event(
 		GtkWidget *widget,
 		GdkEventButton *event,
@@ -224,7 +224,7 @@ gboolean on_mainDrawingAreaImage_expose_event(
 		GdkEventExpose *event,
 		gpointer userData);
 
-//***1.99 - so we can display original image as well as modified
+// 1.99 - so we can display original image as well as modified
 gboolean on_mainDrawingAreaOrigImage_expose_event(
 		GtkWidget *widget,
 		GdkEventExpose *event,
@@ -250,47 +250,47 @@ gboolean on_mainDrawingAreaImage_configure_event(
 		GdkEventConfigure *event,
 		gpointer userData);
 
-//***1.99 - so we can display original image as well as modified
+// 1.99 - so we can display original image as well as modified
 gboolean on_mainDrawingAreaOrigImage_configure_event(
 		GtkWidget *widget,
 		GdkEventConfigure *event,
 		gpointer userData);
 
-//***1.85 -  so the database can be changed from the CreateDatabaseDialog callback
+// 1.85 -  so the database can be changed from the CreateDatabaseDialog callback
 void on_createDbButtonOK_clicked(
 		GtkButton *button,
 		gpointer userData);
 
-//***1.95 - so main clist can show ALL images or ONLY primary images
+// 1.95 - so main clist can show ALL images or ONLY primary images
 void on_mainButtonShowAllImages_toggled(
 		GtkButton *button,
 		gpointer userData);
 
-//***1.85 -  so the database can be changed from the OpenFileChooserDialog callback
+// 1.85 -  so the database can be changed from the OpenFileChooserDialog callback
 void on_fileChooserButtonOK_clicked(
 		OpenFileChooserDialog *dlg);
 
-//***1.85 -  so the database can be changed from the ModifyDatabase callback
+// 1.85 -  so the database can be changed from the ModifyDatabase callback
 void on_m_questionButtonYes_clicked(
 		GtkButton *button,
 		gpointer userData);
 
-//***1.9 -  so the database can be changed from the ModifyDatabase callback
+// 1.9 -  so the database can be changed from the ModifyDatabase callback
 void on_modifyButtonSave_clicked(
 		GtkButton * button, 
 		gpointer userData);
 
 
-//*******************************************************************
+//                      *
 MainWindow::MainWindow(Database *db, Options *o)
 	: mDBCurEntry(0),
 	  mSelectedFin(NULL),
 	  mDatabase(db),
 	  mImage(NULL),
-	  mOrigImage(NULL), //***1.99
-	  mImageFullsize(NULL), //***2.01
-	  mOrigImageFullsize(NULL), //***2.01
-	  mCList(NULL), //***1.95
+	  mOrigImage(NULL), // 1.99
+	  mImageFullsize(NULL), // 2.01
+	  mOrigImageFullsize(NULL), // 2.01
+	  mCList(NULL), // 1.95
 	  mCurImageHeight(IMAGE_HEIGHT),
 	  mCurImageWidth(IMAGE_WIDTH),
 	  mCurContourHeight(IMAGE_HEIGHT),
@@ -298,15 +298,15 @@ MainWindow::MainWindow(Database *db, Options *o)
 	  mGC(NULL),
 	  mCursor(NULL),
 	  mOptions(o),
-	  mOldSort(DB_SORT_ID), //***1.85
-	  mNewSort(DB_SORT_ID),  //***1.85
-	  mImportFromFilename(""), //***1.85
-	  mExportToFilename(""), //***1.85
-	  mShowAlternates(false), //***1.95
-	  mDBCurEntryOffset(0) //***1.96a
+	  mOldSort(DB_SORT_ID), // 1.85
+	  mNewSort(DB_SORT_ID),  // 1.85
+	  mImportFromFilename(""), // 1.85
+	  mExportToFilename(""), // 1.85
+	  mShowAlternates(false), // 1.95
+	  mDBCurEntryOffset(0) // 1.96a
 { 
 	// do this here so the database filename can be placed on the window title
-	mWindow = createMainWindow(o->mToolbarDisplay); //***1.85
+	mWindow = createMainWindow(o->mToolbarDisplay); // 1.85
 
 	// create an emergency backup of DB file, as long as it was successfully loaded
 	if (mDatabase->status() == Database::loaded)
@@ -320,23 +320,23 @@ MainWindow::MainWindow(Database *db, Options *o)
 #ifdef WIN32
 		string command = "copy /Y /V \"" + mOptions->mDatabaseFileName
 #else
-		string command = "cp \"" + mOptions->mDatabaseFileName //***2.22 - for Mac
+		string command = "cp \"" + mOptions->mDatabaseFileName // 2.22 - for Mac
 #endif
 			+ "\" \"" + backupName + "\" >nul";
 		system(command.c_str());
 	}
 }
 
-//*******************************************************************
+//                      *
 MainWindow::~MainWindow()
 {
 	if (NULL != mWindow)
 		gtk_widget_destroy(mWindow);
 	
 	delete mImage;
-	delete mOrigImage; //***1.99
-	delete mImageFullsize; //***2.01
-	delete mOrigImageFullsize; //***2.01
+	delete mOrigImage; // 1.99
+	delete mImageFullsize; // 2.01
+	delete mOrigImageFullsize; // 2.01
 	delete mSelectedFin;
 	delete mDatabase;
 
@@ -349,42 +349,42 @@ MainWindow::~MainWindow()
 	gtk_main_quit();
 }
 
-//*******************************************************************
+//                      *
 
-void MainWindow::setDatabasePtr(Database *db) //***1.85 - used when opening new DB
+void MainWindow::setDatabasePtr(Database *db) // 1.85 - used when opening new DB
 {
 	mDatabase = db; // assume existing database was deleted by caller
 }
 
-//*******************************************************************
+//                      *
 	
-void MainWindow::setExportFilename(std::string filename) //***1.99
+void MainWindow::setExportFilename(std::string filename) // 1.99
 {
 	mExportToFilename = filename;
 }
 
-//*******************************************************************
+//                      *
 
-int MainWindow::getSelectedRow() //***1.96a - new function
+int MainWindow::getSelectedRow() // 1.96a - new function
 {
 	return mDBCurEntry;
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::show()
 {
-	//***1.85 - this function is now called ONLY after a database is intially loaded
+	// 1.85 - this function is now called ONLY after a database is intially loaded
 	// so we reset entries, list sort order, etc. here
 
 	mOldSort = DB_SORT_ID;
 	mNewSort = DB_SORT_ID;
-	mDatabase->sort(DB_SORT_ID);    //***003MR
+	mDatabase->sort(DB_SORT_ID);    // 003MR
 
-	gtk_clist_freeze(GTK_CLIST(mCList)); //***1.85
+	gtk_clist_freeze(GTK_CLIST(mCList)); // 1.85
 
-	clearText(); //***!.85 - clear all text entry fields
-	refreshOptions(true, false); // ***1.96a - this is the initial showing
-	refreshDatabaseDisplayNew(true); //***1.85 - intial CList has not been built yet
+	clearText(); // !.85 - clear all text entry fields
+	refreshOptions(true, false); //  1.96a - this is the initial showing
+	refreshDatabaseDisplayNew(true); // 1.85 - intial CList has not been built yet
 
 	// do not show (first time) until CList is built from database file
 	gtk_widget_show(mWindow); 
@@ -392,33 +392,33 @@ void MainWindow::show()
 	updateGC();
 	updateCursor();
 	//refreshOptions(); 
-	refreshImage();                 //***1.85
-	refreshOutline();               //***1.85
+	refreshImage();                 // 1.85
+	refreshOutline();               // 1.85
 
-	if (mDatabase->size() > 0){				//***002DB
+	if (mDatabase->size() > 0){				// 002DB
 		gtk_clist_select_row(GTK_CLIST(mCList), 0, 0);
-		//selectFromCList(0); //***1.7CL
-		gtk_widget_set_sensitive(mButtonModify, TRUE);  //***002DB
-        }							//***002DB
+		//selectFromCList(0); // 1.7CL
+		gtk_widget_set_sensitive(mButtonModify, TRUE);  // 002DB
+        }							// 002DB
 	else {
 		gtk_widget_set_sensitive(mButtonNext, FALSE);
 		gtk_widget_set_sensitive(mButtonPrev, FALSE);
-		gtk_widget_set_sensitive(mButtonModify, FALSE); //***002DB
+		gtk_widget_set_sensitive(mButtonModify, FALSE); // 002DB
 	}
 
-	//this->displayStatusMessage("Ready."); //***2.01
+	//this->displayStatusMessage("Ready."); // 2.01
 	char numEntriesStr[64];
 	sprintf(numEntriesStr,"Ready: %d fins loaded",mDatabase->size());
-	this->displayStatusMessage(numEntriesStr); //***2.01 - display size too
+	this->displayStatusMessage(numEntriesStr); // 2.01 - display size too
 		
-	gtk_clist_thaw(GTK_CLIST(mCList)); //***1.85
+	gtk_clist_thaw(GTK_CLIST(mCList)); // 1.85
 
 	//gtk_widget_show(mWindow); 
 
 }
 
-//*******************************************************************
-//***1.85 - new function to set up after loading or importing DB
+//                      *
+// 1.85 - new function to set up after loading or importing DB
 //
 void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 {
@@ -488,7 +488,7 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 #ifdef WIN32
 		string command = "copy /Y /V \"" + mOptions->mDatabaseFileName
 #else
-		string command = "cp \"" + mOptions->mDatabaseFileName //***2.22 - for Mac
+		string command = "cp \"" + mOptions->mDatabaseFileName // 2.22 - for Mac
 #endif
 			+ "\" \"" + backupName + "\" >nul";
 		system(command.c_str());
@@ -496,31 +496,31 @@ void MainWindow::resetTitleButtonsAndBackupOnDBLoad()
 	mDBCurEntryOffset=0; //We have a new database, clear the offset to force image rebuilt, etc.//SAH-DB
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::refreshImage()
 {
 	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaImage->window)) // notebook page is visible
 		on_mainDrawingAreaImage_expose_event(mDrawingAreaImage, NULL, (void *) this);
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::refreshOrigImage()
 {
 	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaOrigImage->window)) // notebook page is visible
 		on_mainDrawingAreaOrigImage_expose_event(mDrawingAreaOrigImage, NULL, (void *) this);
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::refreshOutline()
 {
 	if (/*TRUE == */GDK_IS_DRAWABLE(mDrawingAreaOutline->window)) // notebook page is visible
 		on_mainDrawingAreaOutline_expose_event(mDrawingAreaOutline, NULL, (void *) this);
 }
 
-//*******************************************************************
-void MainWindow::clearText()				//***002DB - nf
+//                      *
+void MainWindow::clearText()				// 002DB - nf
 {
-	gtk_entry_set_text(GTK_ENTRY(mSearchID), ""); //***1.85 - always clear this
+	gtk_entry_set_text(GTK_ENTRY(mSearchID), ""); // 1.85 - always clear this
 
   	if(mDatabase->size()!=0)
     		return;
@@ -548,7 +548,7 @@ void MainWindow::clearText()				//***002DB - nf
 
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::refreshDatabaseDisplay()
 {
 	if (NULL == mDatabase)
@@ -564,15 +564,15 @@ void MainWindow::refreshDatabaseDisplay()
 		gtk_clist_freeze(GTK_CLIST(mCList));
 		gtk_clist_clear(GTK_CLIST(mCList));
 
-	  	if (mDatabase->size() == 0){            //***002DB >
+	  	if (mDatabase->size() == 0){            // 002DB >
 	    		gtk_widget_set_sensitive(mButtonNext, FALSE);
 	    		gtk_widget_set_sensitive(mButtonPrev, FALSE);
 	    		gtk_widget_set_sensitive(mButtonModify, FALSE);
-	  	}					//***002DB <
-		else if (mDatabase->size() == 1)        //***003MR   
-				gtk_widget_set_sensitive(mButtonModify, TRUE); //**003MR
+	  	}					// 002DB <
+		else if (mDatabase->size() == 1)        // 003MR   
+				gtk_widget_set_sensitive(mButtonModify, TRUE); // 003MR
 
-		//***1.85 - set font as currently selected 
+		// 1.85 - set font as currently selected 
 
 		gtk_widget_modify_font(
 			mCList,
@@ -586,22 +586,22 @@ void MainWindow::refreshDatabaseDisplay()
 					&mask,
 					fin->mThumbnailPixmap);
 
-			//***2.2 - diagnostic (ID and primary key from SQL
+			// 2.2 - diagnostic (ID and primary key from SQL
 			cout << "Fin ID : " << fin->getID();
 			cout << "Fin key: " << fin->mDataPos;
 
 			// make a copy of the thumbnail to store as data within the GTK pixmap
 			char **thumbCopy = copy_thumbnail(fin->mThumbnailPixmap);
 
-			//***1.85 - attach thumbnail copy to drawable
+			// 1.85 - attach thumbnail copy to drawable
 			gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
 
 			gchar *idCode, *name, *damage, *date, *location;
 
-			if (mOptions->mHideIDs) //***1.65 - hide IDs if needed
+			if (mOptions->mHideIDs) // 1.65 - hide IDs if needed
 			{
 				idCode = new gchar[5];
-				strcpy(idCode, "****");
+				strcpy(idCode, " *");
 			}
 			else if ("NONE" == fin->mIDCode)
 				idCode = NULL;
@@ -618,7 +618,7 @@ void MainWindow::refreshDatabaseDisplay()
 				strcpy(name, fin->mName.c_str());
 			}
 			
-			//***055DB - NONE is a valid damage category now but appears in
+			// 055DB - NONE is a valid damage category now but appears in
 			// interface as "Unspecified"
 			if ("NONE" == fin->mDamageCategory) {
 				damage = new gchar[12];
@@ -683,8 +683,8 @@ void MainWindow::refreshDatabaseDisplay()
 			  "correctly."));
 	}
 }
-//*******************************************************************
-//***1.85 - uses the existing CList entries rather than reloading the 
+//                      *
+// 1.85 - uses the existing CList entries rather than reloading the 
 //          entire database file
 //
 void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
@@ -696,9 +696,9 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 		unsigned numEntries = mDatabase->size();
 
 		//gtk_clist_freeze(GTK_CLIST(mCList));
-		//gtk_clist_clear(GTK_CLIST(mCList)); //***1.85 - do this differently below
+		//gtk_clist_clear(GTK_CLIST(mCList)); // 1.85 - do this differently below
 
-	  	if (mDatabase->size() == 0){            //***002DB >
+	  	if (mDatabase->size() == 0){            // 002DB >
 	    		gtk_widget_set_sensitive(mButtonNext, FALSE);
 	    		gtk_widget_set_sensitive(mButtonPrev, FALSE);
 	    		gtk_widget_set_sensitive(mButtonModify, FALSE);
@@ -715,12 +715,12 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 					delete mImage;
 					mImage = NULL;
 				}
-	  	}					//***002DB <
-		else //if (mDatabase->size() == 1)        //***003MR 
+	  	}					// 002DB <
+		else //if (mDatabase->size() == 1)        // 003MR 
 			//SAH -- Set modify active no matter what. It is possible to import multiple finzs and jump from 0 to X fins in a database all at once (where X>1)			
-				gtk_widget_set_sensitive(mButtonModify, TRUE); //**003MR
+				gtk_widget_set_sensitive(mButtonModify, TRUE); // 003MR
 
-		//***1.85 - set font as currently selected 
+		// 1.85 - set font as currently selected 
 
 		gtk_widget_modify_font(
 			mCList,
@@ -735,10 +735,10 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 
 			gtk_clist_clear(GTK_CLIST(mCList)); // clear and then rebuild from database
 
-			mRow2Id.clear(); //***1.95
-			mId2Row.clear(); //***1.95
+			mRow2Id.clear(); // 1.95
+			mId2Row.clear(); // 1.95
 
-			unsigned row(0); //***1.95 - for position in CList (no longer same as i)
+			unsigned row(0); // 1.95 - for position in CList (no longer same as i)
 
 			for (unsigned i = 0; i < numEntries; i++) {
 
@@ -752,27 +752,27 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 						&mask,
 						fin->mThumbnailPixmap);
 
-				mId2Row.push_back(-1); //***1.95 - default value (maybe -1 is better?)
+				mId2Row.push_back(-1); // 1.95 - default value (maybe -1 is better?)
 
-				//***1.95 - restrict list now
+				// 1.95 - restrict list now
 				if ((! fin->mIsAlternate) || ((fin->mIsAlternate) && mShowAlternates))
 				{
 
-				mRow2Id.push_back(i); //***1.95 - save id that goes with row
-				mId2Row[i] = row; //***1.95
+				mRow2Id.push_back(i); // 1.95 - save id that goes with row
+				mId2Row[i] = row; // 1.95
 
 				// make a copy of the thumbnail to store as data within the GTK pixmap)
 				char **thumbCopy = copy_thumbnail(fin->mThumbnailPixmap);
 
-				//***1.85 - attach thumbnail copy to drawable
+				// 1.85 - attach thumbnail copy to drawable
 				gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
 	
 				gchar *idCode, *name, *damage, *date, *location;
 
-				if (mOptions->mHideIDs) //***1.65 - hide IDs if needed
+				if (mOptions->mHideIDs) // 1.65 - hide IDs if needed
 				{
 					idCode = new gchar[5];
-					strcpy(idCode, "****");
+					strcpy(idCode, " *");
 				}
 				else if ("NONE" == fin->mIDCode)
 					idCode = NULL;
@@ -789,7 +789,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 					strcpy(name, fin->mName.c_str());
 				}
 			
-				//***055DB - NONE is a valid damage category now but appears in
+				// 055DB - NONE is a valid damage category now but appears in
 				// interface as "Unspecified"
 				if ("NONE" == fin->mDamageCategory) {
 					damage = new gchar[12];
@@ -828,7 +828,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 					gtk_clist_set_pixmap(
 						GTK_CLIST(mCList),
 						//i,
-						row++, //***1.95 - use and increment
+						row++, // 1.95 - use and increment
 						0,
 						pixmap,
 						mask);
@@ -839,7 +839,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 				delete[] date;
 				delete[] location;
 
-				} //***1.95 - end of restriction on list
+				} // 1.95 - end of restriction on list
 
 				delete fin;
 
@@ -854,12 +854,12 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 		}
 		else // no change in size of database, so use existing CList entries
 		{
-			//***1.96a - if we have already dealt with the re-sorting of the list
+			// 1.96a - if we have already dealt with the re-sorting of the list
 			// do NOT do it again
 			if (mOldSort == mNewSort)
 				return;
 
-			//***1.95 - copy for now - we will update as we process to get new translations
+			// 1.95 - copy for now - we will update as we process to get new translations
 			vector<int> 
 				newRow2Id(mRow2Id), 
 				newId2Row(mId2Row);
@@ -882,7 +882,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 			// this loop needs to go through the whole DB like the one above
 			// so that non-clist items can be skipped and counters updated correctly
 
-			int id = 0; //***1.95 - fin position in new clist
+			int id = 0; // 1.95 - fin position in new clist
 			for (i = 0; i < numEntries; i++) // for each fin position in database
 			{
 				// get item(i) from new sort list 
@@ -892,7 +892,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 				// NOTE: the called function grabs the offset from the entry passed to it
 				int pos = mDatabase->getItemListPosFromOffset(mOldSort, entry);
 				
-				int row = mId2Row[pos]; //***1.95 -- the entry to be moved is on this row in clist
+				int row = mId2Row[pos]; // 1.95 -- the entry to be moved is on this row in clist
 
 				if (row == -1)
 				{	// then this is a fin that was not in the clist (an alternate view)
@@ -900,8 +900,8 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 					continue;
 				}
 
-				newId2Row[i] = id; //***1.95
-				newRow2Id[id] = i; //***1.95
+				newId2Row[i] = id; // 1.95
+				newRow2Id[id] = i; // 1.95
 
 				// grab a copy of the data from line(row) of the Clist
 
@@ -912,7 +912,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 				for (int k = 1; k < 6; k++)
 				{
 					gchar *lineItem = NULL;
-					gtk_clist_get_text(GTK_CLIST(mCList), row, k, &lineItem); //***1.95 - pos becomes row
+					gtk_clist_get_text(GTK_CLIST(mCList), row, k, &lineItem); // 1.95 - pos becomes row
 				
 					if (lineItem == NULL)
 						itemInfo[id][k] = NULL;
@@ -925,7 +925,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 
 				gtk_clist_get_pixmap(
 					GTK_CLIST(mCList),
-					row, //***1.95 - pos becomes row
+					row, // 1.95 - pos becomes row
 					0,
 					&(pixmap[id]),
 					&(mask[id]));
@@ -940,15 +940,15 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 				// make a copy of the thumbnail to store as data within the GTK pixmap
 				char **thumbCopy = copy_thumbnail(thumbnail);
 
-				//***1.85 - attach thumbnail copy to drawable
+				// 1.85 - attach thumbnail copy to drawable
 				gdk_drawable_set_data(GDK_DRAWABLE(pixmap[id]),"thumb",thumbCopy,free_thumbnail);
 
-				id++; //***1.95 - increment position in new clist
+				id++; // 1.95 - increment position in new clist
 			}
 
 			gtk_clist_clear(GTK_CLIST(mCList)); // this wipes out data in list
 
-			for (i = 0; i < /*numEntries*/mRow2Id.size(); i++) //***1.95
+			for (i = 0; i < /*numEntries*/mRow2Id.size(); i++) // 1.95
 			{
 				// append the new data for the redisplay of the CList
 				gtk_clist_append(GTK_CLIST(mCList), itemInfo[i]);
@@ -982,8 +982,8 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 			}
 			*/
 
-			mRow2Id = newRow2Id; //***1.95
-			mId2Row = newId2Row; //***1.95
+			mRow2Id = newRow2Id; // 1.95
+			mId2Row = newId2Row; // 1.95
 
 			for (i = 0; i < numEntries; i++)
 				delete [] itemInfo[i];
@@ -1002,7 +1002,7 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 	}
 }
 
-//*******************************************************************
+//                      *
 //
 // Function simply adjusts the scrolling CList so that the selected fin
 // is visible.  Size of the CList is indicated by the size of the
@@ -1010,11 +1010,11 @@ void MainWindow::refreshDatabaseDisplayNew(bool sizeChanged)
 // The two sizes are equal only if ALL images (primary and alternate
 // are being displayed.
 //
-void MainWindow::selectFromCList(int newCurEntry)       //***004CL
+void MainWindow::selectFromCList(int newCurEntry)       // 004CL
 {
 	//gtk_clist_select_row(GTK_CLIST(mCList), newCurEntry, 0);
 
-	//*** 1.7CL - all that follows
+	//  1.7CL - all that follows
 
 	const int lineHeight = DATABASEFIN_THUMB_HEIGHT + 1;
 	static int lastEntry = 0;
@@ -1022,7 +1022,7 @@ void MainWindow::selectFromCList(int newCurEntry)       //***004CL
 	int pageEntries = mScrollable->allocation.height / lineHeight;
 
 	//if ((int)mDatabase->size() == 0)
-	if ((int)mRow2Id.size() == 0) //***1.96
+	if ((int)mRow2Id.size() == 0) // 1.96
 		return;
 
 	// else force scrollable window to scroll down to clist entry
@@ -1044,7 +1044,7 @@ void MainWindow::selectFromCList(int newCurEntry)       //***004CL
 		{
 			// reposition list so newCurEntry is at top
 			//float where = (double)newCurEntry / (int)mDatabase->size();
-			float where = (double)newCurEntry / (int)mRow2Id.size(); //***1.96
+			float where = (double)newCurEntry / (int)mRow2Id.size(); // 1.96
 			adj->value = where * (adj->upper - adj->lower);
 			//if (adj->value > adj->upper - adj->page_size)
 			//	adj->value = adj->upper - adj->page_size;
@@ -1065,8 +1065,8 @@ void MainWindow::selectFromCList(int newCurEntry)       //***004CL
 	lastEntry = newCurEntry;
 }
 
-//*******************************************************************
-void MainWindow::selectFromReorderedCList(std::string filename){  //***004CL
+//                      *
+void MainWindow::selectFromReorderedCList(std::string filename){  // 004CL
 	if (NULL == mDatabase)
 		return;
 	try {
@@ -1075,13 +1075,13 @@ void MainWindow::selectFromReorderedCList(std::string filename){  //***004CL
                 bool found = false;
 		while ((i < numEntries) && (!found)) {
 			//DatabaseFin<ColorImage> *fin = mDatabase->getItem(i);
-			DatabaseFin<ColorImage> *fin = mDatabase->getItem(mRow2Id[i]); //***1.95
+			DatabaseFin<ColorImage> *fin = mDatabase->getItem(mRow2Id[i]); // 1.95
 			if (fin->mImageFilename == filename){
 				found = true;
-				gtk_clist_select_row(GTK_CLIST(mCList), i, 0); //***1.7
+				gtk_clist_select_row(GTK_CLIST(mCList), i, 0); // 1.7
 				//selectFromCList(i);
 			}
-			delete fin; //***1.0LK - this fin is only used to find position in clist
+			delete fin; // 1.0LK - this fin is only used to find position in clist
 			i++;
 		}
 	} catch (Error e) {
@@ -1092,17 +1092,17 @@ void MainWindow::selectFromReorderedCList(std::string filename){  //***004CL
 
 }
 
-//*******************************************************************
-//***1.85 - new function
+//                      *
+// 1.85 - new function
 //
-void MainWindow::selectFromReorderedCListNew(std::string selectedIdPlusOffset){  //***004CL
+void MainWindow::selectFromReorderedCListNew(std::string selectedIdPlusOffset){  // 004CL
 	if (NULL == mDatabase)
 		return;
 	try {
 		string offset = selectedIdPlusOffset.substr(1 + selectedIdPlusOffset.rfind(" "));
 		int pos = mDatabase->getItemListPosFromOffset(mNewSort,offset);
 
-		pos = mId2Row[pos]; //***1.95 - must map to actual Clist from master database list posit
+		pos = mId2Row[pos]; // 1.95 - must map to actual Clist from master database list posit
 
 		if (pos != NOT_IN_LIST)
 			gtk_clist_select_row(GTK_CLIST(mCList), pos, 0);
@@ -1115,8 +1115,8 @@ void MainWindow::selectFromReorderedCListNew(std::string selectedIdPlusOffset){ 
 
 }
 
-//*******************************************************************
-//***SAH: This function is called on each expose event for the notebook pages with Outline,Image,and OrigImage
+//                      *
+// SAH: This function is called on each expose event for the notebook pages with Outline,Image,and OrigImage
 //        It is also called once in mainWindowCreate()
 void MainWindow::updateCursor()
 {
@@ -1141,25 +1141,25 @@ void MainWindow::updateCursor()
  
 	// I'm paranoid, what can I say?
 	if (NULL != mCursor && NULL != mDrawingAreaOutline &&
-		NULL != mDrawingAreaOutline->window) //***1.99 - notebook page may be hidden
+		NULL != mDrawingAreaOutline->window) // 1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaOutline->window, mCursor);
 
 	if (NULL != mCursor && NULL != mDrawingAreaImage &&
-		NULL != mDrawingAreaImage->window) //***1.99 - notebook page may be hidden
+		NULL != mDrawingAreaImage->window) // 1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaImage->window, mCursor);
 
 	if (NULL != mCursor && NULL != mDrawingAreaOrigImage &&
-		NULL != mDrawingAreaOrigImage->window) //***1.99 - notebook page may be hidden
+		NULL != mDrawingAreaOrigImage->window) // 1.99 - notebook page may be hidden
 		gdk_window_set_cursor(mDrawingAreaOrigImage->window, mCursor);
 
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::updateGC()
 {
 	if (NULL == mGC) {
 		if (NULL == mDrawingAreaOutline || 
-			NULL == mDrawingAreaOutline->window) //***1.99 - notebook page may  be hidden
+			NULL == mDrawingAreaOutline->window) // 1.99 - notebook page may  be hidden
 			return;
 
 		mGC = gdk_gc_new(mDrawingAreaOutline->window);
@@ -1168,7 +1168,7 @@ void MainWindow::updateGC()
 	updateGCColor();
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::updateGCColor()
 {
 	if (NULL == mGC)
@@ -1181,7 +1181,7 @@ void MainWindow::updateGCColor()
 	//gdkColor.green = (gushort)(0xFFFFF * mOptions->mCurrentColor[1]);
 	//gdkColor.blue = (gushort)(0xFFFFF * mOptions->mCurrentColor[2]);
 
-	//***1.7 - use BLACK now
+	// 1.7 - use BLACK now
 	gdkColor.red = 0;
 	gdkColor.green = 0;
 	gdkColor.blue = 0;
@@ -1192,7 +1192,7 @@ void MainWindow::updateGCColor()
 	gdk_gc_set_foreground(mGC, &gdkColor);
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::refreshOptions(bool initialShow, bool forceReload)
 {
 	updateGCColor();
@@ -1217,33 +1217,33 @@ void MainWindow::refreshOptions(bool initialShow, bool forceReload)
 			break;
 	}
 
-	//***1.96a - reload if ID show/hide state changes
+	// 1.96a - reload if ID show/hide state changes
 	if (forceReload)
 	{
 		refreshDatabaseDisplayNew(true); // force reload from DB
 		gtk_clist_select_row(GTK_CLIST(mCList), mDBCurEntry, 0);
 	}
 
-	//***1.96a - need to force "new" font to be displayed
+	// 1.96a - need to force "new" font to be displayed
 	gtk_widget_modify_font(
 			mCList,
 			(pango_font_description_from_string(mOptions->mCurrentFontName.c_str())));
 }
 
-//*******************************************************************
+//                      *
 void MainWindow::displayStatusMessage(const string &msg)
 {
 	gtk_statusbar_pop(GTK_STATUSBAR(mStatusBar), mContextID);
 	gtk_statusbar_push(GTK_STATUSBAR(mStatusBar), mContextID, msg.c_str());
 }
 
-//*******************************************************************
+//                      *
 GtkWidget *MainWindow::getWindow()
 {
 	return mWindow;
 }
 
-//*******************************************************************
+//                      *
 GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 {
 	GtkWidget *mainWindow;
@@ -1257,11 +1257,11 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	GtkWidget *matching_queue;
 	GtkWidget *separator1;
 	GtkWidget *exit;
-	GtkWidget *catalog;        //***1.4
-	GtkWidget *catalog_menu;   //***1.4
-	GtkWidget *catalog_new;    //***1.4
-	GtkWidget *catalog_view;   //***1.4
-	GtkWidget *catalog_select; //***1.4
+	GtkWidget *catalog;        // 1.4
+	GtkWidget *catalog_menu;   // 1.4
+	GtkWidget *catalog_new;    // 1.4
+	GtkWidget *catalog_view;   // 1.4
+	GtkWidget *catalog_select; // 1.4
 	GtkWidget *settings;
 	GtkWidget *settings_menu;
 	GtkWidget *options;
@@ -1271,7 +1271,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	GtkWidget *mainToolbarHandleBox;
 	GtkWidget *tmp_toolbar_icon;
 	GtkWidget *mainButtonOpen;
-	GtkWidget *mainButtonOpenTrace;  //***1.5
+	GtkWidget *mainButtonOpenTrace;  // 1.5
 	GtkWidget *mainButtonMatchingQueue;
 	//GtkWidget *mainButtonOptions;
 	GtkWidget *mainButtonExit;
@@ -1287,7 +1287,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	GtkWidget *hbuttonbox1;
 	//guint mainButtonPrev_key;
 	//guint mainButtonNext_key;
-	//guint mainButtonModify_key;		//***002DB
+	//guint mainButtonModify_key;		// 002DB
 	GtkWidget *mainInfoTable;
 	GtkWidget *mainLabelID;
 	GtkWidget *mainLabelName;
@@ -1308,7 +1308,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
   
 
 	string MainWinTitle = "DARWIN - ";
-	//***1.85 - set the database filename / message for the window
+	// 1.85 - set the database filename / message for the window
 	switch (mDatabase->status())
 	{
 	case Database::loaded :
@@ -1337,11 +1337,11 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	mainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_object_set_data(GTK_OBJECT (mainWindow), "mainWindow", mainWindow);
-	gtk_window_set_title(GTK_WINDOW (mainWindow), _(MainWinTitle.c_str())); //***1.85
+	gtk_window_set_title(GTK_WINDOW (mainWindow), _(MainWinTitle.c_str())); // 1.85
 	gtk_window_set_policy(GTK_WINDOW (mainWindow), TRUE, TRUE, FALSE);
 	gtk_window_set_wmclass(GTK_WINDOW(mainWindow), "darwin_main", "DARWIN");
 	gtk_window_set_position(GTK_WINDOW(mainWindow), GTK_WIN_POS_CENTER);
-	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 800, 600); //***1.7
+	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 800, 600); // 1.7
 
 	mainVBox = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (mainVBox);
@@ -1420,7 +1420,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GDK_O, GDK_CONTROL_MASK,
 	                           GTK_ACCEL_VISIBLE);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(open, FALSE);
 	mOpenImageMenuItem = open;
@@ -1448,7 +1448,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GDK_T, GDK_CONTROL_MASK,
 	                           GTK_ACCEL_VISIBLE);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(openTFin, FALSE);
 	mOpenFinMenuItem = openTFin;
@@ -1504,7 +1504,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GDK_Q, GDK_CONTROL_MASK,
 	                           GTK_ACCEL_VISIBLE);
 
-		//***1.85 - if database load failed do not allow this menu option
+		// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(matching_queue, FALSE);
 	mQueueMenuItem = matching_queue;
@@ -1516,7 +1516,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_container_add (GTK_CONTAINER (file_menu), separator1);
 	gtk_widget_set_sensitive (separator1, FALSE);
 
-	//***1.85 - menu options for backup and restore
+	// 1.85 - menu options for backup and restore
 
 	GtkWidget *backup = gtk_menu_item_new();
 
@@ -1536,7 +1536,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GDK_B, GDK_CONTROL_MASK,
 	                           GTK_ACCEL_VISIBLE);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(backup, FALSE);
 	mBackupMenuItem = backup;
@@ -1569,7 +1569,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	////////////////////////
 
-	//***1.85 - menu options for import and export
+	// 1.85 - menu options for import and export
 
 	/*GtkWidget *importDB = gtk_menu_item_new();
 
@@ -1644,11 +1644,11 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 		_("Import one or more fins ...\n"
 		"(from user specified *.finz files)"), NULL);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mImportFinzMenuItem, FALSE);
 
-	//***************************************************************//
+	//                     //
 
 	// new Export submenu
 
@@ -1707,7 +1707,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 		_("Export a fin ...\n"
 		"(to a user specified *.finz file)"), NULL);
 
-	//***2.02 - new menu item to allow generation of FULL-SIZE modified images
+	// 2.02 - new menu item to allow generation of FULL-SIZE modified images
 
 	// Export FullSzImgs (*FullSize.png) submenu item
 
@@ -1802,7 +1802,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GDK_P, GDK_CONTROL_MASK,
 	                           GTK_ACCEL_VISIBLE);
 
-	//***1.4 - create "Catalog Scheme" menu item
+	// 1.4 - create "Catalog Scheme" menu item
 
 	catalog = gtk_menu_item_new_with_mnemonic(_("_Catalog Scheme"));
 	gtk_widget_show (catalog);
@@ -1895,7 +1895,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                           GTK_ACCEL_VISIBLE);
 
 
-	//***1.9 - create "Data" menu item (mnemonic ALT-T)
+	// 1.9 - create "Data" menu item (mnemonic ALT-T)
 
 	GtkWidget *data = gtk_menu_item_new_with_mnemonic(_("Da_ta"));
 	gtk_widget_show (data);
@@ -2018,7 +2018,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_button_set_relief (GTK_BUTTON (mainButtonOpen), GTK_RELIEF_NONE);
 	gtk_widget_show (mainButtonOpen);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonOpen, FALSE);
 	mOpenImageButton = mainButtonOpen;
@@ -2035,7 +2035,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_button_set_relief (GTK_BUTTON (mainButtonOpenTrace), GTK_RELIEF_NONE);
 	gtk_widget_show (mainButtonOpenTrace);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonOpenTrace, FALSE);
   	mOpenFinButton = mainButtonOpenTrace;
@@ -2052,7 +2052,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_button_set_relief (GTK_BUTTON (mainButtonMatchingQueue), GTK_RELIEF_NONE);
 	gtk_widget_show (mainButtonMatchingQueue);
 
-	//***1.85 - if database load failed do not allow this menu option
+	// 1.85 - if database load failed do not allow this menu option
 	if (mDatabase->status() != Database::loaded)
 		gtk_widget_set_sensitive(mainButtonMatchingQueue, FALSE);
 	mQueueButton = mainButtonMatchingQueue;
@@ -2060,7 +2060,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	// create "Options" button (shortcut to Options Dialog)
 
 	/*
-	//***1.5 - eliminated this button
+	// 1.5 - eliminated this button
 	tmp_toolbar_icon = create_pixmap_from_data(mainWindow, options_xpm);
 	mainButtonOptions = gtk_toolbar_append_element (GTK_TOOLBAR (mToolBar),
 	                            GTK_TOOLBAR_CHILD_BUTTON,
@@ -2085,12 +2085,12 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainButtonExit);
 
 	/*
-	//***1.85 - new box for tools above Clist and Image
+	// 1.85 - new box for tools above Clist and Image
 	GtkWidget *tempHbox = gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (mainVBox), tempHbox, FALSE, FALSE, 0);
 	gtk_widget_show(tempHbox);
 
-	//***1.95 - new radio buttons to select view PRIMARY images only or view ALL
+	// 1.95 - new radio buttons to select view PRIMARY images only or view ALL
 	GtkWidget *button = gtk_radio_button_new_with_label(
 				NULL,
 				_("Show ONLY Primary Images"));
@@ -2103,7 +2103,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show(button);
 */
 	/*
-	//***1.85 - new FindDolphin by ID tool
+	// 1.85 - new FindDolphin by ID tool
 	tempHbox = gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (mainVBox), tempHbox, FALSE, FALSE, 0);
 	gtk_widget_show(tempHbox);
@@ -2134,16 +2134,16 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_frame_set_shadow_type(GTK_FRAME(leftFrame), GTK_SHADOW_IN);
 	gtk_paned_pack1(GTK_PANED(mainHPaned), leftFrame, TRUE, TRUE);
 
-	//***1.96 - new box for view list options
+	// 1.96 - new box for view list options
 	mainLeftVBox = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (mainLeftVBox);
 	gtk_container_add(GTK_CONTAINER(leftFrame), mainLeftVBox);
 	gtk_container_set_border_width (GTK_CONTAINER (mainLeftVBox), 4);
 
-	//***1.96 - new radio buttons to select view PRIMARY images only or view ALL
+	// 1.96 - new radio buttons to select view PRIMARY images only or view ALL
 	GtkWidget *tempHbox = gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (mainLeftVBox), tempHbox, FALSE, FALSE, 0);
-	//gtk_widget_show(tempHbox); //***1.96a - do NOT show/allow this option for now
+	//gtk_widget_show(tempHbox); // 1.96a - do NOT show/allow this option for now
 
 	GtkWidget *showLabel = gtk_label_new(_("Showing: "));
 	gtk_box_pack_start (GTK_BOX (tempHbox), showLabel, FALSE, FALSE, 0);
@@ -2165,14 +2165,14 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_box_pack_start (GTK_BOX (tempHbox), button, FALSE, FALSE, 0);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
 	gtk_widget_show(button);
-	//***1.96 - end 
+	// 1.96 - end 
 
 	mainScrolledWindow = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_show (mainScrolledWindow);
 	gtk_box_pack_start (GTK_BOX (mainLeftVBox), mainScrolledWindow, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (mainScrolledWindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
 
-	mScrollable = mainScrolledWindow; //***1.7CL
+	mScrollable = mainScrolledWindow; // 1.7CL
 
 	mCList = gtk_clist_new (6);
 	gtk_clist_set_row_height(GTK_CLIST(mCList), DATABASEFIN_THUMB_HEIGHT);
@@ -2209,8 +2209,8 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainCListLabelLocation);
 	gtk_clist_set_column_widget (GTK_CLIST (mCList), 5, mainCListLabelLocation);
 
-	//***1.85 - new FindDolphin by ID tool
-	//***1.95 - moved from above Clist to below
+	// 1.85 - new FindDolphin by ID tool
+	// 1.95 - moved from above Clist to below
 	tempHbox = gtk_hbox_new(FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (mainLeftVBox), tempHbox, FALSE, FALSE, 5);
 	gtk_widget_show(tempHbox);
@@ -2281,7 +2281,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 
 	// create Modify Database button (mnemonic ALT-M)
 
-	//***002DB >
+	// 002DB >
 	mButtonModify = gtk_button_new();
 
 	tmpBox = gtk_hbox_new(FALSE, 0);			
@@ -2297,16 +2297,16 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_container_add(GTK_CONTAINER(mButtonModify), tmpBox);
 
 	gtk_widget_show(mButtonModify);
-	//***1.99 - this button goes with the data in the new notebook page below
+	// 1.99 - this button goes with the data in the new notebook page below
 	//gtk_container_add (GTK_CONTAINER (hbuttonbox1), mButtonModify);
 	GTK_WIDGET_SET_FLAGS (mButtonModify, GTK_CAN_DEFAULT);
 	gtk_tooltips_set_tip (tooltips, mButtonModify, _("Modify selected entry in the database."), NULL);
-	//***002DB <
+	// 002DB <
 
 
 	mainInfoTable = gtk_table_new (7, 2, FALSE);
 	gtk_widget_show(mainInfoTable);
-	//***1.99 - the data table now goes inside a notebook page in the tabbed
+	// 1.99 - the data table now goes inside a notebook page in the tabbed
 	// view code below
 	//gtk_box_pack_start (GTK_BOX (mainLeftVBox), mainInfoTable, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (mainInfoTable), 3);
@@ -2374,7 +2374,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                (GtkAttachOptions) (0), 0, 0);
 
 	//mainLabelRoll = gtk_label_new (_("Roll and Frame"));
-	mainLabelRoll = gtk_label_new (_("Roll/Frame or Lat/Long")); //***2.22 - now Lat/Long
+	mainLabelRoll = gtk_label_new (_("Roll/Frame or Lat/Long")); // 2.22 - now Lat/Long
 	gtk_widget_show (mainLabelRoll);
 	gtk_table_attach (GTK_TABLE (mainInfoTable), mainLabelRoll, 0, 1, 3, 4,
 	                (GtkAttachOptions) (0),
@@ -2405,7 +2405,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_editable (GTK_ENTRY (mEntryID), FALSE);
 
-	//***1.99 - the right frame will now contain a TABBED area for the
+	// 1.99 - the right frame will now contain a TABBED area for the
 	// modified image, original image, data fields, outline, ...
 
 	rightFrame = gtk_frame_new(NULL);
@@ -2417,7 +2417,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_widget_show (mainRightVBox);
 	gtk_container_add(GTK_CONTAINER(rightFrame), mainRightVBox);
 
-	//*** - here is the NEW tabbed notebook
+	//  - here is the NEW tabbed notebook
 
 	GtkWidget *notebook = gtk_notebook_new();
 
@@ -2523,44 +2523,44 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (open), "activate",
 	                    GTK_SIGNAL_FUNC (on_open_activate),
 	                    (void *) this);
-	//***1.4 - new callback for opening previously saved fin tracing
+	// 1.4 - new callback for opening previously saved fin tracing
 	gtk_signal_connect (GTK_OBJECT (openTFin), "activate",
 	                    GTK_SIGNAL_FUNC (on_open_fin_trace_activate),
 	                    (void *) this);
-	//***1.85 - new callback for opening a database
+	// 1.85 - new callback for opening a database
 	gtk_signal_connect (GTK_OBJECT (opendb), "activate",
 	                    GTK_SIGNAL_FUNC (on_open_database_activate),
 	                    (void *) this);
-	//***1.85 - new callback for creating a database
+	// 1.85 - new callback for creating a database
 	gtk_signal_connect (GTK_OBJECT (newdb), "activate",
 	                    GTK_SIGNAL_FUNC (on_new_database_activate),
 	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (matching_queue), "activate",
 	                    GTK_SIGNAL_FUNC (on_matching_queue_activate),
 	                    (void *) this);
-	//***1.85 - new callbacks for backing up or exporting a database
+	// 1.85 - new callbacks for backing up or exporting a database
 	gtk_signal_connect (GTK_OBJECT (backup), "activate",
 	                    GTK_SIGNAL_FUNC (on_backup_database_activate),
 	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (mExportDBMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_database_activate),
 	                    (void *) this);
-	//***1.99 - callback for exporting a Fin
+	// 1.99 - callback for exporting a Fin
 	gtk_signal_connect (GTK_OBJECT (mExportFinzMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_finz_activate),
 	                    (void *) this);
-	//***2.02 - callback for exporting Full-Size Modified Images
+	// 2.02 - callback for exporting Full-Size Modified Images
 	gtk_signal_connect (GTK_OBJECT (mExportFullSzImgsMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_export_fullSzImgs_activate),
 	                    (void *) this);
 
-	//***1.99 - callback for importing Fin
+	// 1.99 - callback for importing Fin
 	gtk_signal_connect (GTK_OBJECT (mImportFinzMenuItem), "activate",
 	                    GTK_SIGNAL_FUNC (on_import_finz_activate),
 	                    (void *) this);
 
 
-	//***1.85 - new callbacks for restoring or importing a database
+	// 1.85 - new callbacks for restoring or importing a database
 	gtk_signal_connect (GTK_OBJECT (restore), "activate",
 	                    GTK_SIGNAL_FUNC (on_restore_database_activate),
 	                    (void *) this);
@@ -2572,7 +2572,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                    GTK_SIGNAL_FUNC (on_exit_activate),
 	                    (void *) this);
 
-	//***1.4 - three new Catalog Scheme related callbacks
+	// 1.4 - three new Catalog Scheme related callbacks
 	gtk_signal_connect (GTK_OBJECT (catalog_new), "activate",
 	                    GTK_SIGNAL_FUNC (on_catalog_new_activate),
 	                    (void *) this);
@@ -2583,7 +2583,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	                    GTK_SIGNAL_FUNC (on_catalog_select_activate),
 	                    (void *) this);
 
-	//***1.9 - callback for data export in spreadsheet format
+	// 1.9 - callback for data export in spreadsheet format
 	gtk_signal_connect (GTK_OBJECT (exportData), "activate",
 	                    GTK_SIGNAL_FUNC (on_exportData_select_activate),
 	                    (void *) this);
@@ -2600,11 +2600,11 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (mainButtonOpen), "clicked",
 	                    GTK_SIGNAL_FUNC (on_mainButtonOpen_clicked),
 	                    (void *) this);
-	//***1.85 -new callback
+	// 1.85 -new callback
 	gtk_signal_connect (GTK_OBJECT (findNow), "clicked",
 	                    GTK_SIGNAL_FUNC (on_mainButtonFindNow_clicked),
 	                    (void *) this);
-	//***1.5 - new callback
+	// 1.5 - new callback
 	gtk_signal_connect (GTK_OBJECT (mainButtonOpenTrace), "clicked",
 	                    GTK_SIGNAL_FUNC (on_mainButtonOpenTrace_clicked),
 	                    (void *) this);
@@ -2629,20 +2629,20 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT (mButtonNext), "clicked",
 	                    GTK_SIGNAL_FUNC (on_mainButtonNext_clicked),
 	                    (void *) this);
-	gtk_signal_connect (GTK_OBJECT (mButtonModify), "clicked",	//***002DB
+	gtk_signal_connect (GTK_OBJECT (mButtonModify), "clicked",	// 002DB
 	                    GTK_SIGNAL_FUNC (on_mainButtonModify_clicked),
 	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (mainEventBoxImage), "button_press_event",
 	                    GTK_SIGNAL_FUNC (on_mainEventBoxImage_button_press_event),
 	                    (void *) this);
-	//***1.99 - new callback for popup viewer containing Original Image
+	// 1.99 - new callback for popup viewer containing Original Image
 	gtk_signal_connect (GTK_OBJECT (mainEventBoxOrigImage), "button_press_event",
 	                    GTK_SIGNAL_FUNC (on_mainEventBoxOrigImage_button_press_event),
 	                    (void *) this);
 	gtk_signal_connect (GTK_OBJECT (mDrawingAreaImage), "expose_event",
 	                    GTK_SIGNAL_FUNC (on_mainDrawingAreaImage_expose_event),
 	                    (void *) this);
-	//***1.99 - new callback for exposure of Original image
+	// 1.99 - new callback for exposure of Original image
 	gtk_signal_connect (GTK_OBJECT (mDrawingAreaOrigImage), "expose_event",
 	                    GTK_SIGNAL_FUNC (on_mainDrawingAreaOrigImage_expose_event),
 	                    (void *) this);
@@ -2656,7 +2656,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	gtk_signal_connect (GTK_OBJECT(mDrawingAreaImage), "configure_event",
 	                    GTK_SIGNAL_FUNC(on_mainDrawingAreaImage_configure_event),
 	                    (void *) this);
-	//***1.99 - new callback for showing original image
+	// 1.99 - new callback for showing original image
 	gtk_signal_connect (GTK_OBJECT(mDrawingAreaOrigImage), "configure_event",
 	                    GTK_SIGNAL_FUNC(on_mainDrawingAreaOrigImage_configure_event),
 	                    (void *) this);
@@ -2673,7 +2673,7 @@ GtkWidget* MainWindow::createMainWindow(toolbarDisplayType toolbarDisplay)
 	return mainWindow;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainWindow_delete_event(
 	GtkWidget *widget,
 	GdkEvent *event,
@@ -2689,7 +2689,7 @@ gboolean on_mainWindow_delete_event(
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 void on_open_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -2709,8 +2709,8 @@ void on_open_activate(
 	}
 }
 
-//*******************************************************************
-//***1.4 - new
+//                      *
+// 1.4 - new
 //
 void on_open_fin_trace_activate(
 	GtkMenuItem *menuitem,
@@ -2730,8 +2730,8 @@ void on_open_fin_trace_activate(
 		dlg->run_and_respond();
 	}
 }
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_open_database_activate(
 	GtkMenuItem *menuitem,
@@ -2758,8 +2758,8 @@ void on_open_database_activate(
 	mainWin->resetTitleButtonsAndBackupOnDBLoad();
 }
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_new_database_activate(
 	GtkMenuItem *menuitem,
@@ -2778,8 +2778,8 @@ void on_new_database_activate(
 	dlg->show();
 }
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_restore_database_activate(
 	GtkMenuItem *menuitem,
@@ -2814,7 +2814,7 @@ void on_restore_database_activate(
 	// default action is to "NOT overwrite" existing files and to "NOT duplicate"
 	// existing files 
 
-	//***1.982 - we assume new database was opened after restore so ...
+	// 1.982 - we assume new database was opened after restore so ...
 	// reset the database filename for the window
 	// set sensitivity of menu items and buttons depending on success
 	// and create an emergency backup of DB file, as long as it was successfully loaded
@@ -2826,8 +2826,8 @@ void on_restore_database_activate(
 	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), FALSE);
 }
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_import_database_activate(
 	GtkMenuItem *menuitem,
@@ -2876,7 +2876,7 @@ void on_import_database_activate(
 	// default action is to "NOT overwrite" existing files and to "NOT duplicate"
 	// existing files 
 
-	//***1.982 - we assume new database was opened after restore so ...
+	// 1.982 - we assume new database was opened after restore so ...
 	// reset the database filename for the window
 	// set sensitivity of menu items and buttons depending on success
 	// and create an emergency backup of DB file, as long as it was successfully loaded
@@ -2889,8 +2889,8 @@ void on_import_database_activate(
 
 }
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_backup_database_activate(
 	GtkMenuItem *menuitem,
@@ -2903,7 +2903,7 @@ void on_backup_database_activate(
 
 	// let user know what is happening and then close iconify main window so user
 	// can see backup progress in console window
-	//***1.93 - begin new code segment
+	// 1.93 - begin new code segment
 	GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(mainWin->getWindow()),
                                   GTK_DIALOG_DESTROY_WITH_PARENT,
                                   GTK_MESSAGE_INFO,
@@ -2911,15 +2911,15 @@ void on_backup_database_activate(
                                   "BACKUP starting ... \nDetails will appear in CONSOLE window.");
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
-	gtk_window_iconify(GTK_WINDOW(mainWin->getWindow())); //***1.93
-	//***1.93 - end new code segment
+	gtk_window_iconify(GTK_WINDOW(mainWin->getWindow())); // 1.93
+	// 1.93 - end new code segment
 
 	if (! backupCatalog(mainWin->mDatabase))
 	{
-		//***2.22 - added mainWin->mWindow
+		// 2.22 - added mainWin->mWindow
 		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Database backup failed.");
 		//err->show();
-		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		// 2.22 - replacing own ErrorDialog with GtkMessageDialogs
 		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
 								GTK_DIALOG_DESTROY_WITH_PARENT,
 								GTK_MESSAGE_ERROR,
@@ -2932,10 +2932,10 @@ void on_backup_database_activate(
 	// must check here to ensure database reopened correctly
 	if (! mainWin->mDatabase->isOpen())
 	{
-		//***2.22 - added mainWin->mWindow
+		// 2.22 - added mainWin->mWindow
 		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Database failed to reopen");
 		//err->show();
-		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		// 2.22 - replacing own ErrorDialog with GtkMessageDialogs
 		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
 								GTK_DIALOG_DESTROY_WITH_PARENT,
 								GTK_MESSAGE_ERROR,
@@ -2946,14 +2946,14 @@ void on_backup_database_activate(
 	}
 
 	// reopen main window in front of the console window
-	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), TRUE); //***1.93
-	gtk_window_deiconify(GTK_WINDOW(mainWin->getWindow())); //***1.93
-	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), FALSE); //***1.93
+	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), TRUE); // 1.93
+	gtk_window_deiconify(GTK_WINDOW(mainWin->getWindow())); // 1.93
+	gtk_window_set_keep_above(GTK_WINDOW(mainWin->getWindow()), FALSE); // 1.93
 
 }
 
-//*******************************************************************
-//***1.99 - new
+//                      *
+// 1.99 - new
 //
 void on_export_finz_activate(
 	GtkMenuItem *menuitem,
@@ -2973,8 +2973,8 @@ void on_export_finz_activate(
 	dlg->show();
 }
 
-//*******************************************************************
-//***2.02 - new
+//                      *
+// 2.02 - new
 //
 void on_export_fullSzImgs_activate(
 	GtkMenuItem *menuitem,
@@ -3008,8 +3008,8 @@ void on_export_fullSzImgs_activate(
 }
 
 
-//*******************************************************************
-//***1.99 - new
+//                      *
+// 1.99 - new
 //
 void on_import_finz_activate(
 	GtkMenuItem *menuitem,
@@ -3033,8 +3033,8 @@ void on_import_finz_activate(
 }
 
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_export_database_activate(
 	GtkMenuItem *menuitem,
@@ -3074,10 +3074,10 @@ void on_export_database_activate(
 		
 	if (! exportCatalogTo(mainWin->mDatabase, mainWin->mOptions, mainWin->mExportToFilename))
 	{
-		//***2.22 - added mainWin->mWindow
+		// 2.22 - added mainWin->mWindow
 		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Catalog EXPORT failed.");
 		//err->show();
-		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		// 2.22 - replacing own ErrorDialog with GtkMessageDialogs
 		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
 								GTK_DIALOG_DESTROY_WITH_PARENT,
 								GTK_MESSAGE_ERROR,
@@ -3089,10 +3089,10 @@ void on_export_database_activate(
 
 	if (! mainWin->mDatabase->isOpen())
 	{
-		//***2.22 - added mainWin->mWindow
+		// 2.22 - added mainWin->mWindow
 		//ErrorDialog *err = new ErrorDialog(mainWin->mWindow,"Catalog failed to reopen");
 		//err->show();
-		//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+		// 2.22 - replacing own ErrorDialog with GtkMessageDialogs
 		GtkWidget *errd = gtk_message_dialog_new (GTK_WINDOW(mainWin->mWindow),
 								GTK_DIALOG_DESTROY_WITH_PARENT,
 								GTK_MESSAGE_ERROR,
@@ -3103,7 +3103,7 @@ void on_export_database_activate(
 	}
 }
 
-//*******************************************************************
+//                      *
 void on_matching_queue_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -3113,11 +3113,11 @@ void on_matching_queue_activate(
 	if (NULL == mainWin)
 		return;
 
-	//***1.0 -- swap commented / uncommented code below as needed
+	// 1.0 -- swap commented / uncommented code below as needed
 	//       for production / testing versions
 
-	//***1.1 - let's get matching queue to work - JHS
-	//showError("The Matching Queue option\nis not available in this\nsoftware version!"); //***054
+	// 1.1 - let's get matching queue to work - JHS
+	//showError("The Matching Queue option\nis not available in this\nsoftware version!"); // 054
 	
 	if (getNumMatchingQueueDialogReferences() < 1) {
 		MatchingQueueDialog *dlg =
@@ -3126,7 +3126,7 @@ void on_matching_queue_activate(
 	}
 }
 
-//*******************************************************************
+//                      *
 void on_exit_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -3136,7 +3136,7 @@ void on_exit_activate(
 	delete mainWin;
 }
 
-//*******************************************************************
+//                      *
 void on_options_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -3153,9 +3153,9 @@ void on_options_activate(
 	dlg->show();
 }
 
-//*******************************************************************
+//                      *
 //
-//***1.4 - new function
+// 1.4 - new function
 //
 void on_catalog_new_activate(
 	GtkMenuItem *menuitem,
@@ -3176,9 +3176,9 @@ void on_catalog_new_activate(
 	dlg->show();
 }
 
-//*******************************************************************
+//                      *
 //
-//***1.4 - new function
+// 1.4 - new function
 //
 void on_catalog_view_activate(
 	GtkMenuItem *menuitem,
@@ -3199,9 +3199,9 @@ void on_catalog_view_activate(
 	dlg->show();
 }
 
-//*******************************************************************
+//                      *
 //
-//***1.4 - new function
+// 1.4 - new function
 //
 void on_catalog_select_activate(
 	GtkMenuItem *menuitem,
@@ -3222,8 +3222,8 @@ void on_catalog_select_activate(
 	dlg->show();
 }
 
-//*******************************************************************
-//***1.9 - new callback
+//                      *
+// 1.9 - new callback
 //
 void on_exportData_select_activate(
 	GtkMenuItem *menuitem,
@@ -3246,7 +3246,7 @@ void on_exportData_select_activate(
 	dlg->run_and_respond();
 }
 
-//*******************************************************************
+//                      *
 void on_about_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -3262,7 +3262,7 @@ void on_about_activate(
 	}
 }
 
-//*******************************************************************
+//                      *
 void on_docs_activate(
 	GtkMenuItem *menuitem,
 	gpointer userData)
@@ -3279,14 +3279,14 @@ void on_docs_activate(
 	cmd = "explorer.exe ";
 	//system("explorer.exe %DARWINHOME%\\docs\\usersguide.htm&");
 #else
-	cmd = "open "; //***2.22 - for the Mac
+	cmd = "open "; // 2.22 - for the Mac
 	//system("open file:$DARWINHOME/docs/usersguide.htm&");
 #endif
 	cmd += "\"" + gOptions->mDarwinHome + PATH_SLASH + "docs" + PATH_SLASH + "usersguide.htm\" &";
 	system(cmd.c_str());
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonOpen_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3294,7 +3294,7 @@ void on_mainButtonOpen_clicked(
 	on_open_activate(NULL, userData);
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonOpenTrace_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3302,7 +3302,7 @@ void on_mainButtonOpenTrace_clicked(
 	on_open_fin_trace_activate(NULL, userData);
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonMatchingQueue_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3310,7 +3310,7 @@ void on_mainButtonMatchingQueue_clicked(
 	on_matching_queue_activate(NULL, userData);
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonOptions_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3318,7 +3318,7 @@ void on_mainButtonOptions_clicked(
 	on_options_activate(NULL, userData);
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonExit_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3326,8 +3326,8 @@ void on_mainButtonExit_clicked(
 	on_exit_activate(NULL, userData);
 }
 
-//*******************************************************************
-//***1.85 - new
+//                      *
+// 1.85 - new
 //
 void on_mainButtonFindNow_clicked(
 	GtkButton *button,
@@ -3358,7 +3358,7 @@ void on_mainButtonFindNow_clicked(
 	gtk_clist_select_row(GTK_CLIST(mainWin->mCList), posit, 0);
 }
 
-//*******************************************************************
+//                      *
 void on_mainCList_click_column(
 	GtkCList *clist,
 	gint column,
@@ -3372,37 +3372,37 @@ void on_mainCList_click_column(
 	if (NULL == mainWin->mDatabase)
 		return;
 	
-	if (0 == mainWin->mDatabase->size()) //***1.85 - don't sort if empty
+	if (0 == mainWin->mDatabase->size()) // 1.85 - don't sort if empty
 		return;
 
-	//mainWin->mOldSort = mainWin->mNewSort; //***1.85 - remember this
+	//mainWin->mOldSort = mainWin->mNewSort; // 1.85 - remember this
 
 	switch (column) {
 		case 1:
 			mainWin->mDatabase->sort(DB_SORT_ID);
-			mainWin->mNewSort = DB_SORT_ID; //***1.85
+			mainWin->mNewSort = DB_SORT_ID; // 1.85
 			break;
 		case 2:
 			mainWin->mDatabase->sort(DB_SORT_NAME);
-			mainWin->mNewSort = DB_SORT_NAME; //***1.8
+			mainWin->mNewSort = DB_SORT_NAME; // 1.8
 			break;
 		case 3:
 			mainWin->mDatabase->sort(DB_SORT_DAMAGE);
-			mainWin->mNewSort = DB_SORT_DAMAGE; //***1.8
+			mainWin->mNewSort = DB_SORT_DAMAGE; // 1.8
 			break;
 		case 4:
 			mainWin->mDatabase->sort(DB_SORT_DATE);
-			mainWin->mNewSort = DB_SORT_DATE; //***1.8
+			mainWin->mNewSort = DB_SORT_DATE; // 1.8
 			break;
 		case 5:
 			mainWin->mDatabase->sort(DB_SORT_LOCATION);
-			mainWin->mNewSort = DB_SORT_LOCATION; //***1.8
+			mainWin->mNewSort = DB_SORT_LOCATION; // 1.8
 			break;
 	}
 	
-	gtk_clist_freeze(GTK_CLIST(mainWin->mCList)); //***1.85
+	gtk_clist_freeze(GTK_CLIST(mainWin->mCList)); // 1.85
 
-	mainWin->refreshDatabaseDisplayNew(false); //***1.85 - just a sort, no change in # of fins
+	mainWin->refreshDatabaseDisplayNew(false); // 1.85 - just a sort, no change in # of fins
 
 	// make sure CList repositions itself for previously selected item to appear
 	string selectedIdPlusOffset = mainWin->mDatabase->getItemEntryFromList(
@@ -3410,14 +3410,14 @@ void on_mainCList_click_column(
 				mainWin->mDBCurEntry);
 	mainWin->selectFromReorderedCListNew(selectedIdPlusOffset);
 
-	mainWin->mOldSort = mainWin->mNewSort; //***1.96a - moved from above
+	mainWin->mOldSort = mainWin->mNewSort; // 1.96a - moved from above
 
-	gtk_clist_thaw(GTK_CLIST(mainWin->mCList)); //***1.85
+	gtk_clist_thaw(GTK_CLIST(mainWin->mCList)); // 1.85
 
-	//mainWin->selectFromReorderedCList(mainWin->mSelectedFin->mImageFilename); //***004CL
+	//mainWin->selectFromReorderedCList(mainWin->mSelectedFin->mImageFilename); // 004CL
 }
 
-//*******************************************************************
+//                      *
 void on_mainCList_select_row(
 	GtkCList *clist,
 	gint row,
@@ -3439,13 +3439,13 @@ void on_mainCList_select_row(
 			gtk_widget_set_sensitive(mainWin->mButtonPrev, TRUE);
 
 		//if (row == (int)mainWin->mDatabase->size() - 1)
-		if (row == mainWin->mRow2Id.size() - 1) //***1.96
+		if (row == mainWin->mRow2Id.size() - 1) // 1.96
 			gtk_widget_set_sensitive(mainWin->mButtonNext, FALSE);
 		else
 			gtk_widget_set_sensitive(mainWin->mButtonNext, TRUE);
 
 		//mainWin->mSelectedFin = mainWin->mDatabase->getItem(row);
-		mainWin->mSelectedFin = mainWin->mDatabase->getItem(mainWin->mRow2Id[row]); //***1.95
+		mainWin->mSelectedFin = mainWin->mDatabase->getItem(mainWin->mRow2Id[row]); // 1.95
 
 		if (NULL == mainWin->mSelectedFin)
 			throw Error("Internal Error:\nProblem retrieving fin from database.");
@@ -3514,7 +3514,7 @@ void on_mainCList_select_row(
 		if (t->mDamageCategory == "NONE") {
 			//damage = new gchar[strlen(NONE_SUBSTITUTE_STRING) + 1];
 			//strcpy(damage, NONE_SUBSTITUTE_STRING);
-			//***055DB - change fo category default (display as "Unspecified"
+			// 055DB - change fo category default (display as "Unspecified"
 			damage = new gchar[12];
 			strcpy(damage, _("Unspecified"));
 			gtk_widget_set_sensitive(mainWin->mEntryDamage, /*FALSE*/ TRUE);
@@ -3533,9 +3533,9 @@ void on_mainCList_select_row(
 			strcpy(shortdescription, t->mShortDescription.c_str());
 			gtk_widget_set_sensitive(mainWin->mEntryDescription, TRUE);
 		}
-		//***1.65 - show or hide ID as setting indicates
+		// 1.65 - show or hide ID as setting indicates
 		if (mainWin->mOptions->mHideIDs)
-			gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryID), "****");
+			gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryID), " *");
 		else
 			gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryID), idcode);
 		gtk_entry_set_text(GTK_ENTRY(mainWin->mEntryName), name);
@@ -3564,24 +3564,24 @@ void on_mainCList_select_row(
 				//GTK_DRAWING_AREA(mainWin->mDrawingAreaImage),
 				////mainWin->mCurImageWidth,
 				////mainWin->mCurImageHeight);    
-				//mainWin->mDrawingAreaImage->allocation.width, //***1.7
-				//mainWin->mDrawingAreaImage->allocation.height); //***1.7
+				//mainWin->mDrawingAreaImage->allocation.width, // 1.7
+				//mainWin->mDrawingAreaImage->allocation.height); // 1.7
 
-		//***1.96a - we want to use the mDataPos offsets to prevent
+		// 1.96a - we want to use the mDataPos offsets to prevent
 		// reloading the same fin (and rebuilding its modified image) unless
 		// a real change of selected fin has occurred
 		if (mainWin->mDBCurEntryOffset != mainWin->mSelectedFin->mDataPos)
 		{
 			// newly selected fin IS NOT the same fin as was previously selected
 			// so remember offset and force reloading of fin image
-			if (mainWin->mWindow->window != NULL) //***1.85
+			if (mainWin->mWindow->window != NULL) // 1.85
 			{
-				on_mainDrawingAreaImage_configure_event(mainWin->mDrawingAreaImage,NULL,userData); //***1.7
-				on_mainDrawingAreaOrigImage_configure_event(mainWin->mDrawingAreaOrigImage,NULL,userData); //***1.7
+				on_mainDrawingAreaImage_configure_event(mainWin->mDrawingAreaImage,NULL,userData); // 1.7
+				on_mainDrawingAreaOrigImage_configure_event(mainWin->mDrawingAreaOrigImage,NULL,userData); // 1.7
 				// configure call above reloads image, so remember the offset of the fin
 				// with the currently loaded image, but do so AFTER the configure event
 			}
-			mainWin->mDBCurEntryOffset = mainWin->mSelectedFin->mDataPos; //***1.96a
+			mainWin->mDBCurEntryOffset = mainWin->mSelectedFin->mDataPos; // 1.96a
 		}
 
 	} catch (Error e) {
@@ -3589,14 +3589,14 @@ void on_mainCList_select_row(
 	}
 	
 	mainWin->refreshImage();
-	mainWin->refreshOrigImage(); //***1.99
+	mainWin->refreshOrigImage(); // 1.99
 	mainWin->refreshOutline();
 	// the following now ONLY updates the scrolling list to display correctly
-	mainWin->selectFromCList(mainWin->mDBCurEntry); //***1.7
+	mainWin->selectFromCList(mainWin->mDBCurEntry); // 1.7
 }
 
-//*******************************************************************
-//***1.95 - so main clist can show ALL images or ONLY primary images
+//                      *
+// 1.95 - so main clist can show ALL images or ONLY primary images
 //
 void on_mainButtonShowAllImages_toggled(
 	GtkButton *button,
@@ -3618,32 +3618,32 @@ void on_mainButtonShowAllImages_toggled(
 	if (NULL == mainWin->mCList)
 		return;
 
-	//***1.9 - new approach to reselect
+	// 1.9 - new approach to reselect
 	gtk_clist_freeze(GTK_CLIST(mainWin->mCList));
 
-	int curId = mainWin->mRow2Id[mainWin->mDBCurEntry]; //***1.96 - save current DB Fin ID
+	int curId = mainWin->mRow2Id[mainWin->mDBCurEntry]; // 1.96 - save current DB Fin ID
 
 	mainWin->refreshDatabaseDisplayNew(true); // force to read DB again & rebuild list
 
-	int newCurRow = mainWin->mId2Row[curId]; //***1.96 - recover DB Fin position in new list
+	int newCurRow = mainWin->mId2Row[curId]; // 1.96 - recover DB Fin position in new list
 
-	//***1.96 - some bounds checks
+	// 1.96 - some bounds checks
 	if (newCurRow == -1) // previous selection is NOT in new list
 		newCurRow = 0; // force selection back to fin 0
 
 	//if(mainWin->mDatabase->size() > 0)
-	if(mainWin->mRow2Id.size() > 0) //***1.96
+	if(mainWin->mRow2Id.size() > 0) // 1.96
 	{
 		gtk_clist_select_row(
 					GTK_CLIST(mainWin->mCList), 
-					newCurRow, 0); //***1.96 - keep same selection as before, if possible
+					newCurRow, 0); // 1.96 - keep same selection as before, if possible
 	}
 		
 	gtk_clist_thaw(GTK_CLIST(mainWin->mCList));
-	//***1.9 - end new approach
+	// 1.9 - end new approach
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonPrev_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3658,10 +3658,10 @@ void on_mainButtonPrev_clicked(
 
 	if (mainWin->mDBCurEntry > 0)
 		gtk_clist_select_row(GTK_CLIST(mainWin->mCList), mainWin->mDBCurEntry - 1, 0);
-		//mainWin->selectFromCList(mainWin->mDBCurEntry - 1); //***1.7CL
+		//mainWin->selectFromCList(mainWin->mDBCurEntry - 1); // 1.7CL
 }
 
-//*******************************************************************
+//                      *
 void on_mainButtonNext_clicked(
 	GtkButton *button,
 	gpointer userData)
@@ -3675,13 +3675,13 @@ void on_mainButtonNext_clicked(
 		return;
 
 	//if (mainWin->mDBCurEntry < (int)mainWin->mDatabase->size() - 1)
-	if (mainWin->mDBCurEntry < mainWin->mRow2Id.size() - 1) //***1.96
+	if (mainWin->mDBCurEntry < mainWin->mRow2Id.size() - 1) // 1.96
 		gtk_clist_select_row(GTK_CLIST(mainWin->mCList), mainWin->mDBCurEntry + 1, 0);
-		//mainWin->selectFromCList(mainWin->mDBCurEntry + 1);//***1.7CL
+		//mainWin->selectFromCList(mainWin->mDBCurEntry + 1);// 1.7CL
 }
 
-//*******************************************************************
-void on_mainButtonModify_clicked(		//***002DB - nf
+//                      *
+void on_mainButtonModify_clicked(		// 002DB - nf
 	GtkButton *button,
 	gpointer userData)
 {
@@ -3695,14 +3695,14 @@ void on_mainButtonModify_clicked(		//***002DB - nf
 	
 	ModifyDatabaseWindow *ModWin= new ModifyDatabaseWindow(
 				       mainWin->mDBCurEntry, 
-				       mainWin,                  //***004CL
+				       mainWin,                  // 004CL
 				       mainWin->mSelectedFin, 
 				       mainWin->mDatabase,
 					   mainWin->mOptions);
 	ModWin->show();	
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainEventBoxImage_button_press_event(
 	GtkWidget *widget,
 	GdkEventButton *event,
@@ -3724,16 +3724,16 @@ gboolean on_mainEventBoxImage_button_press_event(
 	//		mainWin->mSelectedFin->mIDCode,
 	//		mainWin->mSelectedFin->mFinImage);
 	ImageViewDialog *dlg = new ImageViewDialog(
-			mainWin->mWindow, //***2.22 - so dialog will be set transient for this window
+			mainWin->mWindow, // 2.22 - so dialog will be set transient for this window
 			mainWin->mSelectedFin->mIDCode,
-			mainWin->mImageFullsize); //***2.01 - use new fullsize image already in memory
+			mainWin->mImageFullsize); // 2.01 - use new fullsize image already in memory
 	dlg->show();
 
 	return TRUE;
 }
 
-//*******************************************************************
-//***1.99 - new
+//                      *
+// 1.99 - new
 //
 gboolean on_mainEventBoxOrigImage_button_press_event(
 	GtkWidget *widget,
@@ -3756,15 +3756,15 @@ gboolean on_mainEventBoxOrigImage_button_press_event(
 	//		mainWin->mSelectedFin->mIDCode,
 	//		mainWin->mSelectedFin->mFinImage); // was reloading and using modified image - OOPS
 	ImageViewDialog *dlg = new ImageViewDialog(
-			mainWin->mWindow, //***2.22 - so dialog will be set transient for this window
+			mainWin->mWindow, // 2.22 - so dialog will be set transient for this window
 			mainWin->mSelectedFin->mIDCode,
-			mainWin->mOrigImageFullsize); //***2.01 - use new fullsize image already in memory
+			mainWin->mOrigImageFullsize); // 2.01 - use new fullsize image already in memory
 	dlg->show();
 
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaImage_expose_event(
 	GtkWidget *widget,
 	GdkEventExpose *event,
@@ -3775,7 +3775,7 @@ gboolean on_mainDrawingAreaImage_expose_event(
 	if (NULL == mainWin)
 		return FALSE;
 
-	if(mainWin->mDatabase->size()==0){		//***002DB >
+	if(mainWin->mDatabase->size()==0){		// 002DB >
 		gdk_draw_rectangle(
 			mainWin->mDrawingAreaImage->window,
 			mainWin->mDrawingAreaImage->style->bg_gc[GTK_STATE_NORMAL],
@@ -3784,12 +3784,12 @@ gboolean on_mainDrawingAreaImage_expose_event(
 			0,
 			widget->allocation.width,
 			widget->allocation.height);
-	 	//mainWin->clearText();              //***1.85 unnecessary - now done in show() 
-		//mainWin->refreshDatabaseDisplay(); //***1.85 unnecessary - now done in show()        
+	 	//mainWin->clearText();              // 1.85 unnecessary - now done in show() 
+		//mainWin->refreshDatabaseDisplay(); // 1.85 unnecessary - now done in show()        
 		return TRUE;
-	}						//***002DB <
+	}						// 002DB <
 
-	//***1.85 - moved from above backgound redraw
+	// 1.85 - moved from above backgound redraw
 	if (NULL == mainWin->mDrawingAreaImage || NULL == mainWin->mImage)
 		return FALSE;
 
@@ -3808,7 +3808,7 @@ gboolean on_mainDrawingAreaImage_expose_event(
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaOrigImage_expose_event(
 	GtkWidget *widget,
 	GdkEventExpose *event,
@@ -3819,7 +3819,7 @@ gboolean on_mainDrawingAreaOrigImage_expose_event(
 	if (NULL == mainWin)
 		return FALSE;
 
-	if(mainWin->mDatabase->size()==0){		//***002DB >
+	if(mainWin->mDatabase->size()==0){		// 002DB >
 		gdk_draw_rectangle(
 			mainWin->mDrawingAreaOrigImage->window,
 			mainWin->mDrawingAreaOrigImage->style->bg_gc[GTK_STATE_NORMAL],
@@ -3829,9 +3829,9 @@ gboolean on_mainDrawingAreaOrigImage_expose_event(
 			widget->allocation.width,
 			widget->allocation.height);
 		return TRUE;
-	}						//***002DB <
+	}						// 002DB <
 
-	//***1.85 - moved from above backgound redraw
+	// 1.85 - moved from above backgound redraw
 	if (NULL == mainWin->mDrawingAreaOrigImage || NULL == mainWin->mOrigImage)
 		return FALSE;
 
@@ -3850,7 +3850,7 @@ gboolean on_mainDrawingAreaOrigImage_expose_event(
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainEventBoxOutline_button_press_event(
 	GtkWidget *widget,
 	GdkEventButton *event,
@@ -3866,10 +3866,10 @@ gboolean on_mainEventBoxOutline_button_press_event(
 
 	if (getNumContourInfoDialogReferences() < 1) {
 		ContourInfoDialog *dlg = new ContourInfoDialog(
-				mainWin->mWindow, //***2.22
+				mainWin->mWindow, // 2.22
 				mainWin->mSelectedFin->mIDCode,
 				//mainWin->mSelectedFin->mFinContour, removed 008OL
-				mainWin->mSelectedFin->mFinOutline, //***008OL
+				mainWin->mSelectedFin->mFinOutline, // 008OL
 				mainWin->mOptions->mCurrentColor);
 		dlg->show();
 	}
@@ -3877,7 +3877,7 @@ gboolean on_mainEventBoxOutline_button_press_event(
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaOutline_expose_event(
 	GtkWidget *widget,
 	GdkEventExpose *event,
@@ -3888,7 +3888,7 @@ gboolean on_mainDrawingAreaOutline_expose_event(
 	if (NULL == mainWin)
 		return FALSE;
 
-	if ((NULL == mainWin->mSelectedFin) && (mainWin->mDatabase->size() > 0)) //***1.85 - size constraint
+	if ((NULL == mainWin->mSelectedFin) && (mainWin->mDatabase->size() > 0)) // 1.85 - size constraint
 		return FALSE;
 
 	// Redraw the background
@@ -3902,10 +3902,10 @@ gboolean on_mainDrawingAreaOutline_expose_event(
 		mainWin->mCurContourWidth,
 		mainWin->mCurContourHeight);
 
-	if(mainWin->mDatabase->size()==0)		//***002DB
-		return TRUE;				//***002DB
+	if(mainWin->mDatabase->size()==0)		// 002DB
+		return TRUE;				// 002DB
 	//Contour *c = mainWin->mSelectedFin->mFinContour; removed 008OL
-	FloatContour *c = mainWin->mSelectedFin->mFinOutline->getFloatContour(); //***008OL
+	FloatContour *c = mainWin->mSelectedFin->mFinOutline->getFloatContour(); // 008OL
 
 	int
 		xMax = c->maxX(),
@@ -3953,7 +3953,7 @@ gboolean on_mainDrawingAreaOutline_expose_event(
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaOutline_configure_event(
 	GtkWidget *widget,
 	GdkEventConfigure *event,
@@ -3967,14 +3967,14 @@ gboolean on_mainDrawingAreaOutline_configure_event(
 	mainWin->mCurContourHeight = widget->allocation.height;
 	mainWin->mCurContourWidth = widget->allocation.width;
 
-	mainWin->updateGC(); //***1.99 - in cae notebook page was hidden initially
+	mainWin->updateGC(); // 1.99 - in cae notebook page was hidden initially
 
 	mainWin->refreshOutline();
 
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaImage_configure_event(
 	GtkWidget *widget,
 	GdkEventConfigure *event,
@@ -3991,7 +3991,7 @@ gboolean on_mainDrawingAreaImage_configure_event(
 	if (NULL == mainWin->mSelectedFin)
 		return TRUE;
 
-	//***1.96a - no change in image so no need to reconfigure (reload image)
+	// 1.96a - no change in image so no need to reconfigure (reload image)
 	// second condition makes sure this was called by us on Clist row selection
 	// and NOT by an actual window size/state change
 	if ((mainWin->mSelectedFin->mDataPos == mainWin->mDBCurEntryOffset) &&
@@ -4003,17 +4003,17 @@ gboolean on_mainDrawingAreaImage_configure_event(
 	// since resizeWithBorder creates a new image, we must delete this one after it is used
 	ColorImage *tempImage = new ColorImage(mainWin->mSelectedFin->mImageFilename);
 
-	if (NULL != mainWin->mImageFullsize) //***2.01
-		delete mainWin->mImageFullsize;  //***2.01
+	if (NULL != mainWin->mImageFullsize) // 2.01
+		delete mainWin->mImageFullsize;  // 2.01
 
 	mainWin->mImage = resizeWithBorder(		
 			tempImage,
 			//mainWin->mCurImageHeight,
 			//mainWin->mCurImageWidth);
-			mainWin->mDrawingAreaImage->allocation.height, //***1.7
-			mainWin->mDrawingAreaImage->allocation.width); //***1.7
+			mainWin->mDrawingAreaImage->allocation.height, // 1.7
+			mainWin->mDrawingAreaImage->allocation.width); // 1.7
 
-	//***1.99 - since the resizeWithBorder DOES NOT preserve any image
+	// 1.99 - since the resizeWithBorder DOES NOT preserve any image
 	// attributes except the basi image pixel data, we must copy the info
 	// over here -- this should be fixed in the image classes and their support
 	// functions - JHS
@@ -4022,19 +4022,19 @@ gboolean on_mainDrawingAreaImage_configure_event(
 	mainWin->mImage->mNormScale = tempImage->mNormScale; // this may not be usefull
 	mainWin->mImage->mImageMods = tempImage->mImageMods;
 
-	//***1.8 - if information available, set up FRAME label to indicate any image reversal
+	// 1.8 - if information available, set up FRAME label to indicate any image reversal
 	gchar *frameLabel = new gchar[mainWin->mSelectedFin->mIDCode.length() + 12]; // leave room for " (reversed)"
 	strcpy(frameLabel,mainWin->mSelectedFin->mIDCode.c_str());
 	if (tempImage->mImageMods.imageIsReversed())
 		strcat(frameLabel, " (reversed)");
 	gtk_frame_set_label(GTK_FRAME(mainWin->mFrameMod), frameLabel);
 	delete[] frameLabel;
-	//***1.8 - end
+	// 1.8 - end
 
 #ifdef DEBUG
 	cout << "Scale: " << tempImage->mNormScale << endl;
 
-	//***1.9 - check validity of image mods read from file
+	// 1.9 - check validity of image mods read from file
 	if (0 < tempImage->mImageMods.size())
 	{
 		ImageMod mod(ImageMod::IMG_none);
@@ -4056,14 +4056,14 @@ gboolean on_mainDrawingAreaImage_configure_event(
 
 	// delete here or memory leak results
 	//delete tempImage;
-	mainWin->mImageFullsize = tempImage; //***2.01 - deleted as needed above and in destructor now
+	mainWin->mImageFullsize = tempImage; // 2.01 - deleted as needed above and in destructor now
 
 	mainWin->refreshImage();
 
 	return TRUE;
 }
 
-//*******************************************************************
+//                      *
 gboolean on_mainDrawingAreaOrigImage_configure_event(
 	GtkWidget *widget,
 	GdkEventConfigure *event,
@@ -4077,7 +4077,7 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 	if (NULL == mainWin->mSelectedFin)
 		return TRUE;
 
-	//***1.96a - no change in image so no need to reconfigure (reload image)
+	// 1.96a - no change in image so no need to reconfigure (reload image)
 	// second condition makes sure this was called by us on Clist row selection
 	// and NOT by an actual window size/state change
 	if ((mainWin->mSelectedFin->mDataPos == mainWin->mDBCurEntryOffset) &&
@@ -4108,13 +4108,13 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 	// since resizeWithBorder creates a new image, we must delete this one after it is used
 	ColorImage *tempImage = new ColorImage(mainWin->mSelectedFin->mOriginalImageFilename);
 
-	if (NULL != mainWin->mOrigImageFullsize) //***2.01
-		delete mainWin->mOrigImageFullsize;  //***2.01
+	if (NULL != mainWin->mOrigImageFullsize) // 2.01
+		delete mainWin->mOrigImageFullsize;  // 2.01
 
 	mainWin->mOrigImage = resizeWithBorder(		
 			tempImage,
-			mainWin->mDrawingAreaOrigImage->allocation.height, //***1.7
-			mainWin->mDrawingAreaOrigImage->allocation.width); //***1.7
+			mainWin->mDrawingAreaOrigImage->allocation.height, // 1.7
+			mainWin->mDrawingAreaOrigImage->allocation.width); // 1.7
 
 	//indicat that this is the original image
 	gchar *frameLabel = new gchar[mainWin->mSelectedFin->mIDCode.length() + 12]; // leave room for " (reversed)"
@@ -4125,7 +4125,7 @@ gboolean on_mainDrawingAreaOrigImage_configure_event(
 
 	// delete here or memory leak results
 	//delete tempImage;
-	mainWin->mOrigImageFullsize = tempImage; //***2.01 - deleted as needed above and in destructor now
+	mainWin->mOrigImageFullsize = tempImage; // 2.01 - deleted as needed above and in destructor now
 
 	mainWin->refreshOrigImage();
 

@@ -101,4 +101,4 @@ class ImageModList
 			it;
 };
 
-#endif IMAGE_MOD_H
+#endif

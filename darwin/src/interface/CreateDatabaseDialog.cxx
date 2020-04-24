@@ -295,7 +295,6 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 
 	// connect callbacks AFTER setting initial valuse and sensitivity
 	// this prevents callback execution BEFORE entry fields are defined below
-
 	gtk_signal_connect (GTK_OBJECT(radioButton1),"toggled",
 	                    GTK_SIGNAL_FUNC (on_radioNewDbOnly_clicked),
 	                    (void *) this);
@@ -305,7 +304,6 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 	                    (void *) this);
 
 	// scrolling list of Catalog Schemes
-
 	GtkWidget *schemeLabel = gtk_label_new(_("Using Catalog Scheme"));
     gtk_widget_show(schemeLabel);
     gtk_box_pack_start(GTK_BOX(createDbVBox), schemeLabel, FALSE, FALSE, 10);
@@ -339,7 +337,6 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 	}
 
 	// give user a place to select / enter new survey area name
-
 	createDbSurveyAreaListLabel = gtk_label_new("New Survey Area Name");
 	gtk_widget_show (createDbSurveyAreaListLabel);
 	gtk_box_pack_start (GTK_BOX (createDbVBox), createDbSurveyAreaListLabel, FALSE, FALSE, 10);
@@ -351,7 +348,6 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 	gtk_entry_set_text(GTK_ENTRY (mNewSurveyAreaName), "");
 
 	// give user a place to enter a new database name
-
 	createDbNewDatabaseLabel = gtk_label_new("New Database Name");
 	gtk_widget_show (createDbNewDatabaseLabel);
 	gtk_box_pack_start (GTK_BOX (createDbVBox), createDbNewDatabaseLabel, FALSE, FALSE, 10);
@@ -436,7 +432,6 @@ GtkWidget* CreateDatabaseDialog::createCreateDatabaseDialog()
 	gtk_widget_grab_default (createDbButtonOK);
 	return createDbDialog;
 }
-
 
 //*******************************************************************
 //
@@ -867,7 +862,7 @@ void on_createDbButtonOK_clicked(
 
 		// all is well, now we can create the new database
 
-		//***2.22 - again, here we need to use the current data path, NOT DARWINHOME
+		// 2.22 - again, here we need to use the current data path, NOT DARWINHOME
 		//fullSurveyAreaName = dlg->mOptions->mDarwinHome;
 		fullSurveyAreaName = dlg->mOptions->mCurrentDataPath;
 		fullSurveyAreaName += PATH_SLASH;
