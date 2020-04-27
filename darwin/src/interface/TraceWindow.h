@@ -341,9 +341,6 @@ class TraceWindow
 			*mButtonImageMod, //***051TW
 			*mButtonImageOK,
 			*mButtonTraceOK,
-			//*mButtonFeaturePointsOK, //***1.96 - is not used at this time
-			//*mButtonSlideTrace, //***1.4 //Support Dropped v2.0
-			//*mButtonScaleTrace, //***1.4 //Support Dropped v2.0
 			*mButtonTraceUnlock, //***1.4
 			*mStatusLabel; //***054TW
 
@@ -449,7 +446,6 @@ class TraceWindow
 		void updateGC();
 		void updateGCColor();
 		void updateGCColor(GdkGC *gc, double color[4]); //***051TW
-
 
 		// utility functions to handle tracing
 		void traceAddAutoTracePoint(int x, int y, bool bolShift); //103AT SAH

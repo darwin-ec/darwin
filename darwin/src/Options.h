@@ -37,6 +37,7 @@ class Options
 			mNumberOfExistingDatabases(0),   //***2.22
 			//mDatabaseFileName("darwin.db"),
 			mDatabaseFileName(""), //***2.22 - default is now NO default database
+			mTempDirectory(""),
 #ifdef WIN32
 			//mCurrentSurveyArea("surveyAreas\\default"),
 #else

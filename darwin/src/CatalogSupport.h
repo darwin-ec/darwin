@@ -18,8 +18,8 @@ typedef enum {
 	convert
 } db_opentype_t;
 
-Database* openDatabase(Options *o, bool create);
-Database * openDatabase(MainWindow *mainWin, std::string filename);
+Database* openDatabase(Options *o, bool create, std::string area = "default");
+Database* openDatabase(MainWindow *mainWin, std::string filename);
 void copyFins(Database* from, Database *to);
 db_opentype_t databaseOpenType(std::string filePath);
 Database* convertDatabase(Options* o, std::string sourceFilename);

@@ -35,8 +35,8 @@ void **WL_Alloc2Dmem(int r, int c, int size_elem)
     }
     ptr = (void **) dataPtr;
 
-    for(i=0;i<r;i++)
-        ptr[i] = (void *) (((int ) data) + (i*(size_elem*c)));
+    for(i = 0; i < r; i++)
+        ptr[i] = (void *) (((long) data) + (i*(size_elem*c)));
 
     return ((void ** ) dataPtr);
 }
@@ -52,19 +52,22 @@ void **WL_Calloc2Dmem(int r, int c, int size_elem)
     void *dataPtr;
     void **ptr;
 
-    dataPtr= (void *) calloc(r,sizeof(void *));
-    data   = (void *) calloc(r*c,(size_elem));
+    int voidPtrSize = sizeof(void *);
+    dataPtr = (void *) calloc(r, voidPtrSize);
+    data = (void *) calloc(r * c, size_elem);
+    
     if (!data || !dataPtr) {
         printf("calloc failed in WL_Calloc2Dmem [%d %d %d] (Aborting ) ...\n",
                r,c,size_elem);
         exit(-1);
     }
+
     ptr = (void **) dataPtr;
 
-    for(i=0;i<r;i++)
-        ptr[i] = (void *) (((int ) data) + (i*(size_elem*c)));
+    for (i = 0; i < r; i++)
+        ptr[i] = (void *) ((long)data + (i * (size_elem * c)));
     
-    return ((void ** ) dataPtr);
+    return ((void **) dataPtr);
 }
 
 /* WL_Free2Dmem    
@@ -103,15 +106,15 @@ void ***WL_Alloc3Dmem(int d1, int d2, int d3, int size_elem)
     }
 
     size_page = size_elem * d2*d3;
-    rowPtr = (void *) ((int ) ptrTable + (sizeof(void *)*d1));
+    rowPtr = (void *) ((long) ptrTable + (sizeof(void *)*d1));
     for (i=0;i<d1;i++) {
         void **ptr = (void **) ptrTable;
         void **rPtr;
-        ptr[i] = (void *) ((int ) rowPtr + (i*d2*sizeof(void *)));
+        ptr[i] = (void *) ((long) rowPtr + (i*d2*sizeof(void *)));
         rPtr = (void **) ptr[i];
         for (j=0;j<d2;j++) {
-            rPtr[j] = (void *) ((int ) ptrData + 
-                              i*size_page + j*(size_elem * d3));
+            rPtr[j] = (void *) ((long) ptrData + 
+                              i * size_page + j * (size_elem * d3));
         }
     }
     return ((void ***) ptrTable);

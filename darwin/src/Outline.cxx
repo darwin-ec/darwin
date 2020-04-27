@@ -81,15 +81,15 @@ Outline::Outline(Contour *c, double radius) :
   mUserSetEndTE(false),
 	mRemappedChainPoints(NULL)
 {
-  mChainPoints = new FloatContour(); // ***008OL
- 	mChainPoints->ContourToFloatContour(c); //***008OL
-  mChain = new Chain(mChainPoints);
-  mTipPos = findTip();
-  mNotchPos = findNotch();
-  mBeginLE = findBeginLE();
-  mEndLE = findEndLE();
-  mEndTE = findPointOfInflection();
-  mLEAngle = findLEAngle();
+	mChainPoints = new FloatContour(); // ***008OL
+	mChainPoints->ContourToFloatContour(c); //***008OL
+	mChain = new Chain(mChainPoints);
+	mTipPos = findTip();
+	mNotchPos = findNotch();
+	mBeginLE = findBeginLE();
+	mEndLE = findEndLE();
+	mEndTE = findPointOfInflection();
+	mLEAngle = findLEAngle();
 }
 
 //////////////////////////////////////////////////////////////
@@ -377,129 +377,130 @@ int Outline::findTip()
     if (NULL == mChain)
 	    throw EmptyArgumentError("findTip() [*mChain]");
     if (mUserSetTip)  
-	throw InvalidArgumentError("findNotch() [User selected tip in use]");
+		throw InvalidArgumentError("findNotch() [User selected tip in use]");
 
     try {
-	int numPoints = mChain->length();
+		int numPoints = mChain->length();
 
-	// First, make a copy without the first value in the chain,
-	// since the first value skews the rest of the chain and is
-	// unnecessary for our purposes here
-	double *src = new double[numPoints - 1];
+		// First, make a copy without the first value in the chain,
+		// since the first value skews the rest of the chain and is
+		// unnecessary for our purposes here
+		double *src = new double[numPoints - 1];
 
-	memcpy(src, &((*mChain)[1]), (numPoints - 1) * sizeof(double));
-	// Now set up the variables needed to perform a wavelet
-	// transform on the chain
-	double **continuousResult;
-	continuousResult = (double **) WL_Calloc2Dmem(TRANSFORM_LEVELS + 1,
-						      nextPowerOfTwo(numPoints - 1),
-						      sizeof(double));
+		memcpy(src, &((*mChain)[1]), (numPoints - 1) * sizeof(double));
 
-	// Now perform the transformation
-	WL_FrwtVector(src,
-		      continuousResult,
-		      numPoints - 1,
-		      TRANSFORM_LEVELS,
-		      getMZLowPassFilter(), getMZHighPassFilter());
+		int nextPowOfTwo = nextPowerOfTwo(numPoints - 1);
+		// Now set up the variables needed to perform a wavelet
+		// transform on the chain
+		double **continuousResult = (double **) WL_Calloc2Dmem(TRANSFORM_LEVELS + 1,
+								nextPowOfTwo,
+								sizeof(double));
 
-	int
-		tipPosition = 0,
-		level = TRANSFORM_LEVELS;
+		// Now perform the transformation
+		WL_FrwtVector(src,
+				continuousResult,
+				numPoints - 1,
+				TRANSFORM_LEVELS,
+				getMZLowPassFilter(), getMZHighPassFilter());
 
-   //***0041TIP - JHS new section below 
-   // finding higest point on fin
-   // remember image is upside down so high point has minimum Y value
-   int highPointId = -1;
-   float highPointY = 10000.0f;
+		int
+			tipPosition = 0,
+			level = TRANSFORM_LEVELS;
 
-   for (int ptId = 0; ptId < numPoints; ptId++)
-      if ((*mChainPoints)[ptId].y < highPointY)
-      {
-         highPointY = (*mChainPoints)[ptId].y;
-         highPointId = ptId;
-      }
-      else if ((*mChainPoints)[ptId].y < highPointY+3.0)
-      {
-         // until we drop more than 3 units back down the fin
-         // keep advancing the highPointId.  That way, we
-         // find the rightmost "essentially highest" point
-         // on the outline
-         highPointId = ptId;
-      }
+	//***0041TIP - JHS new section below 
+	// finding higest point on fin
+	// remember image is upside down so high point has minimum Y value
+	int highPointId = -1;
+	float highPointY = 10000.0f;
 
-	/*
-	 * while (!tipPosition && level > 0) { // Find the maxima of the
-	 * coefficients double *modMax = new double[numPoints - 1];
-	 * 
-	 * for (int k = 0; k < numPoints - 1; k++) continuousResult[level][k] 
-	 * *= normalizationCoeff(level);
-	 * 
-	 * modulusMaxima(continuousResult[level], modMax, numPoints - 1);
-	 * 
-	 * // Now, find the largest positive max, which we'll // assume is
-	 * the tip of the fin.
-	 * 
-	 * double max = modMax[0]; for (int i = 1; i < numPoints - 1; i++) {
-	 * if (modMax[i] > max) { max = modMax[i]; tipPosition = i; } }
-	 * 
-	 * level--; delete[] modMax; } 
-	 */
+	for (int ptId = 0; ptId < numPoints; ptId++)
+		if ((*mChainPoints)[ptId].y < highPointY)
+		{
+			highPointY = (*mChainPoints)[ptId].y;
+			highPointId = ptId;
+		}
+		else if ((*mChainPoints)[ptId].y < highPointY+3.0)
+		{
+			// until we drop more than 3 units back down the fin
+			// keep advancing the highPointId.  That way, we
+			// find the rightmost "essentially highest" point
+			// on the outline
+			highPointId = ptId;
+		}
+
+		/*
+		* while (!tipPosition && level > 0) { // Find the maxima of the
+		* coefficients double *modMax = new double[numPoints - 1];
+		* 
+		* for (int k = 0; k < numPoints - 1; k++) continuousResult[level][k] 
+		* *= normalizationCoeff(level);
+		* 
+		* modulusMaxima(continuousResult[level], modMax, numPoints - 1);
+		* 
+		* // Now, find the largest positive max, which we'll // assume is
+		* the tip of the fin.
+		* 
+		* double max = modMax[0]; for (int i = 1; i < numPoints - 1; i++) {
+		* if (modMax[i] > max) { max = modMax[i]; tipPosition = i; } }
+		* 
+		* level--; delete[] modMax; } 
+		*/
 
 
-	while (level > 1) {
-	    // Find the maxima of the coefficients
-       double *modMax = new double[numPoints - 1];
+		while (level > 1) {
+			// Find the maxima of the coefficients
+		double *modMax = new double[numPoints - 1];
 
-	    for (int k = 0; k < numPoints - 1; k++)
-		continuousResult[level][k] *= normalizationCoeff(level);
+			for (int k = 0; k < numPoints - 1; k++)
+			continuousResult[level][k] *= normalizationCoeff(level);
 
-	    modulusMaxima(continuousResult[level], modMax, numPoints - 1);
+			modulusMaxima(continuousResult[level], modMax, numPoints - 1);
 
-	    // Now, find the largest positive max, which we'll
-	    // assume is the tip of the fin.
+			// Now, find the largest positive max, which we'll
+			// assume is the tip of the fin.
 
-	    if (tipPosition == 0) {
-			// original loop control is two line below
-			//double max = modMax[0]; //***0041TIP-JHS restricting range of search
-			//for (int i = 1; i < numPoints - 1; i++) { //***0041TIP-JHS restricting range of search
-			//***0041TIP - we now restrict the range for initial detection of the tip
-			// start at high point on fin and search within 150 point range along fin
-			//***1.6 - NOTE: there is an unintended consequence of the limmits imposed
-			// below.  If outlines are shortened to 50% or so of full size by having
-			// leading or trailing edges missing, the range of +/- 75 points is not
-			// a large enough range to capture tips of "MissingTip" fins in a consistent
-			// manner.  We need to rethink this, and possibly go back to the original
-			// and retest against a database of fins traced without this limit.
-			// The new "Iterative, Tip Shifting" mapping approach probably conpensates
-			// for tip placement better than this limit on detection does. -- JHS (8/2/2006)
-			double max = modMax[highPointId - 75]; //***1.6 - removed temporarily for tests
-			for (int i = highPointId - 75; i < highPointId + 75; i++) { //***1.6 - removed temporarily for tests
-				if (modMax[i] > max) {
-				max = modMax[i];
-				tipPosition = i;
+			if (tipPosition == 0) {
+				// original loop control is two line below
+				//double max = modMax[0]; //***0041TIP-JHS restricting range of search
+				//for (int i = 1; i < numPoints - 1; i++) { //***0041TIP-JHS restricting range of search
+				//***0041TIP - we now restrict the range for initial detection of the tip
+				// start at high point on fin and search within 150 point range along fin
+				//***1.6 - NOTE: there is an unintended consequence of the limmits imposed
+				// below.  If outlines are shortened to 50% or so of full size by having
+				// leading or trailing edges missing, the range of +/- 75 points is not
+				// a large enough range to capture tips of "MissingTip" fins in a consistent
+				// manner.  We need to rethink this, and possibly go back to the original
+				// and retest against a database of fins traced without this limit.
+				// The new "Iterative, Tip Shifting" mapping approach probably conpensates
+				// for tip placement better than this limit on detection does. -- JHS (8/2/2006)
+				double max = modMax[highPointId - 75]; //***1.6 - removed temporarily for tests
+				for (int i = highPointId - 75; i < highPointId + 75; i++) { //***1.6 - removed temporarily for tests
+					if (modMax[i] > max) {
+					max = modMax[i];
+					tipPosition = i;
+					}
 				}
-			}
-	    } else
-		tipPosition =
-		    findClosestMax(modMax, numPoints - 1, tipPosition);
+			} else
+			tipPosition =
+				findClosestMax(modMax, numPoints - 1, tipPosition);
 
-	    level--;
-	    delete[]modMax;
-	}
+			level--;
+			delete[]modMax;
+		}
 
-	// ... and clean up
-	WL_Free2Dmem(continuousResult);
-	delete[]src;
+		// ... and clean up
+		WL_Free2Dmem(continuousResult);
+		delete[]src;
 
-	// Note that the actual tip position is +1 because we
-	// ignored the first value 
-#ifdef DEBUG
-	cout << "Tip position: " << tipPosition + 1 << endl;
+		// Note that the actual tip position is +1 because we
+		// ignored the first value 
+	#ifdef DEBUG
+		cout << "Tip position: " << tipPosition + 1 << endl;
 
-	if ((tipPosition + 1) < 5)
-	    cout << "Probable bad tip position." << endl;
-#endif
-	return tipPosition + 1;
+		if ((tipPosition + 1) < 5)
+			cout << "Probable bad tip position." << endl;
+	#endif
+		return tipPosition + 1;
 
     } catch(...) {
 	throw;

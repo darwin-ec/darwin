@@ -30,8 +30,8 @@ Kernel configured for up to 8 processors.
 Processor type: x86_64h (Intel x86-64h Haswell)
 Processors active: 0 1 2 3 4 5 6 7
 Primary memory available: 16.00 gigabytes
-Default processor set: 481 tasks, 2155 threads, 8 processors
-Load average: 1.81, Mach factor: 6.18
+Default processor set: 499 tasks, 2124 threads, 8 processors
+Load average: 1.75, Mach factor: 6.24
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
@@ -1354,7 +1354,7 @@ configure:5867: checking for pkg-config
 configure:5885: found /usr/local/bin/pkg-config
 configure:5898: result: /usr/local/bin/pkg-config
 configure:5920: checking for GTK+ - version >= 2.0.0
-configure:6030: gcc -o conftest -g -O2 -I/usr/local/Cellar/libffi/3.3/include -I/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0 -I/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include -I/usr/local/Cellar/pango/1.44.7/include/pango-1.0 -I/usr/local/Cellar/fribidi/1.0.9/include/fribidi -I/usr/local/Cellar/harfbuzz/2.6.5/include/harfbuzz -I/usr/local/Cellar/graphite2/1.3.14/include -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/atk/2.36.0/include/atk-1.0 -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/pixman/0.40.0/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.13.1/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.37/include/libpng16 -I/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/glib/2.64.2_1/include -I/usr/local/Cellar/glib/2.64.2_1/include/glib-2.0 -I/usr/local/Cellar/glib/2.64.2_1/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.44/include   conftest.c -L/usr/local/Cellar/gtk+/2.24.32_3/lib -L/usr/local/Cellar/pango/1.44.7/lib -L/usr/local/Cellar/harfbuzz/2.6.5/lib -L/usr/local/Cellar/atk/2.36.0/lib -L/usr/local/Cellar/cairo/1.16.0_3/lib -L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib -L/usr/local/Cellar/glib/2.64.2_1/lib -L/usr/local/opt/gettext/lib -lgtk-quartz-2.0 -lgdk-quartz-2.0 -framework Cocoa -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl  >&5
+configure:6030: gcc -o conftest -g -O2 -I/usr/local/Cellar/libffi/3.3/include -I/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0 -I/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include -I/usr/local/Cellar/pango/1.44.7/include/pango-1.0 -I/usr/local/Cellar/fribidi/1.0.9/include/fribidi -I/usr/local/Cellar/harfbuzz/2.6.5_1/include/harfbuzz -I/usr/local/Cellar/graphite2/1.3.14/include -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/atk/2.36.0/include/atk-1.0 -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/pixman/0.40.0/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.13.1/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.37/include/libpng16 -I/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/glib/2.64.2_1/include -I/usr/local/Cellar/glib/2.64.2_1/include/glib-2.0 -I/usr/local/Cellar/glib/2.64.2_1/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.44/include   conftest.c -L/usr/local/Cellar/gtk+/2.24.32_3/lib -L/usr/local/Cellar/pango/1.44.7/lib -L/usr/local/Cellar/harfbuzz/2.6.5_1/lib -L/usr/local/Cellar/atk/2.36.0/lib -L/usr/local/Cellar/cairo/1.16.0_3/lib -L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib -L/usr/local/Cellar/glib/2.64.2_1/lib -L/usr/local/opt/gettext/lib -lgtk-quartz-2.0 -lgdk-quartz-2.0 -framework Cocoa -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl  >&5
 In file included from conftest.c:45:
 In file included from /usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0/gtk/gtk.h:33:
 In file included from /usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0/gtk/gtkaboutdialog.h:32:
@@ -1559,7 +1559,7 @@ configure:6558: checking for _doprnt
 configure:6558: gcc -o conftest -g -O2   conftest.c  >&5
 Undefined symbols for architecture x86_64:
   "__doprnt", referenced from:
-      _main in conftest-66520f.o
+      _main in conftest-bb1024.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:6558: $? = 1
@@ -1660,7 +1660,7 @@ configure:6572: checking for __argz_count
 configure:6572: gcc -o conftest -g -O2   conftest.c  >&5
 Undefined symbols for architecture x86_64:
   "___argz_count", referenced from:
-      _main in conftest-6a8ebd.o
+      _main in conftest-713d0b.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:6572: $? = 1
@@ -1761,7 +1761,7 @@ configure:6572: checking for __argz_next
 configure:6572: gcc -o conftest -g -O2   conftest.c  >&5
 Undefined symbols for architecture x86_64:
   "___argz_next", referenced from:
-      _main in conftest-780daf.o
+      _main in conftest-e60fa4.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:6572: $? = 1
@@ -1862,7 +1862,7 @@ configure:6572: checking for __argz_stringify
 configure:6572: gcc -o conftest -g -O2   conftest.c  >&5
 Undefined symbols for architecture x86_64:
   "___argz_stringify", referenced from:
-      _main in conftest-25caa9.o
+      _main in conftest-c83807.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:6572: $? = 1
@@ -1976,7 +1976,7 @@ configure:6572: checking for mempcpy
 configure:6572: gcc -o conftest -g -O2   conftest.c  >&5
 Undefined symbols for architecture x86_64:
   "_mempcpy", referenced from:
-      _main in conftest-7019d6.o
+      _main in conftest-810793.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 configure:6572: $? = 1
@@ -2364,8 +2364,8 @@ ECHO_T=''
 EGREP='/usr/bin/grep -E'
 EXEEXT=''
 GREP='/usr/bin/grep'
-GTK_CFLAGS='-I/usr/local/Cellar/libffi/3.3/include -I/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0 -I/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include -I/usr/local/Cellar/pango/1.44.7/include/pango-1.0 -I/usr/local/Cellar/fribidi/1.0.9/include/fribidi -I/usr/local/Cellar/harfbuzz/2.6.5/include/harfbuzz -I/usr/local/Cellar/graphite2/1.3.14/include -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/atk/2.36.0/include/atk-1.0 -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/pixman/0.40.0/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.13.1/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.37/include/libpng16 -I/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/glib/2.64.2_1/include -I/usr/local/Cellar/glib/2.64.2_1/include/glib-2.0 -I/usr/local/Cellar/glib/2.64.2_1/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.44/include'
-GTK_LIBS='-L/usr/local/Cellar/gtk+/2.24.32_3/lib -L/usr/local/Cellar/pango/1.44.7/lib -L/usr/local/Cellar/harfbuzz/2.6.5/lib -L/usr/local/Cellar/atk/2.36.0/lib -L/usr/local/Cellar/cairo/1.16.0_3/lib -L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib -L/usr/local/Cellar/glib/2.64.2_1/lib -L/usr/local/opt/gettext/lib -lgtk-quartz-2.0 -lgdk-quartz-2.0 -framework Cocoa -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl'
+GTK_CFLAGS='-I/usr/local/Cellar/libffi/3.3/include -I/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0 -I/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include -I/usr/local/Cellar/pango/1.44.7/include/pango-1.0 -I/usr/local/Cellar/fribidi/1.0.9/include/fribidi -I/usr/local/Cellar/harfbuzz/2.6.5_1/include/harfbuzz -I/usr/local/Cellar/graphite2/1.3.14/include -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/atk/2.36.0/include/atk-1.0 -I/usr/local/Cellar/cairo/1.16.0_3/include/cairo -I/usr/local/Cellar/pixman/0.40.0/include/pixman-1 -I/usr/local/Cellar/fontconfig/2.13.1/include -I/usr/local/opt/freetype/include/freetype2 -I/usr/local/Cellar/libpng/1.6.37/include/libpng16 -I/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0 -I/usr/local/Cellar/glib/2.64.2_1/include -I/usr/local/Cellar/glib/2.64.2_1/include/glib-2.0 -I/usr/local/Cellar/glib/2.64.2_1/lib/glib-2.0/include -I/usr/local/opt/gettext/include -I/usr/local/Cellar/pcre/8.44/include'
+GTK_LIBS='-L/usr/local/Cellar/gtk+/2.24.32_3/lib -L/usr/local/Cellar/pango/1.44.7/lib -L/usr/local/Cellar/harfbuzz/2.6.5_1/lib -L/usr/local/Cellar/atk/2.36.0/lib -L/usr/local/Cellar/cairo/1.16.0_3/lib -L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib -L/usr/local/Cellar/glib/2.64.2_1/lib -L/usr/local/opt/gettext/lib -lgtk-quartz-2.0 -lgdk-quartz-2.0 -framework Cocoa -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl'
 INSTALL_DATA='${INSTALL} -m 644'
 INSTALL_PROGRAM='${INSTALL}'
 INSTALL_SCRIPT='${INSTALL}'

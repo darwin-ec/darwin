@@ -161,60 +161,59 @@ int WL_FrwtVector(
     temp =
 	(dtype *) malloc(sizeof(dtype) * (length + (left + right) * pow2));
     if (temp == NULL) {
-	printf("WL_FrwtVector: unable to malloc working vector\n");
-	return 0;
+		printf("WL_FrwtVector: unable to malloc working vector\n");
+		return 0;
     }
 //printf("here2\n");
     /* allocate memory for the lowpass & highpass filter coefficients */
     hicoefs = (dtype *) malloc((hisize * pow2) * sizeof(dtype));
     lowcoefs = (dtype *) malloc((lowsize * pow2) * sizeof(dtype));
     if ((lowcoefs == NULL) || (hicoefs == NULL)) {
-	printf("WL_FrwtVector: unable to malloc filter coefficients\n");
-	return 0;
+		printf("WL_FrwtVector: unable to malloc filter coefficients\n");
+		return 0;
     }
 //printf("here3 %d %d %d\n",dest, &source,length);
     /* copy source to dest to support doing multiple level transforms */
     memcpy(dest[0], source, length * sizeof(dtype));
 
     for (pow2 = 1, level = 0; level < levels; level++, pow2 *= 2) {
+	//printf("here pow2:%d level:%d\n",pow2,level);
 
-//printf("here pow2:%d level:%d\n",pow2,level);
+		/* dilate the filters */
+		Dilate_filter(lowpass->coefs, lowcoefs, lowpass->length, level);
+		Dilate_filter(hipass->coefs, hicoefs, hipass->length, level);
+		lowoffset = lowpass->offset * pow2;
+		hioffset = hipass->offset * pow2;
+		lowsize = (lowpass->length - 1) * pow2 + 1;
+		hisize = (hipass->length - 1) * pow2 + 1;
+		left = MAX(lowoffset, hioffset);
+		right = MAX(lowsize - lowoffset - 1, hisize - hioffset - 1);
 
-	/* dilate the filters */
-	Dilate_filter(lowpass->coefs, lowcoefs, lowpass->length, level);
-	Dilate_filter(hipass->coefs, hicoefs, hipass->length, level);
-	lowoffset = lowpass->offset * pow2;
-	hioffset = hipass->offset * pow2;
-	lowsize = (lowpass->length - 1) * pow2 + 1;
-	hisize = (hipass->length - 1) * pow2 + 1;
-	left = MAX(lowoffset, hioffset);
-	right = MAX(lowsize - lowoffset - 1, hisize - hioffset - 1);
+		/* make periodic extension of dest vector */
+		j = 0;
+		for (i = length - left; i < length; i++)
+			temp[j++] = dest[0][i];
 
-	/* make periodic extension of dest vector */
-	j = 0;
-	for (i = length - left; i < length; i++)
-	    temp[j++] = dest[0][i];
+		for (i = 0; i < length; i++)
+			temp[j++] = dest[0][i];
 
-	for (i = 0; i < length; i++)
-	    temp[j++] = dest[0][i];
+		for (i = 0; i < right; i++)
+			temp[j++] = dest[0][i];
 
-	for (i = 0; i < right; i++)
-	    temp[j++] = dest[0][i];
-
-	/* convolve the data */
-	lowresult = dest[0];
-	hiresult = dest[level + 1];
-	lowdata = temp + left - lowoffset;
-	hidata = temp + left - hioffset;
-	for (i = 0; i < length; i++, lowdata++, hidata++) {
-	    double hisum = 0, lowsum = 0;
-	    for (j = 0; j < lowsize; j++)
-		lowsum += lowdata[j] * lowcoefs[j];
-	    for (j = 0; j < hisize; j++)
-		hisum += hidata[j] * hicoefs[j];
-	    *lowresult++ = lowsum;
-	    *hiresult++ = hisum;
-	}
+		/* convolve the data */
+		lowresult = dest[0];
+		hiresult = dest[level + 1];
+		lowdata = temp + left - lowoffset;
+		hidata = temp + left - hioffset;
+		for (i = 0; i < length; i++, lowdata++, hidata++) {
+			double hisum = 0, lowsum = 0;
+			for (j = 0; j < lowsize; j++)
+			lowsum += lowdata[j] * lowcoefs[j];
+			for (j = 0; j < hisize; j++)
+			hisum += hidata[j] * hicoefs[j];
+			*lowresult++ = lowsum;
+			*hiresult++ = hisum;
+		}
     }
 
     free((char *) lowcoefs);

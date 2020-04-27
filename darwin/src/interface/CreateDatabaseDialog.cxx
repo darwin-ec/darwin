@@ -688,7 +688,7 @@ void on_createDbButtonOK_clicked(
 			// create new one
 
 			dlg->mOptions->mDatabaseFileName = fullDatabaseName;
-			dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true); //***1.99
+			dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true, surveyAreaName); //***1.99
 
 			// restore GLOBAL currentDefaultScheme
 
@@ -896,7 +896,7 @@ void on_createDbButtonOK_clicked(
 
 		dlg->mOptions->mDatabaseFileName = fullDatabaseName;
 		//dlg->mMainWin->mDatabase = new Database(dlg->mOptions, true); //***1.99
-		dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true); //***1.99
+		dlg->mMainWin->mDatabase = openDatabase(dlg->mOptions, true, surveyAreaName); //***1.99
 
 		// restore GLOBAL currentDefaultScheme
 

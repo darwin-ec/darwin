@@ -1618,7 +1618,7 @@ void TraceWindow::traceMoveFeaturePointDisplay(int xC, int yC)
 	yTop = yC - halfHighPtSize;
 
 	/*
-	//***055TW - removed code to prevent artifacts in images with
+	// 055TW - removed code to prevent artifacts in images with
 	// mZoomRatio less than 100% -- these bounds checks are not
 	// needed ???? -- in any case they must be done in zoomed image
 	// coordinates
@@ -1793,7 +1793,7 @@ void TraceWindow::ensurePointInZoomedBounds(int &x, int &y)
 //
 void TraceWindow::traceSnapToFin()
 {
-	if ((NULL == mContour) || (mTraceLocked)) //***006FC
+	if ((NULL == mContour) || (mTraceLocked)) // 006FC
 		return;
 
 	GrayImage *edgeMagImage;
@@ -1812,7 +1812,7 @@ void TraceWindow::traceSnapToFin()
 		mOptions->mEdgeWeight
 	};
 
-	double spacing; //***005CM declaration moved ouside if() below
+	double spacing; // 005CM declaration moved ouside if() below
 	// contour is initially spaced with larger of 1) space for 200 points or
 	// 2) at three pixels (200 points limits hi res pics from having many points)
 	if (mContour->length() > 2) {
@@ -1835,9 +1835,9 @@ void TraceWindow::traceSnapToFin()
 
 	// features such as glare spots may cause outline points to bunch and wrap
 	// during active contour process
-	mContour->removeKnots(spacing); //***005CM
+	mContour->removeKnots(spacing); // 005CM
 
-	mTraceSnapped = true; //***051TW
+	mTraceSnapped = true; // 051TW
 
 	delete edgeImage;
 	delete edgeMagImage;
@@ -1846,7 +1846,7 @@ void TraceWindow::traceSnapToFin()
 
 
 //***1.96 - modified with virtual cropping bounds
-//***1.1 - new multiscale version
+// 1.1 - new multiscale version
 /////////////////////////////////////////////////////////////////////
 // traceSnapToFin: called to perform the active contour based fit of
 //    trace to fin outline and remove knots.  This is called after
@@ -3047,7 +3047,7 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 
 	// SCALE TRACE Slider
 
-	//***006PM begin additions for button to change scale
+	// 006PM begin additions for button to change scale
 	mButtonScaleTrace = gtk_hscale_new_with_range(0.25,3.5,0.05);
 	gtk_range_set_increments(GTK_RANGE(mButtonScaleTrace),0.01,0.05);
 	gtk_range_set_value(GTK_RANGE(mButtonScaleTrace),mNormScale);
@@ -3234,7 +3234,7 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 	// damage category using a scroll-down menu
 
 
-	if (NULL!=mDatabase) {
+	if (NULL != mDatabase) {
 		//We have a full-blown database, create a drop-down
 
 		mEntryDamage = gtk_combo_box_new_text();
@@ -3255,11 +3255,11 @@ GtkWidget *TraceWindow::createTraceWindow(const string &title)
 					GTK_COMBO_BOX(mEntryDamage),
 					_(mDatabase->catCategoryName(catIDnum).c_str()));
 
-			//***1.4 - set category from fin data if loading previously traced fin
+			// 1.4 - set category from fin data if loading previously traced fin
 			if ((NULL != mFin) && (mFin->mDamageCategory == mDatabase->catCategoryName(catIDnum)))
 				activeNum = catIDnum;
 		}
-		gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage), activeNum); //***1.4 - use activeNum
+		gtk_combo_box_set_active(GTK_COMBO_BOX(mEntryDamage), activeNum); // 1.4 - use activeNum
 
 	} else {//just give a label, we are probably opening a finz file directly from command-line (e.g. stand alone viewer)
 		//Label with mDatabaseFin->mDamageCategory (string)
@@ -4031,7 +4031,7 @@ void on_traceButtonTraceUnlock_clicked(GtkButton * button, gpointer userData)
 	showError("This capability not available yet.");
 
 	/*
-	//**1.4 - this code works to a degree
+	// 1.4 - this code works to a degree
 
 	// set status label
 
@@ -4321,7 +4321,7 @@ void on_traceButtonImageOK_clicked(GtkButton * button, gpointer userData)
 	Removed 103AT SAH
 	if (trace->length() > 100 ) // AUTO trace was successful
 	{
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(traceWin->mRadioButtonChopoutline),TRUE); //***1.6
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(traceWin->mRadioButtonChopoutline),TRUE); // 1.6
 		traceWin->mCurTraceTool = TRACE_CHOPOUTLINE;
 	}
 	else // AUTO trace failed
@@ -4507,7 +4507,7 @@ void on_traceRadioButtonMovePoint_toggled(GtkToggleButton * togglebutton,
 }
 
 //*******************************************************************
-//*** 1.5 krd
+//  1.5 krd
 //
 // void on_traceRadioButtonChopoutline_toggled(...)
 //
@@ -5091,9 +5091,9 @@ gboolean on_traceDrawingArea_expose_event(GtkWidget * widget,
 
 			//***1.8 - no longer draw LE_END
 			/*
-			p = traceWin->mOutline->getFeaturePointCoords(LE_END); //***008OL
-			xC = (int) round(nscale*p.x); //***006CN -- nscale added
-			yC = (int) round(nscale*p.y); //***006CN -- nscale added
+			p = traceWin->mOutline->getFeaturePointCoords(LE_END); // 008OL
+			xC = (int) round(nscale*p.x); // 006CN -- nscale added
+			yC = (int) round(nscale*p.y); // 006CN -- nscale added
 			if (traceWin->mZoomRatio != 100)
 				traceWin->zoomMapPointsToZoomed(xC, yC);
 
@@ -5117,8 +5117,8 @@ gboolean on_traceDrawingArea_expose_event(GtkWidget * widget,
 			
 	}
 		
-	//traceWin->mZoomXOffset -= traceWin->mVirtualLeft; //***1.96 - JHS
-	//traceWin->mZoomYOffset -= traceWin->mVirtualTop; //***1.96 - JHS
+	//traceWin->mZoomXOffset -= traceWin->mVirtualLeft; // 1.96 - JHS
+	//traceWin->mZoomYOffset -= traceWin->mVirtualTop; // 1.96 - JHS
 
 	return TRUE;
 }
@@ -5142,8 +5142,8 @@ float normalizeContour(Contour *c){
   point_t
 		//tipPosPoint = temp->getSavedPoint(tipPos), removed
     //beginLEPoint = temp->getSavedPoint(beginLE); removed
-    tipPosPoint = traceWin->mOutline->getFeaturePointCoords(LE_BEGIN), //***008OL
-    beginLEPoint = traceWin->mOutline->getFeaturePointCoords(LE_END); //***008OL
+    tipPosPoint = traceWin->mOutline->getFeaturePointCoords(LE_BEGIN), // 008OL
+    beginLEPoint = traceWin->mOutline->getFeaturePointCoords(LE_END); // 008OL
 
 
 	delete temp;
@@ -5170,10 +5170,10 @@ float normalizeContour(Contour *c){
     cur = cur->next;
   }
 
-	return factor; //***006NC
+	return factor; // 006NC
 
 }
-//***008OL end of deleted function
+// 008OL end of deleted function
 */
 
 //////////////////////////////////////////////////////////////////////////
@@ -5566,7 +5566,7 @@ void on_traceButtonSave_clicked(GtkButton * button, gpointer userData)
 	}
 
 	//if (NULL != traceWin->mFin) { //***1.65
-	if (NULL != traceWin->mFinWasLoaded) { //***1.95
+	if (traceWin->mFinWasLoaded) { //***1.95
 		showError("Save Fin option is NOT available for previously loaded fin file!");
 		return;
 	}

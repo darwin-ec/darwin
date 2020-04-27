@@ -76,13 +76,14 @@ public:
  *  the database type appropriately.
  *
  */
-Database * openDatabase(Options *o, bool create)
+Database* openDatabase(Options *o, bool create, std::string area)
 {
 	Database* db;
 	CatalogScheme cat; // empty scheme by default
 
 	if (create)
 	{
+		rebuildFolders(o->mCurrentDataPath, area, false);
 		// should ONLY end up here with IFF we are NOT converting an old database
 		int id = o->mCurrentDefaultCatalogScheme;
 		cat.schemeName = o->mDefinedCatalogSchemeName[id];

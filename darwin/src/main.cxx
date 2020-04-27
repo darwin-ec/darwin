@@ -55,10 +55,11 @@
 #include <config.h>
 #endif
 
-#include <glib.h> //***2.22 for threads
+#include <glib.h> // 2.22 for threads
+#include <pwd.h>
 
 #include <gtk/gtk.h>
-#pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
+#pragma warning(disable:4786) // 1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>
 
 #include "CatalogSupport.h" //SAH
@@ -144,8 +145,18 @@ void readConfig(string homedir)
 
 #else
 
-	//***2.22 - no predefined "temp" dir on Mac
-	gOptions->mTempDirectory = getenv("HOME");
+	// 2.22 - no predefined "temp" dir on Mac
+	// getenv("HOME") is sometimes NULL, try a few methods if it is.
+	const char *homeDir = getenv("HOME");
+    if (homeDir == NULL)
+	{
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd)
+    		homeDir = pwd->pw_dir;
+		else
+			homeDir = ".";
+    }
+	gOptions->mTempDirectory = homeDir;
 	gOptions->mTempDirectory += "/darwintmp";
 
 	fileName = homedir + "/system/darwinrc";
@@ -625,8 +636,17 @@ int main(int argc, char *argv[])
 	if (NULL != getenv("HOMEPATH"))
 		gOptions->mCurrentDataPath += getenv("HOMEPATH"); // user's home
 #else
-	if (NULL != getenv("HOME"))
-		gOptions->mCurrentDataPath = getenv("HOME"); // Mac & Linux - user's home
+	const char *homeDir = getenv("HOME");
+    if (homeDir == NULL)
+	{
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd)
+    		homeDir = pwd->pw_dir;
+		else
+			homeDir = ".";
+    }
+
+	gOptions->mCurrentDataPath = homeDir; // Mac & Linux - user's home
 #endif
 	
 	if ("" != gOptions->mCurrentDataPath)
