@@ -18,6 +18,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 
 #include "Options.h"
 extern Options *gOptions;

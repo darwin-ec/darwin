@@ -52,7 +52,7 @@
 #include <stdio.h>
 #ifdef WIN32
 extern "C"{
-/  2.22 - these two macros get redifined inside jpeglib.h (jconfig.vc) */
+/*  2.22 - these two macros get redifined inside jpeglib.h (jconfig.vc) */
 #undef HAVE_STDDEF_H
 #undef HAVE_STDLIB_H
 #include "../../jpeg-6b/src/jpeglib.h" 

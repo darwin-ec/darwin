@@ -56,7 +56,10 @@
 #endif
 
 #include <glib.h> // 2.22 for threads
+
+#ifndef WIN32
 #include <pwd.h>
+#endif
 
 #include <gtk/gtk.h>
 #pragma warning(disable:4786) // 1.95 removes debug warnings in <string> <vector> <map> etc
