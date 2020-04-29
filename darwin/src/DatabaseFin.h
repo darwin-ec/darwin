@@ -49,6 +49,7 @@
 #ifndef DATABASEFIN_HH
 #define DATABASEFIN_HH
 
+#include <string.h>
 #include "image_processing/ColorImage.h"
 #include "image_processing/GrayImage.h"
 #include "FloatContour.h" //  008OL

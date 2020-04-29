@@ -54,6 +54,7 @@ darwin_LDADD = \
         -L$(HOME)/gtk/inst/lib/ -ljpeg \
         -L./../png -lPNGsupport \
         -lpng \
+        -ldl \
         @GTK_LIBS@ $(INTLLIBS)
 
 darwin_DEPENDENCIES = \
@@ -64,3 +65,6 @@ darwin_DEPENDENCIES = \
        $(top_srcdir)/src/math/libmath.a \
        $(top_srcdir)/png/libPNGsupport.a
 
+darwin_CFLAGS = -Wno-narrowing make
+
+darwin_CXXFLAGS = -pthread

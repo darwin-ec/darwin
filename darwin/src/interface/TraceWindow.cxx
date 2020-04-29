@@ -1195,7 +1195,7 @@ void TraceWindow::traceErasePoint(int x, int y)
 		for (int c = col_start; c <= col_end; c++)
 			mContour->removePoint(c, r);
 
-	//***1.4 - remove empty Contour so other functions do not have to check for same
+	// 1.4 - remove empty Contour so other functions do not have to check for same
 	if (0 == mContour->length())
 	{
 		delete mContour;

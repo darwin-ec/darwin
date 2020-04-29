@@ -13,6 +13,10 @@
 
 #include "exif.h"
 
+#ifdef __linux__
+#include <cstring>
+#endif
+
 using namespace std;
 
 //--------------------------------------------------------------------------

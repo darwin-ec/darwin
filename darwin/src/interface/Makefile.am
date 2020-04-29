@@ -37,4 +37,7 @@ libInterface_a_SOURCES = \
         OpenFileChooserDialog.cxx OpenFileChooserDialog.h \
         SaveFileChooserDialog.cxx SaveFileChooserDialog.h
 
+libInterface_a_CFLAGS = -Wno-narrowing
+
+libInterface_a_CXXFLAGS = -Wno-narrowing
 

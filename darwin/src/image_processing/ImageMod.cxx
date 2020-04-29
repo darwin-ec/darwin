@@ -19,6 +19,10 @@
 
 #include "ImageMod.h"
 
+#ifdef __linux__
+#include <stdio.h>
+#endif
+
 using namespace std;
 //using ImageMod::ImageModType; // vc++6.0 for ImageModType returned by getType function
 

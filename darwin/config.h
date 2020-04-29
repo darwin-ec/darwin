@@ -26,7 +26,7 @@
 #define HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the <argz.h> header file. */
-/* #undef HAVE_ARGZ_H */
+#define HAVE_ARGZ_H 1
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 /* #undef HAVE_DOPRNT */
@@ -38,7 +38,7 @@
 #define HAVE_FLOAT_H 1
 
 /* Define to 1 if you have the `floor' function. */
-#define HAVE_FLOOR 1
+/* #undef HAVE_FLOOR */
 
 /* Define to 1 if you have the `getcwd' function. */
 #define HAVE_GETCWD 1
@@ -85,13 +85,13 @@
 #define HAVE_MALLOC 1
 
 /* Define to 1 if you have the <malloc.h> header file. */
-/* #undef HAVE_MALLOC_H */
+#define HAVE_MALLOC_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `mempcpy' function. */
-/* #undef HAVE_MEMPCPY */
+#define HAVE_MEMPCPY 1
 
 /* Define to 1 if you have the `memset' function. */
 #define HAVE_MEMSET 1
@@ -106,7 +106,7 @@
 #define HAVE_NL_LANGINFO 1
 
 /* Define to 1 if you have the `pow' function. */
-#define HAVE_POW 1
+/* #undef HAVE_POW */
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #define HAVE_PTRDIFF_T 1
@@ -119,7 +119,7 @@
 #define HAVE_SETLOCALE 1
 
 /* Define to 1 if you have the `sqrt' function. */
-#define HAVE_SQRT 1
+/* #undef HAVE_SQRT */
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -135,7 +135,7 @@
 #define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdio_ext.h> header file. */
-/* #undef HAVE_STDIO_EXT_H */
+#define HAVE_STDIO_EXT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #define HAVE_STDLIB_H 1
@@ -195,17 +195,17 @@
 #define HAVE__BOOL 1
 
 /* Define to 1 if you have the `__argz_count' function. */
-/* #undef HAVE___ARGZ_COUNT */
+#define HAVE___ARGZ_COUNT 1
 
 /* Define to 1 if you have the `__argz_next' function. */
-/* #undef HAVE___ARGZ_NEXT */
+#define HAVE___ARGZ_NEXT 1
 
 /* Define to 1 if you have the `__argz_stringify' function. */
-/* #undef HAVE___ARGZ_STRINGIFY */
+#define HAVE___ARGZ_STRINGIFY 1
 
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
-/* #undef LSTAT_FOLLOWS_SLASHED_SYMLINK */
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
 
 /* Name of package */
 #define PACKAGE "darwin"
@@ -220,7 +220,7 @@
 #define PACKAGE_NAME "darwin"
 
 /* Define location of package source */
-#define PACKAGE_SOURCE_DIR "/Users/adamrussell/Documents/Projects/darwin-ec/darwin"
+#define PACKAGE_SOURCE_DIR "/home/adamrussell/Documents/Projects/darwin-ec/darwin"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "darwin 2.22"

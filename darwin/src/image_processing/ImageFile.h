@@ -33,6 +33,10 @@
 #include <config.h>
 #endif
 
+#ifdef __linux__
+#include <string.h>
+#endif
+
 #ifndef WIN32
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #endif

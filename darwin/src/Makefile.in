@@ -119,12 +119,12 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ -Wno-narrowing
 CPP = @CPP@
-CPPFLAGS = @CPPFLAGS@
+CPPFLAGS = @CPPFLAGS@ -pthread
 CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = @CXXFLAGS@
+CXXFLAGS = @CXXFLAGS@ -pthread
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -259,6 +259,7 @@ darwin_LDADD = \
         -L$(HOME)/gtk/inst/lib/ -ljpeg \
         -L./../png -lPNGsupport \
         -lpng \
+		-ldl \
         @GTK_LIBS@ $(INTLLIBS)
 
 darwin_DEPENDENCIES = \

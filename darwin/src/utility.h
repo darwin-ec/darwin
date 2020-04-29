@@ -10,6 +10,10 @@
 #ifndef UTILITY_HH
 #define UTILITY_HH
 
+#ifdef __linux__
+#include <cstring>
+#endif
+
 #include <math.h>
 #pragma warning(disable:4786) //***1.95 removes debug warnings in <string> <vector> <map> etc
 #include <string>

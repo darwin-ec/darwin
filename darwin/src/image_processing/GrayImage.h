@@ -10,6 +10,10 @@
 #ifndef GRAYIMAGE_HH
 #define GRAYIMAGE_HH
 
+#ifdef __linux__
+#include <string.h>
+#endif
+
 #include "ImageFile.h"
 #include "Pixel.h"
 #include "Histogram.h"

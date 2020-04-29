@@ -10,6 +10,14 @@
 
 #include <gtk/gtk.h>
 
+
+/*
+ * Ugly hack to prevent libintl.h from actually being included because of the macros below.
+ */
+#ifdef __linux__
+#define _LIBINTL_H      1
+#endif
+
 /*
  * Standard gettext macros.
  */
