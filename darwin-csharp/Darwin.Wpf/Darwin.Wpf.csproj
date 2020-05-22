@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Cursors\autotrace_cursor.cur" />
+    <None Remove="Resources\Cursors\chopoutline_cursor.cur" />
+    <None Remove="Resources\Cursors\eraser_cursor.cur" />
+    <None Remove="Resources\Cursors\magnify_cursor.cur" />
+    <None Remove="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" />
+    <None Remove="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" />
+    <None Remove="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Cursors\autotrace_cursor.cur" />
+    <Resource Include="Resources\Cursors\chopoutline_cursor.cur" />
+    <Resource Include="Resources\Cursors\eraser_cursor.cur" />
+    <Resource Include="Resources\Cursors\magnify_cursor.cur" />
+    <Resource Include="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Darwin\Darwin.csproj" />
+  </ItemGroup>
+
+</Project>
