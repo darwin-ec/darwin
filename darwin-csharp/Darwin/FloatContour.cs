@@ -445,9 +445,7 @@ namespace Darwin
             a[2, 1] = p3.Y;
 
             for (int i = 0; i < 3; i++)
-            {
                 b[i, i] = a[i, i];
-            }
 
             // and, obviously, this time, we're going to solve for the second row of
             // coefficients, so we'll put the desired y values in the augmented
