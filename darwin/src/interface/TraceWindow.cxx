@@ -876,7 +876,7 @@ void TraceWindow::getViewedImageBoundsNonZoomed(int &left, int &top,
 
 //*******************************************************************
 // Point clicked for AutoTrace -- 103AT SAH
-void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift)//AT103 SAH
+void TraceWindow::traceAddAutoTracePoint(int x, int y, bool bolShift) // AT103 SAH
 {
 
 	if (!pointInImageBounds(x, y))

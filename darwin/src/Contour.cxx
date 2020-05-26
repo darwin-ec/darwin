@@ -560,7 +560,6 @@ int Contour::minY()
 }
 
 
-
 //*******************************************************************
 //
 // unsigned Contour::length() const
@@ -571,7 +570,6 @@ unsigned Contour::length() const
 {
 	return mNumPoints;
 }
-
 
 //*******************************************************************
 //
@@ -599,7 +597,6 @@ double Contour::totalDistanceAlongContour() const
 
         return totalDistance;
 }
-
 
 //*******************************************************************
 //
@@ -1194,5 +1191,3 @@ bool Contour::trimAndReorder(Contour_point_t startPt, Contour_point_t endPt)
 
 	return true;
 }
-
-

@@ -34,7 +34,7 @@
 *
 * NAME: Mike Heath
 *       Computer Vision Laboratory
-*       University of South Floeida
+*       University of South Florida
 *       heath@csee.usf.edu
 *
 * DATE: 2/15/96
