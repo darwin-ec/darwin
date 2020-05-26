@@ -16,9 +16,9 @@
         <Cursor x:Key="MagnifyCursor">Resources/Cursors/magnify_cursor.cur</Cursor>
         
         <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Green" />
             <x:Static Member="Brushes.Red" />
             <x:Static Member="Brushes.Yellow" />
-            <x:Static Member="Brushes.Green" />
             <x:Static Member="Brushes.Cyan" />
             <x:Static Member="Brushes.Blue" />
             <x:Static Member="Brushes.Magenta" />

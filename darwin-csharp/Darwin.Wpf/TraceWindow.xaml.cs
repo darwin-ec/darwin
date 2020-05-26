@@ -533,15 +533,13 @@ namespace Darwin.Wpf
 
 		private void TraceChopOutline(Darwin.Point point)
 		{
-			int start, stop;
-
 			if (_vm.Contour == null)
 			{
 				_movePosition = -1;
 				return;
 			}
 
-			_chopInit = true;
+			//_chopInit = true;
 
 			// TODO
 			//this->addUndo(mContour);
@@ -550,6 +548,8 @@ namespace Darwin.Wpf
 
 			if (_chopPosition >= 0)
 			{
+				int start, stop;
+
 				if ((_vm.Contour.NumPoints - _chopPosition) > _chopPosition)
 				{
 					_chopLead = 1;
@@ -567,6 +567,48 @@ namespace Darwin.Wpf
 					_vm.Contour[i].Type = PointType.Chopping;
 			}
         }
+
+		private void TraceChopOutlineUpdate(Darwin.Point point)
+		{
+			if (_vm.Contour == null)
+			{
+				_movePosition = -1;
+				return;
+			}
+
+			var newChopPosition = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
+
+			if (newChopPosition >= 0)
+			{
+				int start, stop;
+
+				if ((_vm.Contour.NumPoints - newChopPosition) > newChopPosition)
+				{
+					_chopLead = 1;
+					start = 0;
+					stop = newChopPosition;
+				}
+				else
+				{
+					_chopLead = 0;
+					start = newChopPosition;
+					stop = _vm.Contour.NumPoints;
+				}
+
+				for (var i = 0; i < _vm.Contour.NumPoints; i++)
+				{
+					if (i >= start && i < stop)
+					{
+						_vm.Contour[i].Type = PointType.Chopping;
+					}
+					else if (_vm.Contour[i].Type == PointType.Chopping)
+                    {
+						_vm.Contour[i].Type = PointType.Normal;
+                    }
+				}
+				_chopPosition = newChopPosition;
+			}
+		}
 
 		private void TraceChopOutlineFinal()
 		{
@@ -638,14 +680,6 @@ namespace Darwin.Wpf
 				_vm.Contour = null;
 		}
 
-		private void TraceMovePointUpdate(Darwin.Point point)
-		{
-			if (_vm.Contour == null || -1 == _movePosition || point.IsEmpty)
-				return;
-
-			_vm.Contour[_movePosition].SetPosition(point.X, point.Y);
-		}
-
 		private void TraceMovePointInit(Darwin.Point point)
 		{
 			if (_vm.Contour == null)
@@ -662,6 +696,14 @@ namespace Darwin.Wpf
 			_movePosition = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
 
 			_vm.Contour[_movePosition].Type = PointType.Moving;
+		}
+
+		private void TraceMovePointUpdate(Darwin.Point point)
+		{
+			if (_vm.Contour == null || -1 == _movePosition || point.IsEmpty)
+				return;
+
+			_vm.Contour[_movePosition].SetPosition(point.X, point.Y);
 		}
 
 		private void TraceMovePointFinalize(Darwin.Point point)
@@ -1445,6 +1487,61 @@ namespace Darwin.Wpf
 			}
 		}
 
+		private void TraceCanvas_MouseMove(object sender, MouseEventArgs e)
+		{
+			var clickedPoint = e.GetPosition(this.TraceCanvas);
+			var imagePoint = MapWindowsPointToDarwinPoint(clickedPoint);
+
+			//bool shiftKeyDown = false;
+
+			//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+			//	shiftKeyDown = true;
+
+			if (e.LeftButton == MouseButtonState.Pressed)
+			{
+				Trace.WriteLine(clickedPoint);
+
+				switch (_vm.TraceTool)
+				{
+					case TraceToolType.Pencil:
+						TraceAddNormalPoint(imagePoint);
+						e.Handled = true;
+						break;
+
+					case TraceToolType.Eraser:
+						TraceErasePoint(imagePoint);
+						e.Handled = true;
+						break;
+
+					case TraceToolType.AddPoint:   // krd - treat add point as move point
+					case TraceToolType.MovePoint:
+						TraceMovePointUpdate(imagePoint);
+						e.Handled = true;
+						break;
+
+					case TraceToolType.MoveFeature: //***006PM new case to move Notch
+						TraceMoveFeaturePointUpdate(imagePoint); //***051TW
+						e.Handled = true;
+						break;
+
+					case TraceToolType.Crop:
+						CropUpdate(imagePoint);
+						e.Handled = true;
+						break;
+
+					case TraceToolType.ChopOutline:
+						TraceChopOutlineUpdate(imagePoint);
+						e.Handled = true;
+						break;
+
+					case TraceToolType.Rotate:
+						RotateUpdate(imagePoint);
+						e.Handled = true;
+						break;
+				}
+			}
+		}
+
 		private void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			Trace.WriteLine("left mouse button up");
@@ -1509,56 +1606,6 @@ namespace Darwin.Wpf
 					RotateFinal(clickedPoint);
 					e.Handled = true;
 					break;
-			}
-		}
-
-		private void TraceCanvas_MouseMove(object sender, MouseEventArgs e)
-		{
-			var clickedPoint = e.GetPosition(this.TraceCanvas);
-			var imagePoint = MapWindowsPointToDarwinPoint(clickedPoint);
-
-			//bool shiftKeyDown = false;
-
-			//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-			//	shiftKeyDown = true;
-
-			if (e.LeftButton == MouseButtonState.Pressed)
-			{
-				Trace.WriteLine(clickedPoint);
-
-				switch (_vm.TraceTool)
-				{
-					case TraceToolType.Pencil:
-						TraceAddNormalPoint(imagePoint);
-						e.Handled = true;
-						break;
-
-					case TraceToolType.Eraser:
-						TraceErasePoint(imagePoint);
-						e.Handled = true;
-						break;
-
-					case TraceToolType.AddPoint:   // krd - treat add point as move point
-					case TraceToolType.MovePoint:
-						TraceMovePointUpdate(imagePoint);
-						e.Handled = true;
-						break;
-
-					case TraceToolType.MoveFeature: //***006PM new case to move Notch
-						TraceMoveFeaturePointUpdate(imagePoint); //***051TW
-						e.Handled = true;
-						break;
-
-					case TraceToolType.Crop:
-						CropUpdate(imagePoint);
-						e.Handled = true;
-						break;
-
-					case TraceToolType.Rotate:
-						RotateUpdate(imagePoint);
-						e.Handled = true;
-						break;
-				}
 			}
 		}
 	}

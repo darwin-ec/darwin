@@ -176,8 +176,17 @@ namespace Darwin.Wpf.FrameworkElements
             drawingVisual.DataPoint = point;
             DrawingContext dc = drawingVisual.RenderOpen();
 
-            dc.DrawEllipse(Brushes[0], null,
-                new System.Windows.Point(point.X, point.Y), 3, 3);
+            switch (point.Type)
+            {
+                case PointType.Chopping:
+                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X, point.Y), 3, 3);
+                    break;
+
+                case PointType.Normal:
+                default:
+                    dc.DrawEllipse(Brushes[0], null, new System.Windows.Point(point.X, point.Y), 3, 3);
+                    break;
+            }
 
             if (point.Type == PointType.Moving && Pens != null)
             {
