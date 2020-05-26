@@ -1,11 +1,19 @@
-﻿using Darwin.Extensions;
+﻿//*******************************************************************
+//   file: snake.cxx
+//
+// author: Mark Allen
+//
+//   mods: 
+//
+// Much of this code is from Active Contour code from USF and other 
+// sources.
+//
+//*******************************************************************
+
+using Darwin.Extensions;
 using Darwin.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin.ImageProcessing
 {

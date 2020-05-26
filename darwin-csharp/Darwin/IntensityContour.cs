@@ -1,4 +1,14 @@
-﻿using Darwin.Extensions;
+﻿//*******************************************************************
+//   file: IntensityContour.cxx
+//
+// author: Scott Hale
+//
+//   mods: J H Stewman (8/2/2005)
+//         -- reformatting of code and addition of comment blocks
+//
+//*******************************************************************
+
+using Darwin.Extensions;
 using Darwin.Helpers;
 using System;
 using System.Collections.Generic;

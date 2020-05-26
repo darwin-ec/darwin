@@ -140,34 +140,6 @@ namespace Darwin.Wpf
 			//ImagingProvider.FitToContentMagnifier(imgObj, imgTransformGroup, imgCanvas, imgCanvasMagnifier, imgMagnifier);
 		}
 
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="p"></param>
-		/// <returns>Returns the point that corresponds with the point inside the bitmap. Empty if it's outside the bitmap.</returns>
-		//private System.Drawing.Point MapSKPointToBitmapPoint(SKPoint p)
-		//{
-		//	if (_originalBitmap == null)
-		//		return System.Drawing.Point.Empty;
-
-		//	SKPoint correctedPoint = new SKPoint(p.X - _imageOffset.X, p.Y - _imageOffset.Y);
-
-		//	int x = (_vm.ZoomRatio < 1.0) ? Convert.ToInt32(Math.Round(correctedPoint.X / _vm.ZoomRatio)) : Convert.ToInt32(Math.Floor(correctedPoint.X / _vm.ZoomRatio));
-
-		//	int y = (_vm.ZoomRatio < 1.0) ? Convert.ToInt32(Math.Round(correctedPoint.Y / _vm.ZoomRatio)) : Convert.ToInt32(Math.Floor(correctedPoint.Y / _vm.ZoomRatio));
-
-		//	if (x < 0 || y < 0 || x >= _originalBitmap.Width || y >= _originalBitmap.Height)
-		//		return System.Drawing.Point.Empty;
-
-		//	return new System.Drawing.Point(x, y);
-		//}
-
-		//private SKPoint MapBitmapPointToSKPoint(System.Drawing.Point p)
-		//{
-		//	return new SKPoint(p.X * _vm.ZoomRatio + _imageOffset.X, p.Y * _vm.ZoomRatio + _imageOffset.Y);
-		//}
-
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)
 		{
 			// Clip to image bounds
@@ -184,341 +156,6 @@ namespace Darwin.Wpf
 		{
 			return new System.Windows.Point(point.X, point.Y);
 		}
-
-		//private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
-		//{
-		//	Trace.WriteLine("paint surface");
-
-		//	var canvas = e.Surface.Canvas;
-
-		//	// Get the screen density for scaling
-		//	var scale = (float)PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
-		//	var scaledSize = new SKSize(e.Info.Width / scale, e.Info.Height / scale);
-
-		//	// Handle the device screen density
-		//	canvas.Scale(scale);
-
-		//	// Make sure the canvas is blank / reset to background color
-		//	canvas.Clear(_backgroundColor);
-
-		//	// draw some text
-		//	var paint = new SKPaint
-		//	{
-		//		Color = SKColors.Black,
-		//		IsAntialias = true,
-		//		Style = SKPaintStyle.Fill,
-		//		TextAlign = SKTextAlign.Center,
-		//		TextSize = 24
-		//	};
-
-		//	var text = "SkiaSharp";
-
-		//	if (_textPoint == null || scale != _currentScale || scaledSize != _currentScaledSize)
-		//	{
-		//		_currentScale = scale;
-		//		_currentScaledSize = scaledSize;
-
-		//		_textPoint = new SKPoint(scaledSize.Width / 2, (scaledSize.Height + paint.TextSize) / 2);
-
-		//		var rect = new SKRect();
-		//		paint.MeasureText(text, ref rect);
-
-		//		var adjustedTextPoint = new SKPoint(_textPoint.X - rect.Width / 2, _textPoint.Y - rect.Height);
-
-		//		_textBounds = SKRect.Create(adjustedTextPoint, rect.Size);
-		//	}
-
-		//	canvas.DrawText(text, _textPoint, paint);
-
-		//	if (_image != null)
-		//	{
-		//		var pixmap = new SKPixmap();
-
-		//		var imageSize = new SKSize(_image.Width, _image.Height);
-		//		float ratio;
-		//		_zoomedImageSize = imageSize.ResizeKeepAspectRatio(scaledSize.Width, scaledSize.Height, out ratio);
-		//		_vm.ZoomRatio = ratio;
-
-		//		// TODO: Make sure this works on HiDPI/Retina displays
-		//		float zoomXOffset = (scaledSize.Width - _zoomedImageSize.Width) / 2.0f;
-		//		float zoomYOffset = (scaledSize.Height - _zoomedImageSize.Height) / 2.0f;
-
-		//		// Just in case we have some bad numbers come through or our math
-		//		// is too fuzzy.
-		//		if (zoomXOffset < 0f)
-		//			zoomXOffset = 0f;
-		//		if (zoomYOffset < 0f)
-		//			zoomYOffset = 0f;
-
-		//		_imageOffset = new SKPoint(zoomXOffset, zoomYOffset);
-
-		//		_imageBounds = SKRect.Create(_imageOffset, _zoomedImageSize);
-
-		//		canvas.DrawImage(_image, _imageBounds);
-		//	}
-
-		//	//on_traceDrawingArea_expose_event
-		//	if (_vm.Contour != null)
-		//	{
-		//		var pointPaint = new SKPaint
-		//		{
-		//			Color = SKColors.Green,
-		//			IsAntialias = true,
-		//			Style = SKPaintStyle.Fill
-		//		};
-
-		//		foreach (var p in _vm.Contour.Points)
-		//		{
-		//			SKPoint contourPoint = MapBitmapPointToSKPoint(p);
-
-		//			canvas.DrawCircle(contourPoint, AppSettings.DrawingPointSize, pointPaint);
-		//		}
-
-		//		//TODO _moveDrawLine Need to draw before after lines to moveposition
-		//	}
-		//}
-
-		//private void skiaElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-		//{
-		//	var clickedPoint = e.GetPosition(this.skiaElement).ToSKPoint();
-		//	var bitmapPoint = MapSKPointToBitmapPoint(clickedPoint);
-
-		//	bool shiftKeyDown = false;
-
-		//	if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-		//		shiftKeyDown = true;
-
-		//	switch (_vm.TraceTool)
-		//	{
-		//		case TraceToolType.Magnify:
-		//			if (shiftKeyDown)
-		//				ZoomOut(clickedPoint);
-		//			else
-		//				ZoomIn(clickedPoint);
-
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.AutoTrace:
-		//			if (!_vm.TraceLocked)
-		//			{
-		//				// TODO: Clean this up
-		//				if (_vm.Contour != null && _vm.Contour.NumPoints >= 2) //If the it has 0 or 1 points, it's ok to use.
-		//				{
-		//					//traceWin->addUndo(traceWin->mContour);
-		//					//if (getNumDeleteOutlineDialogReferences() > 0)
-		//					//	return TRUE;
-		//					//DeleteOutlineDialog* dialog =
-		//					//	new DeleteOutlineDialog(traceWin, &traceWin->mContour);
-		//					//dialog->show();
-		//				}
-		//				else
-		//					TraceAddAutoTracePoint(bitmapPoint, shiftKeyDown); //103AT SAH
-
-		//				e.Handled = true;
-		//			}
-		//			break;
-
-		//		case TraceToolType.Pencil:
-		//			if (_vm.ImageLocked && !_vm.TraceLocked)
-		//			{ //***051TW
-
-		//				//if ((NULL != traceWin->mContour) &&
-		//				//	(traceWin->mContour->length() != 0)) //***1.4TW - empty is OK to reuse
-		//				//{
-		//				//	traceWin->addUndo(traceWin->mContour);
-		//				//	if (getNumDeleteOutlineDialogReferences() > 0)
-		//				//		return TRUE;
-		//				//	DeleteOutlineDialog* dialog =
-		//				//		new DeleteOutlineDialog(traceWin, &traceWin->mContour);
-		//				//	dialog->show();
-		//				//}
-		//				//else
-		//				TraceAddNormalPoint(bitmapPoint);
-		//			}
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.AddPoint:
-		//			TraceAddExtraPoint(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.MovePoint:
-		//			TraceMovePointInit(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.MoveFeature: //***006PM new case to move Notch
-		//			TraceMoveFeaturePointInit(bitmapPoint); //***051TW
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.Crop:
-		//			CropInit(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.ChopOutline: //** 1.5 krd - chop outline to end of trace 
-		//			TraceChopOutline(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.Rotate:
-		//			RotateInit(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-		//	}
-		//}
-
-		//private void skiaElement_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-		//{
-		//	Trace.WriteLine("left mouse button up");
-
-		//	var clickedPoint = e.GetPosition(this.skiaElement).ToSKPoint();
-		//	var bitmapPoint = MapSKPointToBitmapPoint(clickedPoint);
-
-		//	//bool shiftKeyDown = false;
-
-		//	//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-		//	//	shiftKeyDown = true;
-
-		//	switch (_vm.TraceTool)
-		//	{
-		//		case TraceToolType.Pencil:
-		//			if (!_vm.TraceSnapped)
-		//			{ //***051TW
-		//			  // it is possible for user to trace completely OUTSIDE of the image, so Contour is never created
-		//				if (null == _vm.Contour) //***1.982 - fail quietly
-		//					return;
-		//				//***1.4TW - shorter contours cannot be procesed without errors in following 
-		//				// processes, so reset trace and force retrace
-		//				if (_vm.Contour.Length < 100)
-		//				{
-		//					TraceReset();
-		//					//***2.22 - added traceWin->mWindow
-		//					//ErrorDialog *errDialog = new ErrorDialog(traceWin->mWindow,"This outline trace is too short to\nprocess further.  Please retrace.");
-		//					//errDialog->show();
-		//					//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
-		//					//GtkWidget* errd = gtk_message_dialog_new(GTK_WINDOW(traceWin->mWindow),
-		//					//					GTK_DIALOG_DESTROY_WITH_PARENT,
-		//					//					GTK_MESSAGE_ERROR,
-		//					//					GTK_BUTTONS_CLOSE,
-		//					//					"This outline trace is too short to\nprocess further.  Please retrace.");
-		//					//gtk_dialog_run(GTK_DIALOG(errd));
-		//					//gtk_widget_destroy(errd);
-		//					MessageBox.Show("This outline trace is too short to\nprocess further.  Please retrace.");
-		//				}
-		//				else
-		//				{
-		//					int left, top, right, bottom; //***1.96
-		//					GetViewedImageBoundsNonZoomed(out left, out top, out right, out bottom); //***1.96
-		//					TraceSnapToFin(false, left, top, right, bottom); //***006FC,***1.96
-		//				}
-		//			}
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.AddPoint:   // krd - treat add point as move point, erase lines
-		//		case TraceToolType.MovePoint:
-		//			TraceMovePointFinalize(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.MoveFeature: //***006PM new case to move Notch
-		//			TraceMoveFeaturePointFinalize(bitmapPoint); //***051TW
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.Crop:
-		//			CropFinalize(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.ChopOutline: // *** 1.5 krd - chop outline to end of trace 
-		//			TraceChopOutlineFinal();
-		//			e.Handled = true;
-		//			break;
-
-		//		case TraceToolType.Rotate:
-		//			RotateFinal(bitmapPoint);
-		//			e.Handled = true;
-		//			break;
-		//	}
-		//}
-
-		//private void skiaElement_MouseMove(object sender, MouseEventArgs e)
-		//{
-		//	var clickedPoint = e.GetPosition(this.skiaElement).ToSKPoint();
-		//	var bitmapPoint = MapSKPointToBitmapPoint(clickedPoint);
-
-		//	//bool shiftKeyDown = false;
-
-		//	//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-		//	//	shiftKeyDown = true;
-
-		//	if (e.LeftButton == MouseButtonState.Pressed)
-		//	{
-		//		Trace.WriteLine(e.GetPosition(this.skiaElement));
-
-		//		switch (_vm.TraceTool)
-		//		{
-		//			case TraceToolType.Pencil:
-		//				TraceAddNormalPoint(bitmapPoint);
-		//				e.Handled = true;
-		//				break;
-
-		//			case TraceToolType.Eraser:
-		//				TraceErasePoint(bitmapPoint);
-		//				e.Handled = true;
-		//				break;
-
-		//			case TraceToolType.AddPoint:   // krd - treat add point as move point
-		//			case TraceToolType.MovePoint:
-		//				TraceMovePointUpdate(bitmapPoint);
-		//				e.Handled = true;
-		//				break;
-
-		//			case TraceToolType.MoveFeature: //***006PM new case to move Notch
-		//				TraceMoveFeaturePointUpdate(bitmapPoint); //***051TW
-		//				e.Handled = true;
-		//				break;
-
-		//			case TraceToolType.Crop:
-		//				CropUpdate(bitmapPoint);
-		//				e.Handled = true;
-		//				break;
-
-		//			case TraceToolType.Rotate:
-		//				RotateUpdate(bitmapPoint);
-		//				e.Handled = true;
-		//				break;
-		//		}
-
-		//		//if (_textBounds != null)
-		//		//{
-		//		//	var skPoint = e.GetPosition(this.skiaElement).ToSKPoint();
-
-		//		//	if (_textBounds.Contains(skPoint))
-		//		//	{
-		//		//		Trace.WriteLine("inside bounds");
-		//		//		_textPoint = skPoint;
-
-		//		//		this.skiaElement.InvalidateVisual();
-		//		//	}
-		//		//}
-
-		//		//if (_imageBounds != null)
-		//		//{
-		//		//	var skPoint = e.GetPosition(this.skiaElement).ToSKPoint();
-
-		//		//	if (_imageBounds.Contains(skPoint))
-		//		//	{
-		//		//		Trace.WriteLine(this.MapSKPointToBitmapPoint(skPoint));
-		//		//	}
-		//		//}
-		//	}
-		//}
 
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
@@ -550,13 +187,9 @@ namespace Darwin.Wpf
 			if (_vm.Contour != null)
 				_vm.Contour = null;
 
-			// TODO
 			//***1.4 - new code to remove Outline, if loaded from fin file
-			/*if (NULL != mOutline)
-			{
-				delete mOutline;
-				mOutline = NULL;
-			}*/
+			if (_vm.Outline != null)
+				_vm.Outline = null;
 
 			// TODO
 			//***1.95 - new code to remove DatabaseFin, if loaded from fin file
@@ -570,14 +203,11 @@ namespace Darwin.Wpf
 			}*/
 
 			// TODO
-			//_traceSnapped = false; //***051TW
+			_vm.TraceSnapped = false; //***051TW
 			_vm.TraceLocked = false;
 
-			//_traceFinalized = false;
+			_vm.TraceFinalized = false;
 			//mNormScale = 1.0f; //***051TW
-
-			//TODO
-			//this.skiaElement.InvalidateVisual();
 		}
 
 		//*******************************************************************
@@ -587,24 +217,10 @@ namespace Darwin.Wpf
 			if (p.IsEmpty)
 				return;
 
-			// TODO: Performance of this going through the VM?
 			if (_vm.Contour == null)
 				_vm.Contour = new Contour();
 
 			_vm.Contour.AddPoint(p);
-
-			float zoomedPointSize = _vm.ZoomPointSize;
-
-			/*zoomMapPointsToZoomed(x, y);
-
-			gdk_draw_rectangle(
-				mDrawingArea->window,
-				mGC,
-				TRUE,
-				x - zoomedPointSize / 2 + mZoomXOffset,
-				y - zoomedPointSize / 2 + mZoomYOffset,
-				zoomedPointSize,
-				zoomedPointSize);*/
 
 			if (_vm.Contour.NumPoints > 1)
 			{
@@ -672,7 +288,7 @@ namespace Darwin.Wpf
 
 					if (trace.NumPoints > 100)
 					{//102AT
-						Trace.WriteLine("\n   Using edge detection and active contours to refine outline placement\n   (with cyan intensity image) ....\n");
+						Trace.WriteLine("Using edge detection and active contours to refine outline placement\n   (with cyan intensity image) ....\n");
 
 						_vm.Contour = trace;//102AT
 						TraceSnapToFin(true, left, top, right, bottom);//102AT
@@ -688,32 +304,20 @@ namespace Darwin.Wpf
 
 						// TODO
 						//select pencil
-						//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mRadioButtonPencil), TRUE);
-						//mCurTraceTool = TRACE_PENCIL;
-						//updateCursor();
-
-						// set status label
-						//gtk_label_set_text(GTK_LABEL(mStatusLabel),
-						//	_("Please hand trace the fin outline below."));
+						_vm.TraceTool = TraceToolType.Pencil;
+						StatusBarMessage.Text = "Please hand trace the fin outline above";
 
 						return;
 					}//102AT
 
 				}
 
-				//successful trace
+				// Successful trace
+				_vm.TraceTool = TraceToolType.Eraser;
 
-				// TODO
-				//select eraser
-				//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mRadioButtonEraser), TRUE);
-				//mCurTraceTool = TRACE_ERASER;
-				//updateCursor();
+				StatusBarMessage.Text = "Make any Needed Corrections to Outline Trace using Tools Above";
 
-				// set status label
-				//gtk_label_set_text(GTK_LABEL(mStatusLabel),
-				//		_("Make any Needed Corrections to Outline Trace using Tools Below."));
-
-			}//102AT
+			} //102AT
 		}
 
 		private void ZoomIn(System.Windows.Point point)
@@ -730,6 +334,7 @@ namespace Darwin.Wpf
 			ZoomSlider.Value -= 1;
 		}
 
+		// TODO: Do we really need this, or is this not ported correctly?
 		private void GetViewedImageBoundsNonZoomed(out int left, out int top, out int right, out int bottom)
 		{
 			int
@@ -784,36 +389,6 @@ namespace Darwin.Wpf
 				_vm.Contour = new Contour();
 
 			_vm.Contour.AddPoint(point.X, point.Y);
-
-			// TODO: Verify the performance of this is OK
-
-			//TODO
-			//this.skiaElement.InvalidateVisual();
-
-			//int zoomedPointSize = zoomPointSize();
-
-			//var canvas = skiaElement.
-
-			//// Get the screen density for scaling
-			//var scale = (float)PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
-
-			//// Handle the device screen density
-			//canvas.Scale(scale);
-
-			//// TODO : Size?
-			//var pointPaint = new SKPaint
-			//{
-			//	Color = SKColors.Green,
-			//	IsAntialias = true,
-			//	Style = SKPaintStyle.Fill
-			//};
-
-			//foreach (var p in _vm.Contour.Points)
-			//{
-			//	SKPoint contourPoint = MapBitmapPointToSKPoint(p);
-
-			//	canvas.DrawCircle(contourPoint, AppSettings.DrawingPointSize, pointPaint);
-			//}
 		}
 
 		//***1.96 - modified with virtual cropping bounds
@@ -940,8 +515,6 @@ namespace Darwin.Wpf
 			// features such as glare spots may cause outline points to bunch and wrap
 			// during active contour process
 			_vm.Contour.RemoveKnots(spacing); //***005CM
-			//TODO
-			//skiaElement.InvalidateVisual();
 		}
 
 		// Point added to middle of contour after trace has been finalized
@@ -956,7 +529,6 @@ namespace Darwin.Wpf
 			// use MovePoint code to display newly added point
 			_moveInit = true;
 			_movePosition = _vm.Contour.AddPointInOrder(point.X, point.Y);
-			TraceMovePointDisplay();
 		}
 
 		private void TraceChopOutline(Darwin.Point point)
@@ -990,31 +562,11 @@ namespace Darwin.Wpf
 					start = _chopPosition;
 					stop = _vm.Contour.NumPoints;
 				}
+
+				for (var i = start; i < stop; i++)
+					_vm.Contour[i].Type = PointType.Chopping;
 			}
-
-			// what if mChopPosition = -1?
-
-			//TODO: Drawing?
-			//int zoomedPointSize = _vm.ZoomPointSize;
-
-
-			//for (var i = start; i < stop; i++)
-			//{
-			//	int zoomedX = (*mContour)[i].x;
-			//	int zoomedY = (*mContour)[i].y;
-
-			//	zoomMapPointsToZoomed(zoomedX, zoomedY);
-
-			//	gdk_draw_rectangle(
-			//					mDrawingArea->window,
-			//					mMovingGC,
-			//					TRUE,
-			//					zoomedX - zoomedPointSize / 2 + mZoomXOffset,
-			//					zoomedY - zoomedPointSize / 2 + mZoomYOffset,
-			//					zoomedPointSize,
-			//					zoomedPointSize);
-			//}
-		}
+        }
 
 		private void TraceChopOutlineFinal()
 		{
@@ -1033,19 +585,16 @@ namespace Darwin.Wpf
 				start = _chopPosition;
 				stop = _vm.Contour.Length;
 			}
+
 			for (var i = start; i < stop; i++)
 			{
-				//    cout << "removing " << i << endl;
+				Trace.WriteLine("removing " + i);
 				_vm.Contour.RemovePoint(start);
 			}
-
-			//TODO
-			//skiaElement.InvalidateVisual();
 		}
 
 		private void TraceErasePoint(Darwin.Point point)
 		{
-			var blah = new System.Drawing.Point(1, 2);
 			if (_vm.Contour == null || point.IsEmpty)
 				return;
 
@@ -1058,23 +607,27 @@ namespace Darwin.Wpf
 
 			int
 				row_start, col_start,
-				row_end, col_end,
-				offset;
+				row_end, col_end;
 
-			// TODO: Verify this is correct
-			offset = (int)Math.Round(EraserBrushSize / _vm.ZoomRatio / (float)2);  // krd 10/28/05
+			//offset = (int)Math.Round(EraserBrushSize / _vm.ZoomRatio / (float)2);  // krd 10/28/05
 
-			row_start = point.X - offset;
-			col_start = point.Y - offset;
+			row_start = point.Y - EraserBrushSize;
+			col_start = point.X - EraserBrushSize;
 
-			if (row_start < 0) row_start = 0;
-			if (col_start < 0) col_start = 0;
+			if (row_start < 0)
+				row_start = 0;
 
-			row_end = point.Y + offset;
-			col_end = point.X + offset;
+			if (col_start < 0)
+				col_start = 0;
 
-			if (row_end >= (int)numRows) row_end = numRows - 1;
-			if (col_end >= (int)numCols) col_end = numCols - 1;
+			row_end = point.Y + EraserBrushSize;
+			col_end = point.X + EraserBrushSize;
+
+			if (row_end >= numRows)
+				row_end = numRows - 1;
+
+			if (col_end >= numCols)
+				col_end = numCols - 1;
 
 			for (int r = row_start; r <= row_end; r++)
 				for (int c = col_start; c <= col_end; c++)
@@ -1082,25 +635,15 @@ namespace Darwin.Wpf
 
 			// 1.4 - remove empty Contour so other functions do not have to check for same
 			if (_vm.Contour.Length == 0)
-			{
 				_vm.Contour = null;
-			}
-
-			//TODO
-			//skiaElement.InvalidateVisual();
 		}
 
 		private void TraceMovePointUpdate(Darwin.Point point)
 		{
-			if (_vm.Contour == null || -1 == _movePosition)
-				return;
-
-			if (point.IsEmpty)
+			if (_vm.Contour == null || -1 == _movePosition || point.IsEmpty)
 				return;
 
 			_vm.Contour[_movePosition].SetPosition(point.X, point.Y);
-
-			TraceMovePointDisplay();
 		}
 
 		private void TraceMovePointInit(Darwin.Point point)
@@ -1119,48 +662,6 @@ namespace Darwin.Wpf
 			_movePosition = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
 
 			_vm.Contour[_movePosition].Type = PointType.Moving;
-
-			if (_movePosition >= 0)
-				TraceMovePointDisplay();
-		}
-
-		private void TraceMovePointDisplay()
-		{
-			if (_vm.Contour == null || -1 == _movePosition)
-				return;
-
-			int contourLength = _vm.Contour.Length;
-			int nextPosition, previousPosition;
-
-			//TODO
-			if (0 == _movePosition)
-			{
-				nextPosition = 1;
-				previousPosition = 1;          // if mMovePosition is endpoint make same
-			}
-			else if (contourLength - 1 == _movePosition)
-			{
-				nextPosition = _movePosition - 1;   // if mMovePosition is endpoint make same
-				previousPosition = _movePosition - 1;
-			}
-			else
-			{
-				nextPosition = _movePosition + 1;
-				previousPosition = _movePosition - 1;
-			}
-
-			if (_moveInit)
-			{
-				_moveFirstRun = true;
-				_moveInit = false;
-			}
-
-			if (_moveFirstRun)
-			{
-				_moveFirstRun = false;
-			}
-
-			_moveDrawLine = true;
 		}
 
 		private void TraceMovePointFinalize(Darwin.Point point)
@@ -1195,7 +696,7 @@ namespace Darwin.Wpf
 		//
 		private void TraceMoveFeaturePointInit(System.Windows.Point point)
 		{
-			// bale out if feature points have not already been identified
+			// Bail out if feature points have not already been identified
 			if (_vm.Contour == null || _vm.Outline == null || !_vm.TraceFinalized)
 				return;
 
@@ -1263,9 +764,6 @@ namespace Darwin.Wpf
 
 			// reset message label
 			StatusBarMessage.Text = _previousStatusBarMessage;
-
-			//TODO
-			//skiaElement.InvalidateVisual();
 		}
 
 
@@ -1870,6 +1368,14 @@ namespace Darwin.Wpf
 			}
 		}
 
+		private void ShowOutlineDeleteDialog()
+        {
+			var result = MessageBox.Show("Delete the current outline of the fin?", "Delete Confirmation", MessageBoxButton.YesNo);
+
+			if (result == MessageBoxResult.Yes)
+				TraceReset();
+		}
+
 		private void TraceCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			var clickedPoint = e.GetPosition(this.TraceCanvas);
@@ -1885,16 +1391,8 @@ namespace Darwin.Wpf
 				case TraceToolType.AutoTrace:
 					if (!_vm.TraceLocked)
 					{
-						// TODO: Clean this up
 						if (_vm.Contour != null && _vm.Contour.NumPoints >= 2) //If the it has 0 or 1 points, it's ok to use.
-						{
-							//traceWin->addUndo(traceWin->mContour);
-							//if (getNumDeleteOutlineDialogReferences() > 0)
-							//	return TRUE;
-							//DeleteOutlineDialog* dialog =
-							//	new DeleteOutlineDialog(traceWin, &traceWin->mContour);
-							//dialog->show();
-						}
+							ShowOutlineDeleteDialog();
 						else
 							TraceAddAutoTracePoint(bitmapPoint, shiftKeyDown); //103AT SAH
 
@@ -1905,19 +1403,10 @@ namespace Darwin.Wpf
 				case TraceToolType.Pencil:
 					if (_vm.ImageLocked && !_vm.TraceLocked)
 					{ //***051TW
-
-						//if ((NULL != traceWin->mContour) &&
-						//	(traceWin->mContour->length() != 0)) //***1.4TW - empty is OK to reuse
-						//{
-						//	traceWin->addUndo(traceWin->mContour);
-						//	if (getNumDeleteOutlineDialogReferences() > 0)
-						//		return TRUE;
-						//	DeleteOutlineDialog* dialog =
-						//		new DeleteOutlineDialog(traceWin, &traceWin->mContour);
-						//	dialog->show();
-						//}
-						//else
-						TraceAddNormalPoint(bitmapPoint);
+						if (_vm.Contour != null && _vm.Contour.Length > 0) //***1.4TW - empty is OK to reuse
+							ShowOutlineDeleteDialog();
+						else
+							TraceAddNormalPoint(bitmapPoint);
 					}
 					e.Handled = true;
 					break;
@@ -1976,22 +1465,12 @@ namespace Darwin.Wpf
 					  // it is possible for user to trace completely OUTSIDE of the image, so Contour is never created
 						if (null == _vm.Contour) //***1.982 - fail quietly
 							return;
+
 						//***1.4TW - shorter contours cannot be procesed without errors in following 
 						// processes, so reset trace and force retrace
 						if (_vm.Contour.Length < 100)
 						{
 							TraceReset();
-							//***2.22 - added traceWin->mWindow
-							//ErrorDialog *errDialog = new ErrorDialog(traceWin->mWindow,"This outline trace is too short to\nprocess further.  Please retrace.");
-							//errDialog->show();
-							//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
-							//GtkWidget* errd = gtk_message_dialog_new(GTK_WINDOW(traceWin->mWindow),
-							//					GTK_DIALOG_DESTROY_WITH_PARENT,
-							//					GTK_MESSAGE_ERROR,
-							//					GTK_BUTTONS_CLOSE,
-							//					"This outline trace is too short to\nprocess further.  Please retrace.");
-							//gtk_dialog_run(GTK_DIALOG(errd));
-							//gtk_widget_destroy(errd);
 							MessageBox.Show("This outline trace is too short to\nprocess further.  Please retrace.");
 						}
 						else

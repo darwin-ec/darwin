@@ -1,4 +1,14 @@
-﻿using Darwin.Utilities;
+﻿//*******************************************************************
+//   file: FloatContour.cxx
+//
+// author: 
+//
+//   mods: J H Stewman (1/21/2008)
+//         -- reformatting of code and addition of comment blocks
+//
+//*******************************************************************
+
+using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

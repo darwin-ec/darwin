@@ -14,6 +14,11 @@
     <None Remove="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf" />
+    <None Remove="Resources\Images\addpoint.png" />
+    <None Remove="Resources\Images\autotrace.png" />
+    <None Remove="Resources\Images\chopoutline_button.png" />
+    <None Remove="Resources\Images\crop_button.png" />
+    <None Remove="Resources\Images\rotate_button.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +35,11 @@
     <Resource Include="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Images\addpoint.png" />
+    <Resource Include="Resources\Images\autotrace.png" />
+    <Resource Include="Resources\Images\chopoutline_button.png" />
+    <Resource Include="Resources\Images\crop_button.png" />
+    <Resource Include="Resources\Images\rotate_button.png" />
   </ItemGroup>
 
   <ItemGroup>

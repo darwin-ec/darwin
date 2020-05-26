@@ -1,9 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//*******************************************************************
+//   file: guassj.cxx
+//
+// author: 
+//
+//   mods: J H Stewman (1/21/2008)
+//         -- reformatting of code and addition of comment blocks
+//
+//*******************************************************************
+
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin.Utilities
 {

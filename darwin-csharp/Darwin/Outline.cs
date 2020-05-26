@@ -1,12 +1,18 @@
-﻿using Darwin.Utilities;
+﻿//*******************************************************************
+//   file: Outline.cxx
+//
+// author: J H Stewman & K R Debure
+//
+// This class consolidates in one place what was previously passed
+// about as a collection of Contours, FloatContours, Chains, ...
+//
+//*******************************************************************
+
+using Darwin.Utilities;
 using Darwin.Wavelet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin
 {

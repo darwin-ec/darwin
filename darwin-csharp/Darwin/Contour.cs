@@ -1,12 +1,17 @@
-﻿using Darwin.Collections;
+﻿//*******************************************************************
+//   file: Contour.cxx
+//
+// author: Adam Russell
+//
+//   mods: J H Stewman (4/12/2005)
+//         -- reformatting of code and addition of comment blocks
+//
+//*******************************************************************
+
+using Darwin.Collections;
 using Darwin.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin
 {

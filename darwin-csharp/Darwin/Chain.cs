@@ -1,10 +1,18 @@
-﻿using Darwin.Utilities;
+﻿//*******************************************************************
+//   file: Chain.cxx
+//
+// author: Adam Russell
+//
+//   mods: J H Stewman (7/22/2005)
+//         -- reformatting of code and addition of comment blocks
+//         -- changes to incorporate Outline CLASS in project
+//
+//*******************************************************************
+
+using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin
 {

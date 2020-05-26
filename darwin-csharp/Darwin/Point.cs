@@ -9,7 +9,8 @@ namespace Darwin
     {
         Normal = 0,
         Feature = 1,
-        Moving = 2
+        Moving = 2,
+        Chopping = 3
     }
 
     public class Point : INotifyPropertyChanged

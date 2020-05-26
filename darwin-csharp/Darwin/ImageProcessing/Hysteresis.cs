@@ -4,14 +4,9 @@
 * from Michigan State University. heath@csee.usf.edu (Re-written in 1996).
 *******************************************************************************/
 
-
 using Darwin.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin.ImageProcessing
 {
