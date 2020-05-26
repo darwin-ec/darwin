@@ -14,6 +14,8 @@ namespace Darwin
 
     public class Point : INotifyPropertyChanged
     {
+        public static readonly Point Empty = new Point { IsEmpty = true };
+
         private int x;
         private int y;
         private PointType type;
@@ -112,6 +114,11 @@ namespace Darwin
             var p = obj as Darwin.Point;
 
             return p != null && p.X == X && p.Y == Y;
+        }
+
+        public override int GetHashCode()
+        {
+            return x ^ y;
         }
 
         public void SetPosition(int x, int y)

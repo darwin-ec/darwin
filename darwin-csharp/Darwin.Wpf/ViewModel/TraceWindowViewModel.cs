@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,17 @@ namespace Darwin.Wpf.ViewModel
     public class TraceWindowViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+		private Bitmap _bitmap;
+		public Bitmap Bitmap
+		{
+			get => _bitmap;
+			set
+			{
+				_bitmap = value;
+				RaisePropertyChanged("Bitmap");
+			}
+		}
 
 		private Contour _contour;
 		public Contour Contour

@@ -48,8 +48,6 @@ namespace Darwin.Wpf
 
 		//private SKImage _image;
 
-		private Bitmap _originalBitmap;
-
 		private int _zoomRatioOld = 100;
 
 		// The image won't always fit in the container cleanly -- this is the offset from the top left
@@ -77,7 +75,6 @@ namespace Darwin.Wpf
 		{
 			InitializeComponent();
 
-			_originalBitmap = null;
 			//_backgroundColor = SKColors.Transparent;
 			//_imageOffset = new SKPoint(0, 0);
 			//_zoomedImageSize = SKSize.Empty;
@@ -88,6 +85,7 @@ namespace Darwin.Wpf
 
 			_vm = new TraceWindowViewModel
 			{
+				Bitmap = null,
 				Contour = null,
 				TraceTool = TraceToolType.Hand,
 				ImageLocked = true,
@@ -172,6 +170,13 @@ namespace Darwin.Wpf
 
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)
 		{
+			// Clip to image bounds
+			if (point.X < 0 || point.Y < 0)
+				return Darwin.Point.Empty;
+
+			if (_vm.Bitmap != null && (point.X > _vm.Bitmap.Width || point.Y > _vm.Bitmap.Height))
+				return Darwin.Point.Empty;
+
 			return new Darwin.Point((int)Math.Round(point.X), (int)Math.Round(point.Y));
 		}
 
@@ -526,13 +531,13 @@ namespace Darwin.Wpf
 				Trace.WriteLine(openFile.FileName);
 
 				var img = System.Drawing.Image.FromFile(openFile.FileName);
-				_originalBitmap = new Bitmap(img);
+				_vm.Bitmap = new Bitmap(img);
 				//_image = _originalBitmap.ToSKImage();
 
 				// TODO: Hack for HiDPI -- this should be more intelligent.
-				_originalBitmap.SetResolution(96, 96);
+				_vm.Bitmap.SetResolution(96, 96);
 				//this.skiaElement.InvalidateVisual();
-				ImagingProvider.LoadImage(_originalBitmap, TraceImage);
+				ImagingProvider.LoadImage(_vm.Bitmap, TraceImage);
 			}
 		}
 
@@ -628,7 +633,7 @@ namespace Darwin.Wpf
 				if (!shiftKeyDown)
 					//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
 					trace = new IntensityContour(
-						_originalBitmap,
+						_vm.Bitmap,
 						_vm.Contour,
 						left, top, right, bottom); //***1.96 added window bounds 
 
@@ -661,7 +666,7 @@ namespace Darwin.Wpf
 
 					//102AT Add hooks for cyan intensity trace
 					trace = new IntensityContourCyan(
-						_originalBitmap,
+						_vm.Bitmap,
 						_vm.Contour,
 						left, top, right, bottom); //***1.96 added window bounds 
 
@@ -728,8 +733,8 @@ namespace Darwin.Wpf
 		private void GetViewedImageBoundsNonZoomed(out int left, out int top, out int right, out int bottom)
 		{
 			int
-				width = _originalBitmap.Width,
-				height = _originalBitmap.Height;
+				width = _vm.Bitmap.Width,
+				height = _vm.Bitmap.Height;
 
 			left = 0;
 			top = 0;
@@ -837,9 +842,9 @@ namespace Darwin.Wpf
 			Bitmap temp;
 
 			if (useCyan)
-				temp = _originalBitmap.ToCyanIntensity(); //***1.96 - copy to cyan
+				temp = _vm.Bitmap.ToCyanIntensity(); //***1.96 - copy to cyan
 			else
-				temp = _originalBitmap.ToGrayscale(); //***1.96 - copy to grayscale
+				temp = _vm.Bitmap.ToGrayscale(); //***1.96 - copy to grayscale
 
 			Bitmap temp2 = BitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
 
@@ -1048,8 +1053,8 @@ namespace Darwin.Wpf
 			//this->addUndo(mContour);
 
 			int
-				numRows = _originalBitmap.Height,
-				numCols = _originalBitmap.Width;
+				numRows = _vm.Bitmap.Height,
+				numCols = _vm.Bitmap.Width;
 
 			int
 				row_start, col_start,
@@ -1162,22 +1167,23 @@ namespace Darwin.Wpf
 		{
 			if (_vm.Contour == null || -1 == _movePosition)
 				return;
-
+			
 			if (point.IsEmpty)
-				return;
-
-			//zoomMapPointsToOriginal(x, y);
-			//ensurePointInBounds(x, y);
-
-			_vm.Contour[_movePosition] = new Darwin.Point
 			{
-				X = point.X,
-				Y = point.Y,
-				Type = PointType.Normal
-			};
+				// Leave the position of this point whatever it was before we went out of bounds
+				_vm.Contour[_movePosition].Type = PointType.Normal;
+			}
+			else
+			{
+				_vm.Contour[_movePosition] = new Darwin.Point
+				{
+					X = point.X,
+					Y = point.Y,
+					Type = PointType.Normal
+				};
+			}
 
-			//TODO
-			//skiaElement.InvalidateVisual();
+			_movePosition = -1;
 		}
 
 		//*******************************************************************
@@ -1774,11 +1780,14 @@ namespace Darwin.Wpf
 
 		private void TraceScrollViewer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			if (_vm.TraceTool == TraceToolType.Hand)
+			switch (_vm.TraceTool)
 			{
-				TraceScrollViewer.Cursor = Cursors.Arrow;
-				TraceScrollViewer.ReleaseMouseCapture();
-				lastDragPoint = null;
+				case TraceToolType.Hand:
+					TraceScrollViewer.Cursor = Cursors.Arrow;
+					TraceScrollViewer.ReleaseMouseCapture();
+					lastDragPoint = null;
+					e.Handled = true;
+					break;
 			}
 		}
 
@@ -1914,11 +1923,13 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceToolType.AddPoint:
+					Mouse.Capture(TraceCanvas);
 					TraceAddExtraPoint(bitmapPoint);
 					e.Handled = true;
 					break;
 
 				case TraceToolType.MovePoint:
+					Mouse.Capture(TraceCanvas);
 					TraceMovePointInit(bitmapPoint);
 					e.Handled = true;
 					break;
@@ -1995,6 +2006,7 @@ namespace Darwin.Wpf
 
 				case TraceToolType.AddPoint:   // krd - treat add point as move point, erase lines
 				case TraceToolType.MovePoint:
+					TraceCanvas.ReleaseMouseCapture();
 					TraceMovePointFinalize(bitmapPoint);
 					e.Handled = true;
 					break;
