@@ -257,15 +257,15 @@ void IntensityContour::getPointsFromGrayImage(
 	//Get a one pixel outline by eroding once and XORing with the previous image
 
 	BinaryImage outline(binImg);
-	binImg->save("c:\\users\\adamr\\desktop\\outline.png");
+	//binImg->save("c:\\users\\adamr\\desktop\\outline.png");
 	ecount = 0;
 	for (i = 0; i < 1; i++) {
 		ecount = outline.doErode(0);
 	}
-	outline.save("c:\\users\\adamr\\desktop\\erode.png");
+	//outline.save("c:\\users\\adamr\\desktop\\erode.png");
 
 	binImg->doXor(outline);
-	binImg->save("c:\\users\\adamr\\desktop\\xor.png");
+	//binImg->save("c:\\users\\adamr\\desktop\\xor.png");
 	//***1.0LK - a bit of a mess - JHS
 	// at this point binImg points to the largestFeature->mask (eroded and XORed).
 	// We want to use this binImg to find a new largestFeature, but we cannot
