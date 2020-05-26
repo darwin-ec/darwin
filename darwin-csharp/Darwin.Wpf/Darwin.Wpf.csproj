@@ -11,13 +11,20 @@
     <None Remove="Resources\Cursors\chopoutline_cursor.cur" />
     <None Remove="Resources\Cursors\eraser_cursor.cur" />
     <None Remove="Resources\Cursors\magnify_cursor.cur" />
+    <None Remove="Resources\Cursors\pencil_cursor.cur" />
     <None Remove="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf" />
     <None Remove="Resources\Images\addpoint.png" />
     <None Remove="Resources\Images\autotrace.png" />
+    <None Remove="Resources\Images\brightness_button.png" />
     <None Remove="Resources\Images\chopoutline_button.png" />
     <None Remove="Resources\Images\crop_button.png" />
+    <None Remove="Resources\Images\eraser.png" />
+    <None Remove="Resources\Images\finger.png" />
+    <None Remove="Resources\Images\horizontal_flip.png" />
+    <None Remove="Resources\Images\magnify.png" />
+    <None Remove="Resources\Images\pencil.png" />
     <None Remove="Resources\Images\rotate_button.png" />
   </ItemGroup>
 
@@ -26,6 +33,7 @@
     <Resource Include="Resources\Cursors\chopoutline_cursor.cur" />
     <Resource Include="Resources\Cursors\eraser_cursor.cur" />
     <Resource Include="Resources\Cursors\magnify_cursor.cur" />
+    <Resource Include="Resources\Cursors\pencil_cursor.cur" />
     <Resource Include="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -37,8 +45,14 @@
     </Resource>
     <Resource Include="Resources\Images\addpoint.png" />
     <Resource Include="Resources\Images\autotrace.png" />
+    <Resource Include="Resources\Images\brightness_button.png" />
     <Resource Include="Resources\Images\chopoutline_button.png" />
     <Resource Include="Resources\Images\crop_button.png" />
+    <Resource Include="Resources\Images\eraser.png" />
+    <Resource Include="Resources\Images\finger.png" />
+    <Resource Include="Resources\Images\horizontal_flip.png" />
+    <Resource Include="Resources\Images\magnify.png" />
+    <Resource Include="Resources\Images\pencil.png" />
     <Resource Include="Resources\Images\rotate_button.png" />
   </ItemGroup>
 

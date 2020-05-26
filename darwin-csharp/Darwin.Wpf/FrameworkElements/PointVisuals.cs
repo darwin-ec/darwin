@@ -1,6 +1,7 @@
 ﻿// Based on 
 // ScatterPlotVisuals.cs by Charles Petzold, December 2008
 // https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/march/foundations-writing-more-efficient-itemscontrols
+
 using Darwin.Collections;
 using System;
 using System.Collections;

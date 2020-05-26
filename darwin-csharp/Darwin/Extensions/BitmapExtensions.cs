@@ -15,6 +15,35 @@ namespace Darwin.Extensions
         private static int o0666 = Convert.ToInt32("0666", 8);
         private static int o0110 = Convert.ToInt32("0110", 8);
 
+        public static Bitmap AlterBrightness(this Bitmap bitmap, int brightness)
+        {
+            float brightnessTransform = (float)brightness / 255.0f;
+            
+            float[][] floatMatrix = {
+                     new float[] { 1, 0, 0, 0, 0 },
+                     new float[] { 0, 1, 0, 0, 0 },
+                     new float[] { 0, 0, 1, 0, 0 },
+                     new float[] { 0, 0, 0, 1, 0 },
+                     new float[] { brightnessTransform, brightnessTransform, brightnessTransform, 0, 1 }
+            };
+
+            ColorMatrix colorMatrix = new ColorMatrix(floatMatrix);
+            ImageAttributes imageAttributes = new ImageAttributes();
+            imageAttributes.SetColorMatrix(colorMatrix);
+            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            Bitmap updatedBrightnessBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+            using (Graphics graphics = Graphics.FromImage(updatedBrightnessBitmap))
+            {
+                graphics.DrawImage(bitmap, rect,
+                    0, 0, bitmap.Width, bitmap.Height,
+                    GraphicsUnit.Pixel,
+                    imageAttributes);
+            }
+
+            return updatedBrightnessBitmap;
+        }
+
         public static Bitmap ToGrayscale(this Bitmap bitmap)
         {
             var result = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format24bppRgb);
@@ -62,7 +91,7 @@ namespace Darwin.Extensions
 
             var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
 
-            using (var gr = Graphics.FromImage(bitmap))
+            using (var gr = Graphics.FromImage(result))
             {
                 gr.DrawImage(bitmap, rect, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, attributes);
             }
@@ -80,7 +109,7 @@ namespace Darwin.Extensions
 
             var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
 
-            using (var gr = Graphics.FromImage(bitmap))
+            using (var gr = Graphics.FromImage(result))
             {
                 gr.DrawImage(bitmap, rect, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, attributes);
             }

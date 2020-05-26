@@ -1,4 +1,5 @@
 ﻿using Darwin.Model;
+using Darwin.Wpf.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -22,6 +24,46 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_bitmap = value;
 				RaisePropertyChanged("Bitmap");
+
+				if (_bitmap != null)
+				{
+					// Copy it to the OriginalBitmap property, as well, if it hasn't been set
+					if (OriginalBitmap == null)
+						OriginalBitmap = new Bitmap(_bitmap);
+
+					ImageSource = _bitmap.ToImageSource();
+				}
+				else if (ImageSource != null)
+                {
+					ImageSource = null;
+                }
+			}
+		}
+
+		private ImageSource _imageSource;
+		public ImageSource ImageSource
+		{
+			get => _imageSource;
+			set
+			{
+				_imageSource = value;
+				RaisePropertyChanged("ImageSource");
+			}
+		}
+
+		public void UpdateImage()
+        {
+			ImageSource = _bitmap.ToImageSource();
+        }
+
+		private Bitmap _originalBitmap;
+		public Bitmap OriginalBitmap
+		{
+			get => _originalBitmap;
+			set
+			{
+				_originalBitmap = value;
+				RaisePropertyChanged("OriginalBitmap");
 			}
 		}
 
@@ -111,6 +153,17 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_zoomRatio = value;
 				RaisePropertyChanged("ZoomRatio");
+			}
+		}
+
+		private List<double> _zoomValues;
+		public List<double> ZoomValues
+		{
+			get => _zoomValues;
+			set
+			{
+				_zoomValues = value;
+				RaisePropertyChanged("ZoomValues");
 			}
 		}
 

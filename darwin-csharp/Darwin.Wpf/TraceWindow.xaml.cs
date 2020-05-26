@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -90,8 +91,16 @@ namespace Darwin.Wpf
 				TraceTool = TraceToolType.Hand,
 				ImageLocked = true,
 				TraceLocked = false,
-				ZoomRatio = 1.0f
+				ZoomRatio = 1.0f,
+				ZoomValues = new List<double>()
 			};
+
+			_vm.ZoomValues.Add(4);
+			_vm.ZoomValues.Add(3);
+			_vm.ZoomValues.Add(2);
+			_vm.ZoomValues.Add(1);
+			_vm.ZoomValues.Add(0.75);
+			_vm.ZoomValues.Add(0.50);
 
 			this.DataContext = _vm;
 		}
@@ -168,13 +177,22 @@ namespace Darwin.Wpf
 				Trace.WriteLine(openFile.FileName);
 
 				var img = System.Drawing.Image.FromFile(openFile.FileName);
-				_vm.Bitmap = new Bitmap(img);
-				//_image = _originalBitmap.ToSKImage();
 
+				var bitmap = new Bitmap(img);
 				// TODO: Hack for HiDPI -- this should be more intelligent.
-				_vm.Bitmap.SetResolution(96, 96);
+				bitmap.SetResolution(96, 96);
+
+				_vm.Bitmap = bitmap;
+
+				//_vm.Bitmap = new Bitmap(img);
+				////_image = _originalBitmap.ToSKImage();
+
+				
+				//_vm.Bitmap.SetResolution(96, 96);
+
+
 				//this.skiaElement.InvalidateVisual();
-				ImagingProvider.LoadImage(_vm.Bitmap, TraceImage);
+				//ImagingProvider.LoadImage(_vm.Bitmap, TraceImage);
 			}
 		}
 
@@ -1239,32 +1257,41 @@ namespace Darwin.Wpf
 				// TODO: Maybe this could be done better with databinding
 				switch (_vm.TraceTool)
 				{
-					case TraceToolType.Hand:
-						TraceCanvas.Cursor = Cursors.Hand;
-						break;
-
-					case TraceToolType.Pencil:
-						TraceCanvas.Cursor = Cursors.Pen;
-						break;
-
+					case TraceToolType.AddPoint:
 					case TraceToolType.AutoTrace:
 						TraceCanvas.Cursor = Resources["AutoTraceCursor"] as Cursor;
 						break;
 
-					case TraceToolType.Eraser:
-						TraceCanvas.Cursor = Resources["EraserCursor"] as Cursor;
+					case TraceToolType.Crop:
+						TraceCanvas.Cursor = Cursors.SizeNWSE;
 						break;
 
 					case TraceToolType.ChopOutline:
 						TraceCanvas.Cursor = Resources["ChopOutlineCursor"] as Cursor;
 						break;
 
+					case TraceToolType.Eraser:
+						TraceCanvas.Cursor = Resources["EraserCursor"] as Cursor;
+						break;
+
+					case TraceToolType.Hand:
+						TraceCanvas.Cursor = Cursors.Hand;
+						break;
+
 					case TraceToolType.Magnify:
 						TraceCanvas.Cursor = Resources["MagnifyCursor"] as Cursor;
 						break;
 
+					case TraceToolType.MovePoint:
+						TraceCanvas.Cursor = Cursors.Hand;
+						break;
+
+					case TraceToolType.Pencil:
+						TraceCanvas.Cursor = Resources["PencilCursor"] as Cursor;
+						break;
+
 					default:
-						TraceCanvas.Cursor = Cursors.Cross;
+						TraceCanvas.Cursor = Cursors.Arrow;
 						break;
 				}
 			}
@@ -1492,6 +1519,11 @@ namespace Darwin.Wpf
 			var clickedPoint = e.GetPosition(this.TraceCanvas);
 			var imagePoint = MapWindowsPointToDarwinPoint(clickedPoint);
 
+			if (imagePoint.IsEmpty)
+				CursorPositionMessage.Text = string.Empty;
+			else
+				CursorPositionMessage.Text = string.Format("{0}, {1}", imagePoint.X, imagePoint.Y);
+
 			//bool shiftKeyDown = false;
 
 			//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -1608,5 +1640,65 @@ namespace Darwin.Wpf
 					break;
 			}
 		}
-	}
+
+		private void ZoomComboBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			string text = ZoomComboBox.Text;
+			double num;
+			if (double.TryParse(text, out num) && _vm.ZoomValues.Contains(num / 100))
+			{
+				//slider.Value = num / 100;
+				Dispatcher.BeginInvoke(new Action(() =>
+				{
+					var textBox = ZoomComboBox.Template.FindName("PART_EditableTextBox", ZoomComboBox) as TextBox;
+					if (textBox != null)
+						textBox.CaretIndex = textBox.Text.Length - 1;
+				}));
+			}
+		}
+
+        private void FlipHorizontalButton_Click(object sender, RoutedEventArgs e)
+        {
+			//TODO
+			//// ***1.75 - set location of center based on slider
+			//if (traceWin->mScrolledWindow->allocation.height < traceWin->mImage->getNumRows())
+			//{
+			//	GtkAdjustment* adj = gtk_scrolled_window_get_vadjustment(
+			//		GTK_SCROLLED_WINDOW(traceWin->mScrolledWindow));
+			//	double half = 0.5 * traceWin->mScrolledWindow->allocation.height;
+			//	traceWin->mImageCenterY = (adj->value + half) / (adj->upper - adj->lower);
+			//}
+			//if (traceWin->mScrolledWindow->allocation.width < traceWin->mImage->getNumCols())
+			//{
+			//	GtkAdjustment* adj = gtk_scrolled_window_get_hadjustment(
+			//		GTK_SCROLLED_WINDOW(traceWin->mScrolledWindow));
+			//	double half = 0.5 * traceWin->mScrolledWindow->allocation.width;
+			//	traceWin->mImageCenterX = (adj->value + half) / (adj->upper - adj->lower);
+			//}
+			////***1.75 - flip desired / current center
+			//traceWin->mImageCenterX = 1.0 - traceWin->mImageCenterX;
+
+			if (_vm.Bitmap != null)
+			{
+				_vm.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
+				_vm.UpdateImage();
+
+				//traceWin->addUndo(traceWin->mNonZoomedImage);
+
+				//ImageMod imod(ImageMod::IMG_flip); //***1.8 - add modification to list
+				//traceWin->mImageMods.add(imod); //***1.8 - add modification to list
+			}
+		}
+
+        private void BrightnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+			//TODO Undo and image mod
+
+			if (_vm.Bitmap != null)
+            {
+				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
+				_vm.Bitmap = _vm.OriginalBitmap.AlterBrightness(Convert.ToInt32(BrightnessSlider.Value));
+            }
+        }
+    }
 }

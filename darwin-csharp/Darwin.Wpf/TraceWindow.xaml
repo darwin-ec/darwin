@@ -14,6 +14,7 @@
         <Cursor x:Key="ChopOutlineCursor">Resources/Cursors/chopoutline_cursor.cur</Cursor>
         <Cursor x:Key="EraserCursor">Resources/Cursors/eraser_cursor.cur</Cursor>
         <Cursor x:Key="MagnifyCursor">Resources/Cursors/magnify_cursor.cur</Cursor>
+        <Cursor x:Key="PencilCursor">Resources/Cursors/pencil_cursor.cur</Cursor>
         
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Green" />
@@ -58,15 +59,26 @@
             <TextBlock x:Name="TextBlock1" FontFamily="{StaticResource FontAwesome}" Text="&#xf004;" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="100"/>
         </StackPanel>-->
         <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Button x:Name="FlipHorizontalButton" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/horizontal_flip.png" />
+                    <TextBlock HorizontalAlignment="Center">Flip</TextBlock>
+                </StackPanel>
+            </Button>
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <Image Source="/Darwin.Wpf;component/Resources/Images/brightness_button.png" />
+                <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" ValueChanged="BrightnessSlider_ValueChanged" TickFrequency="1" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
+            </StackPanel>
             <RadioButton x:Name="HandButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf256;</TextBlock>
                     <TextBlock HorizontalAlignment="Center">Move</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="MagnifyingGlassButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
+            <RadioButton x:Name="MagnifyingGlassButton" ToolTip="Hold Shift to Zoom Out" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>
+                    <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/magnify.png" />
                     <TextBlock HorizontalAlignment="Center">Zoom</TextBlock>
                 </StackPanel>
             </RadioButton>
@@ -78,25 +90,27 @@
             </RadioButton>
             <RadioButton x:Name="PencilButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf303;</TextBlock>
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/pencil.png" />
                     <TextBlock HorizontalAlignment="Center">Pencil</TextBlock>
                 </StackPanel>
             </RadioButton>
             <RadioButton x:Name="AddPointButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AddPoint}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/addpoint.png" />
-                    <TextBlock HorizontalAlignment="Center">AutoTrace</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">Add Point</TextBlock>
                 </StackPanel>
             </RadioButton>
             <RadioButton x:Name="AdjustButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MovePoint}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                    <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf25a;</TextBlock>
+                    <!--<TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf25a;</TextBlock>-->
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
                     <TextBlock HorizontalAlignment="Center">Adjust</TextBlock>
                 </StackPanel>
             </RadioButton>
             <RadioButton x:Name="EraserButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Eraser}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf12d;</TextBlock>
+                    <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf12d;</TextBlock>-->
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/eraser.png" />
                     <TextBlock HorizontalAlignment="Center">Erase</TextBlock>
                 </StackPanel>
             </RadioButton>
@@ -125,7 +139,7 @@
                         </TransformGroup>
                     </Viewbox.LayoutTransform>
                     <Canvas x:Name="TraceCanvas" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}" MouseLeftButtonDown="TraceCanvas_MouseLeftButtonDown" MouseLeftButtonUp="TraceCanvas_MouseLeftButtonUp" MouseMove="TraceCanvas_MouseMove">
-                        <Image x:Name="TraceImage">
+                        <Image x:Name="TraceImage" Source="{Binding Path=ImageSource}">
                             <Image.LayoutTransform>
                                 <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
                             </Image.LayoutTransform>
@@ -144,8 +158,12 @@
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="80" />
+
                             <ColumnDefinition Width="Auto"/>
+                            
+                            <ColumnDefinition Width="Auto"/>
+                            
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
@@ -154,8 +172,17 @@
             <StatusBarItem>
                 <TextBlock Name="CursorPositionMessage" />
             </StatusBarItem>
-            <Separator Grid.Column="1" />
-            <StatusBarItem Grid.Column="2">
+            <StatusBarItem Grid.Column="1">
+                <ComboBox x:Name="ZoomComboBox" Text="{Binding Path=ZoomRatio, StringFormat=P0, Mode=OneWay}" ItemsSource="{Binding ZoomValues}" IsEditable="True" TextBoxBase.TextChanged="ZoomComboBox_TextChanged" >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding StringFormat=P0}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StatusBarItem>
+            <Separator Grid.Column="2" />
+            <StatusBarItem Grid.Column="3">
                 <TextBlock Name="StatusBarMessage" />
             </StatusBarItem>
         </StatusBar>
