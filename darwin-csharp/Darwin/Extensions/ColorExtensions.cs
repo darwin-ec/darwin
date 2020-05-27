@@ -49,5 +49,46 @@ namespace Darwin.Extensions
 
             return Convert.ToByte(Math.Round(color.R * 0.299 + color.G * 0.587 + color.B * 0.114));
         }
+
+        public static Color SetIntensity(this Color color, byte intensity)
+        {
+            byte outputR, outputG, outputB;
+
+            float inphase = 0.596f * color.R - 0.275f * color.G - 0.321f * color.B;
+            float quadrature = 0.212f * color.R - 0.523f * color.G + 0.311f * color.B;
+
+            int redTemp = (int)Math.Round(intensity + 0.956 * inphase + 0.621 * quadrature);
+            int greenTemp = (int)Math.Round(intensity - 0.272 * inphase - 0.647 * quadrature);
+            int blueTemp = (int)Math.Round(intensity - 1.108 * inphase + 1.705 * quadrature);
+
+            if (redTemp > 255)
+                outputR = 255;
+
+            else if (redTemp < 0) // Just in case!
+                outputR = 0;
+
+            else
+                outputR = (byte)redTemp;
+
+            if (greenTemp > 255)
+                outputG = 255;
+
+            else if (greenTemp < 0)
+                outputG = 0;
+
+            else
+                outputG = (byte)greenTemp;
+
+            if (blueTemp > 255)
+                outputB = 255;
+
+            else if (blueTemp < 0)
+                outputB = 0;
+
+            else
+                outputB = (byte)blueTemp;
+
+            return Color.FromArgb(outputR, outputG, outputB);
+        }
     }
 }

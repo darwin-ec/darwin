@@ -19,6 +19,7 @@
     <None Remove="Resources\Images\autotrace.png" />
     <None Remove="Resources\Images\brightness_button.png" />
     <None Remove="Resources\Images\chopoutline_button.png" />
+    <None Remove="Resources\Images\contrast_button.png" />
     <None Remove="Resources\Images\crop_button.png" />
     <None Remove="Resources\Images\eraser.png" />
     <None Remove="Resources\Images\finger.png" />
@@ -47,6 +48,7 @@
     <Resource Include="Resources\Images\autotrace.png" />
     <Resource Include="Resources\Images\brightness_button.png" />
     <Resource Include="Resources\Images\chopoutline_button.png" />
+    <Resource Include="Resources\Images\contrast_button.png" />
     <Resource Include="Resources\Images\crop_button.png" />
     <Resource Include="Resources\Images\eraser.png" />
     <Resource Include="Resources\Images\finger.png" />

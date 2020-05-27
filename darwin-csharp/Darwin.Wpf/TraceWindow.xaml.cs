@@ -1694,11 +1694,22 @@ namespace Darwin.Wpf
         {
 			//TODO Undo and image mod
 
-			if (_vm.Bitmap != null)
+			if (_vm?.Bitmap != null)
             {
 				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
 				_vm.Bitmap = _vm.OriginalBitmap.AlterBrightness(Convert.ToInt32(BrightnessSlider.Value));
             }
         }
+
+        private void ContrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+			//TODO Undo and image mod
+
+			if (_vm?.Bitmap != null)
+			{
+				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
+				_vm.Bitmap = _vm.OriginalBitmap.EnhanceContrast(Convert.ToByte(ContrastSlider.LowerValue), Convert.ToByte(ContrastSlider.UpperValue));
+			}
+		}
     }
 }

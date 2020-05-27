@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:model="clr-namespace:Darwin.Model"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
@@ -67,7 +68,11 @@
             </Button>
             <StackPanel Orientation="Horizontal" Margin="8">
                 <Image Source="/Darwin.Wpf;component/Resources/Images/brightness_button.png" />
-                <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" ValueChanged="BrightnessSlider_ValueChanged" TickFrequency="1" TickPlacement="BottomRight" IsSnapToTickEnabled="True" />
+                <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" ValueChanged="BrightnessSlider_ValueChanged" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <Image Source="/Darwin.Wpf;component/Resources/Images/contrast_button.png" />
+                <controls:TwoThumbSlider x:Name="ContrastSlider" Width="200" Minimum="0" Maximum="255" LowerValue="0" UpperValue="255" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="ContrastSlider_ValueChanged" />
             </StackPanel>
             <RadioButton x:Name="HandButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">

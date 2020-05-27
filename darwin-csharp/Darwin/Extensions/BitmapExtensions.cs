@@ -17,31 +17,60 @@ namespace Darwin.Extensions
 
         public static Bitmap AlterBrightness(this Bitmap bitmap, int brightness)
         {
-            float brightnessTransform = (float)brightness / 255.0f;
+            float brightnessScaled = (float)brightness / 255.0f;
             
-            float[][] floatMatrix = {
+            float[][] brightnessTransform = {
                      new float[] { 1, 0, 0, 0, 0 },
                      new float[] { 0, 1, 0, 0, 0 },
                      new float[] { 0, 0, 1, 0, 0 },
                      new float[] { 0, 0, 0, 1, 0 },
-                     new float[] { brightnessTransform, brightnessTransform, brightnessTransform, 0, 1 }
+                     new float[] { brightnessScaled, brightnessScaled, brightnessScaled, 0, 1 }
             };
 
-            ColorMatrix colorMatrix = new ColorMatrix(floatMatrix);
+            ColorMatrix colorMatrix = new ColorMatrix(brightnessTransform);
             ImageAttributes imageAttributes = new ImageAttributes();
             imageAttributes.SetColorMatrix(colorMatrix);
-            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
 
+            var destRect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
             Bitmap updatedBrightnessBitmap = new Bitmap(bitmap.Width, bitmap.Height);
             using (Graphics graphics = Graphics.FromImage(updatedBrightnessBitmap))
             {
-                graphics.DrawImage(bitmap, rect,
+                graphics.DrawImage(bitmap, destRect,
                     0, 0, bitmap.Width, bitmap.Height,
                     GraphicsUnit.Pixel,
                     imageAttributes);
             }
 
             return updatedBrightnessBitmap;
+        }
+
+        public static Bitmap EnhanceContrast(this Bitmap bitmap, byte minLevel, byte maxLevel)
+        {
+            if (maxLevel == 255 && minLevel == 0)
+                return new Bitmap(bitmap);
+
+            int range = maxLevel - minLevel;
+            int tempIntensity;
+            Bitmap enhancedContrastBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+
+            for (int c = 0; c < bitmap.Width; c++)
+            {
+                for (int r = 0; r < bitmap.Height; r++)
+                {
+                    var sourcePixel = bitmap.GetPixel(c, r);
+                    tempIntensity = (int)Math.Round(((sourcePixel.GetIntensity() - minLevel) * 255) / (float)range);
+
+                    if (tempIntensity < 1 || sourcePixel.GetIntensity() < minLevel)
+                        tempIntensity = 0;
+
+                    if (tempIntensity > 254)
+                        tempIntensity = 255;
+
+                    enhancedContrastBitmap.SetPixel(c, r, sourcePixel.SetIntensity((byte)tempIntensity));
+                }
+            }
+
+            return enhancedContrastBitmap;
         }
 
         public static Bitmap ToGrayscale(this Bitmap bitmap)
