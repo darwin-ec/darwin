@@ -79,6 +79,17 @@ namespace Darwin
 				_points.Add(new Darwin.Point(p.X, p.Y));
 		}
 
+		public void ReloadPoints(Contour c)
+        {
+			if (c == null)
+				throw new ArgumentNullException(nameof(c));
+
+			Points.Clear();
+
+			foreach (var p in c.Points)
+				Points.Add(new Darwin.Point(p.X, p.Y));
+        }
+
         public void Clear()
         {
             Points.Clear();

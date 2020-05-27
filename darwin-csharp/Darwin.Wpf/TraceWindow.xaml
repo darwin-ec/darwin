@@ -53,8 +53,22 @@
                 <MenuItem Header="Paste"></MenuItem>
             </MenuItem>
         </Menu>
-        
-        <Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+            <Button x:Name="UndoButton" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">Undo</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="RedoButton" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                    <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf01e;</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">Redo</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
 
         <!--<StackPanel Orientation="Horizontal" Grid.Row="1">
             <TextBlock x:Name="TextBlock1" FontFamily="{StaticResource FontAwesome}" Text="&#xf004;" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="100"/>

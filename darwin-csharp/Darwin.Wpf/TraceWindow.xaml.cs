@@ -1,8 +1,10 @@
-﻿using Darwin.Extensions;
+﻿using Darwin.Database;
+using Darwin.Extensions;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
 using Darwin.Model;
 using Darwin.Wpf.Extensions;
+using Darwin.Wpf.Model;
 using Darwin.Wpf.ViewModel;
 using Microsoft.Win32;
 using System;
@@ -65,6 +67,8 @@ namespace Darwin.Wpf
 		private bool _chopInit;
 		private int _chopPosition;
 		private int _chopLead;
+
+		private bool _eraseInit = false;
 
 		private string _previousStatusBarMessage;
 
@@ -541,8 +545,7 @@ namespace Darwin.Wpf
 			if (_vm.Contour == null || point.IsEmpty)
 				return;
 
-			// TODO: Undo
-			//this->addUndo(mContour);
+			AddContourUndo(_vm.Contour);
 
 			// use MovePoint code to display newly added point
 			_moveInit = true;
@@ -557,10 +560,7 @@ namespace Darwin.Wpf
 				return;
 			}
 
-			//_chopInit = true;
-
-			// TODO
-			//this->addUndo(mContour);
+			AddContourUndo(_vm.Contour);
 
 			_chopPosition = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
 
@@ -655,11 +655,8 @@ namespace Darwin.Wpf
 
 		private void TraceErasePoint(Darwin.Point point)
 		{
-			if (_vm.Contour == null || point.IsEmpty)
+			if (_vm.Contour == null || point.IsEmpty || !_eraseInit)
 				return;
-
-			// TODO
-			//this->addUndo(mContour);
 
 			int
 				numRows = _vm.Bitmap.Height,
@@ -708,8 +705,7 @@ namespace Darwin.Wpf
 
 			_moveInit = true;
 
-			// TODO
-			//this->addUndo(mContour);
+			AddContourUndo(_vm.Contour);
 
 			_movePosition = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
 
@@ -1486,6 +1482,12 @@ namespace Darwin.Wpf
 					e.Handled = true;
 					break;
 
+				case TraceToolType.Eraser:
+					Mouse.Capture(TraceCanvas);
+					AddContourUndo(_vm.Contour);
+					_eraseInit = true;
+					break;
+
 				case TraceToolType.MovePoint:
 					Mouse.Capture(TraceCanvas);
 					TraceMovePointInit(bitmapPoint);
@@ -1634,6 +1636,12 @@ namespace Darwin.Wpf
 					e.Handled = true;
 					break;
 
+				case TraceToolType.Eraser:
+					TraceCanvas.ReleaseMouseCapture();
+					_eraseInit = false;
+					e.Handled = true;
+					break;
+
 				case TraceToolType.Rotate:
 					RotateFinal(clickedPoint);
 					e.Handled = true;
@@ -1703,13 +1711,77 @@ namespace Darwin.Wpf
 
         private void ContrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-			//TODO Undo and image mod
+			// TODO Undo and image mod
 
 			if (_vm?.Bitmap != null)
 			{
 				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
 				_vm.Bitmap = _vm.OriginalBitmap.EnhanceContrast(Convert.ToByte(ContrastSlider.LowerValue), Convert.ToByte(ContrastSlider.UpperValue));
 			}
+		}
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+			if (_vm.RedoItems.Count > 0)
+			{
+				var mod = _vm.RedoItems.Pop();
+
+				switch (mod.ModificationType)
+				{
+					case ModificationType.Contour:
+						_vm.UndoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Contour,
+							Contour = new Contour(_vm.Contour)
+						});
+
+						_vm.Contour = new Contour(mod.Contour);
+						break;
+				}
+			}
+		}
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+			if (_vm.UndoItems.Count > 0)
+            {
+				var mod = _vm.UndoItems.Pop();
+
+				switch (mod.ModificationType)
+                {
+					case ModificationType.Contour:
+						_vm.RedoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Contour,
+							Contour = new Contour(_vm.Contour)
+						});
+
+						_vm.Contour = new Contour(mod.Contour);
+						break;
+                }
+            }
+        }
+
+		private void AddContourUndo(Contour contour)
+        {
+			_vm.UndoItems.Push(new Modification
+			{
+				ModificationType = ModificationType.Contour,
+				Contour = new Contour(contour)
+			});
+
+			_vm.RedoItems.Clear();
+        }
+
+		private void AddImageUndo(ImageModType modType, int val1 = 0, int val2 = 0, int val3 = 0, int val4 = 0)
+        {
+			_vm.UndoItems.Push(new Modification
+			{
+				ModificationType = ModificationType.Image,
+				ImageMod = new ImageMod(modType, val1, val2, val3, val4)
+			});
+
+			_vm.RedoItems.Clear();
 		}
     }
 }

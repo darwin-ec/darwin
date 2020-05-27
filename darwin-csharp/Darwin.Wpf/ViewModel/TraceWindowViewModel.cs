@@ -1,7 +1,10 @@
-﻿using Darwin.Model;
+﻿using Darwin.Collections;
+using Darwin.Model;
 using Darwin.Wpf.Extensions;
+using Darwin.Wpf.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -176,6 +179,68 @@ namespace Darwin.Wpf.ViewModel
 
 				return AppSettings.DrawingPointSize;
 			}
+		}
+
+		public bool UndoEnabled
+		{
+			get
+			{
+				if (_undoItems == null)
+					return false;
+
+				return _undoItems.Count > 0;
+			}
+		}
+		public ObservableStack<Modification> _undoItems;
+		public ObservableStack<Modification> UndoItems
+		{
+			get => _undoItems;
+			set
+			{
+				_undoItems = value;
+				RaisePropertyChanged("UndoItems");
+				RaisePropertyChanged("UndoEnabled");
+			}
+		}
+
+		public bool RedoEnabled
+        {
+            get
+            {
+				if (_redoItems == null)
+					return false;
+
+				return _redoItems.Count > 0;
+            }
+        }
+		public ObservableStack<Modification> _redoItems;
+		public ObservableStack<Modification> RedoItems
+		{
+			get => _redoItems;
+			set
+			{
+				_redoItems = value;
+				RaisePropertyChanged("RedoItems");
+				RaisePropertyChanged("RedoEnabled");
+			}
+		}
+
+		public TraceWindowViewModel()
+        {
+			UndoItems = new ObservableStack<Modification>();
+			UndoItems.CollectionChanged += UndoItemsCollectionChanged;
+			RedoItems = new ObservableStack<Modification>();
+			RedoItems.CollectionChanged += RedoItemsCollectionChanged;
+        }
+
+		private void UndoItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+			RaisePropertyChanged("UndoEnabled");
+		}
+
+		private void RedoItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			RaisePropertyChanged("RedoEnabled");
 		}
 
 		private void RaisePropertyChanged(string propertyName)
