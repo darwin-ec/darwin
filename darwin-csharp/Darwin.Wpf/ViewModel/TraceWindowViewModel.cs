@@ -34,6 +34,9 @@ namespace Darwin.Wpf.ViewModel
 					if (OriginalBitmap == null)
 						OriginalBitmap = new Bitmap(_bitmap);
 
+					if (BaseBitmap == null)
+						BaseBitmap = new Bitmap(_bitmap);
+
 					ImageSource = _bitmap.ToImageSource();
 				}
 				else if (ImageSource != null)
@@ -59,7 +62,25 @@ namespace Darwin.Wpf.ViewModel
 			ImageSource = _bitmap.ToImageSource();
         }
 
+		private Bitmap _baseBitmap;
+		/// <summary>
+		/// The "base" bitmap that brightness/contrast operate on.
+		/// </summary>
+		public Bitmap BaseBitmap
+		{
+			get => _baseBitmap;
+			set
+			{
+				_baseBitmap = value;
+				RaisePropertyChanged("BaseBitmap");
+			}
+		}
+
 		private Bitmap _originalBitmap;
+
+		/// <summary>
+		/// The original bitmap/image prior to any modifications.
+		/// </summary>
 		public Bitmap OriginalBitmap
 		{
 			get => _originalBitmap;

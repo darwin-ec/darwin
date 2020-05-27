@@ -1,4 +1,5 @@
-﻿using Darwin.Database;
+﻿using Darwin.Collections;
+using Darwin.Database;
 using Darwin.Extensions;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
@@ -21,6 +22,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Schema;
 
 namespace Darwin.Wpf
 {
@@ -1193,7 +1195,7 @@ namespace Darwin.Wpf
 			//	//***1.8 - add the CROP modification to list
 			//	ImageMod imod(ImageMod::IMG_crop, xMin, yMin, xMax, yMax);
 			//	mImageMods.add(imod);
-
+			
 			//	zoomUpdate(true);
 			//}
 		}
@@ -1688,37 +1690,42 @@ namespace Darwin.Wpf
 
 			if (_vm.Bitmap != null)
 			{
+				
 				_vm.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
+				_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
 				_vm.UpdateImage();
 
-				//traceWin->addUndo(traceWin->mNonZoomedImage);
-
-				//ImageMod imod(ImageMod::IMG_flip); //***1.8 - add modification to list
-				//traceWin->mImageMods.add(imod); //***1.8 - add modification to list
+				AddImageUndo(ImageModType.IMG_flip);
 			}
 		}
 
         private void BrightnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-			//TODO Undo and image mod
-
 			if (_vm?.Bitmap != null)
             {
+				int val = Convert.ToInt32(BrightnessSlider.Value);
 				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
-				_vm.Bitmap = _vm.OriginalBitmap.AlterBrightness(Convert.ToInt32(BrightnessSlider.Value));
+				_vm.Bitmap = _vm.BaseBitmap.AlterBrightness(val);
+
+				AddImageUndo(ImageModType.IMG_brighten, val);
             }
         }
 
         private void ContrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-			// TODO Undo and image mod
-
 			if (_vm?.Bitmap != null)
 			{
+				byte lowerValue = Convert.ToByte(ContrastSlider.LowerValue);
+				byte upperValue = Convert.ToByte(ContrastSlider.UpperValue);
+
 				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
-				_vm.Bitmap = _vm.OriginalBitmap.EnhanceContrast(Convert.ToByte(ContrastSlider.LowerValue), Convert.ToByte(ContrastSlider.UpperValue));
+				_vm.Bitmap = _vm.BaseBitmap.EnhanceContrast(lowerValue, upperValue);
+
+				AddImageUndo(ImageModType.IMG_contrast, lowerValue, upperValue);
 			}
 		}
+
+        #region Undo and Redo
 
         private void RedoButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1736,6 +1743,17 @@ namespace Darwin.Wpf
 						});
 
 						_vm.Contour = new Contour(mod.Contour);
+						break;
+
+					case ModificationType.Image:
+						// TODO: Need to update the sliders based on op.
+						_vm.UndoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Image,
+							ImageMod = mod.ImageMod
+						});
+
+						ApplyImageModificationsToOriginal(_vm.UndoItems);
 						break;
 				}
 			}
@@ -1758,6 +1776,17 @@ namespace Darwin.Wpf
 
 						_vm.Contour = new Contour(mod.Contour);
 						break;
+
+					case ModificationType.Image:
+						// TODO: Need to update the sliders based on op.
+						_vm.RedoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Image,
+							ImageMod = mod.ImageMod
+						});
+
+						ApplyImageModificationsToOriginal(_vm.UndoItems);
+						break;
                 }
             }
         }
@@ -1775,6 +1804,24 @@ namespace Darwin.Wpf
 
 		private void AddImageUndo(ImageModType modType, int val1 = 0, int val2 = 0, int val3 = 0, int val4 = 0)
         {
+			// Look at the top of the stack and see if we have brighten operations there, if the current op is a brighten.
+			// We're doing this because we'll get a ton of events come through at a time as the slider is moved, and we
+			// really only want to store a brightness change as one op.
+			if (modType == ImageModType.IMG_brighten && _vm.UndoItems.Count > 0)
+            {
+				while (_vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_brighten)
+					_vm.UndoItems.Pop();
+            }
+
+			// Look at the top of the stack and see if we have contrast operations there, if the current op is a contrast change.
+			// We're doing this because we'll get a ton of events come through at a time as the slider is moved, and we
+			// really only want to store a contrast change as one op.
+			if (modType == ImageModType.IMG_contrast && _vm.UndoItems.Count > 0)
+			{
+				while (_vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_contrast)
+					_vm.UndoItems.Pop();
+			}
+
 			_vm.UndoItems.Push(new Modification
 			{
 				ModificationType = ModificationType.Image,
@@ -1783,5 +1830,60 @@ namespace Darwin.Wpf
 
 			_vm.RedoItems.Clear();
 		}
-    }
+
+		/// <summary>
+		/// Reapplies image modifications to an original.  TODO: Not factored correctly. TODO:Probably not efficient.
+		/// </summary>
+		/// <param name="modifications"></param>
+		private void ApplyImageModificationsToOriginal(ObservableStack<Modification> modifications)
+		{
+			if (modifications == null)
+				throw new ArgumentNullException(nameof(modifications));
+
+			// Rebuild a list in FIFO order. TODO: There's probably a more efficient way to do this.
+			var modificationList = new List<Modification>();
+
+			foreach (var stackMod in modifications)
+			{
+				modificationList.Insert(0, stackMod);
+			}
+
+			_vm.Bitmap = new Bitmap(_vm.OriginalBitmap);
+
+			foreach (var mod in modificationList)
+			{
+				if (mod.ImageMod != null && mod.ModificationType == ModificationType.Image)
+				{
+					// TODO: This is really awkward
+					ImageModType modType;
+					int val1, val2, val3, val4;
+					mod.ImageMod.Get(out modType, out val1, out val2, out val3, out val4);
+
+					switch (mod.ImageMod.Op)
+					{
+						case ImageModType.IMG_flip:
+							_vm.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
+							break;
+
+						case ImageModType.IMG_brighten:
+							_vm.Bitmap.AlterBrightness(val1);
+							break;
+
+						case ImageModType.IMG_contrast:
+							_vm.Bitmap.EnhanceContrast((byte)val1, (byte)val2);
+							break;
+
+						default:
+							throw new NotImplementedException();
+					}
+				}
+			}
+
+			_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
+			// Just in case
+			_vm.UpdateImage();
+		}
+
+		#endregion
+	}
 }

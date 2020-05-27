@@ -2,17 +2,14 @@
 // Based on the StackOverflow answer by Ernie S at
 // https://stackoverflow.com/questions/3127136/observable-stack-and-queue
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Text;
 
 namespace Darwin.Collections
 {
     public class ObservableStack<T> : Stack<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        #region Constructors
 
         public ObservableStack() : base() { }
 
@@ -20,9 +17,6 @@ namespace Darwin.Collections
 
         public ObservableStack(int capacity) : base(capacity) { }
 
-        #endregion
-
-        #region Overrides
 
         public virtual new T Pop()
         {
@@ -44,10 +38,6 @@ namespace Darwin.Collections
             OnCollectionChanged(NotifyCollectionChangedAction.Reset, default);
         }
 
-        #endregion
-
-        #region CollectionChanged
-
         public virtual event NotifyCollectionChangedEventHandler CollectionChanged;
 
         protected virtual void OnCollectionChanged(NotifyCollectionChangedAction action, T item)
@@ -61,17 +51,11 @@ namespace Darwin.Collections
             OnPropertyChanged(nameof(Count));
         }
 
-        #endregion
-
-        #region PropertyChanged
-
         public virtual event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string proertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(proertyName));
         }
-
-        #endregion
     }
 }
