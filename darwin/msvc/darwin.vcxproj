@@ -89,7 +89,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)\..\gtk-2.22\bin\*.dll $(OutDir)</Command>
+      <Command>xcopy /y "$(ProjectDir)"..\gtk-2.22\bin\*.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
