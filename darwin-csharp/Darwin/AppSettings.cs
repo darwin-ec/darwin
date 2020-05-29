@@ -114,6 +114,5 @@ namespace Darwin
         public static float GaussianStdDev = 1.5f;
         public static float CannyLowThreshold = 0.15f;
         public static float CannyHighThreshold = 0.85f;
-
     }
 }

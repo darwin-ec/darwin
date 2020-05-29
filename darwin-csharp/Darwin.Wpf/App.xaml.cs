@@ -1,4 +1,48 @@
-﻿using System;
+﻿///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//	DARWIN Software                                                      //
+//                                                                       //
+// Digital Analysis and Recognition of Whale Image on a Network          //
+// Digital Analysis to Recognize Whale Images on a Network               //
+// Digital Archive of Recognized Whale Images on a Network               //
+//                                                                       //
+// Software designed and coded as a collaborative effort ...             //
+//                                                                       //
+// ... by  The DARWIN Research Group                                     //
+//                                                                       //
+//	Kelly R. Debure, PhD (GTK+, X Window System version)                 //
+//	John H. Stewman, PhD (all versions)                                  //
+//	Kristen McCoy (GTK+ Version)                                         //
+//	Henry Burroughs (GTK+ Version)                                       //
+//	Zach Roberts (X Window System version)                               //
+//	Daniel J. Wilkin (X Window System version)                           //
+//	Mark C. Allen (Microsoft Win 3.1 version, Expert System version)     //
+//	Rachel Stanley (Expert System version)                               //
+//	Andrew Cameron (protype database)                                    //
+//	Adam Russell (major Object Oriented rewrite & Gtk GUI)               //
+//  Scott Hale (autotrace, finz file support, misc. gui/HCI ...)         //
+//  R J Nowling (SQLite database, finz file support)                     //
+//                                                                       //
+// ... at  Eckerd College                                                //
+//	       St.Petersburg, FL                                             //
+//                                                                       //
+// xdarwin (DARWIN for the X Window System)                              //
+//                                                                       //
+// ... begun on July 27, 1994 (JHS)                                      //
+// ... and updated on July 28, 1994 (JHS)                                //
+// ... and updated starting June 12, 1995 (DW)                           //
+// ... then maintained by Daniel J. Wilkin and Zach Roberts              //
+// ... major rewrite using GTK+ 2000-2002 (Adam Russell)                 //
+// ... currently maintained by JHS & KRD                                 //
+//                                                                       //
+// Supported by grants from the National Science Foundation              //
+//                                                                       //
+// Species Domain - Common Bottlenose Dolphin - Tursiops truncatus       //
+//                                                                       //
+// Copyright (C) 2001                                                    //
+///////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +57,22 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            if (e.Args != null && e.Args.Length > 0)
+            {
+                if (e.Args[0].EndsWith(".finz"))
+                {
+                    string filePathFormMainArgs = e.Args[0];
+
+                }
+            }
+            else
+            {
+                StartupUri = new Uri("/Darwin.Wpf;component/TraceWindow.xaml",
+                    UriKind.Relative);
+                // Call the view "welcome page application"
+            }
+        }
     }
 }
