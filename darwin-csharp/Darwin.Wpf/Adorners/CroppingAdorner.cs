@@ -19,9 +19,49 @@ namespace Darwin.Wpf.Adorners
 {
     public class CroppingAdorner : Adorner
     {
+        static public DependencyProperty FillProperty = Shape.FillProperty.AddOwner(typeof(CroppingAdorner));
+
+        public Brush Fill
+        {
+            get
+            {
+                return GetValue(FillProperty) as Brush;
+            }
+            set
+            {
+                SetValue(FillProperty, value);
+            }
+        }
+
+        private static void FillPropChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
+        {
+            CroppingAdorner croppingAdorner = o as CroppingAdorner;
+
+            if (croppingAdorner != null)
+                croppingAdorner._cropMask.Fill = (Brush)args.NewValue;
+        }
+
+        public static readonly RoutedEvent CropEvent = EventManager.RegisterRoutedEvent(
+            "Crop", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(CroppingAdorner));
+
+        public event RoutedEventHandler Crop
+        {
+            add
+            {
+                base.AddHandler(CroppingAdorner.CropEvent, value);
+            }
+            remove
+            {
+                base.RemoveHandler(CroppingAdorner.CropEvent, value);
+            }
+        }
+
+
         private readonly UIElement _adornedElement;
         private readonly RectangleGeometry _geometry;
         private System.Windows.Point _anchorPoint;
+        // PuncturedRect to hold the "Cropping" portion of the adorner
+        private PuncturedRect _cropMask;
         private Rect _selectRect;
 
         private Canvas _thumbsCanvas;
@@ -51,21 +91,6 @@ namespace Darwin.Wpf.Adorners
         private System.Windows.Point ThumbBottomLeftPoint { get; set; }
         private System.Windows.Point ThumbBottomRightPoint { get; set; }
 
-        public static readonly RoutedEvent CropEvent = EventManager.RegisterRoutedEvent(
-            "Crop", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(CroppingAdorner));
-
-        public event RoutedEventHandler Crop
-        {
-            add
-            {
-                base.AddHandler(CroppingAdorner.CropEvent, value);
-            }
-            remove
-            {
-                base.RemoveHandler(CroppingAdorner.CropEvent, value);
-            }
-        }
-
         // To store and manage the adorner's visual children.
         private readonly VisualCollection _visualChildren;
 
@@ -93,6 +118,18 @@ namespace Darwin.Wpf.Adorners
             };
 
             _visualChildren.Add(Rubberband);
+
+            // A transparent black background to show outside the crop area over the rest
+            // of the image
+            Fill = new SolidColorBrush(Color.FromArgb(110, 0, 0, 0));
+
+            _cropMask = new PuncturedRect();
+            _cropMask.IsHitTestVisible = false;
+            _cropMask.RectInterior = _selectRect;
+            _cropMask.Fill = Fill;
+            _cropMask.Visibility = Visibility.Hidden;
+
+            _visualChildren.Add(_cropMask);
 
             // We're going to put the thumbs in a canvas, since the events and placement
             // actually work correctly in a canvas.
@@ -171,6 +208,11 @@ namespace Darwin.Wpf.Adorners
             var finalSize = base.ArrangeOverride(size);
             ((UIElement)GetVisualChild(0))?.Arrange(new Rect(new System.Windows.Point(), finalSize));
 
+            Rect rcExterior = new Rect(0, 0, AdornedElement.RenderSize.Width, AdornedElement.RenderSize.Height);
+            _cropMask.RectExterior = rcExterior;
+            _cropMask.RectInterior = _selectRect;
+            _cropMask.Arrange(rcExterior);
+
             SetThumbPositions(false);
 
             _thumbsCanvas.Arrange(new Rect(0, 0, AdornedElement.RenderSize.Width, AdornedElement.RenderSize.Height));
@@ -235,13 +277,14 @@ namespace Darwin.Wpf.Adorners
             }
         }
 
-        public void SetElementVisibility(Visibility visibility)
+        private void SetElementVisibility(Visibility visibility)
         {
             Rubberband.Visibility = visibility;
             _topLeft.Visibility = visibility;
             _topRight.Visibility = visibility;
             _bottomLeft.Visibility = visibility;
             _bottomRight.Visibility = visibility;
+            _cropMask.Visibility = visibility;
         }
 
         private void DrawSelection(object sender, MouseEventArgs e)
@@ -254,6 +297,8 @@ namespace Darwin.Wpf.Adorners
                 _selectRect.Width = Math.Abs(mousePosition.X - _anchorPoint.X);
                 _selectRect.Height = Math.Abs(mousePosition.Y - _anchorPoint.Y);
                 _geometry.Rect = _selectRect;
+
+                _cropMask.RectInterior = _selectRect;
 
                 SetThumbPositions();
 
@@ -288,6 +333,8 @@ namespace Darwin.Wpf.Adorners
                 ThumbTopLeftPoint.Y < ThumbBottomLeftPoint.Y ? ThumbTopLeftPoint.Y : ThumbBottomLeftPoint.Y,
                 Math.Abs(ThumbTopLeftPoint.X - ThumbTopRightPoint.X),
                 Math.Abs(ThumbTopLeftPoint.Y - ThumbBottomLeftPoint.Y));
+
+            _cropMask.RectInterior = _selectRect;
 
             var layer = AdornerLayer.GetAdornerLayer(_adornedElement);
             layer.InvalidateArrange();
