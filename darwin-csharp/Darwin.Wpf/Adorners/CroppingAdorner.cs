@@ -220,6 +220,7 @@ namespace Darwin.Wpf.Adorners
             if (CropEnabled && _selectRect != null && _selectRect.Contains(anchorPoint))
             {
                 RaiseEvent(new RoutedEventArgs(CropEvent, this));
+                SetElementVisibility(Visibility.Hidden);
             }
             else
             {
@@ -234,7 +235,7 @@ namespace Darwin.Wpf.Adorners
             }
         }
 
-        private void SetElementVisibility(Visibility visibility)
+        public void SetElementVisibility(Visibility visibility)
         {
             Rubberband.Visibility = visibility;
             _topLeft.Visibility = visibility;

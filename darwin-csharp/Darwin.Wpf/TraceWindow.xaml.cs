@@ -1056,163 +1056,27 @@ namespace Darwin.Wpf
 			//		highlightPointSize);
 		}
 
-		private void CropInit(Darwin.Point point)
-		{
-			//this->ensurePointInZoomedBounds(x, y); //***1.8 - must start in bounds
-
-			//addUndo(mNonZoomedImage);
-
-			//mXCropStart = x;
-			//mYCropStart = y;
-
-			//mXCropPrev = mYCropPrev = mXCropPrevLen = mYCropPrevLen = 0;
-		}
-
-
-		private void CropUpdate(Darwin.Point point)
-		{
-			//this->ensurePointInZoomedBounds(x, y);
-
-			//int rowStart, colStart, numCropCols, numCropRows;
-
-			//if (x < mXCropStart)
-			//{
-			//	colStart = x;
-			//	numCropCols = mXCropStart - x;
-			//}
-			//else
-			//{
-			//	colStart = mXCropStart;
-			//	numCropCols = x - mXCropStart;
-			//}
-
-			//if (y < mYCropStart)
-			//{
-			//	rowStart = y;
-			//	numCropRows = mYCropStart - y;
-			//}
-			//else
-			//{
-			//	rowStart = mYCropStart;
-			//	numCropRows = y - mYCropStart;
-			//}
-
-			//int rowstride = mImage->getNumCols() * mImage->bytesPerPixel();
-			//// remove top row
-			//gdk_draw_rgb_image(
-			//	mDrawingArea->window,
-			//	mDrawingArea->style->fg_gc[GTK_STATE_NORMAL],
-			//	mXCropPrev + mZoomXOffset, mYCropPrev + mZoomYOffset,
-			//	mXCropPrevLen + 1, 1,
-			//	GDK_RGB_DITHER_NONE,
-			//	(guchar*)(mImage->getData() + mYCropPrev * mImage->getNumCols() + mXCropPrev),
-			//	rowstride);
-
-			////remove bottom row of last crop box
-			//gdk_draw_rgb_image(
-			//	mDrawingArea->window,
-			//	mDrawingArea->style->fg_gc[GTK_STATE_NORMAL],
-			//	mXCropPrev + mZoomXOffset, mYCropPrev + mYCropPrevLen + mZoomYOffset,
-			//	mXCropPrevLen + 1, 1,
-			//	GDK_RGB_DITHER_NONE,
-			//	(guchar*)(mImage->getData() + (mYCropPrev + mYCropPrevLen) * mImage->getNumCols() + mXCropPrev),
-			//	rowstride);
-
-			////remove left edge of last crop box...
-			//gdk_draw_rgb_image(
-			//	mDrawingArea->window,
-			//	mDrawingArea->style->fg_gc[GTK_STATE_NORMAL],
-			//	mXCropPrev + mZoomXOffset, mYCropPrev + mZoomYOffset,
-			//	1, mYCropPrevLen + 1,
-			//	GDK_RGB_DITHER_NONE,
-			//	(guchar*)(mImage->getData() + mYCropPrev * mImage->getNumCols() + mXCropPrev),
-			//	rowstride);
-
-			////remove right edge of last crop box...
-			//gdk_draw_rgb_image(
-			//	mDrawingArea->window,
-			//	mDrawingArea->style->fg_gc[GTK_STATE_NORMAL],
-			//	mXCropPrev + mXCropPrevLen + mZoomXOffset, mYCropPrev + mZoomYOffset,
-			//	1, mYCropPrevLen + 1,
-			//	GDK_RGB_DITHER_NONE,
-			//	(guchar*)(mImage->getData() + mYCropPrev * mImage->getNumCols() + (mXCropPrev + mXCropPrevLen)),
-			//	rowstride);
-
-			//gdk_draw_rectangle(
-			//		mDrawingArea->window,
-			//		mGC,
-			//		FALSE,
-			//		colStart + mZoomXOffset,
-			//		rowStart + mZoomYOffset,
-			//		numCropCols,
-			//		numCropRows);
-
-			//mXCropEnd = x;
-			//mYCropEnd = y;
-
-			//mXCropPrev = colStart;
-			//mYCropPrev = rowStart;
-
-			//mXCropPrevLen = numCropCols;
-			//mYCropPrevLen = numCropRows;
-		}
-
-		private void CropFinalize(Darwin.Point point)
-		{
-			//ColorImage* temp = mNonZoomedImage;
-
-			//int xMin, xMax, yMin, yMax;
-
-			//this->ensurePointInZoomedBounds(x, y);
-
-			//if (x < mXCropStart)
-			//{
-			//	xMin = x;
-			//	xMax = mXCropStart;
-			//}
-			//else
-			//{
-			//	xMin = mXCropStart;
-			//	xMax = x;
-			//}
-
-			//if (y < mYCropStart)
-			//{
-			//	yMin = y;
-			//	yMax = mYCropStart;
-			//}
-			//else
-			//{
-			//	yMin = mYCropStart;
-			//	yMax = y;
-			//}
-			//this->zoomMapPointsToOriginal(xMin, yMin);
-			//this->zoomMapPointsToOriginal(xMax, yMax);
-
-			//if ((xMin < xMax) && (yMin < yMax)) //***1.8 - don't crop if size ridiculous
-			//{
-			//	mNonZoomedImage = crop(temp, xMin, yMin, xMax, yMax);
-			//	delete temp;
-			//	//***1.8 - add the CROP modification to list
-			//	ImageMod imod(ImageMod::IMG_crop, xMin, yMin, xMax, yMax);
-			//	mImageMods.add(imod);
-			
-			//	zoomUpdate(true);
-			//}
-		}
-
 		private void CropApply(Object sender, RoutedEventArgs args)
         {
+			int x = (int)Math.Round(_cropSelector.SelectRect.X);
+			int y = (int)Math.Round(_cropSelector.SelectRect.Y);
+			int width = (int)Math.Round(_cropSelector.SelectRect.Width);
+			int height = (int)Math.Round(_cropSelector.SelectRect.Height);
+
+			AddImageUndo(ImageModType.IMG_crop,
+				x, y,
+				x + width, y + height);
+
 			System.Drawing.Rectangle cropRect = new System.Drawing.Rectangle(
-				(int)Math.Round(_cropSelector.SelectRect.X),
-				(int)Math.Round(_cropSelector.SelectRect.Y),
-				(int)Math.Round(_cropSelector.SelectRect.Width),
-				(int)Math.Round(_cropSelector.SelectRect.Height));
+				x,
+				y,
+				width,
+				height);
 
 			var croppedBitmap = ImageTransform.CropBitmap(_vm.Bitmap, cropRect);
 
 			_vm.Bitmap = _vm.BaseBitmap = croppedBitmap;
-        }
+		}
 
 		private void RotateInit(Darwin.Point point)
 		{
@@ -1580,10 +1444,10 @@ namespace Darwin.Wpf
 						e.Handled = true;
 						break;
 
-					case TraceToolType.Crop:
-						CropUpdate(imagePoint);
-						e.Handled = true;
-						break;
+					//case TraceToolType.Crop:
+					//	CropUpdate(imagePoint);
+					//	e.Handled = true;
+					//	break;
 
 					case TraceToolType.ChopOutline:
 						TraceChopOutlineUpdate(imagePoint);
@@ -1648,10 +1512,10 @@ namespace Darwin.Wpf
 					e.Handled = true;
 					break;
 
-				case TraceToolType.Crop:
-					CropFinalize(bitmapPoint);
-					e.Handled = true;
-					break;
+				//case TraceToolType.Crop:
+				//	CropFinalize(bitmapPoint);
+				//	e.Handled = true;
+				//	break;
 
 				case TraceToolType.ChopOutline: // *** 1.5 krd - chop outline to end of trace 
 					TraceChopOutlineFinal();
@@ -1891,6 +1755,11 @@ namespace Darwin.Wpf
 
 						case ImageModType.IMG_contrast:
 							_vm.Bitmap.EnhanceContrast((byte)val1, (byte)val2);
+							break;
+
+						case ImageModType.IMG_crop:
+							var cropRect = new System.Drawing.Rectangle(val1, val2, val3 - val1, val4 - val2);
+							_vm.Bitmap = ImageTransform.CropBitmap(_vm.Bitmap, cropRect);
 							break;
 
 						default:
