@@ -101,6 +101,12 @@
                     <TextBlock HorizontalAlignment="Center">Zoom</TextBlock>
                 </StackPanel>
             </RadioButton>
+            <RadioButton x:Name="CropButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />
+                    <TextBlock HorizontalAlignment="Center">Crop</TextBlock>
+                </StackPanel>
+            </RadioButton>
             <RadioButton x:Name="AutoTraceButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AutoTrace}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/autotrace.png" />

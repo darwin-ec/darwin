@@ -4,6 +4,7 @@ using Darwin.Extensions;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
 using Darwin.Model;
+using Darwin.Wpf.Adorners;
 using Darwin.Wpf.Extensions;
 using Darwin.Wpf.Model;
 using Darwin.Wpf.ViewModel;
@@ -31,6 +32,7 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class TraceWindow : Window
     {
+		private CroppingAdorner _cropSelector;
 		System.Windows.Point? lastCenterPositionOnTarget;
 		System.Windows.Point? lastMousePositionOnTarget;
 		System.Windows.Point? lastDragPoint;
@@ -1191,7 +1193,6 @@ namespace Darwin.Wpf
 			//{
 			//	mNonZoomedImage = crop(temp, xMin, yMin, xMax, yMax);
 			//	delete temp;
-
 			//	//***1.8 - add the CROP modification to list
 			//	ImageMod imod(ImageMod::IMG_crop, xMin, yMin, xMax, yMax);
 			//	mImageMods.add(imod);
@@ -1199,6 +1200,19 @@ namespace Darwin.Wpf
 			//	zoomUpdate(true);
 			//}
 		}
+
+		private void CropApply(Object sender, RoutedEventArgs args)
+        {
+			System.Drawing.Rectangle cropRect = new System.Drawing.Rectangle(
+				(int)Math.Round(_cropSelector.SelectRect.X),
+				(int)Math.Round(_cropSelector.SelectRect.Y),
+				(int)Math.Round(_cropSelector.SelectRect.Width),
+				(int)Math.Round(_cropSelector.SelectRect.Height));
+
+			var croppedBitmap = ImageTransform.CropBitmap(_vm.Bitmap, cropRect);
+
+			_vm.Bitmap = _vm.BaseBitmap = croppedBitmap;
+        }
 
 		private void RotateInit(Darwin.Point point)
 		{
@@ -1261,7 +1275,11 @@ namespace Darwin.Wpf
 						break;
 
 					case TraceToolType.Crop:
-						TraceCanvas.Cursor = Cursors.SizeNWSE;
+						//TraceCanvas.Cursor = Cursors.SizeNWSE;
+						var layer = AdornerLayer.GetAdornerLayer(TraceCanvas);
+						_cropSelector = new CroppingAdorner(TraceCanvas);
+						_cropSelector.Crop += CropApply;
+						layer.Add(_cropSelector);
 						break;
 
 					case TraceToolType.ChopOutline:
@@ -1502,7 +1520,9 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceToolType.Crop:
-					CropInit(bitmapPoint);
+					_cropSelector.CaptureMouse();
+					_cropSelector.StartSelection(clickedPoint);
+
 					e.Handled = true;
 					break;
 
