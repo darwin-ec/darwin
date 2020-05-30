@@ -1,14 +1,16 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace Darwin.Database
 {
     public static class CatalogSupport
     {
+		public const string FinzDatabaseFilename = "database.db";
+
 		public const string SurveyAreasFolderName = "surveyAreas";
 		public const string CatalogFolderName = "catalog";
 		public const string TracedFinsFolderName = "tracedFins";
@@ -16,26 +18,50 @@ namespace Darwin.Database
 		public const string MatchQResultsFolderName = "matchQResults";
 		public const string SightingsFolderName = "sightings";
 
-		//public static DarwinDatabase OpenDatabase()
-  //      {
+        public static DarwinDatabase OpenDatabase(string databaseFilename, Options o, bool create, string area = "default")
+        {
+			CatalogScheme cat = new CatalogScheme();
+			DarwinDatabase db = null;
 
-  //      }
+			if (create)
+			{
+				RebuildFolders(o.CurrentDataPath, area);
+				// should ONLY end up here with IFF we are NOT converting an old database
+				int id = o.CurrentDefaultCatalogScheme;
+				cat.SchemeName = o.DefinedCatalogSchemeName[id];
+				cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
+				//db = new SQLiteDatabase(o, cat, create);
+			}
+
+			return db;
+		}
 
         public static DatabaseFin OpenFinz(string filename)
-        {
+		{
 			if (string.IsNullOrEmpty(filename))
 				throw new ArgumentNullException(nameof(filename));
 
-			using (Stream fs = File.OpenRead(filename))
-            {
-				using (var zf = new ZipFile(fs))
-                {
-					foreach (ZipEntry entery in zf)
-                    {
+			string uniqueDirectoryName = filename.Replace(".", string.Empty) + "_" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+			string fullDirectoryName = Path.Combine(Path.GetTempPath(), uniqueDirectoryName);
 
-                    }
-                }
-            }
+			try
+			{ 
+				Directory.CreateDirectory(fullDirectoryName);
+
+				ZipFile.ExtractToDirectory(filename, fullDirectoryName);
+
+				string dbFilename = Path.Combine(fullDirectoryName, FinzDatabaseFilename);
+
+				if (!File.Exists(dbFilename))
+					return null;
+
+				var db = OpenDatabase(dbFilename, Options.CurrentUserOptions, false);
+			}
+			finally
+            {
+				if (Directory.Exists(fullDirectoryName))
+					Directory.Delete(fullDirectoryName, true);
+			}
 
 			return null;
 			//string baseimgfilename;
