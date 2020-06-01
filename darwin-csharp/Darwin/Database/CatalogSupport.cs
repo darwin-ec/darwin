@@ -30,7 +30,7 @@ namespace Darwin.Database
 				int id = o.CurrentDefaultCatalogScheme;
 				cat.SchemeName = o.DefinedCatalogSchemeName[id];
 				cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
-				//db = new SQLiteDatabase(o, cat, create);
+				db = null; //new SQLiteDatabase(databaseFilename, o, cat, create);
 			}
 
 			return db;

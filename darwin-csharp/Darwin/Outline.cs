@@ -193,7 +193,7 @@ namespace Darwin
 
         //    If compute = true then ignore theta and call findLEAngle()
         //    else use theta as the angle value
-        void SetLEAngle(double theta, bool compute)
+        public void SetLEAngle(double theta, bool compute)
         {
             if (compute)
                 _LEAngle = FindLEAngle();

@@ -16,6 +16,7 @@ namespace Darwin
         public string CurrentDataPath { get; set; }
         public int CurrentDefaultCatalogScheme { get; set; }
         public string CurrentDefaultCatalogSchemeName { get; set; }
+        public string CurrentSurveyArea { get; set; }
         public List<string> DefinedCatalogSchemeName { get; set; }
         public List<List<string>> DefinedCatalogCategoryName { get; set; }
 
