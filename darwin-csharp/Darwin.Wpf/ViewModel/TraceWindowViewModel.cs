@@ -265,6 +265,11 @@ namespace Darwin.Wpf.ViewModel
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
+
+			UndoItems = new ObservableStack<Modification>();
+			UndoItems.CollectionChanged += UndoItemsCollectionChanged;
+			RedoItems = new ObservableStack<Modification>();
+			RedoItems.CollectionChanged += RedoItemsCollectionChanged;
 		}
 
 		private void UndoItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

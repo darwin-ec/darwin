@@ -1713,7 +1713,7 @@ namespace Darwin.Wpf
 			// really only want to store a brightness change as one op.
 			if (modType == ImageModType.IMG_brighten && _vm.UndoItems.Count > 0)
             {
-				while (_vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_brighten)
+				while (_vm.UndoItems.Count > 0 && _vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_brighten)
 					_vm.UndoItems.Pop();
             }
 
@@ -1722,7 +1722,7 @@ namespace Darwin.Wpf
 			// really only want to store a contrast change as one op.
 			if (modType == ImageModType.IMG_contrast && _vm.UndoItems.Count > 0)
 			{
-				while (_vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_contrast)
+				while (_vm.UndoItems.Count > 0 && _vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_contrast)
 					_vm.UndoItems.Pop();
 			}
 

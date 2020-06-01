@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Darwin.Helpers;
+using Darwin.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -65,7 +67,19 @@ namespace Darwin.Database
 
                 var baseimgfilename = Path.GetFileName(fin.mImageFilename);
                 fin.mImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
+
+				List<ImageMod> imageMods;
+				bool thumbOnly;
+				string originalFilename;
+				float normScale;
+
+				PngHelper.ParsePngText(fin.mImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
 				
+				fin.mImageMods = imageMods;
+				fin.mNormScale = normScale;
+
+				// TODO: Do something with thumbOnly?
+
 				// We're loading the image this way because Bitmap keeps a lock on the original file, and
 				// we want to try to delete the file below.  So we open the file in another object in a using statement
 				// then copy it over to our actual working object.
@@ -74,13 +88,15 @@ namespace Darwin.Database
 					fin.mModifiedFinImage = new Bitmap(imageFromFile);
 				}
 
-                // TODO
-                //fin.mOriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(fin.mModifiedFinImage.mOriginalImageFilename));
+				if (!string.IsNullOrEmpty(originalFilename))
+				{
+					fin.mOriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(originalFilename));
 
-                //if (!string.IsNullOrEmpty(fin.mOriginalImageFilename))
-                //{
-                //    fin.mFinImage = new Bitmap(fin.mOriginalImageFilename);
-                //}
+					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.mOriginalImageFilename))
+					{
+						fin.mFinImage = new Bitmap(originalImageFromFile);
+					}
+				}
 
                 return fin;
             }

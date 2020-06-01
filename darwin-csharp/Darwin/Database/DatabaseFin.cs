@@ -69,6 +69,8 @@ namespace Darwin.Database
         public char[,] mThumbnailPixmap;
         public int mThumbnailRows;
 
+        public float mNormScale;
+
         //  1.4 - new members for tracking image modifications during tracing
         public bool mLeft, mFlipped;              // left side or flipped internally to swim left
         public double mXmin, mYmin, mXmax, mYmax; // internal cropping bounds
@@ -122,7 +124,7 @@ namespace Darwin.Database
             mModifiedFinImage = null; //  1.5
             mFinFilename = string.Empty; //  1.6
             mIsAlternate = false; //  1.95
-
+            mNormScale = 1.0f;
             //  1.5 - need some way to CATCH error thrown when image file
             //         does not exist or is unsupported type  --
             //         program now crashes when database image is misplaced or misnamed
@@ -184,7 +186,8 @@ namespace Darwin.Database
             mFinFilename = string.Empty; //  1.6
             mFinImage = null;
             mIsAlternate = false; //  1.99
-                                // let's see what happens... -- rjn
+            mNormScale = 1.0f;
+            // let's see what happens... -- rjn
             /*
             mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //  001DB
             FIN_IMAGE_TYPE *thumb = resizeWithBorderNN(
@@ -239,6 +242,8 @@ namespace Darwin.Database
             //  1.8 - and we create a COPY of the original image here
             if (null != fin.mFinImage)
                 mFinImage = new Bitmap(fin.mFinImage);
+
+            mNormScale = 1.0f;
 
             // TODO
             //for (int i = 0; i < fin.mThumbnailRows; i++)
