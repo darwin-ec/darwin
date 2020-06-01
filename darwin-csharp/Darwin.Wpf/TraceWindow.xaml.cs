@@ -113,6 +113,26 @@ namespace Darwin.Wpf
 			this.DataContext = _vm;
 		}
 
+		public TraceWindow(TraceWindowViewModel vm)
+		{
+			InitializeComponent();
+
+			_movePosition = -1;
+			_moveFirstRun = true;
+			_moveDrawLine = false;
+
+			_vm = vm;
+
+			_vm.ZoomValues.Add(4);
+			_vm.ZoomValues.Add(3);
+			_vm.ZoomValues.Add(2);
+			_vm.ZoomValues.Add(1);
+			_vm.ZoomValues.Add(0.75);
+			_vm.ZoomValues.Add(0.50);
+
+			this.DataContext = _vm;
+		}
+
 		private void img_MouseWheel(object sender, MouseWheelEventArgs e)
 		{
 			//ImagingProvider.MouseWheel(imgCanvas, imgTransformGroup, e);

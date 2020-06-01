@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -30,8 +32,9 @@ namespace Darwin.Database
 				int id = o.CurrentDefaultCatalogScheme;
 				cat.SchemeName = o.DefinedCatalogSchemeName[id];
 				cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
-				db = new SQLiteDatabase(databaseFilename, o, cat, create);
 			}
+
+			db = new SQLiteDatabase(databaseFilename, o, cat, create);
 
 			return db;
 		}
@@ -41,7 +44,7 @@ namespace Darwin.Database
 			if (string.IsNullOrEmpty(filename))
 				throw new ArgumentNullException(nameof(filename));
 
-			string uniqueDirectoryName = filename.Replace(".", string.Empty) + "_" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+			string uniqueDirectoryName = Path.GetFileName(filename).Replace(".", string.Empty) + "_" + Guid.NewGuid().ToString().Replace("-", string.Empty);
 			string fullDirectoryName = Path.Combine(Path.GetTempPath(), uniqueDirectoryName);
 
 			try
@@ -55,59 +58,57 @@ namespace Darwin.Database
 				if (!File.Exists(dbFilename))
 					return null;
 
-				var db = OpenDatabase(dbFilename, Options.CurrentUserOptions, false);
-			}
+                var db = OpenDatabase(dbFilename, Options.CurrentUserOptions, false);
+
+                // First and only fin
+                var fin = db.getItem(0);
+
+                var baseimgfilename = Path.GetFileName(fin.mImageFilename);
+                fin.mImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
+				
+				// We're loading the image this way because Bitmap keeps a lock on the original file, and
+				// we want to try to delete the file below.  So we open the file in another object in a using statement
+				// then copy it over to our actual working object.
+				using (var imageFromFile = (Bitmap)Image.FromFile(fin.mImageFilename))
+				{
+					fin.mModifiedFinImage = new Bitmap(imageFromFile);
+				}
+
+                // TODO
+                //fin.mOriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(fin.mModifiedFinImage.mOriginalImageFilename));
+
+                //if (!string.IsNullOrEmpty(fin.mOriginalImageFilename))
+                //{
+                //    fin.mFinImage = new Bitmap(fin.mOriginalImageFilename);
+                //}
+
+                return fin;
+            }
+			catch
+            {
+				// TODO: Probably should have better handling here
+				return null;
+            }
 			finally
             {
-				if (Directory.Exists(fullDirectoryName))
-					Directory.Delete(fullDirectoryName, true);
+				try
+				{
+					Trace.WriteLine("Trying to remove temporary files for finz file.");
+
+					SQLiteConnection.ClearAllPools();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+
+					if (Directory.Exists(fullDirectoryName))
+						Directory.Delete(fullDirectoryName, true);
+				}
+				catch (Exception ex)
+                {
+					Trace.Write("Couldn't remove temporary files:");
+					Trace.WriteLine(ex);
+                }
 			}
-
-			return null;
-			//string baseimgfilename;
-			//string tempdir("");
-			//tempdir += gOptions->mTempDirectory;//getenv("TEMP");
-			//tempdir += PATH_SLASH;
-			//tempdir += extractBasename(archive);
-
-			//systemUnzip(archive, tempdir);
-
-			//Options o = Options();
-			//o.mDatabaseFileName = tempdir + PATH_SLASH + "database.db";
-
-			//if (!SQLiteDatabase::isType(o.mDatabaseFileName))
-			//	return NULL;
-
-			//Database* db = openDatabase(&o, false);
-
-			//if (db->status() != Database::loaded)
-			//{
-			//	delete db;
-			//	return NULL;
-			//}
-
-			//DatabaseFin<ColorImage>* fin = db->getItem(0); // first and only fin
-
-
-			//// construct absolute file paths and open images
-			//baseimgfilename = extractBasename(fin->mImageFilename);
-			//fin->mImageFilename = tempdir + PATH_SLASH + baseimgfilename;
-			//fin->mModifiedFinImage = new ColorImage(fin->mImageFilename);
-			//fin->mOriginalImageFilename = tempdir + PATH_SLASH + extractBasename(fin->mModifiedFinImage->mOriginalImageFilename);
-
-			//if ("" != fin->mOriginalImageFilename)
-			//{
-			//	fin->mFinImage = new ColorImage(fin->mOriginalImageFilename);
-			//}
-
-			//fin->mImageMods = fin->mModifiedFinImage->mImageMods;
-
-			//// fixes an issue with the MatchResults trying to re-save the fin
-			//fin->mFinFilename = archive;
-
-			//delete db;
-
-			//return fin;
 		}
 
 		public static void RebuildFolders(string home, string area)

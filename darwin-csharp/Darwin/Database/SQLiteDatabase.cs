@@ -49,8 +49,17 @@ namespace Darwin.Database
             using (var conn = new SQLiteConnection(_connectionString))
             {
                 conn.Open();
+
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = "pragma quick_check;";
+                    cmd.ExecuteNonQuery();
+                }
+
                 conn.Close();
             }
+
+            loadLists();
         }
 
         public List<DBIndividual> selectAllIndividuals()
@@ -1599,6 +1608,13 @@ namespace Darwin.Database
             //deleteFinFromLists(id);
         }
 
+        public void addFinToLists(DatabaseFin fin)
+        {
+            addFinToLists(fin.mDataPos, fin.mName, fin.mIDCode, fin.mDateOfSighting,
+                fin.mRollAndFrame, fin.mLocationCode, fin.mDamageCategory,
+                fin.mShortDescription);
+        }
+
         //*******************************************************************
         //
         // Adds a fin to the sort lists. Does not resort the lists.
@@ -1606,13 +1622,13 @@ namespace Darwin.Database
         public void addFinToLists(long datapos, string name, string id, string date, string roll,
                                            string location, string damage, string description)
         {
-            mNameList.Add(name ?? "NONE" + " " + datapos);
-            mIDList.Add(id ?? "NONE" + " " + datapos);
-            mDateList.Add(date ?? "NONE" + " " + datapos);
-            mRollList.Add(roll ?? "NONE" + " " + datapos);
-            mLocationList.Add(location ?? "NONE" + " " + datapos);
-            mDamageList.Add(damage ?? "NONE" + " " + datapos);
-            mDescriptionList.Add(description ?? "NONE" + " " + datapos);
+            mNameList.Add((name ?? "NONE") + " " + datapos);
+            mIDList.Add((id ?? "NONE") + " " + datapos);
+            mDateList.Add((date ?? "NONE") + " " + datapos);
+            mRollList.Add((roll ?? "NONE") + " " + datapos);
+            mLocationList.Add((location ?? "NONE") + " " + datapos);
+            mDamageList.Add((damage ?? "NONE") + " " + datapos);
+            mDescriptionList.Add((description ?? "NONE") + " " + datapos);
 
             //***2.2 -- make room for HOLES, unused primary Keys
             // mAbsoluteOffset.push_back(datapos); // the way RJ did it
@@ -1647,6 +1663,67 @@ namespace Darwin.Database
             //***2.2 - replace all of above
             //if (id < mAbsoluteOffset.Count)
             //    mAbsoluteOffset[id] = -1;
+        }
+
+        //*******************************************************************
+        //
+        // Rebuilds the lists from the database and sorts them.
+        //
+        private void loadLists()
+        {
+            List<DatabaseFin> fins;
+
+            if (mNameList == null)
+                mNameList = new List<string>();
+            else
+                mNameList.Clear();
+
+            if (mIDList == null)
+                mIDList = new List<string>();
+            else
+                mIDList.Clear();
+
+            if (mDateList == null)
+                mDateList = new List<string>();
+            else
+                mDateList.Clear();
+
+            if (mRollList == null)
+                mRollList = new List<string>();
+            else
+                mRollList.Clear();
+
+            if (mLocationList == null)
+                mLocationList = new List<string>();
+            else
+                mLocationList.Clear();
+
+            if (mDamageList == null)
+                mDamageList = new List<string>();
+            else
+                mDamageList.Clear();
+
+            if (mDescriptionList == null)
+                mDescriptionList = new List<string>();
+            else
+                mDescriptionList.Clear();
+
+            if (mAbsoluteOffset == null)
+                mAbsoluteOffset = new List<long>();
+            else
+                mAbsoluteOffset.Clear();
+
+            fins = getAllFins();
+
+            if (fins != null)
+            {
+                foreach (var fin in fins)
+                {
+                    addFinToLists(fin);
+                }
+            }
+
+            sortLists();
         }
 
         public void sortLists()
@@ -1815,14 +1892,15 @@ namespace Darwin.Database
 
                 conn.Open();
 
-                var transaction = conn.BeginTransaction();
+                using (SQLiteCommand cmd = new SQLiteCommand(conn))
+                {
+                    var transaction = conn.BeginTransaction();
 
-                SQLiteCommand cmd = new SQLiteCommand(conn);
-                cmd.CommandText = tableCreate;
-                cmd.ExecuteNonQuery();
+                    cmd.CommandText = tableCreate;
+                    cmd.ExecuteNonQuery();
 
-                transaction.Commit();
-
+                    transaction.Commit();
+                }
                 // At this point, the Database class already contains the catalog scheme 
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS

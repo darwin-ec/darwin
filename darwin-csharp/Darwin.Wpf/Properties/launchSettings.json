@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Darwin.Wpf": {
+      "commandName": "Project"
+    },
+    "Darwin.Wpf Finz CMD": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\adamr\\iCloudDrive\\Darwin\\BearImagesAndTraces\\KNOWN_GOBL.finz"
+    }
+  }
+}

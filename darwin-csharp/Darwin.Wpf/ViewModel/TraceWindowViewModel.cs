@@ -254,6 +254,19 @@ namespace Darwin.Wpf.ViewModel
 			RedoItems.CollectionChanged += RedoItemsCollectionChanged;
         }
 
+		public TraceWindowViewModel(Bitmap bitmap, Contour contour, Outline outline, bool imageLocked, bool traceLocked)
+        {
+			Bitmap = bitmap;
+			Contour = contour;
+			Outline = outline;
+			ImageLocked = imageLocked;
+			TraceLocked = traceLocked;
+
+			TraceTool = TraceToolType.Hand;
+			ZoomRatio = 1.0f;
+			ZoomValues = new List<double>();
+		}
+
 		private void UndoItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
 			RaisePropertyChanged("UndoEnabled");

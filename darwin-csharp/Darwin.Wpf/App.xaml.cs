@@ -42,13 +42,17 @@
 // Copyright (C) 2001                                                    //
 ///////////////////////////////////////////////////////////////////////////
 
+using Darwin.Database;
+using Darwin.Wpf.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Darwin.Model;
 
 namespace Darwin.Wpf
 {
@@ -63,15 +67,40 @@ namespace Darwin.Wpf
             {
                 if (e.Args[0].EndsWith(".finz"))
                 {
-                    string filePathFormMainArgs = e.Args[0];
+                    var fin = CatalogSupport.OpenFinz(e.Args[0]);
 
+                    // TODO: Better error messages?
+                    if (fin == null)
+                    {
+                        var result = MessageBox.Show("Problem opening finz file.");
+                        System.Windows.Application.Current.Shutdown();
+                    }
+                    else
+                    {
+                        // TODO: Hack fo
+                        fin.mModifiedFinImage.SetResolution(96, 96);
+
+                        // TODO: Move this logic into the constructor?
+                        var vm = new TraceWindowViewModel(
+                            fin.mModifiedFinImage,
+                            new Contour(fin.mFinOutline.ChainPoints),
+                            fin.mFinOutline,
+                            true,
+                            true);
+
+                        TraceWindow traceWindow = new TraceWindow(vm);
+                        traceWindow.Show();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Unknown commandline arguments.");
+                    System.Windows.Application.Current.Shutdown();
                 }
             }
             else
             {
-                StartupUri = new Uri("/Darwin.Wpf;component/TraceWindow.xaml",
-                    UriKind.Relative);
-                // Call the view "welcome page application"
+                StartupUri = new Uri("/Darwin.Wpf;component/TraceWindow.xaml", UriKind.Relative);
             }
         }
     }

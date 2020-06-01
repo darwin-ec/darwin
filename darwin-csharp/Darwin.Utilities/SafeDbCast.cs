@@ -15,7 +15,7 @@ namespace Darwin.Utilities
             if (rdr.IsDBNull(colIndex))
                 return default(int);
 
-            return rdr.GetInt32(colIndex);
+            return Convert.ToInt32(rdr[colIndex]);
         }
 
         public static int? SafeGetNullableInt(this SQLiteDataReader rdr, string columnName)
@@ -25,7 +25,7 @@ namespace Darwin.Utilities
             if (rdr.IsDBNull(colIndex))
                 return null;
 
-            return rdr.GetInt32(colIndex);
+            return Convert.ToInt32(rdr[colIndex]);
         }
 
         // TODO: This one might not be necessary

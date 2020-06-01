@@ -16,12 +16,12 @@ namespace Darwin
         public string CurrentDataPath { get; set; }
         public int CurrentDefaultCatalogScheme { get; set; }
         public string CurrentDefaultCatalogSchemeName { get; set; }
-        public string CurrentSurveyArea { get; set; }
+        public string CurrentSurveyArea { get; set; } = string.Empty;
         public List<string> DefinedCatalogSchemeName { get; set; }
         public List<List<string>> DefinedCatalogCategoryName { get; set; }
 
         [DefaultValue(1.5f)]
-        public float GaussianStdDev { get; set; }
+        public float GaussianStdDev { get; set; } = 1.5f;
 
         private const string OptionsFilename = "options.json";
 
@@ -50,7 +50,7 @@ namespace Darwin
                     }
                 }
 
-                return null;
+                return new Options();
             }
         }
 
