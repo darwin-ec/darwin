@@ -7,6 +7,17 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Button Content="Hello"></Button>
+        </StackPanel>
+        <DataGrid x:Name="DatabaseGrid" AutoGenerateColumns="False">
+            <DataGridTextColumn Header="IDCode" Binding="{Binding IDCode}" />
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+        </DataGrid>
     </Grid>
 </Window>

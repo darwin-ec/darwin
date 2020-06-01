@@ -75,8 +75,8 @@ namespace Darwin.Database
 
 				PngHelper.ParsePngText(fin.mImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
 				
-				fin.mImageMods = imageMods;
-				fin.mNormScale = normScale;
+				fin.ImageMods = imageMods;
+				fin.Scale = normScale;
 
 				// TODO: Do something with thumbOnly?
 
@@ -85,14 +85,14 @@ namespace Darwin.Database
 				// then copy it over to our actual working object.
 				using (var imageFromFile = (Bitmap)Image.FromFile(fin.mImageFilename))
 				{
-					fin.mModifiedFinImage = new Bitmap(imageFromFile);
+					fin.ModifiedFinImage = new Bitmap(imageFromFile);
 				}
 
 				if (!string.IsNullOrEmpty(originalFilename))
 				{
-					fin.mOriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(originalFilename));
+					fin.OriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(originalFilename));
 
-					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.mOriginalImageFilename))
+					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.OriginalImageFilename))
 					{
 						fin.mFinImage = new Bitmap(originalImageFromFile);
 					}

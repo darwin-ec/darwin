@@ -1434,14 +1434,14 @@ namespace Darwin.Database
             // TODO
             //beginTransaction();
 
-            dmgCat = selectDamageCategoryByName(fin.mDamageCategory);
+            dmgCat = selectDamageCategoryByName(fin.DamageCategory);
 
             if (dmgCat.id == -1)
                 dmgCat = selectDamageCategoryByName("NONE");
 
             DBIndividual individual = new DBIndividual();
-            individual.idcode = fin.mIDCode;
-            individual.name = fin.mName;
+            individual.idcode = fin.IDCode;
+            individual.name = fin.Name;
             individual.fkdamagecategoryid = dmgCat.id;
             insertIndividual(ref individual);
 
@@ -1472,17 +1472,17 @@ namespace Darwin.Database
             insertPoints(points);
 
             DBImage image = new DBImage();
-            image.dateofsighting = fin.mDateOfSighting;
+            image.dateofsighting = fin.DateOfSighting;
             image.imagefilename = fin.mImageFilename;
-            image.locationcode = fin.mLocationCode;
-            image.rollandframe = fin.mRollAndFrame;
-            image.shortdescription = fin.mShortDescription;
+            image.locationcode = fin.LocationCode;
+            image.rollandframe = fin.RollAndFrame;
+            image.shortdescription = fin.ShortDescription;
             image.fkindividualid = individual.id;
             insertImage(ref image);
 
             DBThumbnail thumbnail = new DBThumbnail();
-            thumbnail.rows = fin.mThumbnailRows;
-            thumbnail.pixmap = new string(fin.mThumbnailPixmap.Cast<char>().ToArray()); ;
+            thumbnail.rows = fin.ThumbnailRows;
+            thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray()); ;
             thumbnail.fkimageid = image.id;
             insertThumbnail(ref thumbnail);
 
@@ -1512,12 +1512,12 @@ namespace Darwin.Database
             int i, numPoints;
             string pixTemp;
 
-            dmgCat = selectDamageCategoryByName(fin.mDamageCategory);
+            dmgCat = selectDamageCategoryByName(fin.DamageCategory);
 
             DBIndividual individual = new DBIndividual();
-            individual.id = fin.mDataPos; // mapping Individuals id to mDataPos
-            individual.idcode = fin.mIDCode;
-            individual.name = fin.mName;
+            individual.id = fin.DataPos; // mapping Individuals id to mDataPos
+            individual.idcode = fin.IDCode;
+            individual.name = fin.Name;
             individual.fkdamagecategoryid = dmgCat.id;
             updateIndividual(individual);
 
@@ -1550,18 +1550,18 @@ namespace Darwin.Database
 
             // query db as we don't know the image id
             image = selectImageByFkIndividualID(individual.id);
-            image.dateofsighting = fin.mDateOfSighting;
+            image.dateofsighting = fin.DateOfSighting;
             image.imagefilename = fin.mImageFilename;
-            image.locationcode = fin.mLocationCode;
-            image.rollandframe = fin.mRollAndFrame;
-            image.shortdescription = fin.mShortDescription;
+            image.locationcode = fin.LocationCode;
+            image.rollandframe = fin.RollAndFrame;
+            image.shortdescription = fin.ShortDescription;
             image.fkindividualid = individual.id;
             updateImage(image);
 
             // query db as we don't know the thumbnail id
             thumbnail = selectThumbnailByFkImageID(image.id);
-            thumbnail.rows = fin.mThumbnailRows;
-            thumbnail.pixmap = new string(fin.mThumbnailPixmap.Cast<char>().ToArray());
+            thumbnail.rows = fin.ThumbnailRows;
+            thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray());
 
             updateThumbnail(thumbnail);
 
@@ -1587,7 +1587,7 @@ namespace Darwin.Database
             long id;
 
             // mDataPos field will be used to map to id in db for individuals
-            id = fin.mDataPos;
+            id = fin.DataPos;
 
             //TODO
             //beginTransaction();
@@ -1610,9 +1610,9 @@ namespace Darwin.Database
 
         public void addFinToLists(DatabaseFin fin)
         {
-            addFinToLists(fin.mDataPos, fin.mName, fin.mIDCode, fin.mDateOfSighting,
-                fin.mRollAndFrame, fin.mLocationCode, fin.mDamageCategory,
-                fin.mShortDescription);
+            addFinToLists(fin.DataPos, fin.Name, fin.IDCode, fin.DateOfSighting,
+                fin.RollAndFrame, fin.LocationCode, fin.DamageCategory,
+                fin.ShortDescription);
         }
 
         //*******************************************************************

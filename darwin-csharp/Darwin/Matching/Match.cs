@@ -147,7 +147,7 @@ namespace Darwin.Matching
             bool tryMatch = false;
             for (int i = 0; i < mDatabase.catCategoryNamesMax() && !tryMatch; i++)
             {
-                tryMatch = thisDBFin.mDamageCategory == mDatabase.catCategoryName(i) && categoryToMatch[i];
+                tryMatch = thisDBFin.DamageCategory == mDatabase.catCategoryName(i) && categoryToMatch[i];
             }
 
             if (tryMatch)
@@ -241,15 +241,15 @@ namespace Darwin.Matching
                         result.C1, //***005CM
                         result.C2, //***005CM
                         thisDBFin.mImageFilename,  //***001DB
-                        thisDBFin.mThumbnailPixmap, //***1.0
-                        thisDBFin.mThumbnailRows,    //***1.0
+                        thisDBFin.ThumbnailPixmap, //***1.0
+                        thisDBFin.ThumbnailRows,    //***1.0
                         mCurrentFin,
                         errorTemp,
-                        thisDBFin.mIDCode,
-                        thisDBFin.mName,
-                        thisDBFin.mDamageCategory,
-                        thisDBFin.mDateOfSighting,
-                        thisDBFin.mLocationCode);
+                        thisDBFin.IDCode,
+                        thisDBFin.Name,
+                        thisDBFin.DamageCategory,
+                        thisDBFin.DateOfSighting,
+                        thisDBFin.LocationCode);
 
                     //***1.1 - set indices of beginning, tip and end points used in mapping
                     r.SetMappingControlPoints(
@@ -459,7 +459,7 @@ namespace Darwin.Matching
             results.T2 = dbTipPosition;
             results.E2 = dbEndTE;
 
-            Trace.WriteLine("matching unk " + mUnknownFin.mIDCode + " to DB " + dbFin.mIDCode);
+            Trace.WriteLine("matching unk " + mUnknownFin.IDCode + " to DB " + dbFin.IDCode);
 
             //***055ER - found and fixed adjustment of Leading Edge Begin 
             // now all points prior to mUnknownBeginLE and dbBeginLE are ignored
@@ -1124,7 +1124,7 @@ shiftedUnkTipMappedContour = null; //***1.1
 
             int jumpingOn = 0;   // 1=DBLead,2=UnkLead,3=DBTrail,4=UnkTrail,5=UnkTip
 
-            Trace.WriteLine("matching unk " + mUnknownFin.mIDCode + " to DB " + dbFin.mIDCode);
+            Trace.WriteLine("matching unk " + mUnknownFin.IDCode + " to DB " + dbFin.IDCode);
 
             // set initial starting points on each leading edge
             startLeadUnk = mUnknownBeginLE;

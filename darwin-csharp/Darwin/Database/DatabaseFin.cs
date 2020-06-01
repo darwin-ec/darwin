@@ -47,43 +47,112 @@
 //
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 
 namespace Darwin.Database
 {
-    public class DatabaseFin
+    public class DatabaseFin : INotifyPropertyChanged
     {
         public Bitmap mFinImage;
         public string mImageFilename; //  001DB
 
         public Outline mFinOutline; //  008OL
 
-        public string mIDCode;
-        public string mName;
-        public string mDateOfSighting;
-        public string mRollAndFrame;
-        public string mLocationCode;
-        public string mDamageCategory;
-        public string mShortDescription;
-        public long mDataPos;     //  001DB
-        public char[,] mThumbnailPixmap;
-        public int mThumbnailRows;
-
-        public float mNormScale;
+        private string _IDCode;
+        private string _name;
+        private string _dateOfSighting;
+        private string _rollAndFrame;
+        private string _locationCode;
+        private string _damageCategory;
+        private string _shortDescription;
+        public long DataPos;     //  001DB
+        public char[,] ThumbnailPixmap;
+        public int ThumbnailRows;
 
         //  1.4 - new members for tracking image modifications during tracing
         public bool mLeft, mFlipped;              // left side or flipped internally to swim left
-        public double mXmin, mYmin, mXmax, mYmax; // internal cropping bounds
-        public double mScale;                     // image to Outline scale change
-        public Bitmap mModifiedFinImage;      // modified fin image from TraceWin, ...
+        public double XMin, YMin, XMax, YMax; // internal cropping bounds
+        public double Scale;                     // image to Outline scale change
+        public Bitmap ModifiedFinImage;      // modified fin image from TraceWin, ...
 
-        public List<ImageMod> mImageMods;    //  1.8 - for list of image modifications
-        public string mOriginalImageFilename; //  1.8 - filename of original unmodified image
+        public List<ImageMod> ImageMods;    //  1.8 - for list of image modifications
+        public string OriginalImageFilename; //  1.8 - filename of original unmodified image
 
-        public string mFinFilename;   //  1.6 - for name of fin file if fin saved outside DB
+        public string FinFilename;   //  1.6 - for name of fin file if fin saved outside DB
 
-        public bool mIsAlternate; //  1.95 - allow designation of primary and alternate fins/images
+        public bool IsAlternate; //  1.95 - allow designation of primary and alternate fins/images
 
+        public string IDCode
+        {
+            get => _IDCode;
+            set
+            {
+                _IDCode = value;
+                OnPropertyChanged("IDCode");
+            }
+        }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged("Name");
+            }
+        }
+        public string DateOfSighting
+        {
+            get => _dateOfSighting;
+            set
+            {
+                _dateOfSighting = value;
+                OnPropertyChanged("DateOfSighting");
+            }
+        }
+
+        public string RollAndFrame
+        {
+            get => _rollAndFrame;
+            set
+            {
+                _rollAndFrame = value;
+                OnPropertyChanged("RollAndFrame");
+            }
+        }
+
+        public string LocationCode
+        {
+            get => _locationCode;
+            set
+            {
+                _locationCode = value;
+                OnPropertyChanged("LocationCode");
+            }
+        }
+
+        public string DamageCategory
+        {
+            get => _damageCategory;
+            set
+            {
+                _damageCategory = value;
+                OnPropertyChanged("DamageCategory");
+            }
+        }
+
+        public string ShortDescription
+        {
+            get => _shortDescription;
+            set
+            {
+                _shortDescription = value;
+                OnPropertyChanged("ShortDescription");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         //                                                **
         //
@@ -105,26 +174,26 @@ namespace Darwin.Database
         {
             mImageFilename = filename; //  001DB
             mFinOutline = new Outline(outline); //  006DF,008OL
-            mIDCode = idcode;
-            mName = name;
-            mDateOfSighting = dateOfSighting;
-            mRollAndFrame = rollAndFrame;
-            mLocationCode = locationCode;
-            mDamageCategory = damageCategory;
-            mShortDescription = shortDescription;
-            mThumbnailPixmap = null;
-            mThumbnailRows = 0;
+            IDCode = idcode;
+            Name = name;
+            DateOfSighting = dateOfSighting;
+            RollAndFrame = rollAndFrame;
+            LocationCode = locationCode;
+            DamageCategory = damageCategory;
+            ShortDescription = shortDescription;
+            ThumbnailPixmap = null;
+            ThumbnailRows = 0;
             mLeft = true; //  1.4
             mFlipped = false; //  1.4
-            mXmin = 0.0; //  1.4
-            mXmax = 0.0; //  1.4
-            mYmin = 0.0; //  1.4
-            mYmax = 0.0; //  1.4
-            mScale = 1.0; //  1.4
-            mModifiedFinImage = null; //  1.5
-            mFinFilename = string.Empty; //  1.6
-            mIsAlternate = false; //  1.95
-            mNormScale = 1.0f;
+            XMin = 0.0; //  1.4
+            XMax = 0.0; //  1.4
+            YMin = 0.0; //  1.4
+            YMax = 0.0; //  1.4
+            Scale = 1.0; //  1.4
+            ModifiedFinImage = null; //  1.5
+            FinFilename = string.Empty; //  1.6
+            IsAlternate = false; //  1.95
+
             //  1.5 - need some way to CATCH error thrown when image file
             //         does not exist or is unsupported type  --
             //         program now crashes when database image is misplaced or misnamed
@@ -165,28 +234,28 @@ namespace Darwin.Database
         {
             mImageFilename = filename; //  001DB
 			mFinOutline =new Outline(outline); //  006DF,008OL
-            mIDCode = idcode;
-            mName = name;
-            mDateOfSighting = dateOfSighting;
-            mRollAndFrame = rollAndFrame;
-            mLocationCode = locationCode;
-            mDamageCategory = damageCategory;
-            mShortDescription = shortDescription;
-            mThumbnailPixmap = pixmap;
-            mThumbnailRows = rows;
-            mDataPos = datapos;
+            IDCode = idcode;
+            Name = name;
+            DateOfSighting = dateOfSighting;
+            RollAndFrame = rollAndFrame;
+            LocationCode = locationCode;
+            DamageCategory = damageCategory;
+            ShortDescription = shortDescription;
+            ThumbnailPixmap = pixmap;
+            ThumbnailRows = rows;
+            DataPos = datapos;
             mLeft = true; //  1.4
             mFlipped = false; //  1.4
-            mXmin = 0.0; //  1.4
-            mXmax = 0.0; //  1.4
-            mYmin= 0.0; //  1.4
-            mYmax = 0.0; //  1.4
-            mScale = 1.0; //  1.4
-            mModifiedFinImage = null; //  1.5
-            mFinFilename = string.Empty; //  1.6
+            XMin = 0.0; //  1.4
+            XMax = 0.0; //  1.4
+            YMin= 0.0; //  1.4
+            YMax = 0.0; //  1.4
+            Scale = 1.0; //  1.4
+            ModifiedFinImage = null; //  1.5
+            FinFilename = string.Empty; //  1.6
             mFinImage = null;
-            mIsAlternate = false; //  1.99
-            mNormScale = 1.0f;
+            IsAlternate = false; //  1.99
+
             // let's see what happens... -- rjn
             /*
             mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //  001DB
@@ -207,43 +276,41 @@ namespace Darwin.Database
         {
             mImageFilename = fin.mImageFilename;        //  001DB
 			mFinImage = null;                          //   major change JHS
-            mModifiedFinImage = null; //  1.5
-            mDataPos = fin.mDataPos;                    //  001DB
+            ModifiedFinImage = null; //  1.5
+            DataPos = fin.DataPos;                    //  001DB
             mFinOutline = new Outline(fin.mFinOutline); //  006DF,008OL
-            mIDCode = fin.mIDCode;
-            mName = fin.mName;
-            mDateOfSighting = fin.mDateOfSighting;
-            mRollAndFrame = fin.mRollAndFrame;
-            mLocationCode = fin.mLocationCode;
-            mDamageCategory = fin.mDamageCategory;
-            mShortDescription = fin.mShortDescription;
+            IDCode = fin.IDCode;
+            Name = fin.Name;
+            DateOfSighting = fin.DateOfSighting;
+            RollAndFrame = fin.RollAndFrame;
+            LocationCode = fin.LocationCode;
+            DamageCategory = fin.DamageCategory;
+            ShortDescription = fin.ShortDescription;
             // TODO
-            mThumbnailPixmap = null; //new char*[fin.mThumbnailRows];
-            mThumbnailRows = fin.mThumbnailRows;
+            ThumbnailPixmap = null; //new char*[fin.mThumbnailRows];
+            ThumbnailRows = fin.ThumbnailRows;
             mLeft = fin.mLeft; //  1.4
             mFlipped = fin.mFlipped; //  1.4
-            mXmin = fin.mXmin; //  1.4
-            mXmax = fin.mXmax; //  1.4
-            mYmin = fin.mYmin; //  1.4
-            mYmax = fin.mYmax; //  1.4
-            mScale = fin.mScale; //  1.4
-            mFinFilename = fin.mFinFilename; //  1.6
-            mOriginalImageFilename = fin.mOriginalImageFilename; //  1.8
+            XMin = fin.XMin; //  1.4
+            XMax = fin.XMax; //  1.4
+            YMin = fin.YMin; //  1.4
+            YMax = fin.YMax; //  1.4
+            Scale = fin.Scale; //  1.4
+            FinFilename = fin.FinFilename; //  1.6
+            OriginalImageFilename = fin.OriginalImageFilename; //  1.8
 
-            mImageMods = fin.mImageMods; //  1.8
+            ImageMods = fin.ImageMods; //  1.8
 
-            mIsAlternate = fin.mIsAlternate; //  1.95
+            IsAlternate = fin.IsAlternate; //  1.95
 
             //  1.5 - just set pointer to original copy from TraceWindow
             //  1.8 - we actually create a COPY of the modified image here
-            if (null != fin.mModifiedFinImage)
-                mModifiedFinImage = new Bitmap(fin.mModifiedFinImage);
+            if (null != fin.ModifiedFinImage)
+                ModifiedFinImage = new Bitmap(fin.ModifiedFinImage);
 
             //  1.8 - and we create a COPY of the original image here
             if (null != fin.mFinImage)
                 mFinImage = new Bitmap(fin.mFinImage);
-
-            mNormScale = 1.0f;
 
             // TODO
             //for (int i = 0; i < fin.mThumbnailRows; i++)
@@ -251,6 +318,12 @@ namespace Darwin.Database
             //    mThumbnailPixmap[i] = new char[strlen(fin->mThumbnailPixmap[i]) + 1];
             //    strcpy(mThumbnailPixmap[i], fin->mThumbnailPixmap[i]);
             //}
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

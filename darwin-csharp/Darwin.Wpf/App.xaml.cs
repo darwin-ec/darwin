@@ -78,12 +78,12 @@ namespace Darwin.Wpf
                     else
                     {
                         // TODO: Hack fo
-                        fin.mModifiedFinImage.SetResolution(96, 96);
+                        fin.ModifiedFinImage.SetResolution(96, 96);
 
                         // TODO: Move this logic into the constructor?
                         var vm = new TraceWindowViewModel(
-                            fin.mFinImage ?? fin.mModifiedFinImage,
-                            new Contour(fin.mFinOutline.ChainPoints, fin.mNormScale),
+                            fin.mFinImage ?? fin.ModifiedFinImage,
+                            new Contour(fin.mFinOutline.ChainPoints, fin.Scale),
                             fin.mFinOutline,
                             true,
                             true);

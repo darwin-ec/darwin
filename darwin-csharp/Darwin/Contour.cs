@@ -87,7 +87,7 @@ namespace Darwin
 				_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
 		}
 
-		public Contour(FloatContour c, float normalizationScale)
+		public Contour(FloatContour c, double normalizationScale)
 		{
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
