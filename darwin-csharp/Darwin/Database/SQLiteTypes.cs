@@ -9,7 +9,7 @@ namespace Darwin.Database
         public long id;
         public string idcode;
         public string name;
-        public int fkdamagecategoryid;
+        public long fkdamagecategoryid;
     }
 
     public class DBDamageCategory
@@ -21,7 +21,7 @@ namespace Darwin.Database
     public class DBImage
     {
         public long id;
-        public int fkindividualid;
+        public long fkindividualid;
         public string imagefilename;
         public string dateofsighting;
         public string rollandframe;
@@ -34,7 +34,7 @@ namespace Darwin.Database
         public long id;
         public int rows;
         public string pixmap;
-        public int fkimageid;
+        public long fkimageid;
     }
     public class DBOutline
     {
@@ -44,7 +44,7 @@ namespace Darwin.Database
         public int endle;
         public int notchposition;
         public int endte;
-        public int fkindividualid;
+        public long fkindividualid;
     }
 
     public class DBPoint
@@ -52,7 +52,7 @@ namespace Darwin.Database
         public long id;
         public float xcoordinate;
         public float ycoordinate;
-        public int fkoutlineid;
+        public long fkoutlineid;
         public int orderid;
     }
     public class DBInfo
@@ -69,6 +69,6 @@ namespace Darwin.Database
         public int value3;
         public int value4;
         public int orderid;
-        public int fkimageid;
+        public long fkimageid;
     }
 }

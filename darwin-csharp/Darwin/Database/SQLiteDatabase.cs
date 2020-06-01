@@ -15,7 +15,7 @@ namespace Darwin.Database
 {
     // TODO: There's some copy/pasted code in here that could be refactored a little to
     // eliminate some duplication.
-    public class SQLiteDatabase // : DarwinDatabase
+    public class SQLiteDatabase : DarwinDatabase
     {
         private string _connectionString;
 
@@ -26,6 +26,8 @@ namespace Darwin.Database
 
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
+
+            mFilename = filename;
 
             // We're using ConnectionStringBuilder to avoid injection attacks
             var builder = new SQLiteConnectionStringBuilder();
@@ -148,7 +150,7 @@ namespace Darwin.Database
             }
         }
 
-        public DBDamageCategory selectDamageCategoryByID(int id)
+        public DBDamageCategory selectDamageCategoryByID(long id)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -606,11 +608,11 @@ namespace Darwin.Database
             return thumbnails.FirstOrDefault();
         }
 
-            // *****************************************************************************
-            //
-            // This returns all the Thumbnails rows as a list of DBThumbnail structs.
-            //
-            public List<DBThumbnail> selectThumbnailsByFkImageID(long fkimageid)
+        // *****************************************************************************
+        //
+        // This returns all the Thumbnails rows as a list of DBThumbnail structs.
+        //
+        public List<DBThumbnail> selectThumbnailsByFkImageID(long fkimageid)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1294,7 +1296,6 @@ namespace Darwin.Database
         // Returns complete DatabaseFin<ColorImage>. mDataPos field will be used to map to id in 
         // db for individuals
         //
-
         public DatabaseFin getFin(long id)
         {
             DBIndividual individual;
@@ -1338,45 +1339,33 @@ namespace Darwin.Database
             finOutline.SetLEAngle(0.0, true);
 
             // Based on thumbnail size in DatabaseFin<ColorImage>
-            // TODO
-            //char** pixmap = new char*[thumbnail.rows];
-            //string pixmapString = thumbnail.pixmap;
-            //string buffer;
+            int pixmapCols = thumbnail.pixmap.Length / thumbnail.rows;
+            char[,] pixmap = new char[pixmapCols, thumbnail.rows];
+            string buffer;
 
-            //for (int i = 0; i < thumbnail.rows; i++)
-            //{
-            //    int j = 0;
+            // Could be done faster with array.copy
+            for (int i = 0; i < thumbnail.rows; i++)
+            {
+                for (int j = 0; j < pixmapCols; j++)
+                {
+                    pixmap[j, i] = thumbnail.pixmap[j + i * pixmapCols];
+                }
+            }
 
-            //    j = pixmapString.find('\n');
+            fin = new DatabaseFin(image.imagefilename,
+                finOutline,
+                individual.idcode,
+                individual.name,
+                image.dateofsighting,
+                image.rollandframe,
+                image.locationcode,
+                damagecategory.name,
+                image.shortdescription,
+                individual.id, // mDataPos field will be used to map to id in db for individuals
+                pixmap,
+                thumbnail.rows);
 
-            //    if (j != string::npos && j <= pixmapString.size())
-            //    {
-            //        buffer = pixmapString.substr(0, j);
-            //        pixmapString = pixmapString.substr(j + 1);
-            //    }
-            //    else
-            //    {
-            //        buffer = pixmapString;
-            //    }
-
-            //    pixmap[i] = new char[buffer.length() + 1];
-            //    strcpy(pixmap[i], buffer.c_str());
-            //}
-
-            //fin = new DatabaseFin(image.imagefilename,
-            //    finOutline,
-            //    individual.idcode,
-            //    individual.name,
-            //    image.dateofsighting,
-            //    image.rollandframe,
-            //    image.locationcode,
-            //    damagecategory.name,
-            //    image.shortdescription,
-            //    individual.id, // mDataPos field will be used to map to id in db for individuals
-            //    pixmap,
-            //    thumbnail.rows);
-            return null;
-            //return fin;
+            return fin;
         }
 
         // *****************************************************************************
@@ -1420,11 +1409,168 @@ namespace Darwin.Database
             }
         }
 
+        public override long Add(DatabaseFin fin)
+        {
+            DBDamageCategory dmgCat;
+            Outline finOutline;
+            FloatContour fc;
+            int i, numPoints, pos;
+            string pixTemp = "";
+            DBPoint point;
+
+            //***054 - assume that the image filename contains path
+            // information which must be stripped BEFORE saving fin
+            fin.mImageFilename = Path.GetFileName(fin.mImageFilename);
+
+            // TODO
+            //beginTransaction();
+
+            dmgCat = selectDamageCategoryByName(fin.mDamageCategory);
+
+            if (dmgCat.id == -1)
+                dmgCat = selectDamageCategoryByName("NONE");
+
+            DBIndividual individual = new DBIndividual();
+            individual.idcode = fin.mIDCode;
+            individual.name = fin.mName;
+            individual.fkdamagecategoryid = dmgCat.id;
+            insertIndividual(ref individual);
+
+            finOutline = fin.mFinOutline;
+
+            DBOutline outline = new DBOutline();
+            outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+            outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
+            outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
+            outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            outline.fkindividualid = individual.id;
+            insertOutline(ref outline);
+
+            List<DBPoint> points = new List<DBPoint>();
+            numPoints = finOutline.Length;
+            fc = finOutline.ChainPoints;
+            for (i = 0; i < numPoints; i++)
+            {
+                points.Add(new DBPoint
+                {
+                    xcoordinate = fc[i].X,
+                    ycoordinate = fc[i].Y,
+                    orderid = i,
+                    fkoutlineid = outline.id
+                });
+            }
+            insertPoints(points);
+
+            DBImage image = new DBImage();
+            image.dateofsighting = fin.mDateOfSighting;
+            image.imagefilename = fin.mImageFilename;
+            image.locationcode = fin.mLocationCode;
+            image.rollandframe = fin.mRollAndFrame;
+            image.shortdescription = fin.mShortDescription;
+            image.fkindividualid = individual.id;
+            insertImage(ref image);
+
+            DBThumbnail thumbnail = new DBThumbnail();
+            thumbnail.rows = fin.mThumbnailRows;
+            thumbnail.pixmap = new string(fin.mThumbnailPixmap.Cast<char>().ToArray()); ;
+            thumbnail.fkimageid = image.id;
+            insertThumbnail(ref thumbnail);
+
+            //TODO
+            //commitTransaction();
+
+            addFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
+                image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
+
+            sortLists();
+
+            return individual.id; // mDataPos field will be used to map to id in db for individuals
+        }
+
+        // *****************************************************************************
+        //
+        // Updates DatabaseFin<ColorImage>
+        //
+        public void update(DatabaseFin fin)
+        {
+            DBImage image;
+            DBOutline outline;
+            DBThumbnail thumbnail;
+            DBDamageCategory dmgCat;
+            Outline finOutline;
+            FloatContour fc;
+            int i, numPoints;
+            string pixTemp;
+
+            dmgCat = selectDamageCategoryByName(fin.mDamageCategory);
+
+            DBIndividual individual = new DBIndividual();
+            individual.id = fin.mDataPos; // mapping Individuals id to mDataPos
+            individual.idcode = fin.mIDCode;
+            individual.name = fin.mName;
+            individual.fkdamagecategoryid = dmgCat.id;
+            updateIndividual(individual);
+
+            finOutline = fin.mFinOutline;
+            // we do this as we don't know what the outline id is
+            outline = selectOutlineByFkIndividualID(individual.id);
+            outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+            outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
+            outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
+            outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            outline.fkindividualid = individual.id;
+            updateOutline(outline);
+
+            List<DBPoint> points = new List<DBPoint>();
+            numPoints = finOutline.Length;
+            fc = finOutline.ChainPoints;
+            for (i = 0; i < numPoints; i++)
+            {
+                points.Add(new DBPoint
+                {
+                    xcoordinate = fc[i].X,
+                    ycoordinate = fc[i].Y,
+                    orderid = i,
+                    fkoutlineid = outline.id
+                });
+            }
+            deletePoints(outline.id);
+            insertPoints(points);
+
+            // query db as we don't know the image id
+            image = selectImageByFkIndividualID(individual.id);
+            image.dateofsighting = fin.mDateOfSighting;
+            image.imagefilename = fin.mImageFilename;
+            image.locationcode = fin.mLocationCode;
+            image.rollandframe = fin.mRollAndFrame;
+            image.shortdescription = fin.mShortDescription;
+            image.fkindividualid = individual.id;
+            updateImage(image);
+
+            // query db as we don't know the thumbnail id
+            thumbnail = selectThumbnailByFkImageID(image.id);
+            thumbnail.rows = fin.mThumbnailRows;
+            thumbnail.pixmap = new string(fin.mThumbnailPixmap.Cast<char>().ToArray());
+
+            updateThumbnail(thumbnail);
+
+            // loadLists(); // reload and re-sort lists.
+
+            deleteFinFromLists(individual.id);
+            addFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
+                image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
+
+            sortLists();
+        }
+
+
         // *****************************************************************************
         //
         // Delete fin from database
         //
-        public void Delete(DatabaseFin fin)
+        public override void Delete(DatabaseFin fin)
         {
 
             DBOutline outline;
@@ -1445,7 +1591,7 @@ namespace Darwin.Database
             deleteThumbnailByFkImageID(image.id);
             deleteImage(image.id);
             deleteIndividual(id);
-            
+
             //TODO
             //commitTransaction();
 
@@ -1453,25 +1599,140 @@ namespace Darwin.Database
             //deleteFinFromLists(id);
         }
 
-        public void sortLists()
+        //*******************************************************************
+        //
+        // Adds a fin to the sort lists. Does not resort the lists.
+        //
+        public void addFinToLists(long datapos, string name, string id, string date, string roll,
+                                           string location, string damage, string description)
         {
-            //if (mNameList != null)
-            //    mNameList.Sort();
-            //if (mIDList != null)
-            //    mIDList.Sort();
-            //if (mDateList != null)
-            //    mDateList.Sort();
-            //if (mRollList != null)
-            //    mRollList.Sort();
-            //if (mLocationList != null)
-            //    mLocationList.Sort();
-            //if (mDamageList != null)
-            //    mDamageList.Sort();
-            //if (mDescriptionList != null)
-            //    mDescriptionList.Sort();
+            mNameList.Add(name ?? "NONE" + " " + datapos);
+            mIDList.Add(id ?? "NONE" + " " + datapos);
+            mDateList.Add(date ?? "NONE" + " " + datapos);
+            mRollList.Add(roll ?? "NONE" + " " + datapos);
+            mLocationList.Add(location ?? "NONE" + " " + datapos);
+            mDamageList.Add(damage ?? "NONE" + " " + datapos);
+            mDescriptionList.Add(description ?? "NONE" + " " + datapos);
+
+            //***2.2 -- make room for HOLES, unused primary Keys
+            // mAbsoluteOffset.push_back(datapos); // the way RJ did it
+
+            // TODO
+            //mAbsoluteOffset[datapos] = datapos;
         }
 
-        public void createEmptyDatabase()
+        private void deleteEntry(ref List<string> lst, long id)
+        {
+            for (var i = 0; i < lst.Count; i++)
+            {
+                if (listEntryToID(lst[i]) == id)
+                {
+                    lst.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        public void deleteFinFromLists(long id)
+        {
+            deleteEntry(ref mNameList, id);
+            deleteEntry(ref mIDList, id);
+            deleteEntry(ref mDateList, id);
+            deleteEntry(ref mRollList, id);
+            deleteEntry(ref mLocationList, id);
+            deleteEntry(ref mDamageList, id);
+            deleteEntry(ref mDescriptionList, id);
+
+            // TODO
+            //***2.2 - replace all of above
+            //if (id < mAbsoluteOffset.Count)
+            //    mAbsoluteOffset[id] = -1;
+        }
+
+        public void sortLists()
+        {
+            if (mNameList != null)
+                mNameList.Sort();
+            if (mIDList != null)
+                mIDList.Sort();
+            if (mDateList != null)
+                mDateList.Sort();
+            if (mRollList != null)
+                mRollList.Sort();
+            if (mLocationList != null)
+                mLocationList.Sort();
+            if (mDamageList != null)
+                mDamageList.Sort();
+            if (mDescriptionList != null)
+                mDescriptionList.Sort();
+        }
+
+        // *****************************************************************************
+        //
+        // Returns fin from database.  pos refers to position within one of the sort
+        // lists.
+        //
+        public override DatabaseFin getItem(int pos)
+        {
+            long id;
+
+            switch (mCurrentSort)
+            {
+                case DatabaseSortType.DB_SORT_NAME:
+                    id = listEntryToID(mNameList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_ID:
+                    id = listEntryToID(mIDList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_DATE:
+                    id = listEntryToID(mDateList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_ROLL:
+                    id = listEntryToID(mRollList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_LOCATION:
+                    id = listEntryToID(mLocationList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_DAMAGE:
+                    id = listEntryToID(mDamageList[pos]);
+                    break;
+
+                case DatabaseSortType.DB_SORT_DESCRIPTION:
+                    id = listEntryToID(mDescriptionList[pos]);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return getFin(id);
+        }
+
+        //*******************************************************************
+        //
+        // Looks up row id in AbsoluteOffset list and then uses getFin(int)
+        // to retrieve that fin from the database.
+        //
+        public override DatabaseFin getItemAbsolute(int pos)
+        {
+            throw new NotImplementedException();
+            //if (pos > this->mAbsoluteOffset.size())
+            //    throw BoundsError();
+
+            //if (mAbsoluteOffset[pos] == -1)
+            //    return NULL;               // this is a HOLE, a previously deleted fin
+
+            //DatabaseFin<ColorImage>* fin = getFin(this->mAbsoluteOffset[pos]);
+
+            //return fin;
+        }
+
+        public override void CreateEmptyDatabase()
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1562,22 +1823,20 @@ namespace Darwin.Database
 
                 transaction.Commit();
 
-
                 // At this point, the Database class already contains the catalog scheme 
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS
 
-                // TODO
-                //for (int i = 0; i < mCatCategoryNames.Count; i++)
-                //{
-                //    DBDamageCategory cat = new DBDamageCategory
-                //    {
-                //        name = mCatCategoryNames[i],
-                //        orderid = i
-                //    };
+                for (int i = 0; i < mCatCategoryNames.Count; i++)
+                {
+                    DBDamageCategory cat = new DBDamageCategory
+                    {
+                        name = mCatCategoryNames[i],
+                        orderid = i
+                    };
 
-                //    insertDamageCategory(ref cat);
-                //}
+                    insertDamageCategory(ref cat);
+                }
 
                 // TODO: enter code to populate DBInfo
 

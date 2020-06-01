@@ -128,7 +128,7 @@ namespace Darwin.Matching
                     if (mCurrentFin >= (int)mDatabase.sizeAbsolute())
                         return 100.0f;
 
-                    thisDBFin = mDatabase.getItemAbsolute((uint)mCurrentFin);
+                    thisDBFin = mDatabase.getItemAbsolute(mCurrentFin);
 
                     if (null == thisDBFin)
                         mCurrentFin++;
@@ -140,7 +140,7 @@ namespace Darwin.Matching
                 if (mCurrentFin >= (int)mDatabase.size())
                     return 100.0f;
 
-                thisDBFin = mDatabase.getItem((uint)mCurrentFin);
+                thisDBFin = mDatabase.getItem(mCurrentFin);
             }
 
 
