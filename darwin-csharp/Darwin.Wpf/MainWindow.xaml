@@ -4,18 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
+        xmlns:commands="clr-namespace:Darwin.Wpf.Commands"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.CommandBindings>
+        <CommandBinding Command="commands:CustomCommands.Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
+    </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="New"></MenuItem>
+                <MenuItem Command="commands:CustomCommands.Open" />
+                <MenuItem Command="commands:CustomCommands.OpenDatabase" />
+                <Separator></Separator>
+                <MenuItem Command="commands:CustomCommands.Exit" />
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Undo"></MenuItem>
+                <MenuItem Header="Redo"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Cut"></MenuItem>
+                <MenuItem Header="Copy"></MenuItem>
+                <MenuItem Header="Paste"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Button Content="Hello"></Button>
         </StackPanel>
-        <DataGrid x:Name="DatabaseGrid" AutoGenerateColumns="False">
+        
+        <DataGrid x:Name="DatabaseGrid" AutoGenerateColumns="False" Grid.Row="2">
             <DataGridTextColumn Header="IDCode" Binding="{Binding IDCode}" />
             <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
         </DataGrid>

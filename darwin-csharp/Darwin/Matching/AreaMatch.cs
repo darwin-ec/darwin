@@ -1025,7 +1025,7 @@ namespace Darwin.Matching
             SortedSet<int> perpsUNK = new SortedSet<int>();
 
             // set<int>::iterator in C++ version
-            int sit = 0;
+            //int sit = 0;
 
             // vector<ref_point>::iterator in C++ version
             int mit2;

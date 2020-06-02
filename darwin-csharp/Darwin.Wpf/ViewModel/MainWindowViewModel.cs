@@ -11,6 +11,19 @@ namespace Darwin.Wpf.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private DarwinDatabase _darwinDatabase;
+        public DarwinDatabase DarwinDatabase
+        {
+            get
+            {
+                return _darwinDatabase;
+            }
+            set
+            {
+                _darwinDatabase = value;
+            }
+        }
+
         private ObservableNotifiableCollection<DatabaseFin> _fins;
         public ObservableNotifiableCollection<DatabaseFin> Fins
         {
@@ -24,6 +37,7 @@ namespace Darwin.Wpf.ViewModel
             set
             {
                 _fins = value;
+                RaisePropertyChanged("Fins");
             }
         }
 

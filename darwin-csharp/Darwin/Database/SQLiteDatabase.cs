@@ -1350,7 +1350,6 @@ namespace Darwin.Database
             // Based on thumbnail size in DatabaseFin<ColorImage>
             int pixmapCols = thumbnail.pixmap.Length / thumbnail.rows;
             char[,] pixmap = new char[pixmapCols, thumbnail.rows];
-            string buffer;
 
             // Could be done faster with array.copy
             for (int i = 0; i < thumbnail.rows; i++)
@@ -1423,9 +1422,7 @@ namespace Darwin.Database
             DBDamageCategory dmgCat;
             Outline finOutline;
             FloatContour fc;
-            int i, numPoints, pos;
-            string pixTemp = "";
-            DBPoint point;
+            int i, numPoints;
 
             //***054 - assume that the image filename contains path
             // information which must be stripped BEFORE saving fin
@@ -1510,7 +1507,6 @@ namespace Darwin.Database
             Outline finOutline;
             FloatContour fc;
             int i, numPoints;
-            string pixTemp;
 
             dmgCat = selectDamageCategoryByName(fin.DamageCategory);
 

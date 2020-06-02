@@ -12,7 +12,6 @@ namespace Darwin
     {
         public const int MaxZoom = 1600;
         public const int MinZoom = 6;
-        public static float DrawingPointSize = 4;
 
         public static readonly float[][] GrayscaleConversionMatrix = new float[][] {
                 new float[] { 0.299f, 0.299f, 0.299f, 0, 0 },
@@ -105,14 +104,5 @@ namespace Darwin
           0,  0,  0,  0,    0,  0,  0,  0,    0,  0,  0,  0,    0,  0,  0,  0,
           4,  3,  3,  2,    3,  2,  2,  1,    3,  2,  2,  1,    2,  1,  1,  0
         };
-
-        public static int SnakeMaximumIterations = 50;
-        public static float SnakeEnergyContinuity = 9.0f;
-        public static float SnakeEnergyLinearity = 3.0f;
-        public static float SnakeEnergyEdge = 3.0f;
-
-        public static float GaussianStdDev = 1.5f;
-        public static float CannyLowThreshold = 0.15f;
-        public static float CannyHighThreshold = 0.85f;
     }
 }

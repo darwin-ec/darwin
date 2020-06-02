@@ -196,9 +196,9 @@ namespace Darwin.Wpf.ViewModel
 			get
 			{
 				if (_zoomRatio > 0.5f)
-					return AppSettings.DrawingPointSize * _zoomRatio;
+					return Options.CurrentUserOptions.DrawingPointSize * _zoomRatio;
 
-				return AppSettings.DrawingPointSize;
+				return Options.CurrentUserOptions.DrawingPointSize;
 			}
 		}
 
@@ -248,11 +248,21 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel()
         {
-			UndoItems = new ObservableStack<Modification>();
-			UndoItems.CollectionChanged += UndoItemsCollectionChanged;
-			RedoItems = new ObservableStack<Modification>();
-			RedoItems.CollectionChanged += RedoItemsCollectionChanged;
-        }
+			AttachEvents();
+		}
+
+		public TraceWindowViewModel(Bitmap bitmap)
+		{
+			Bitmap = bitmap;
+			ImageLocked = false;
+			TraceLocked = false;
+
+			TraceTool = TraceToolType.Hand;
+			ZoomRatio = 1.0f;
+			ZoomValues = new List<double>();
+
+			AttachEvents();
+		}
 
 		public TraceWindowViewModel(Bitmap bitmap, Contour contour, Outline outline, bool imageLocked, bool traceLocked)
         {
@@ -266,6 +276,11 @@ namespace Darwin.Wpf.ViewModel
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
 
+			AttachEvents();
+		}
+
+		private void AttachEvents()
+        {
 			UndoItems = new ObservableStack<Modification>();
 			UndoItems.CollectionChanged += UndoItemsCollectionChanged;
 			RedoItems = new ObservableStack<Modification>();

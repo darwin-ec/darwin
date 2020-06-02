@@ -45,16 +45,6 @@ namespace Darwin.Wpf
 		private const int MaxZoom = 1600;
 		private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
 
-		//private SKColor _backgroundColor;
-
-		private float _currentScale;
-		//private SKSize _currentScaledSize;
-
-		//private SKPoint _textPoint;
-		//private SKRect _textBounds;
-
-		//private SKImage _image;
-
 		private int _zoomRatioOld = 100;
 
 		// The image won't always fit in the container cleanly -- this is the offset from the top left
@@ -63,12 +53,8 @@ namespace Darwin.Wpf
 		//private SKRect _imageBounds;
 		//private SKSize _zoomedImageSize;
 
-		private bool _moveInit;
 		private int _movePosition;
-		private bool _moveFirstRun;
-		private bool _moveDrawLine;
 
-		private bool _chopInit;
 		private int _chopPosition;
 		private int _chopLead;
 
@@ -89,8 +75,8 @@ namespace Darwin.Wpf
 			//_zoomedImageSize = SKSize.Empty;
 
 			_movePosition = -1;
-			_moveFirstRun = true;
-			_moveDrawLine = false;
+			//_moveFirstRun = true;
+			//_moveDrawLine = false;
 
 			_vm = new TraceWindowViewModel
 			{
@@ -118,8 +104,8 @@ namespace Darwin.Wpf
 			InitializeComponent();
 
 			_movePosition = -1;
-			_moveFirstRun = true;
-			_moveDrawLine = false;
+			//_moveFirstRun = true;
+			//_moveDrawLine = false;
 
 			_vm = vm;
 
@@ -452,9 +438,9 @@ namespace Darwin.Wpf
 				return;
 
 			float[] energyWeights = new float[]{
-				AppSettings.SnakeEnergyContinuity,
-				AppSettings.SnakeEnergyLinearity,
-				AppSettings.SnakeEnergyEdge
+				Options.CurrentUserOptions.SnakeEnergyContinuity,
+				Options.CurrentUserOptions.SnakeEnergyLinearity,
+				Options.CurrentUserOptions.SnakeEnergyEdge
 			};
 
 			// full size and currently viewed scale edgeMagImage
@@ -474,9 +460,9 @@ namespace Darwin.Wpf
 					temp2, //***1.96
 					out EdgeMagImage,
 					true,
-					AppSettings.GaussianStdDev,
-					AppSettings.CannyLowThreshold,
-					AppSettings.CannyHighThreshold);
+					Options.CurrentUserOptions.GaussianStdDev,
+					Options.CurrentUserOptions.CannyLowThreshold,
+					Options.CurrentUserOptions.CannyHighThreshold);
 
 
 			//***1.96 - copy edgeMagImage into area of entire temp image bounded by 
@@ -514,9 +500,9 @@ namespace Darwin.Wpf
 			int ratio = _zoomRatioOld;
 			int chunkSize;  // used to divide up iterations among the scales
 			if (ratio <= 100)
-				chunkSize = (int)(AppSettings.SnakeMaximumIterations / (100.0 / ratio * 2 - 1));
+				chunkSize = (int)(Options.CurrentUserOptions.SnakeMaximumIterations / (100.0 / ratio * 2 - 1));
 			else
-				chunkSize = AppSettings.SnakeMaximumIterations;
+				chunkSize = Options.CurrentUserOptions.SnakeMaximumIterations;
 			int tripNum = 1;  // one trip at each scale
 
 			// at each ZoomRatio, create an EdgeMagImage and a contour at that scale
@@ -572,7 +558,7 @@ namespace Darwin.Wpf
 			AddContourUndo(_vm.Contour);
 
 			// use MovePoint code to display newly added point
-			_moveInit = true;
+			//_moveInit = true;
 			_movePosition = _vm.Contour.AddPointInOrder(point.X, point.Y);
 		}
 
@@ -727,7 +713,7 @@ namespace Darwin.Wpf
 				return;
 			}
 
-			_moveInit = true;
+			//_moveInit = true;
 
 			AddContourUndo(_vm.Contour);
 
@@ -780,7 +766,7 @@ namespace Darwin.Wpf
 			if (_vm.Contour == null || _vm.Outline == null || !_vm.TraceFinalized)
 				return;
 
-			_moveInit = true;
+			//_moveInit = true;
 
 			_moveFeature = (FeaturePointType)_vm.Outline.FindClosestFeaturePoint(new PointF(point.X, point.Y));
 

@@ -870,7 +870,7 @@ namespace Darwin.Matching
             double sum = 0.0;
             int ptsFound = 0;
             int c1skips = 0, c2skips = 0; // count jumps forward on non-point-pair event
-            bool ptPairFound = false;
+            //bool ptPairFound = false;
 
             bool prevPtInSegment = false; // previous point has been found in THIS segment of unknown
             bool prevPtExists = false;     // some previous point has been found (use 1st in unknown initially)
@@ -1917,7 +1917,6 @@ shiftedUnkTipMappedContour = null; //***1.1
             double sum = 0.0;
             int ptsFound = 0;
             int c1skips = 0, c2skips = 0; // count jumps forward on non-point-pair event
-            bool ptPairFound = false;
 
             bool prevPtInSegment = false; // previous point has been found in THIS segment of unknown
             bool prevPtExists = false;     // some previous point has been found (1st point in c1, initially)
@@ -2776,7 +2775,7 @@ shiftedUnkTipMappedContour = null; //***1.1
                 int end2)
         {
             double
-                error = 50000.0,
+                //error = 50000.0,
                 dbArcLength, unkArcLength;
 
             // saved segment lengths, each is length of edge entering indexed point

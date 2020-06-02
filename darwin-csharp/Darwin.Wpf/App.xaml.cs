@@ -77,7 +77,7 @@ namespace Darwin.Wpf
                     }
                     else
                     {
-                        // TODO: Hack fo
+                        // TODO: Hack for HiDPI
                         fin.ModifiedFinImage.SetResolution(96, 96);
 
                         // TODO: Move this logic into the constructor?
@@ -100,7 +100,7 @@ namespace Darwin.Wpf
             }
             else
             {
-                StartupUri = new Uri("/Darwin.Wpf;component/TraceWindow.xaml", UriKind.Relative);
+                StartupUri = new Uri("/Darwin.Wpf;component/MainWindow.xaml", UriKind.Relative);
             }
         }
     }
