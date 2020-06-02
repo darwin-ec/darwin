@@ -1426,7 +1426,7 @@ namespace Darwin.Database
 
             //***054 - assume that the image filename contains path
             // information which must be stripped BEFORE saving fin
-            fin.mImageFilename = Path.GetFileName(fin.mImageFilename);
+            fin.ImageFilename = Path.GetFileName(fin.ImageFilename);
 
             // TODO
             //beginTransaction();
@@ -1470,7 +1470,7 @@ namespace Darwin.Database
 
             DBImage image = new DBImage();
             image.dateofsighting = fin.DateOfSighting;
-            image.imagefilename = fin.mImageFilename;
+            image.imagefilename = fin.ImageFilename;
             image.locationcode = fin.LocationCode;
             image.rollandframe = fin.RollAndFrame;
             image.shortdescription = fin.ShortDescription;
@@ -1547,7 +1547,7 @@ namespace Darwin.Database
             // query db as we don't know the image id
             image = selectImageByFkIndividualID(individual.id);
             image.dateofsighting = fin.DateOfSighting;
-            image.imagefilename = fin.mImageFilename;
+            image.imagefilename = fin.ImageFilename;
             image.locationcode = fin.LocationCode;
             image.rollandframe = fin.RollAndFrame;
             image.shortdescription = fin.ShortDescription;

@@ -65,15 +65,15 @@ namespace Darwin.Database
                 // First and only fin
                 var fin = db.getItem(0);
 
-                var baseimgfilename = Path.GetFileName(fin.mImageFilename);
-                fin.mImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
+                var baseimgfilename = Path.GetFileName(fin.ImageFilename);
+                fin.ImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
 
 				List<ImageMod> imageMods;
 				bool thumbOnly;
 				string originalFilename;
 				float normScale;
 
-				PngHelper.ParsePngText(fin.mImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
+				PngHelper.ParsePngText(fin.ImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
 				
 				fin.ImageMods = imageMods;
 				fin.Scale = normScale;
@@ -83,7 +83,7 @@ namespace Darwin.Database
 				// We're loading the image this way because Bitmap keeps a lock on the original file, and
 				// we want to try to delete the file below.  So we open the file in another object in a using statement
 				// then copy it over to our actual working object.
-				using (var imageFromFile = (Bitmap)Image.FromFile(fin.mImageFilename))
+				using (var imageFromFile = (Bitmap)Image.FromFile(fin.ImageFilename))
 				{
 					fin.ModifiedFinImage = new Bitmap(imageFromFile);
 				}

@@ -9,9 +9,27 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.CommandBindings>
-        <CommandBinding Command="commands:CustomCommands.Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.NewDatabase" />
+        
+        <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.OpenTracedFin" />
         <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
+        
+        <CommandBinding Command="commands:CustomCommands.MatchingQueue" />
+
+        <CommandBinding Command="commands:CustomCommands.Backup" />
+        <CommandBinding Command="commands:CustomCommands.Restore" />
+
+        <CommandBinding Command="commands:CustomCommands.ImportCatalog" />
+        <CommandBinding Command="commands:CustomCommands.ImportFin" />
+        
+        <CommandBinding Command="commands:CustomCommands.ExportCatalog" />
+        <CommandBinding Command="commands:CustomCommands.ExportFin" />
+        <CommandBinding Command="commands:CustomCommands.ExportImages" />
+        
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
+
+        <CommandBinding Command="commands:CustomCommands.Options" />
     </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -22,24 +40,37 @@
 
         <Menu Grid.Row="0">
             <MenuItem Header="File">
-                <MenuItem Header="New"></MenuItem>
-                <MenuItem Command="commands:CustomCommands.Open" />
+                <MenuItem Command="commands:CustomCommands.NewDatabase" />
+                <Separator/>
+                <MenuItem Command="commands:CustomCommands.OpenImage" />
+                <MenuItem Command="commands:CustomCommands.OpenTracedFin" />
                 <MenuItem Command="commands:CustomCommands.OpenDatabase" />
-                <Separator></Separator>
+                <Separator/>
+                <MenuItem Command="commands:CustomCommands.MatchingQueue" />
+                <Separator/>
+                <MenuItem Command="commands:CustomCommands.Backup" />
+                <MenuItem Command="commands:CustomCommands.Restore" />
+                <Separator/>
+                <MenuItem Header="Import">
+                    <MenuItem Command="commands:CustomCommands.ImportCatalog" />
+                    <MenuItem Command="commands:CustomCommands.ImportFin" />
+                </MenuItem>
+                <MenuItem Header="Export">
+                    <MenuItem Command="commands:CustomCommands.ExportCatalog" />
+                    <MenuItem Command="commands:CustomCommands.ExportFin" />
+                    <MenuItem Command="commands:CustomCommands.ExportImages" />
+                </MenuItem>
+                <Separator/>
                 <MenuItem Command="commands:CustomCommands.Exit" />
             </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Header="Undo"></MenuItem>
-                <MenuItem Header="Redo"></MenuItem>
-                <Separator></Separator>
-                <MenuItem Header="Cut"></MenuItem>
-                <MenuItem Header="Copy"></MenuItem>
-                <MenuItem Header="Paste"></MenuItem>
+            <MenuItem Header="Settings">
+                <MenuItem Command="commands:CustomCommands.Options" />
+                <MenuItem Header="Catalog Schemes"/>
             </MenuItem>
         </Menu>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Hello" Click="Button_Click"></Button>
+            <Button Content="Hello"></Button>
         </StackPanel>
 
         <!--<DataGrid x:Name="DatabaseGrid" IsReadOnly="True" AutoGenerateColumns="False" Grid.Row="2" ItemsSource="{Binding Fins}">
@@ -48,18 +79,50 @@
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
             </DataGrid.Columns>
         </DataGrid>-->
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <controls:SortableListView Grid.Column="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                            <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                            <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                        </GridViewColumn>
+                        <GridViewColumn Header="Damage" DisplayMemberBinding="{Binding DamageCategory}"></GridViewColumn>
+                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding DateOfSighting}"></GridViewColumn>
+                        <GridViewColumn Header="Location" DisplayMemberBinding="{Binding LocationCode}"></GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </controls:SortableListView>
 
-        <controls:SortableListView x:Name="DatabaseGrid" Grid.Row="2" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                        <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </controls:SortableListView>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TabControl Grid.Row="0">
+                    <TabItem Header="Image">
+                        <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
+                    </TabItem>
+                    <TabItem Header="Outline" />
+                    <TabItem Header="Original Image" />
+                    <TabItem Header="Data" />
+                </TabControl>
+                
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+
+                <Label Grid.Row="2" Content="Content goes here..." />
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

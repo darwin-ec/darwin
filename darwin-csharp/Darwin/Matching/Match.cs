@@ -240,7 +240,7 @@ namespace Darwin.Matching
                     Result r = new Result(
                         result.C1, //***005CM
                         result.C2, //***005CM
-                        thisDBFin.mImageFilename,  //***001DB
+                        thisDBFin.ImageFilename,  //***001DB
                         thisDBFin.ThumbnailPixmap, //***1.0
                         thisDBFin.ThumbnailRows,    //***1.0
                         mCurrentFin,

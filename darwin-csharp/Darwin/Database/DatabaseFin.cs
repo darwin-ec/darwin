@@ -55,7 +55,6 @@ namespace Darwin.Database
     public class DatabaseFin : INotifyPropertyChanged
     {
         public Bitmap mFinImage;
-        public string mImageFilename; //  001DB
 
         public Outline mFinOutline; //  008OL
 
@@ -66,6 +65,7 @@ namespace Darwin.Database
         private string _locationCode;
         private string _damageCategory;
         private string _shortDescription;
+        private string _imageFilename; //  001DB
         public long DataPos;     //  001DB
         public char[,] ThumbnailPixmap;
         public int ThumbnailRows;
@@ -152,6 +152,16 @@ namespace Darwin.Database
             }
         }
 
+        public string ImageFilename
+        {
+            get => _imageFilename;
+            set
+            {
+                _imageFilename = value;
+                OnPropertyChanged("ImageFilename");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         //                                                **
@@ -172,7 +182,7 @@ namespace Darwin.Database
             string shortDescription
         )
         {
-            mImageFilename = filename; //  001DB
+            ImageFilename = filename; //  001DB
             mFinOutline = new Outline(outline); //  006DF,008OL
             IDCode = idcode;
             Name = name;
@@ -198,7 +208,7 @@ namespace Darwin.Database
             //         does not exist or is unsupported type  --
             //         program now crashes when database image is misplaced or misnamed
 
-            mFinImage = new Bitmap(mImageFilename); //  001DB
+            mFinImage = new Bitmap(ImageFilename); //  001DB
 
             // TODO
             //FIN_IMAGE_TYPE* thumb = resizeWithBorderNN(
@@ -232,7 +242,7 @@ namespace Darwin.Database
             int rows
 		)
         {
-            mImageFilename = filename; //  001DB
+            ImageFilename = filename; //  001DB
 			mFinOutline =new Outline(outline); //  006DF,008OL
             IDCode = idcode;
             Name = name;
@@ -274,7 +284,7 @@ namespace Darwin.Database
         //
         public DatabaseFin(DatabaseFin fin)
         {
-            mImageFilename = fin.mImageFilename;        //  001DB
+            ImageFilename = fin.ImageFilename;        //  001DB
 			mFinImage = null;                          //   major change JHS
             ModifiedFinImage = null; //  1.5
             DataPos = fin.DataPos;                    //  001DB

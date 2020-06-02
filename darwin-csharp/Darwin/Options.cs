@@ -89,7 +89,7 @@ namespace Darwin
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
-            using (IsolatedStorageFileStream isoStream = new IsolatedStorageFileStream(OptionsFilename, FileMode.CreateNew, isoStore))
+            using (IsolatedStorageFileStream isoStream = new IsolatedStorageFileStream(OptionsFilename, FileMode.OpenOrCreate, isoStore))
             {
                 using (StreamWriter writer = new StreamWriter(isoStream))
                 {
@@ -103,8 +103,14 @@ namespace Darwin
         {
             DatabaseFileName = filename;
 
-            // TODO: Need to walk this back up a little
-            CurrentDataPath = Path.GetDirectoryName(filename);
+            // W're going to walk back up one level
+            var dirInfo = new DirectoryInfo(Path.GetDirectoryName(filename));
+
+            // Fall back if there's a problem getting the parent
+            if (dirInfo == null || dirInfo.Parent == null)
+                CurrentDataPath = Path.GetDirectoryName(filename);
+            else
+                CurrentDataPath = dirInfo.Parent.FullName;
         }
 
         /// <summary>

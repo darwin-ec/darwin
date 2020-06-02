@@ -49,15 +49,15 @@ namespace Darwin.Wpf
                 sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
         }
 
-        private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void OpenImageCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
 
-        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void OpenImageCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var openDialog = new OpenFileDialog();
-            openDialog.Filter = CustomCommands.OpenFilter;
+            openDialog.Filter = CustomCommands.OpenImageFilter;
             if (openDialog.ShowDialog() == true)
             {
                 var img = System.Drawing.Image.FromFile(openDialog.FileName);
@@ -114,11 +114,6 @@ namespace Darwin.Wpf
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.Fins[2].IDCode = "HELLO";
         }
     }
 }
