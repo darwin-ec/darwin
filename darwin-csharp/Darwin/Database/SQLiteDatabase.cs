@@ -1380,7 +1380,7 @@ namespace Darwin.Database
         //
         // Returns all fins from database.
         //
-        public List<DatabaseFin> getAllFins()
+        public override List<DatabaseFin> GetAllFins()
         {
             List<DatabaseFin> fins = new List<DatabaseFin>();
 
@@ -1709,7 +1709,7 @@ namespace Darwin.Database
             else
                 mAbsoluteOffset.Clear();
 
-            fins = getAllFins();
+            fins = GetAllFins();
 
             if (fins != null)
             {

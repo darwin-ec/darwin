@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         xmlns:commands="clr-namespace:Darwin.Wpf.Commands"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.CommandBindings>
@@ -38,12 +39,27 @@
         </Menu>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Hello"></Button>
+            <Button Content="Hello" Click="Button_Click"></Button>
         </StackPanel>
-        
-        <DataGrid x:Name="DatabaseGrid" AutoGenerateColumns="False" Grid.Row="2">
-            <DataGridTextColumn Header="IDCode" Binding="{Binding IDCode}" />
-            <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-        </DataGrid>
+
+        <!--<DataGrid x:Name="DatabaseGrid" IsReadOnly="True" AutoGenerateColumns="False" Grid.Row="2" ItemsSource="{Binding Fins}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="IDCode" Binding="{Binding IDCode}" />
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+            </DataGrid.Columns>
+        </DataGrid>-->
+
+        <controls:SortableListView x:Name="DatabaseGrid" Grid.Row="2" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                        <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </controls:SortableListView>
     </Grid>
 </Window>

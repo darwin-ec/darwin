@@ -41,6 +41,12 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        public MainWindowViewModel()
+        {
+            _darwinDatabase = null;
+            _fins = new ObservableNotifiableCollection<DatabaseFin>();
+        }
+
         private void RaisePropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;

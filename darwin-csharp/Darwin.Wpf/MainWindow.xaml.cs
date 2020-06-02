@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
+using Darwin.Collections;
+using System.ComponentModel;
 
 namespace Darwin.Wpf
 {
@@ -26,13 +28,25 @@ namespace Darwin.Wpf
     public partial class MainWindow : Window
     {
         private MainWindowViewModel _vm;
+
         public MainWindow()
         {
             InitializeComponent();
 
             _vm = new MainWindowViewModel();
 
+            if (!string.IsNullOrEmpty(Options.CurrentUserOptions.DatabaseFileName))
+                OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false);
+
             this.DataContext = _vm;
+        }
+
+        private void GridHeader_Click(object sender, RoutedEventArgs e)
+        {
+            var sortableListViewSender = sender as Controls.SortableListView;
+
+            if (sortableListViewSender != null)
+                sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
         }
 
         private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -73,8 +87,22 @@ namespace Darwin.Wpf
 
             if (openDatabaseDialog.ShowDialog() == true)
             {
-                var db = CatalogSupport.OpenDatabase(openDatabaseDialog.FileName, Options.CurrentUserOptions, false);
-                _vm.DarwinDatabase = db;
+                OpenDatabase(openDatabaseDialog.FileName, true);
+            }
+        }
+
+        private void OpenDatabase(string filename, bool saveOptions = false)
+        {
+            var db = CatalogSupport.OpenDatabase(filename, Options.CurrentUserOptions, false);
+            _vm.DarwinDatabase = db;
+            _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(_vm.DarwinDatabase.GetAllFins());
+
+            if (saveOptions)
+            {
+                // TODO: Some more logic around this
+                Options.CurrentUserOptions.SetLastDatabaseFilename(filename);
+
+                Options.CurrentUserOptions.Save();
             }
         }
 
@@ -86,6 +114,11 @@ namespace Darwin.Wpf
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.Fins[2].IDCode = "HELLO";
         }
     }
 }

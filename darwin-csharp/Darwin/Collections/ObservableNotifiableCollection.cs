@@ -13,6 +13,18 @@ namespace Darwin.Collections
         public ItemPropertyChangedEventHandler ItemPropertyChanged;
         public EventHandler CollectionCleared;
 
+        public ObservableNotifiableCollection()
+            : base()
+        { }
+
+        public ObservableNotifiableCollection(IEnumerable<T> collection)
+            : base(collection)
+        { }
+
+        public ObservableNotifiableCollection(List<T> list)
+            : base(list)
+        { }
+
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
             base.OnCollectionChanged(args);

@@ -99,6 +99,14 @@ namespace Darwin
             }
         }
 
+        public void SetLastDatabaseFilename(string filename)
+        {
+            DatabaseFileName = filename;
+
+            // TODO: Need to walk this back up a little
+            CurrentDataPath = Path.GetDirectoryName(filename);
+        }
+
         /// <summary>
         /// Sets a default current data path if one isn't already set.
         /// </summary>

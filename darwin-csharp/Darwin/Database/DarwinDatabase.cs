@@ -50,6 +50,8 @@ namespace Darwin.Database
         public abstract long Add(DatabaseFin data);
         public abstract void Delete(DatabaseFin Fin);
 
+        public abstract List<DatabaseFin> GetAllFins();
+
         public abstract DatabaseFin getItemAbsolute(int pos);
 
         public abstract DatabaseFin getItem(int pos);
@@ -117,7 +119,6 @@ namespace Darwin.Database
 
             return name;
         }
-
 
         public string catSchemeName()
         {
