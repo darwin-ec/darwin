@@ -83,6 +83,8 @@ namespace Darwin.Wpf.ViewModel
                 // TODO: Cache images?
                 if (!string.IsNullOrEmpty(SelectedFin.ImageFilename))
                 {
+                    CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentDataPath, SelectedFin);
+
                     string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, SelectedFin.ImageFilename);
 
                     if (File.Exists(fullImageFilename))

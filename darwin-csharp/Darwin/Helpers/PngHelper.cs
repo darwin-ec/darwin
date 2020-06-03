@@ -85,14 +85,6 @@ namespace Darwin.Helpers
 						}							
                     }
 				}
-				// "tEXt"
-				//
-				var v = System.Text.Encoding.Default.GetString(c.Data);
-				// Author\0DARWIN-2.22 Dolphin PhotoID Software
-				// "NormScale\02.225349"
-				// "OriginalImage\0goblin.jpg"
-				//ImageMod %d %d %d %d %d
-				//ThumbOnly\0yes
 			}
 		}
     }

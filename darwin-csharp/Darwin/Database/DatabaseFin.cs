@@ -54,6 +54,8 @@ namespace Darwin.Database
 {
     public class DatabaseFin : INotifyPropertyChanged
     {
+        public decimal Version { get; set; } = 1.0m;
+
         public Bitmap mFinImage;
 
         public Outline mFinOutline; //  008OL

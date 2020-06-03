@@ -26,13 +26,13 @@ namespace Darwin.Database
 {
     public enum ImageModType
     {
-        IMG_none,
-        IMG_flip,
-        IMG_contrast,
-        IMG_brighten,
-        IMG_crop,
-        IMG_undo,
-        IMG_redo
+        IMG_none = 0,
+        IMG_flip = 1,
+        IMG_contrast = 2,
+        IMG_brighten = 3,
+        IMG_crop = 4,
+        IMG_undo = 5,
+        IMG_redo = 6
     }
 
     public class ImageMod

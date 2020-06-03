@@ -41,7 +41,37 @@ namespace Darwin.Database
 			return db;
 		}
 
-        public static DatabaseFin OpenFinz(string filename)
+		public static void UpdateFinFieldsFromImage(string basePath, DatabaseFin fin)
+        {
+			if (fin.Version < 2.0m)
+			{
+				List<ImageMod> imageMods;
+				bool thumbOnly;
+				string originalFilename;
+				float normScale;
+
+				string fullFilename = Path.Combine(basePath, fin.ImageFilename);
+
+				PngHelper.ParsePngText(fullFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
+
+				fin.ImageMods = imageMods;
+				fin.Scale = normScale;
+
+				// This is a little hacky, but we're going to get the bottom directory name, and append that to
+				// the filename below.
+				var bottomDirectoryName = Path.GetFileName(Path.GetDirectoryName(fullFilename));
+
+				originalFilename = Path.Combine(bottomDirectoryName, originalFilename);
+
+				// TODO Original isn't right -- need to replay imagemods, maybe?
+				fin.OriginalImageFilename = originalFilename;
+				fin.ImageFilename = originalFilename;
+				fin.Version = 2.0m;
+				// TODO: Save these changes back to the database
+			}
+		}
+
+		public static DatabaseFin OpenFinz(string filename)
 		{
 			if (string.IsNullOrEmpty(filename))
 				throw new ArgumentNullException(nameof(filename));
