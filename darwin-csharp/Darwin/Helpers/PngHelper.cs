@@ -68,16 +68,16 @@ namespace Darwin.Helpers
 									op = Convert.ToInt32(secondLevelSplit[0]);
 
 								if (secondLevelSplit.Length >= 2)
-									op = Convert.ToInt32(secondLevelSplit[1]);
+									val1 = Convert.ToInt32(secondLevelSplit[1]);
 
 								if (secondLevelSplit.Length >= 3)
-									op = Convert.ToInt32(secondLevelSplit[2]);
+									val2 = Convert.ToInt32(secondLevelSplit[2]);
 
 								if (secondLevelSplit.Length >= 4)
-									op = Convert.ToInt32(secondLevelSplit[3]);
+									val3 = Convert.ToInt32(secondLevelSplit[3]);
 
                                 if (secondLevelSplit.Length >= 5)
-                                    op = Convert.ToInt32(secondLevelSplit[4]);
+                                    val4 = Convert.ToInt32(secondLevelSplit[4]);
 
 								var mod = new ImageMod((ImageModType)op, val1, val2, val3, val4);
 								imageMods.Add(mod);

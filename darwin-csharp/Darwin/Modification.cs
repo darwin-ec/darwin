@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Darwin.Wpf.Model
+namespace Darwin
 {
     public enum ModificationType
     {
         Image,
-        Contour
+        Contour,
+        Both
     }
 
     public class Modification

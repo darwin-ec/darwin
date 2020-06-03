@@ -6,7 +6,6 @@ using Darwin.ImageProcessing;
 using Darwin.Model;
 using Darwin.Wpf.Adorners;
 using Darwin.Wpf.Extensions;
-using Darwin.Wpf.Model;
 using Darwin.Wpf.ViewModel;
 using Microsoft.Win32;
 using System;
@@ -1559,25 +1558,6 @@ namespace Darwin.Wpf
 
         private void FlipHorizontalButton_Click(object sender, RoutedEventArgs e)
         {
-			//TODO
-			//// ***1.75 - set location of center based on slider
-			//if (traceWin->mScrolledWindow->allocation.height < traceWin->mImage->getNumRows())
-			//{
-			//	GtkAdjustment* adj = gtk_scrolled_window_get_vadjustment(
-			//		GTK_SCROLLED_WINDOW(traceWin->mScrolledWindow));
-			//	double half = 0.5 * traceWin->mScrolledWindow->allocation.height;
-			//	traceWin->mImageCenterY = (adj->value + half) / (adj->upper - adj->lower);
-			//}
-			//if (traceWin->mScrolledWindow->allocation.width < traceWin->mImage->getNumCols())
-			//{
-			//	GtkAdjustment* adj = gtk_scrolled_window_get_hadjustment(
-			//		GTK_SCROLLED_WINDOW(traceWin->mScrolledWindow));
-			//	double half = 0.5 * traceWin->mScrolledWindow->allocation.width;
-			//	traceWin->mImageCenterX = (adj->value + half) / (adj->upper - adj->lower);
-			//}
-			////***1.75 - flip desired / current center
-			//traceWin->mImageCenterX = 1.0 - traceWin->mImageCenterX;
-
 			if (_vm.Bitmap != null)
 			{
 				
@@ -1734,45 +1714,9 @@ namespace Darwin.Wpf
 			var modificationList = new List<Modification>();
 
 			foreach (var stackMod in modifications)
-			{
 				modificationList.Insert(0, stackMod);
-			}
 
-			_vm.Bitmap = new Bitmap(_vm.OriginalBitmap);
-
-			foreach (var mod in modificationList)
-			{
-				if (mod.ImageMod != null && mod.ModificationType == ModificationType.Image)
-				{
-					// TODO: This is really awkward
-					ImageModType modType;
-					int val1, val2, val3, val4;
-					mod.ImageMod.Get(out modType, out val1, out val2, out val3, out val4);
-
-					switch (mod.ImageMod.Op)
-					{
-						case ImageModType.IMG_flip:
-							_vm.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
-							break;
-
-						case ImageModType.IMG_brighten:
-							_vm.Bitmap.AlterBrightness(val1);
-							break;
-
-						case ImageModType.IMG_contrast:
-							_vm.Bitmap.EnhanceContrast((byte)val1, (byte)val2);
-							break;
-
-						case ImageModType.IMG_crop:
-							var cropRect = new System.Drawing.Rectangle(val1, val2, val3 - val1, val4 - val2);
-							_vm.Bitmap = ImageTransform.CropBitmap(_vm.Bitmap, cropRect);
-							break;
-
-						default:
-							throw new NotImplementedException();
-					}
-				}
-			}
+			_vm.Bitmap = ModificationHelper.ApplyImageModificationsToOriginal(_vm.OriginalBitmap, modificationList);
 
 			_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
 			// Just in case

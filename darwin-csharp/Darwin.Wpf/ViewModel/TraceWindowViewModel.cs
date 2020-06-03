@@ -1,7 +1,6 @@
 ﻿using Darwin.Collections;
 using Darwin.Model;
 using Darwin.Wpf.Extensions;
-using Darwin.Wpf.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;

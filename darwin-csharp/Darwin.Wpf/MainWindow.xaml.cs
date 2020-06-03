@@ -115,5 +115,18 @@ namespace Darwin.Wpf
         {
             Application.Current.Shutdown();
         }
+
+        private void DeleteFin_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to delete this fin from the database?", "Delete Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                // TODO: Delete
+            }
+        }
+
+        private void SaveFinData_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Save the fin
+        }
     }
 }

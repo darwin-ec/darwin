@@ -1,5 +1,6 @@
 ﻿using Darwin.Collections;
 using Darwin.Database;
+using Darwin.Helpers;
 using Darwin.Wpf.Extensions;
 using System;
 using System.Collections.Generic;
@@ -96,6 +97,10 @@ namespace Darwin.Wpf.ViewModel
                             var bitmap = new Bitmap(img);
                             // TODO: Hack for HiDPI -- this should be more intelligent.
                             bitmap.SetResolution(96, 96);
+
+                            // TODO: Refactor this so we're not doing it every time, which is a little crazy
+                            if (SelectedFin.ImageMods != null && SelectedFin.ImageMods.Count > 0)
+                                bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, SelectedFin.ImageMods);
 
                             // We're directly changing the source, not the bitmap property on DatabaseFin
                             SelectedImageSource = bitmap.ToImageSource();
