@@ -81,7 +81,7 @@ namespace Darwin.Database
                         {
                             id = rdr.SafeGetInt("ID"),
                             idcode = rdr.SafeGetString("IDCode"),
-                            name = rdr.SafeGetString("Name"),
+                            name = rdr.SafeGetStringStripNone("Name"),
                             fkdamagecategoryid = rdr.SafeGetInt("fkDamageCategoryID")
                         };
 
@@ -115,7 +115,7 @@ namespace Darwin.Database
                         {
                             id = rdr.SafeGetInt("ID"),
                             idcode = rdr.SafeGetString("IDCode"),
-                            name = rdr.SafeGetString("Name"),
+                            name = rdr.SafeGetStringStripNone("Name"),
                             fkdamagecategoryid = rdr.SafeGetInt("fkDamageCategoryID")
                         };
                     }
@@ -371,10 +371,10 @@ namespace Darwin.Database
                         {
                             id = rdr.SafeGetInt("ID"),
                             imagefilename = rdr.SafeGetString("ImageFilename"),
-                            dateofsighting = rdr.SafeGetString("DateOfSighting"),
-                            rollandframe = rdr.SafeGetString("RollAndFrame"),
-                            locationcode = rdr.SafeGetString("LocationCode"),
-                            shortdescription = rdr.SafeGetString("ShortDescription"),
+                            dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
+                            rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
+                            locationcode = rdr.SafeGetStringStripNone("LocationCode"),
+                            shortdescription = rdr.SafeGetStringStripNone("ShortDescription"),
                             fkindividualid = rdr.SafeGetInt("fkIndividualID")
                         };
 
@@ -414,10 +414,10 @@ namespace Darwin.Database
                         {
                             id = rdr.SafeGetInt("ID"),
                             imagefilename = rdr.SafeGetString("ImageFilename"),
-                            dateofsighting = rdr.SafeGetString("DateOfSighting"),
-                            rollandframe = rdr.SafeGetString("RollAndFrame"),
-                            locationcode = rdr.SafeGetString("LocationCode"),
-                            shortdescription = rdr.SafeGetString("ShortDescription"),
+                            dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
+                            rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
+                            locationcode = rdr.SafeGetStringStripNone("LocationCode"),
+                            shortdescription = rdr.SafeGetStringStripNone("ShortDescription"),
                             fkindividualid = rdr.SafeGetInt("fkIndividualID")
                         };
 

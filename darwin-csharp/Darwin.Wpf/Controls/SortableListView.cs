@@ -42,17 +42,25 @@ namespace Darwin.Wpf.Controls
                             direction = ListSortDirection.Ascending;
                     }
 
-                    string sortString = ((Binding)headerClicked.Column.DisplayMemberBinding).Path.Path;
-
-                    Sort(sortString, direction);
-
-                    if (direction == ListSortDirection.Ascending)
-                        headerClicked.Column.HeaderTemplate = FindResource("ListHeaderTemplateArrowUp") as DataTemplate;
+                    if (headerClicked.Column.DisplayMemberBinding == null)
+                    {
+                        _lastHeaderClicked = null;
+                        _lastDirection = ListSortDirection.Ascending;
+                    }
                     else
-                        headerClicked.Column.HeaderTemplate = FindResource("ListHeaderTemplateArrowDown") as DataTemplate;
+                    {
+                        string sortString = ((Binding)headerClicked.Column.DisplayMemberBinding).Path.Path;
 
-                    _lastHeaderClicked = headerClicked;
-                    _lastDirection = direction;
+                        Sort(sortString, direction);
+
+                        if (direction == ListSortDirection.Ascending)
+                            headerClicked.Column.HeaderTemplate = FindResource("ListHeaderTemplateArrowUp") as DataTemplate;
+                        else
+                            headerClicked.Column.HeaderTemplate = FindResource("ListHeaderTemplateArrowDown") as DataTemplate;
+
+                        _lastHeaderClicked = headerClicked;
+                        _lastDirection = direction;
+                    }
                 }
             }
         }

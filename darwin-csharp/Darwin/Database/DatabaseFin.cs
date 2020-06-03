@@ -49,6 +49,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 
 namespace Darwin.Database
 {
@@ -67,6 +68,7 @@ namespace Darwin.Database
         private string _damageCategory;
         private string _shortDescription;
         private string _imageFilename; //  001DB
+        private string _thumbnailFileName;
         public long DataPos;     //  001DB
         public char[,] ThumbnailPixmap;
         public int ThumbnailRows;
@@ -160,6 +162,25 @@ namespace Darwin.Database
             {
                 _imageFilename = value;
                 OnPropertyChanged("ImageFilename");
+            }
+        }
+
+        public string ThumbnailFilename
+        {
+            get => _thumbnailFileName;
+            set
+            {
+                _thumbnailFileName = value;
+                OnPropertyChanged("ThumbnailFilename");
+                OnPropertyChanged("ThumbnailFilenameUri");
+            }
+        }
+
+        public string ThumbnailFilenameUri
+        {
+            get
+            {
+                return Path.Combine(Options.CurrentUserOptions.CurrentDataPath, ThumbnailFilename);
             }
         }
 
@@ -284,7 +305,9 @@ namespace Darwin.Database
                     mFinImage,
                     DATABASEFIN_THUMB_HEIGHT,
                     DATABASEFIN_THUMB_WIDTH);
-            convToPixmapString(thumb, mThumbnailPixmap, mThumbnailRows);
+            convToPixmapString(thumb, m
+            
+            Pixmap, mThumbnailRows);
             delete thumb;
             */
         }

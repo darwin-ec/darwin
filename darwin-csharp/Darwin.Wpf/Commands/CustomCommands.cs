@@ -129,5 +129,17 @@ namespace Darwin.Wpf.Commands
                 new KeyGesture(Key.P, ModifierKeys.Control)
             }
         );
+
+        public static readonly RoutedUICommand About = new RoutedUICommand(
+            "About Darwin",
+            "About Darwin",
+            typeof(CustomCommands)
+        );
+
+        public static readonly RoutedUICommand Documentation = new RoutedUICommand(
+            "Documentation",
+            "Documentation",
+            typeof(CustomCommands)
+        );
     }
 }

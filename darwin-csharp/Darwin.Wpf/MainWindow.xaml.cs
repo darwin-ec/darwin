@@ -95,7 +95,13 @@ namespace Darwin.Wpf
         {
             var db = CatalogSupport.OpenDatabase(filename, Options.CurrentUserOptions, false);
             _vm.DarwinDatabase = db;
-            _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(_vm.DarwinDatabase.GetAllFins());
+            // TODO: The thumbnail part is temporary
+            // Need to store the thumbnail images more nicely
+            _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
+                _vm.DarwinDatabase
+                .GetAllFins()
+                .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
+                .ToList());
 
             if (saveOptions)
             {

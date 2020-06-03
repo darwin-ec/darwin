@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="550" Width="850">
     <Window.CommandBindings>
         <CommandBinding Command="commands:CustomCommands.NewDatabase" />
         
@@ -31,6 +31,9 @@
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Options" />
+
+        <CommandBinding Command="commands:CustomCommands.Documentation" />
+        <CommandBinding Command="commands:CustomCommands.About" />
     </Window.CommandBindings>
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
@@ -78,6 +81,10 @@
                 <MenuItem Command="commands:CustomCommands.Options" />
                 <MenuItem Header="Catalog Schemes"/>
             </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Command="commands:CustomCommands.Documentation" />
+                <MenuItem Command="commands:CustomCommands.About" />
+            </MenuItem>
         </Menu>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
@@ -97,17 +104,39 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <controls:SortableListView Grid.Column="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Image.Source>
+                                            <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                        </Image.Source>
+                                    </Image>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                            <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                            <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
                         </GridViewColumn>
                         <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                            <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="150" />
+                            <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                         </GridViewColumn>
-                        <GridViewColumn Header="Damage" DisplayMemberBinding="{Binding DamageCategory}"></GridViewColumn>
-                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding DateOfSighting}"></GridViewColumn>
-                        <GridViewColumn Header="Location" DisplayMemberBinding="{Binding LocationCode}"></GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                            <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
+                            <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
+                            <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </controls:SortableListView>

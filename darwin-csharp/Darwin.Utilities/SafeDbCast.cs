@@ -38,5 +38,20 @@ namespace Darwin.Utilities
 
             return rdr.GetString(colIndex);
         }
+
+        public static string SafeGetStringStripNone(this SQLiteDataReader rdr, string columnName)
+        {
+            var colIndex = rdr.GetOrdinal(columnName);
+
+            if (rdr.IsDBNull(colIndex))
+                return null;
+
+            var s = rdr.GetString(colIndex);
+
+            if (s == "NONE")
+                return null;
+
+            return s;
+        }
     }
 }
