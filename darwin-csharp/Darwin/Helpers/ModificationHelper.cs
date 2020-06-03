@@ -24,7 +24,10 @@ namespace Darwin.Helpers
 			if (modifications == null)
 				throw new ArgumentNullException(nameof(modifications));
 
-			var mods = modifications.Where(x => x.ImageMod != null && (x.ModificationType == ModificationType.Image || x.ModificationType == ModificationType.Both)).ToList();
+			var mods = modifications
+				.Where(x => x.ImageMod != null && (x.ModificationType == ModificationType.Image || x.ModificationType == ModificationType.Both))
+				.Select(x => x.ImageMod)
+				.ToList();
 
 			if (mods == null || mods.Count < 1)
 				return new Bitmap(bitmap);
