@@ -18,8 +18,8 @@
         <Cursor x:Key="PencilCursor">Resources/Cursors/pencil_cursor.cur</Cursor>
         
         <x:Array Type="Brush" x:Key="brushes">
-            <x:Static Member="Brushes.Green" />
-            <x:Static Member="Brushes.Red" />
+            <x:Static Member="Brushes.Lime" />
+            <x:Static Member="Brushes.Crimson" />
             <x:Static Member="Brushes.Yellow" />
             <x:Static Member="Brushes.Cyan" />
             <x:Static Member="Brushes.Blue" />
@@ -170,9 +170,10 @@
                             </Image.LayoutTransform>
                         </Image>
                         <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
-                             Background="Azure"
-                             ItemsSource="{Binding Contour.Points}"
-                             Brushes="{StaticResource brushes}" />
+                                         Background="Transparent"
+                                         PointSize="3"
+                                         ItemsSource="{Binding Contour.Points}"
+                                         Brushes="{StaticResource brushes}" />
                     </Canvas>
                 </Viewbox>
             </ScrollViewer>

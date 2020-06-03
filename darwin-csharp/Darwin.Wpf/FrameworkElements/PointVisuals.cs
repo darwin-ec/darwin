@@ -32,6 +32,13 @@ namespace Darwin.Wpf.FrameworkElements
                 new FrameworkPropertyMetadata(null,
                         FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty PointSizeProperty =
+            DependencyProperty.Register("PointSize",
+                typeof(double),
+                typeof(PointVisuals),
+                new FrameworkPropertyMetadata(2.0,
+                        FrameworkPropertyMetadataOptions.AffectsRender));
+
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(typeof(PointRender));
 
@@ -58,6 +65,12 @@ namespace Darwin.Wpf.FrameworkElements
         {
             set { SetValue(BackgroundProperty, value); }
             get { return (Brush)GetValue(BackgroundProperty); }
+        }
+
+        public double PointSize
+        {
+            set { SetValue(PointSizeProperty, value); }
+            get { return (double)GetValue(PointSizeProperty); }
         }
 
         static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
@@ -180,12 +193,12 @@ namespace Darwin.Wpf.FrameworkElements
             switch (point.Type)
             {
                 case PointType.Chopping:
-                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X, point.Y), 3, 3);
+                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X, point.Y), PointSize, PointSize);
                     break;
 
                 case PointType.Normal:
                 default:
-                    dc.DrawEllipse(Brushes[0], null, new System.Windows.Point(point.X, point.Y), 3, 3);
+                    dc.DrawEllipse(Brushes[0], null, new System.Windows.Point(point.X, point.Y), PointSize, PointSize);
                     break;
             }
 
@@ -292,7 +305,8 @@ namespace Darwin.Wpf.FrameworkElements
 
         protected override void OnRender(DrawingContext dc)
         {
-            //dc.DrawRectangle(Background, null, new Rect(RenderSize));
+            if (Background != System.Windows.Media.Brushes.Transparent)
+                dc.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
         protected override void OnToolTipOpening(ToolTipEventArgs e)

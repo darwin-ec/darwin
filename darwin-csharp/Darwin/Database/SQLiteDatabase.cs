@@ -1442,7 +1442,7 @@ namespace Darwin.Database
             individual.fkdamagecategoryid = dmgCat.id;
             insertIndividual(ref individual);
 
-            finOutline = fin.mFinOutline;
+            finOutline = fin.FinOutline;
 
             DBOutline outline = new DBOutline();
             outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
@@ -1517,7 +1517,7 @@ namespace Darwin.Database
             individual.fkdamagecategoryid = dmgCat.id;
             updateIndividual(individual);
 
-            finOutline = fin.mFinOutline;
+            finOutline = fin.FinOutline;
             // we do this as we don't know what the outline id is
             outline = selectOutlineByFkIndividualID(individual.id);
             outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);

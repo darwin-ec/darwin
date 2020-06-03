@@ -309,9 +309,9 @@ namespace Darwin.Matching
 
             int dbTipPosition, dbBeginLE, dbNotchPosition;
 
-            dbTipPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
-            dbBeginLE = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
-            dbNotchPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
+            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
+            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
+            dbNotchPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
 
             PointF
                 dbTipPositionPoint,
@@ -319,11 +319,11 @@ namespace Darwin.Matching
                 dbNotchPositionPoint;
             //temp; //***005CM for unsure code section below
 
-            dbTipPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
-            dbBeginLEPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
-            dbNotchPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
+            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
+            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
+            dbNotchPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
 
-            var mappedContour = mUnknownFin.mFinOutline.ChainPoints.MapContour(
+            var mappedContour = mUnknownFin.FinOutline.ChainPoints.MapContour(
                     mUnknownTipPositionPoint,
                     mUnknownBeginLEPoint,
                     mUnknownNotchPositionPoint,
@@ -340,7 +340,7 @@ namespace Darwin.Matching
              *     since we are NOT evenly re-spacing either after the mapping.  
              */
 
-            FloatContour floatDBContour = new FloatContour(dbFin.mFinOutline.ChainPoints);
+            FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints);
 
             //***1.5 - since contour may get trimmed by error function, create temp copies here
             FloatContour
@@ -350,7 +350,7 @@ namespace Darwin.Matching
             MseInfo results = MeanSquaredErrorBetweenOutlines_Original( //***005CM
                                                                         //mappedContour,
                     c1, //***1.5
-                    mUnknownFin.mFinOutline.GetFeaturePoint(FeaturePointType.Tip),
+                    mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip),
                     //floatDBContour, 
                     c2,
                     dbTipPosition);
@@ -363,7 +363,7 @@ namespace Darwin.Matching
             results.C2 = floatDBContour;
             results.B2 = dbBeginLE;
             results.T2 = dbTipPosition;
-            results.E2 = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            results.E2 = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
 
             // both evenly spaced contours are returned as part of results
             return results; //***005C
@@ -396,11 +396,11 @@ namespace Darwin.Matching
 
             int dbTipPosition, dbBeginLE, dbNotchPosition;
 
-            dbTipPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
-            dbBeginLE = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
-            dbNotchPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
+            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
+            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
+            dbNotchPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
 
-            int dbEndTE = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection); //***055ER
+            int dbEndTE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection); //***055ER
 
             PointF
                 dbTipPositionPoint,
@@ -408,11 +408,11 @@ namespace Darwin.Matching
                 dbNotchPositionPoint;
             //temp; //***005CM for unsure code section below
 
-            dbTipPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
-            dbBeginLEPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
-            dbNotchPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
+            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
+            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
+            dbNotchPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
 
-            FloatContour floatDBContour = new FloatContour(dbFin.mFinOutline.ChainPoints); //***006CM, 008OL
+            FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
 
             //***008OL new strategy 
             // follows strategy of stepping along database fin and finding "closest"
@@ -437,7 +437,7 @@ namespace Darwin.Matching
             // reasoning : since the error is highly dependent on the ill defined 
             // beginning of the leading edge, we try several points
 
-            FloatContour preMapUnknown = new FloatContour(mUnknownFin.mFinOutline.ChainPoints);
+            FloatContour preMapUnknown = new FloatContour(mUnknownFin.FinOutline.ChainPoints);
 
             double newError; //***1.0LK
 
@@ -1039,10 +1039,10 @@ namespace Darwin.Matching
                 dbNotchPosition,
                 dbEndTE;
 
-            dbTipPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            dbBeginLE = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            dbNotchPosition = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.Notch);
-            dbEndTE = dbFin.mFinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            dbNotchPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch);
+            dbEndTE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
 
             PointF
                 dbTipPositionPoint,
@@ -1050,14 +1050,14 @@ namespace Darwin.Matching
                 dbNotchPositionPoint,
                 dbEndTEPoint;
 
-            dbTipPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
-            dbBeginLEPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
-            dbNotchPositionPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.Notch);
-            dbEndTEPoint = dbFin.mFinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection);
+            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
+            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
+            dbNotchPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch);
+            dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection);
 
-            FloatContour floatDBContour = new FloatContour(dbFin.mFinOutline.ChainPoints);
+            FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints);
 
-            FloatContour preMapUnknown = new FloatContour(mUnknownFin.mFinOutline.ChainPoints);
+            FloatContour preMapUnknown = new FloatContour(mUnknownFin.FinOutline.ChainPoints);
 
             FloatContour
                 mappedContour = null,
@@ -1139,7 +1139,7 @@ shiftedUnkTipMappedContour = null; //***1.1
             endTrailDB = dbEndTE;
 
             // set initial position of unknown TIP
-            movedTipUnk = mUnknownFin.mFinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
+            movedTipUnk = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
 
             //***055OP
             // find inital lengths (# of points) for each outline

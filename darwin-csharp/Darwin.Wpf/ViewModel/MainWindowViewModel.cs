@@ -39,7 +39,7 @@ namespace Darwin.Wpf.ViewModel
                 _selectedFin = value;
                 RaisePropertyChanged("SelectedFin");
 
-                LoadSelectedImages();
+                LoadSelectedFin();
             }
         }
 
@@ -53,6 +53,29 @@ namespace Darwin.Wpf.ViewModel
                 RaisePropertyChanged("SelectedImageSource");
             }
         }
+
+        private ImageSource _selectedOriginalImageSource;
+        public ImageSource SelectedOriginalImageSource
+        {
+            get => _selectedOriginalImageSource;
+            set
+            {
+                _selectedOriginalImageSource = value;
+                RaisePropertyChanged("SelectedOriginalImageSource");
+            }
+        }
+
+        private Contour _selectedContour;
+        public Contour SelectedContour
+        {
+            get => _selectedContour;
+            set
+            {
+                _selectedContour = value;
+                RaisePropertyChanged("SelectedContour");
+            }
+        }
+
 
         private ObservableNotifiableCollection<DatabaseFin> _fins;
         public ObservableNotifiableCollection<DatabaseFin> Fins
@@ -77,7 +100,7 @@ namespace Darwin.Wpf.ViewModel
             _fins = new ObservableNotifiableCollection<DatabaseFin>();
         }
 
-        private void LoadSelectedImages()
+        private void LoadSelectedFin()
         {
             if (SelectedFin != null)
             {
@@ -85,6 +108,8 @@ namespace Darwin.Wpf.ViewModel
                 if (!string.IsNullOrEmpty(SelectedFin.ImageFilename))
                 {
                     CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentDataPath, SelectedFin);
+
+                    SelectedContour = new Contour(SelectedFin.FinOutline.ChainPoints, SelectedFin.Scale);
 
                     string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, SelectedFin.ImageFilename);
 
@@ -97,6 +122,8 @@ namespace Darwin.Wpf.ViewModel
                             var bitmap = new Bitmap(img);
                             // TODO: Hack for HiDPI -- this should be more intelligent.
                             bitmap.SetResolution(96, 96);
+
+                            SelectedOriginalImageSource = bitmap.ToImageSource();
 
                             // TODO: Refactor this so we're not doing it every time, which is a little crazy
                             if (SelectedFin.ImageMods != null && SelectedFin.ImageMods.Count > 0)

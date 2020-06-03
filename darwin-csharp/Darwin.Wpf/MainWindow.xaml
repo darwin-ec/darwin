@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:Darwin.Wpf"
         xmlns:commands="clr-namespace:Darwin.Wpf.Commands"
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.CommandBindings>
@@ -31,6 +32,16 @@
 
         <CommandBinding Command="commands:CustomCommands.Options" />
     </Window.CommandBindings>
+    <Window.Resources>
+        <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Lime" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Yellow" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -114,9 +125,18 @@
                     <TabItem Header="Image">
                         <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
                     </TabItem>
-                    <TabItem Header="Outline" />
-                    <TabItem Header="Original Image" />
-                    <TabItem Header="Data" />
+                    <TabItem Header="Outline">
+                        <Viewbox>
+                            <fe:PointVisuals Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
+                                         Background="Transparent"
+                                         PointSize="3"
+                                         ItemsSource="{Binding SelectedContour.Points}"
+                                         Brushes="{StaticResource brushes}" />
+                        </Viewbox>
+                    </TabItem>
+                    <TabItem Header="Original Image">
+                        <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />
+                    </TabItem>
                 </TabControl>
                 
                 <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />

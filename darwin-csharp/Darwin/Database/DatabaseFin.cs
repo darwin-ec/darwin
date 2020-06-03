@@ -58,8 +58,7 @@ namespace Darwin.Database
 
         public Bitmap mFinImage;
 
-        public Outline mFinOutline; //  008OL
-
+        private Outline _finOutline;
         private string _IDCode;
         private string _name;
         private string _dateOfSighting;
@@ -164,6 +163,16 @@ namespace Darwin.Database
             }
         }
 
+        public Outline FinOutline //  008OL
+        {
+            get => _finOutline;
+            set
+            {
+                _finOutline = value;
+                OnPropertyChanged("FinOutline");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         //                                                **
@@ -185,7 +194,7 @@ namespace Darwin.Database
         )
         {
             ImageFilename = filename; //  001DB
-            mFinOutline = new Outline(outline); //  006DF,008OL
+            FinOutline = new Outline(outline); //  006DF,008OL
             IDCode = idcode;
             Name = name;
             DateOfSighting = dateOfSighting;
@@ -245,7 +254,7 @@ namespace Darwin.Database
 		)
         {
             ImageFilename = filename; //  001DB
-			mFinOutline =new Outline(outline); //  006DF,008OL
+			FinOutline =new Outline(outline); //  006DF,008OL
             IDCode = idcode;
             Name = name;
             DateOfSighting = dateOfSighting;
@@ -290,7 +299,7 @@ namespace Darwin.Database
 			mFinImage = null;                          //   major change JHS
             ModifiedFinImage = null; //  1.5
             DataPos = fin.DataPos;                    //  001DB
-            mFinOutline = new Outline(fin.mFinOutline); //  006DF,008OL
+            FinOutline = new Outline(fin.FinOutline); //  006DF,008OL
             IDCode = fin.IDCode;
             Name = fin.Name;
             DateOfSighting = fin.DateOfSighting;

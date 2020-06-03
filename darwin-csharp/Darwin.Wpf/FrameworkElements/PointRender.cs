@@ -26,6 +26,13 @@ namespace Darwin.Wpf.FrameworkElements
                 new FrameworkPropertyMetadata(null,
                         FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty PointSizeProperty =
+            DependencyProperty.Register("PointSize",
+                typeof(double),
+                typeof(PointVisuals),
+                new FrameworkPropertyMetadata(2.0,
+                        FrameworkPropertyMetadataOptions.AffectsRender));
+
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(typeof(PointRender));
 
@@ -45,6 +52,12 @@ namespace Darwin.Wpf.FrameworkElements
         {
             set { SetValue(BackgroundProperty, value); }
             get { return (Brush)GetValue(BackgroundProperty); }
+        }
+
+        public double PointSize
+        {
+            set { SetValue(PointSizeProperty, value); }
+            get { return (double)GetValue(PointSizeProperty); }
         }
 
         static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
@@ -86,7 +99,8 @@ namespace Darwin.Wpf.FrameworkElements
 
         protected override void OnRender(DrawingContext dc)
         {
-            //dc.DrawRectangle(Background, null, new Rect(RenderSize));
+            if (Background != System.Windows.Media.Brushes.Transparent)
+                dc.DrawRectangle(Background, null, new Rect(RenderSize));
 
             if (ItemsSource == null || Brushes == null)
                 return;
@@ -94,7 +108,7 @@ namespace Darwin.Wpf.FrameworkElements
             foreach (Darwin.Point dataPoint in ItemsSource)
             {
                 dc.DrawEllipse(Brushes[0], null,
-                    new System.Windows.Point(dataPoint.X, dataPoint.Y), 3, 3);
+                    new System.Windows.Point(dataPoint.X, dataPoint.Y), PointSize, PointSize);
             }
         }
     }
