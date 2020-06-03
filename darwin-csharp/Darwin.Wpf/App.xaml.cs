@@ -65,7 +65,7 @@ namespace Darwin.Wpf
         {
             if (e.Args != null && e.Args.Length > 0)
             {
-                if (e.Args[0].EndsWith(".finz"))
+                if (!string.IsNullOrEmpty(e.Args[0]) && e.Args[0].ToLower().EndsWith(".finz"))
                 {
                     var fin = CatalogSupport.OpenFinz(e.Args[0]);
 

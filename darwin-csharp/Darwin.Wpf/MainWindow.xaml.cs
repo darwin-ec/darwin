@@ -74,6 +74,44 @@ namespace Darwin.Wpf
             }
         }
 
+        private void OpenTracedFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OpenTracedFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var openDialog = new OpenFileDialog();
+            openDialog.Filter = CustomCommands.OpenTracedFinFilter;
+            if (openDialog.ShowDialog() == true)
+            {
+                var fin = CatalogSupport.OpenFinz(openDialog.FileName);
+
+                // TODO: Better error messages?
+                if (fin == null)
+                {
+                    var result = MessageBox.Show("Problem opening finz file.");
+                    System.Windows.Application.Current.Shutdown();
+                }
+                else
+                {
+                    // TODO: Hack for HiDPI
+                    fin.ModifiedFinImage.SetResolution(96, 96);
+
+                    // TODO: Move this logic into the constructor?
+                    var vm = new TraceWindowViewModel(
+                        fin.mFinImage ?? fin.ModifiedFinImage,
+                        new Contour(fin.FinOutline.ChainPoints, fin.Scale),
+                        fin.FinOutline,
+                        true,
+                        true);
+
+                    TraceWindow traceWindow = new TraceWindow(vm);
+                    traceWindow.Show();
+                }
+            }
+        }
+
         private void OpenDatabaseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;

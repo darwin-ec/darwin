@@ -13,7 +13,7 @@
         <CommandBinding Command="commands:CustomCommands.NewDatabase" />
         
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
-        <CommandBinding Command="commands:CustomCommands.OpenTracedFin" />
+        <CommandBinding Command="commands:CustomCommands.OpenTracedFin" CanExecute="OpenTracedFinCommand_CanExecute" Executed="OpenTracedFinCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
         
         <CommandBinding Command="commands:CustomCommands.MatchingQueue" />
