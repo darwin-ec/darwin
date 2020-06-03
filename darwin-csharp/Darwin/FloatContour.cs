@@ -8,6 +8,7 @@
 //
 //*******************************************************************
 
+using Darwin.Collections;
 using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
@@ -20,14 +21,14 @@ namespace Darwin
 {
     public class FloatContour
     {
-        private List<PointF> _points;
+        private ObservableNotifiableCollection<PointF> _points;
 
-        public List<PointF> Points
+        public ObservableNotifiableCollection<PointF> Points
         {
             get
             {
                 if (_points == null)
-                    _points = new List<PointF>();
+                    _points = new ObservableNotifiableCollection<PointF>();
 
                 return _points;
             }
@@ -57,7 +58,7 @@ namespace Darwin
         //
         public FloatContour(FloatContour contour)  //***006FC new
         {
-            _points = new List<PointF>();
+            _points = new ObservableNotifiableCollection<PointF>();
 
             foreach (var p in contour.Points)
                 _points.Add(new PointF(p.X, p.Y, p.Z));

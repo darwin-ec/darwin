@@ -196,6 +196,11 @@ namespace Darwin.Database
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public DatabaseFin()
+        {
+
+        }
+
         //                                                **
         //
         // called from numerous places in ...
@@ -366,8 +371,7 @@ namespace Darwin.Database
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

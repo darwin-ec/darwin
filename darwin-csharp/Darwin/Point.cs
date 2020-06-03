@@ -73,7 +73,6 @@ namespace Darwin
             IsEmpty = false;
         }
 
-        // this is first one '=='
         public static bool operator ==(Darwin.Point p1, Darwin.Point p2)
         {
             // If both are null, or both are same instance, return true.
@@ -91,7 +90,6 @@ namespace Darwin
             return p1.X == p2.X && p1.Y == p2.Y;
         }
 
-        // this is second one '!='
         public static bool operator !=(Darwin.Point p1, Darwin.Point p2)
         {
             // If both are null, or both are same instance, return false.

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Darwin.Database;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -109,6 +110,17 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_outline = value;
 				RaisePropertyChanged("Outline");
+			}
+		}
+
+		private DatabaseFin _databaseFin;
+		public DatabaseFin DatabaseFin
+        {
+			get => _databaseFin;
+			set
+			{
+				_databaseFin = value;
+				RaisePropertyChanged("DatabaseFin");
 			}
 		}
 
@@ -247,11 +259,14 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel()
         {
+			DatabaseFin = new DatabaseFin();
 			AttachEvents();
 		}
 
 		public TraceWindowViewModel(Bitmap bitmap)
 		{
+			DatabaseFin = new DatabaseFin();
+
 			Bitmap = bitmap;
 			ImageLocked = false;
 			TraceLocked = false;
@@ -265,6 +280,8 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel(Bitmap bitmap, Contour contour, Outline outline, bool imageLocked, bool traceLocked)
         {
+			DatabaseFin = new DatabaseFin();
+
 			Bitmap = bitmap;
 			Contour = contour;
 			Outline = outline;

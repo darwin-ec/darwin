@@ -35,7 +35,7 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem Header="New"></MenuItem>
@@ -151,32 +151,67 @@
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition />
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
-            <ScrollViewer x:Name="TraceScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
-                <Viewbox x:Name="imgViewBox" Stretch="None">
-                    <Viewbox.LayoutTransform>
-                        <TransformGroup x:Name="imgTransformGroup">
-                            <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
-                            <!--<TranslateTransform x:Name="imgTranslateTransform"></TranslateTransform>-->
-                        </TransformGroup>
-                    </Viewbox.LayoutTransform>
-                    <Canvas x:Name="TraceCanvas" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}" MouseLeftButtonDown="TraceCanvas_MouseLeftButtonDown" MouseLeftButtonUp="TraceCanvas_MouseLeftButtonUp" MouseMove="TraceCanvas_MouseMove">
-                        <Image x:Name="TraceImage" Source="{Binding Path=ImageSource}">
-                            <Image.LayoutTransform>
-                                <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
-                            </Image.LayoutTransform>
-                        </Image>
-                        <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
-                                         Background="Transparent"
-                                         PointSize="3"
-                                         ItemsSource="{Binding Contour.Points}"
-                                         Brushes="{StaticResource brushes}" />
-                    </Canvas>
-                </Viewbox>
-            </ScrollViewer>
+            
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
+                <ScrollViewer x:Name="TraceScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
+                    <Viewbox x:Name="imgViewBox" Stretch="None">
+                        <Viewbox.LayoutTransform>
+                            <TransformGroup x:Name="imgTransformGroup">
+                                <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
+                                <!--<TranslateTransform x:Name="imgTranslateTransform"></TranslateTransform>-->
+                            </TransformGroup>
+                        </Viewbox.LayoutTransform>
+                        <Canvas x:Name="TraceCanvas" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}" MouseLeftButtonDown="TraceCanvas_MouseLeftButtonDown" MouseLeftButtonUp="TraceCanvas_MouseLeftButtonUp" MouseMove="TraceCanvas_MouseMove">
+                            <Image x:Name="TraceImage" Source="{Binding Path=ImageSource}">
+                                <Image.LayoutTransform>
+                                    <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
+                                </Image.LayoutTransform>
+                            </Image>
+                            <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
+                                            Background="Transparent"
+                                            PointSize="3"
+                                            ItemsSource="{Binding Contour.Points}"
+                                            Brushes="{StaticResource brushes}" />
+                        </Canvas>
+                    </Viewbox>
+                </ScrollViewer>
+            </Grid>
+
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Label>ID Code:</Label>
+                <TextBox  Text="{Binding Path=SelectedFin.IDCode}" Margin="0,5,10,5"  />
+
+                <Label>Name:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.Name}" Margin="0,5,10,5" />
+
+                <Label>Date of Sighting:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.DateOfSighting}" Margin="0,5,10,5"  />
+
+                <Label>Roll/Frame or Lat/Long:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.RollAndFrame}" Margin="0,5,10,5"  />
+
+                <Label>Location Code:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.LocationCode}" Margin="0,5,10,5"  />
+
+                <Label>Damage Category:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5"  />
+
+                <Label>Short Description:</Label>
+                <TextBox Text="{Binding Path=SelectedFin.ShortDescription}" Margin="0,5,10,5"  />
+
+                <Button x:Name="ExportDataButton">Export Data</Button>
+                <Button x:Name="MatchButton">Match</Button>
+                <Button x:Name="SaveButton">Save</Button>
+                <Button x:Name="AddToDatabaseButton">Add to Database</Button>
+            </StackPanel>
         </Grid>
 
         <StatusBar Grid.Row="4">
@@ -187,9 +222,9 @@
                             <ColumnDefinition Width="80" />
 
                             <ColumnDefinition Width="Auto"/>
-                            
+
                             <ColumnDefinition Width="Auto"/>
-                            
+
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
