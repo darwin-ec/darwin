@@ -11,13 +11,25 @@
 using Darwin.Collections;
 using Darwin.Utilities;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace Darwin
 {
-    public class Contour
+    public class Contour : INotifyPropertyChanged
     {
 		public const int MaxTurnAngle = 150;
+
+		private double _scale;
+		public double Scale
+        {
+			get { return _scale; }
+			set
+            {
+				_scale = value;
+				OnPropertyChanged("Scale");
+			}
+        }
 
         private ObservableNotifiableCollection<Darwin.Point> _points;
         public ObservableNotifiableCollection<Darwin.Point> Points
@@ -32,7 +44,8 @@ namespace Darwin
             set
             {
                 _points = value;
-            }
+				OnPropertyChanged("Points");
+			}
         }
 
 		public Darwin.Point this[int i]
@@ -45,6 +58,7 @@ namespace Darwin
 			set
 			{
 				Points[i] = value;
+				OnPropertyChanged("Points");
 			}
 		}
 
@@ -66,13 +80,17 @@ namespace Darwin
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		public Contour()
         {
-            _points = new ObservableNotifiableCollection<Darwin.Point>();
+			_scale = 1.0;
+			_points = new ObservableNotifiableCollection<Darwin.Point>();
         }
 
 		public Contour(Contour c)
 		{
+			_scale = c.Scale;
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
 			foreach (var p in c.Points)
@@ -81,6 +99,8 @@ namespace Darwin
 
 		public Contour(FloatContour c)
         {
+			_scale = 1.0;
+
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
 			foreach (var p in c.Points)
@@ -89,10 +109,14 @@ namespace Darwin
 
 		public Contour(FloatContour c, double normalizationScale)
 		{
+			_scale = normalizationScale;
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
 			foreach (var p in c.Points)
-				_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
+				_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
+
+			//foreach (var p in c.Points)
+			//	_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
 		}
 
 		public void ReloadPoints(Contour c)
@@ -292,7 +316,8 @@ namespace Darwin
 				  basey = (float)(0.5 * (this[0].Y + this[this.Length - 1].Y));
 
 			// Calculate distance
-			float dx = tipx - basex, dy = tipy - basey;
+			float dx = tipx - basex;
+			float dy = tipy - basey;
 			float distance = (float)Math.Sqrt(dx * dx + dy * dy);
 
 			// Compute rescaling factor
@@ -304,6 +329,8 @@ namespace Darwin
 					(int)Math.Round(_points[i].X * factor),
 					(int)Math.Round(_points[i].Y * factor));
             }
+
+			Scale = factor;
 
 			return factor; //***006NC
 		}
@@ -350,7 +377,9 @@ namespace Darwin
 
             for (var i = 0; i < Points.Count; i++)
             {
-                double curDistance = MathHelper.GetDistance(Points[i].X, Points[i].Y, inputPoint.X, inputPoint.Y);
+                double curDistance = (Scale == 1.0) ?
+					MathHelper.GetDistance(Points[i].X, Points[i].Y, inputPoint.X, inputPoint.Y) :
+					MathHelper.GetDistance(Points[i].X / Scale, Points[i].Y / Scale, inputPoint.X, inputPoint.Y);
 
                 if (position == -1 || curDistance < lowestDistance)
                 {
@@ -432,7 +461,10 @@ namespace Darwin
 			// index of p
 			i = 1;
 
-			Contour newContour = new Contour();
+			Contour newContour = new Contour()
+			{
+				Scale = Scale
+			};
 
 			// first point of new Contour is first point of old contour
 			newContour.AddPoint(ccx, ccy); //005CT
@@ -826,6 +858,12 @@ namespace Darwin
 				if (j >= NumPoints)
 					done = true;
 			}
+		}
+
+		protected virtual void OnPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

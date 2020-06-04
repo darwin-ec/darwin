@@ -162,6 +162,12 @@
                     <TextBlock HorizontalAlignment="Center">Chop</TextBlock>
                 </StackPanel>
             </RadioButton>
+            <RadioButton Visibility="Hidden" x:Name="MoveFeatureButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MoveFeature}}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
+                    <TextBlock HorizontalAlignment="Center">Move Feature</TextBlock>
+                </StackPanel>
+            </RadioButton>
         </StackPanel>
 
         <!--<skia:SKElement PaintSurface="OnPaintSurface" Name="skiaElement" MouseLeftButtonDown="skiaElement_MouseLeftButtonDown"  MouseLeftButtonUp="skiaElement_MouseLeftButtonUp" MouseMove="skiaElement_MouseMove" Grid.Row="2" />-->
@@ -195,6 +201,7 @@
                             <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             Background="Transparent"
                                             PointSize="3"
+                                            ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding Contour.Points}"
                                             Brushes="{StaticResource brushes}" />
                         </Canvas>

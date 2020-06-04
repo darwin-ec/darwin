@@ -33,6 +33,20 @@ namespace Darwin.Wpf.FrameworkElements
                 new FrameworkPropertyMetadata(2.0,
                         FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty FeaturePointSizeProperty =
+        DependencyProperty.Register("FeaturePointSize",
+            typeof(double),
+            typeof(PointVisuals),
+            new FrameworkPropertyMetadata(5.0,
+                    FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty ContourScaleProperty =
+            DependencyProperty.Register("ContourScale",
+                typeof(double),
+                typeof(PointVisuals),
+                new FrameworkPropertyMetadata(1.0,
+                        FrameworkPropertyMetadataOptions.AffectsRender));
+
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(typeof(PointRender));
 
@@ -58,6 +72,18 @@ namespace Darwin.Wpf.FrameworkElements
         {
             set { SetValue(PointSizeProperty, value); }
             get { return (double)GetValue(PointSizeProperty); }
+        }
+
+        public double ContourScale
+        {
+            set { SetValue(ContourScaleProperty, value); }
+            get { return (double)GetValue(ContourScaleProperty); }
+        }
+
+        public double FeaturePointSize
+        {
+            set { SetValue(FeaturePointSizeProperty, value); }
+            get { return (double)GetValue(FeaturePointSizeProperty); }
         }
 
         static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
@@ -108,7 +134,7 @@ namespace Darwin.Wpf.FrameworkElements
             foreach (Darwin.Point dataPoint in ItemsSource)
             {
                 dc.DrawEllipse(Brushes[0], null,
-                    new System.Windows.Point(dataPoint.X, dataPoint.Y), PointSize, PointSize);
+                    new System.Windows.Point(dataPoint.X / ContourScale, dataPoint.Y / ContourScale), PointSize, PointSize);
             }
         }
     }

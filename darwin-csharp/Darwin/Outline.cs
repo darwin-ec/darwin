@@ -102,11 +102,22 @@ namespace Darwin
             _chainPoints = new FloatContour(); // ***008OL
             _chainPoints.ContourToFloatContour(c); //***008OL
             _chain = new Chain(_chainPoints);
+
             _tipPos = FindTip();
+            c[_tipPos].Type = PointType.Feature;
+
             _notchPos = FindNotch();
+            c[_notchPos].Type = PointType.Feature;
+
             _beginLE = FindBeginLE();
+            c[_beginLE].Type = PointType.Feature;
+
             _endLE = FindEndLE();
+            // Not setting EndLE type
+
             _endTE = FindPointOfInflection();
+            c[_endTE].Type = PointType.Feature;
+
             _LEAngle = FindLEAngle();
         }
 
@@ -166,8 +177,6 @@ namespace Darwin
             _chain = new Chain(outline.Chain);
             _chainPoints = new FloatContour(outline.ChainPoints); //***008OL
         }
-
-
 
         public void MapOutlineTo(Outline target)
         {

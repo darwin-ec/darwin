@@ -173,6 +173,12 @@ namespace Darwin.Wpf
 			return new System.Windows.Point(point.X, point.Y);
 		}
 
+		private PointF MapWindowsPointToPointF(System.Windows.Point point)
+        {
+			// Note we are using the scaling here!
+			return new PointF(point.X * _vm.NormScale, point.Y * _vm.NormScale);
+        }
+
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			var openFile = new OpenFileDialog();
@@ -761,7 +767,7 @@ namespace Darwin.Wpf
 
 			//_moveInit = true;
 
-			_moveFeature = (FeaturePointType)_vm.Outline.FindClosestFeaturePoint(new PointF(point.X, point.Y));
+			_moveFeature = (FeaturePointType)_vm.Outline.FindClosestFeaturePoint(MapWindowsPointToPointF(point));
 
 			if (FeaturePointType.NoFeature == _moveFeature)
 				return;
@@ -798,33 +804,8 @@ namespace Darwin.Wpf
 
 			_movePosition = _vm.Outline.GetFeaturePoint(_moveFeature);
 
-			//p.x = (int)Math.Round(_vm.Contour[_movePosition].X / mNormScale);
-			//p.y = (int)Math.Round(_vm.Contour[_movePosition].Y / mNormScale);
-
-			TraceMoveFeaturePointDisplay(point.ToDarwinPoint());
+			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
-
-
-		//*******************************************************************
-		//
-		// void TraceWindow::traceMoveFeaturePointFinalize(int x, int y)
-		//
-		//
-		//
-		private void TraceMoveFeaturePointFinalize(Darwin.Point point)
-		{
-			if (_vm.Contour == null || (int)FeaturePointType.NoFeature == _movePosition)
-				return;
-
-			// TODO: Shouldn't this do something with point on mouse up in case it's different than move?
-
-			// set new location of feature
-			_vm.Outline.SetFeaturePoint(_moveFeature, _movePosition);
-
-			// reset message label
-			StatusBarMessage.Text = _previousStatusBarMessage;
-		}
-
 
 		//*******************************************************************
 		//
@@ -855,6 +836,9 @@ namespace Darwin.Wpf
 
 			// enforce constraints on feature movement so their order cannot be changed
 
+			// Set the previous point to normal
+			_vm.Contour[_movePosition].Type = PointType.Normal;
+
 			switch (_moveFeature)
 			{
 				case FeaturePointType.LeadingEdgeBegin:
@@ -881,178 +865,32 @@ namespace Darwin.Wpf
 					break;
 			}
 
-			//x = (int)Math.Round(_vm.Contour[_movePosition].X / mNormScale);
-			//y = (int)Math.Round(_vm.Contour[_movePosition].Y / mNormScale);
-
-			TraceMoveFeaturePointDisplay(point);
+			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
 
 		//*******************************************************************
 		//
-		// void TraceWindow::traceMoveFeaturePointDisplay(int xC, int yC)
+		// void TraceWindow::traceMoveFeaturePointFinalize(int x, int y)
 		//
-		//    Handles display of the feature point at each point as it is being
-		//    dragged to new location.
 		//
-		private void TraceMoveFeaturePointDisplay(Darwin.Point point)
+		//
+		private void TraceMoveFeaturePointFinalize(Darwin.Point point)
 		{
-			if (_vm.Contour == null || FeaturePointType.NoFeature == _moveFeature)
+			if (_vm.Contour == null || (int)FeaturePointType.NoFeature == _movePosition)
 				return;
 
-			int contourLength = _vm.Contour.Length;
+			// TODO: Shouldn't this do something with point on mouse up in case it's different than move?
 
-			//int
-			//	xLeft, xRight, yTop, yBot;
+			// set new location of feature
+			_vm.Outline.SetFeaturePoint(_moveFeature, _movePosition);
 
-			//static int
-			//	lastXLeft, lastXRight, lastYTop, lastYBot;
+			_vm.Contour[_movePosition].Type = PointType.Feature;
 
-			//int highlightPointSize = 4 * _vm.ZoomPointSize;
+			_moveFeature = FeaturePointType.NoFeature;
+			_movePosition = -1;
 
-			//if (mZoomRatio != 100)
-			//	highlightPointSize = 4 * zoomPointSize();
-
-			//int halfHighPtSize = highlightPointSize / 2;
-
-			//zoomMapPointsToZoomed(xC, yC);
-
-			//xLeft = xC - halfHighPtSize;
-			//xRight = xC + halfHighPtSize;
-			//yBot = yC + halfHighPtSize;
-			//yTop = yC - halfHighPtSize;
-
-			/*
-			// 055TW - removed code to prevent artifacts in images with
-			// mZoomRatio less than 100% -- these bounds checks are not
-			// needed ???? -- in any case they must be done in zoomed image
-			// coordinates
-			if (xLeft < 0)
-				xLeft = 0;
-			if (yTop < 0)
-				yTop = 0;
-			if (xRight >= (int) mNonZoomedImage->getNumCols())
-				xRight = mNonZoomedImage->getNumCols() - 1;
-			if (yBot >= (int) mNonZoomedImage->getNumRows())
-				yBot = mNonZoomedImage->getNumRows() - 1;
-
-			zoomMapPointsToZoomed(xLeft, yTop);
-			zoomMapPointsToZoomed(xRight, yBot);
-			*/
-
-			// save bounds of this box for next round, even though we may widen
-			// the box a bit below to cover last box and this one
-			//	int
-			//		saveXLeft(xLeft), saveXRight(xRight), 
-			//saveYTop(yTop), saveYBot(yBot);
-
-			//	if (mMoveInit)
-			//	{
-			//		mMoveInit = false;
-			//	}
-			//	else
-			//	{
-			//		if (lastXLeft < xLeft)
-			//			xLeft = lastXLeft;
-
-			//		if (lastXRight > xRight)
-			//			xRight = lastXRight;
-
-			//		if (lastYTop < yTop)
-			//			yTop = lastYTop;
-
-			//		if (lastYBot > yBot)
-			//			yBot = lastYBot;
-			//	}
-
-			//	lastXLeft = saveXLeft;
-			//	lastXRight = saveXRight;
-			//	lastYTop = saveYTop;
-			//	lastYBot = saveYBot;
-
-			//	// redraw image within tiny window 
-
-			//	gdk_draw_rgb_image(
-			//		mDrawingArea->window,
-			//		mDrawingArea->style->fg_gc[GTK_STATE_NORMAL],
-			//		xLeft + mZoomXOffset, yTop + mZoomYOffset,
-			//		xRight - xLeft,
-			//		yBot - yTop,
-			//		GDK_RGB_DITHER_NONE,
-			//		(guchar*)(mImage->getData() + yTop * mImage->getNumCols() + xLeft),
-			//		mImage->getNumCols() * mImage->bytesPerPixel());
-
-			//	// redraw portion of contour within tiny window
-
-			//	int zoomedPointSize = zoomPointSize();
-
-			//	unsigned numPoints = mContour->length();
-
-			//	float nscale = 1.0 / mNormScale;
-
-			//	for (unsigned i = 0; i < numPoints; i++)
-			//	{
-			//		int zoomedX = nscale * (*mContour)[i].x;
-			//		int zoomedY = nscale * (*mContour)[i].y;
-
-			//		zoomMapPointsToZoomed(zoomedX, zoomedY);
-
-			//		if ((zoomedX >= xLeft) && (zoomedX <= xRight) && (zoomedY >= yTop) && (zoomedY <= yBot))
-			//			gdk_draw_rectangle(
-			//				mDrawingArea->window,
-			//				mGC,
-			//				TRUE,
-			//				zoomedX - zoomedPointSize / 2 + mZoomXOffset,
-			//				zoomedY - zoomedPointSize / 2 + mZoomYOffset,
-			//				zoomedPointSize,
-			//				zoomedPointSize);
-			//	}
-
-			//	// redraw two adjacent features if they are inside the box
-
-			//	if ((LE_BEGIN < _moveFeature) && (_moveFeature - 1 != FeaturePointType.LeadingEdgeBegin)) //***1.8 not LE_END
-			//	{
-			//		point_t p = mOutline->getFeaturePointCoords(mMoveFeature - 1);
-			//		int xC = (int)round(nscale * p.x);
-			//		int yC = (int)round(nscale * p.y);
-			//		if (mZoomRatio != 100)
-			//			zoomMapPointsToZoomed(xC, yC);
-			//		gdk_draw_rectangle(
-			//			mDrawingArea->window,
-			//			mGC,
-			//			TRUE,
-			//			xC - halfHighPtSize + mZoomXOffset,
-			//			yC - halfHighPtSize + mZoomYOffset,
-			//			highlightPointSize,
-			//			highlightPointSize);
-			//	}
-
-			//	if ((_moveFeature < FeaturePointType.PointOfInflection) && (_moveFeature + 1 != FeaturePointType.LeadingEdgeEnd)) //***1.8 not LE_END
-			//	{
-			//		Model.Point p = _vm.Outline.GetFeaturePointCoords(_moveFeature + 1);
-			//		int xC = (int)Math.Round(nscale * p.x);
-			//		int yC = (int)Math.Round(nscale * p.y);
-			//		if (mZoomRatio != 100)
-			//			zoomMapPointsToZoomed(xC, yC);
-			//		gdk_draw_rectangle(
-			//			mDrawingArea->window,
-			//			mGC,
-			//			TRUE,
-			//			xC - halfHighPtSize + mZoomXOffset,
-			//			yC - halfHighPtSize + mZoomYOffset,
-			//			highlightPointSize,
-			//			highlightPointSize);
-			//	}
-
-			//	// Lastly, draw feature point in current (dragged to) location
-
-			//	gdk_draw_rectangle(
-			//		mDrawingArea->window,
-			//		mMovingGC,
-			//		TRUE,
-			//		xC - halfHighPtSize + mZoomXOffset,
-			//		yC - halfHighPtSize + mZoomYOffset,
-			//		highlightPointSize,
-			//		highlightPointSize);
+			// Reset message label
+			StatusBarMessage.Text = _previousStatusBarMessage;
 		}
 
 		private void CropApply(Object sender, RoutedEventArgs args)
@@ -1610,6 +1448,7 @@ namespace Darwin.Wpf
 
 			_vm.TraceFinalized = true; //***006PD moved from beginning of function
 
+			_vm.TraceTool = TraceToolType.MoveFeature;
 			//this->refreshImage();
 		}
 

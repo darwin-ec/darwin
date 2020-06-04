@@ -39,6 +39,20 @@ namespace Darwin.Wpf.FrameworkElements
                 new FrameworkPropertyMetadata(2.0,
                         FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty FeaturePointSizeProperty =
+            DependencyProperty.Register("FeaturePointSize",
+                typeof(double),
+                typeof(PointVisuals),
+                new FrameworkPropertyMetadata(8.0,
+                        FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty ContourScaleProperty =
+            DependencyProperty.Register("ContourScale",
+                typeof(double),
+                typeof(PointVisuals),
+                new FrameworkPropertyMetadata(1.0,
+                        FrameworkPropertyMetadataOptions.AffectsRender));
+
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(typeof(PointRender));
 
@@ -71,6 +85,18 @@ namespace Darwin.Wpf.FrameworkElements
         {
             set { SetValue(PointSizeProperty, value); }
             get { return (double)GetValue(PointSizeProperty); }
+        }
+
+        public double FeaturePointSize
+        {
+            set { SetValue(FeaturePointSizeProperty, value); }
+            get { return (double)GetValue(FeaturePointSizeProperty); }
+        }
+
+        public double ContourScale
+        {
+            set { SetValue(ContourScaleProperty, value); }
+            get { return (double)GetValue(ContourScaleProperty); }
         }
 
         static void OnItemsSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
@@ -193,12 +219,20 @@ namespace Darwin.Wpf.FrameworkElements
             switch (point.Type)
             {
                 case PointType.Chopping:
-                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X, point.Y), PointSize, PointSize);
+                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X / ContourScale, point.Y / ContourScale), PointSize, PointSize);
+                    break;
+
+                case PointType.Feature:
+                    dc.DrawEllipse(Brushes[2], null, new System.Windows.Point(point.X / ContourScale, point.Y / ContourScale), FeaturePointSize, FeaturePointSize);
+                    break;
+
+                case PointType.FeatureMoving:
+                    dc.DrawEllipse(Brushes[1], null, new System.Windows.Point(point.X / ContourScale, point.Y / ContourScale), FeaturePointSize, FeaturePointSize);
                     break;
 
                 case PointType.Normal:
                 default:
-                    dc.DrawEllipse(Brushes[0], null, new System.Windows.Point(point.X, point.Y), PointSize, PointSize);
+                    dc.DrawEllipse(Brushes[0], null, new System.Windows.Point(point.X / ContourScale, point.Y / ContourScale), PointSize, PointSize);
                     break;
             }
 
@@ -223,15 +257,15 @@ namespace Darwin.Wpf.FrameworkElements
                 if (pointIndex >= 1)
                 {
                     dc.DrawLine(Pens[0],
-                        new System.Windows.Point(ItemsSource[pointIndex - 1].X, ItemsSource[pointIndex - 1].Y),
-                        new System.Windows.Point(dataPoint.X, dataPoint.Y));
+                        new System.Windows.Point(ItemsSource[pointIndex - 1].X / ContourScale, ItemsSource[pointIndex - 1].Y / ContourScale),
+                        new System.Windows.Point(dataPoint.X / ContourScale, dataPoint.Y / ContourScale));
                 }
 
                 if (pointIndex < ItemsSource.Count - 1)
                 {
                     dc.DrawLine(Pens[0],
-                        new System.Windows.Point(ItemsSource[pointIndex + 1].X, ItemsSource[pointIndex + 1].Y),
-                        new System.Windows.Point(dataPoint.X, dataPoint.Y));
+                        new System.Windows.Point(ItemsSource[pointIndex + 1].X / ContourScale, ItemsSource[pointIndex + 1].Y / ContourScale),
+                        new System.Windows.Point(dataPoint.X / ContourScale, dataPoint.Y / ContourScale));
                 }
             }
         }
@@ -277,10 +311,10 @@ namespace Darwin.Wpf.FrameworkElements
                     if (xform != null)
                     {
                         if (sizeInfo.WidthChanged)
-                            xform.X = sizeInfo.NewSize.Width * drawingVisual.DataPoint.X;
+                            xform.X = sizeInfo.NewSize.Width * (drawingVisual.DataPoint.X / ContourScale);
 
                         if (sizeInfo.HeightChanged)
-                            xform.Y = sizeInfo.NewSize.Height * drawingVisual.DataPoint.Y;
+                            xform.Y = sizeInfo.NewSize.Height * (drawingVisual.DataPoint.Y / ContourScale);
                     }
                 }
             }
@@ -317,7 +351,7 @@ namespace Darwin.Wpf.FrameworkElements
             {
                 DrawingVisualPlus drawingVisual = result.VisualHit as DrawingVisualPlus;
                 Darwin.Point dataPoint = drawingVisual.DataPoint;
-                ToolTip = String.Format("X={0}, Y={1}", dataPoint.X, dataPoint.Y);
+                ToolTip = String.Format("X={0}, Y={1}", dataPoint.X / ContourScale, dataPoint.Y / ContourScale);
             }
             base.OnToolTipOpening(e);
         }
