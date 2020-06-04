@@ -159,7 +159,8 @@
                             <fe:PointVisuals Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
                                          Background="Transparent"
                                          PointSize="3"
-                                         ItemsSource="{Binding SelectedContour.Points}"
+                                         ContourScale="{Binding SelectedContour.Scale}"
+                                         ItemsSource="{Binding SelectedContour.Points}"     
                                          Brushes="{StaticResource brushes}" />
                         </Viewbox>
                     </TabItem>
