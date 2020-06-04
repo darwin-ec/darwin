@@ -15,8 +15,8 @@
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenTracedFin" CanExecute="OpenTracedFinCommand_CanExecute" Executed="OpenTracedFinCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
-        
-        <CommandBinding Command="commands:CustomCommands.MatchingQueue" />
+
+        <CommandBinding Command="commands:CustomCommands.MatchingQueue" CanExecute="MatchingQueueCommand_CanExecute" Executed="MatchingQueueCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Backup" />
         <CommandBinding Command="commands:CustomCommands.Restore" />
@@ -88,7 +88,24 @@
         </Menu>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Hello"></Button>
+            <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click">
+                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/open_image.png" Height="23"  />
+                    <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Margin="5,0,0,0">
+                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
+                    <TextBlock HorizontalAlignment="Center">Open Traced Fin</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Margin="5,0,0,0">
+                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
+                    <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
         <!--<DataGrid x:Name="DatabaseGrid" IsReadOnly="True" AutoGenerateColumns="False" Grid.Row="2" ItemsSource="{Binding Fins}">

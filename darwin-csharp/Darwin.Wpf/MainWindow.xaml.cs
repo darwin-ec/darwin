@@ -150,6 +150,16 @@ namespace Darwin.Wpf
             }
         }
 
+        private void MatchingQueueCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void MatchingQueueCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            MessageBox.Show("Not yet implemented.");
+        }
+
         private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -183,6 +193,21 @@ namespace Darwin.Wpf
         private void SaveFinData_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Save the fin
+        }
+
+        private void OpenImageToolbarButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenImageCommand_Executed(null, null);
+        }
+
+        private void OpenTracedFinToolbarButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenTracedFinCommand_Executed(null, null);
+        }
+
+        private void MatchingQueueToolbarButton_Click(object sender, RoutedEventArgs e)
+        {
+            MatchingQueueCommand_Executed(null, null);
         }
     }
 }

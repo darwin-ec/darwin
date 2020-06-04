@@ -145,9 +145,9 @@ namespace Darwin.Matching
 
 
             bool tryMatch = false;
-            for (int i = 0; i < mDatabase.catCategoryNamesMax() && !tryMatch; i++)
+            for (int i = 0; i < mDatabase.Categories.Count && !tryMatch; i++)
             {
-                tryMatch = thisDBFin.DamageCategory == mDatabase.catCategoryName(i) && categoryToMatch[i];
+                tryMatch = thisDBFin.DamageCategory == mDatabase.Categories[i].name && categoryToMatch[i];
             }
 
             if (tryMatch)

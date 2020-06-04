@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Darwin.Database;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,11 +19,11 @@ namespace Darwin
         public string DatabaseFileName { get; set; } = string.Empty;
         public string CurrentDataPath { get; set; }
 
-        public int CurrentDefaultCatalogScheme { get; set; }
-        public string CurrentDefaultCatalogSchemeName { get; set; }
         public string CurrentSurveyArea { get; set; } = string.Empty;
-        public List<string> DefinedCatalogSchemeName { get; set; }
-        public List<List<string>> DefinedCatalogCategoryName { get; set; }
+
+        [DefaultValue(0)]
+        public int DefaultCatalogScheme { get; set; } = 0;
+        public List<CatalogScheme> CatalogSchemes { get; set; }
 
         [DefaultValue(50)]
         public int SnakeMaximumIterations { get; set; } = 50;
@@ -80,6 +81,7 @@ namespace Darwin
                     _currentUserOptions = new Options();
 
                 CheckCurrentDataPath(ref _currentUserOptions);
+                CheckCatalogSchemes(ref _currentUserOptions);
 
                 return _currentUserOptions;
             }
@@ -135,6 +137,41 @@ namespace Darwin
                     else
                         options.CurrentDataPath = myDocumentsPath;
                 }
+            }
+        }
+
+        private static void CheckCatalogSchemes(ref Options options)
+        {
+            if (options == null)
+                return;
+
+            if (options.CatalogSchemes == null)
+                options.CatalogSchemes = new List<CatalogScheme>();
+
+            if (options.CatalogSchemes.Count < 1)
+            {
+                var defaultScheme = new CatalogScheme
+                {
+                    SchemeName = "Eckerd College",
+                    CategoryNames = new List<string>()
+                };
+
+                defaultScheme.CategoryNames.Add("NONE");  // shown as "Unspecified" in database and pull-down lists
+                defaultScheme.CategoryNames.Add("Upper");
+                defaultScheme.CategoryNames.Add("Middle");
+                defaultScheme.CategoryNames.Add("Lower");
+                defaultScheme.CategoryNames.Add("Upper-Middle");
+                defaultScheme.CategoryNames.Add("Upper-Lower");
+                defaultScheme.CategoryNames.Add("Middle-Lower");
+                defaultScheme.CategoryNames.Add("Leading Edge");
+                defaultScheme.CategoryNames.Add("Entire");
+                defaultScheme.CategoryNames.Add("Tip-Nick");
+                defaultScheme.CategoryNames.Add("Missing Tip");
+                defaultScheme.CategoryNames.Add("Extended Tip");
+                defaultScheme.CategoryNames.Add("Peduncle");
+                defaultScheme.CategoryNames.Add("Pergatory");
+
+                options.CatalogSchemes.Add(defaultScheme);
             }
         }
     }

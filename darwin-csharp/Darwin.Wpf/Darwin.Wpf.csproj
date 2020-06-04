@@ -26,6 +26,9 @@
     <None Remove="Resources\Images\horizontal_flip.png" />
     <None Remove="Resources\Images\logo.png" />
     <None Remove="Resources\Images\magnify.png" />
+    <None Remove="Resources\Images\matching_queue.png" />
+    <None Remove="Resources\Images\open_image.png" />
+    <None Remove="Resources\Images\open_trace.png" />
     <None Remove="Resources\Images\pencil.png" />
     <None Remove="Resources\Images\rotate_button.png" />
     <None Remove="Resources\Images\trace.png" />
@@ -58,6 +61,9 @@
     <Resource Include="Resources\Images\horizontal_flip.png" />
     <Resource Include="Resources\Images\logo.png" />
     <Resource Include="Resources\Images\magnify.png" />
+    <Resource Include="Resources\Images\matching_queue.png" />
+    <Resource Include="Resources\Images\open_image.png" />
+    <Resource Include="Resources\Images\open_trace.png" />
     <Resource Include="Resources\Images\pencil.png" />
     <Resource Include="Resources\Images\rotate_button.png" />
     <Resource Include="Resources\Images\trace.png" />

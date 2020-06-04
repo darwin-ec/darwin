@@ -17,9 +17,22 @@ namespace Darwin.Database
     // eliminate some duplication.
     public class SQLiteDatabase : DarwinDatabase
     {
+        private List<DBDamageCategory> _categories;
+
+        public override List<DBDamageCategory> Categories
+        {
+            get
+            {
+                if (_categories == null)
+                    _categories = SelectAllDamageCategories();
+
+                return _categories;
+            }
+        }
+
         private string _connectionString;
 
-        public SQLiteDatabase(string filename, Options options, CatalogScheme cat, bool createEmptyDB)
+        public SQLiteDatabase(string filename, Options options, CatalogScheme cat = null, bool createEmptyDB = false)
         {
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentNullException(nameof(filename));
@@ -41,6 +54,8 @@ namespace Darwin.Database
                     throw new Exception("Database file does not exist, and not trying to create it.");
 
                 SQLiteConnection.CreateFile(builder.DataSource);
+
+                CreateEmptyDatabase(cat);
             }
 
             // Let's make sure we can open it
@@ -191,7 +206,7 @@ namespace Darwin.Database
             }
         }
 
-        public List<DBDamageCategory> selectAllDamageCategories()
+        private List<DBDamageCategory> SelectAllDamageCategories()
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1805,7 +1820,7 @@ namespace Darwin.Database
             //return fin;
         }
 
-        public override void CreateEmptyDatabase()
+        public override void CreateEmptyDatabase(CatalogScheme catalogScheme)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1901,11 +1916,11 @@ namespace Darwin.Database
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS
 
-                for (int i = 0; i < mCatCategoryNames.Count; i++)
+                for (int i = 0; i < catalogScheme.CategoryNames.Count; i++)
                 {
                     DBDamageCategory cat = new DBDamageCategory
                     {
-                        name = mCatCategoryNames[i],
+                        name = catalogScheme.CategoryNames[i],
                         orderid = i
                     };
 

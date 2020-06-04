@@ -30,13 +30,13 @@ namespace Darwin.Database
 			if (create)
 			{
 				RebuildFolders(o.CurrentDataPath, area);
-				// should ONLY end up here with IFF we are NOT converting an old database
-				int id = o.CurrentDefaultCatalogScheme;
-				cat.SchemeName = o.DefinedCatalogSchemeName[id];
-				cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
+				//// should ONLY end up here with IFF we are NOT converting an old database
+				//int id = o.CurrentDefaultCatalogScheme;
+				//cat.SchemeName = o.DefinedCatalogSchemeName[id];
+				//cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
 			}
 
-			db = new SQLiteDatabase(databaseFilename, o, cat, create);
+			db = new SQLiteDatabase(databaseFilename, o, o.CatalogSchemes[o.DefaultCatalogScheme], create);
 
 			return db;
 		}

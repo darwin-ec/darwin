@@ -45,7 +45,7 @@ namespace Darwin.Database
     {
         //		public Database(Options o, CatalogScheme cat, bool createEmptyDB);
 
-        public abstract void CreateEmptyDatabase();
+        public abstract void CreateEmptyDatabase(CatalogScheme catalogScheme);
 
         public abstract long Add(DatabaseFin data);
         public abstract void Delete(DatabaseFin Fin);
@@ -110,57 +110,57 @@ namespace Darwin.Database
         //public abstract bool closeStream();
 
         //***1.99 - new access functions for catalog scheme moved from Options
-        public string catCategoryName(int id)
-        {
-            string name = string.Empty;
+        //public string catCategoryName(int id)
+        //{
+        //    string name = string.Empty;
 
-            if (0 <= id && id < mCatCategoryNames.Count)
-                name = mCatCategoryNames[id];
+        //    if (0 <= id && id < mCatCategoryNames.Count)
+        //        name = mCatCategoryNames[id];
 
-            return name;
-        }
+        //    return name;
+        //}
 
-        public string catSchemeName()
-        {
-            return mCatSchemeName;
-        }
+        //public string catSchemeName()
+        //{
+        //    return mCatSchemeName;
+        //}
 
-        public int catCategoryNamesMax()
-        {
-            if (mCatCategoryNames == null)
-                return 0;
+        //public int catCategoryNamesMax()
+        //{
+        //    if (mCatCategoryNames == null)
+        //        return 0;
 
-            return mCatCategoryNames.Count;
-        }
+        //    return mCatCategoryNames.Count;
+        //}
 
-        public void appendCategoryName(string name)
-        {
-            if (mCatCategoryNames == null)
-                mCatCategoryNames = new List<string>();
+        //public void appendCategoryName(string name)
+        //{
+        //    if (mCatCategoryNames == null)
+        //        mCatCategoryNames = new List<string>();
 
-            mCatCategoryNames.Add(name);
-        }
+        //    mCatCategoryNames.Add(name);
+        //}
 
-        public void setCatSchemeName(string name)
-        {
-            mCatSchemeName = name;
-        }
+        //public void setCatSchemeName(string name)
+        //{
+        //    mCatSchemeName = name;
+        //}
 
-        public void clearCatalogScheme()
-        {
-            if (mCatCategoryNames == null)
-                mCatCategoryNames = new List<string>();
-            else
-                mCatCategoryNames.Clear();
-        }
+        //public void clearCatalogScheme()
+        //{
+        //    if (mCatCategoryNames == null)
+        //        mCatCategoryNames = new List<string>();
+        //    else
+        //        mCatCategoryNames.Clear();
+        //}
 
-        public CatalogScheme catalogScheme()
-        {
-            return new CatalogScheme {
-                SchemeName = mCatSchemeName,
-                CategoryNames = mCatCategoryNames
-            };
-        }
+        //public CatalogScheme catalogScheme()
+        //{
+        //    return new CatalogScheme {
+        //        SchemeName = mCatSchemeName,
+        //        CategoryNames = mCatCategoryNames
+        //    };
+        //}
 
         public bool dbOpen;
 
@@ -169,7 +169,10 @@ namespace Darwin.Database
         protected string mFilename;
 
         //***1.99 - the catalog scheme for this database (moved from Options)
-        protected List<string> mCatCategoryNames;     // names of catalog categories
+        //public CatalogScheme CurrentCatalogScheme { get; set; }
+        //public List<CatalogScheme> CatalogSchemes { get; set; }    // names of catalog categories
+        public abstract List<DBDamageCategory> Categories { get; }
+
         protected string mCatSchemeName;       // name of catalog scheme
 
         protected long mFooterPos;
