@@ -3,9 +3,9 @@ using Darwin.Database;
 using Darwin.Extensions;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
-using Darwin.Model;
 using Darwin.Wpf.Adorners;
 using Darwin.Wpf.Extensions;
+using Darwin.Wpf.Model;
 using Darwin.Wpf.ViewModel;
 using Microsoft.Win32;
 using System;
@@ -45,12 +45,6 @@ namespace Darwin.Wpf
 		private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
 
 		private int _zoomRatioOld = 100;
-
-		// The image won't always fit in the container cleanly -- this is the offset from the top left
-		// where we start drawing.
-		//private SKPoint _imageOffset;
-		//private SKRect _imageBounds;
-		//private SKSize _zoomedImageSize;
 
 		private int _movePosition;
 
@@ -1595,9 +1589,48 @@ namespace Darwin.Wpf
 			}
 		}
 
-        #region Undo and Redo
+		/////////////////////////////////////////////////////////////////////
+		// traceFinalize:  Locks in trace after user cleanup, but before
+		//    user is allowed to move feature points (tip, notch, etc)
+		//
+		private void TraceFinalize()
+		{
+			if (_vm.Contour == null || !_vm.TraceLocked) //***006FC
+				return;
 
-        private void RedoButton_Click(object sender, RoutedEventArgs e)
+			// after even spacing and normalization fin height will be approx 600 units
+
+			_vm.NormScale = _vm.Contour.NormalizeContour(); //***006CN
+			_vm.Contour.RemoveKnots(3.0);       //***006CN
+			Contour evenContour = _vm.Contour.EvenlySpaceContourPoints(3.0); //***006CN
+
+			_vm.Contour = evenContour;
+
+			_vm.Outline = new Outline(_vm.Contour, 3.0); // ***008OL
+
+			_vm.TraceFinalized = true; //***006PD moved from beginning of function
+
+			//this->refreshImage();
+		}
+
+		private void TraceStep_Checked(object sender, RoutedEventArgs e)
+		{
+			switch (_vm.TraceStep)
+            {
+				case TraceStepType.TraceOutline:
+					break;
+
+				case TraceStepType.IdentifyFeatures:
+					_vm.TraceLocked = true;
+					TraceFinalize();
+					_vm.TraceTool = TraceToolType.MoveFeature;
+					break;
+            }
+		}
+
+		#region Undo and Redo
+
+		private void RedoButton_Click(object sender, RoutedEventArgs e)
         {
 			if (_vm.RedoItems.Count > 0)
 			{

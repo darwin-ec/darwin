@@ -1,5 +1,4 @@
 ﻿using Darwin.Collections;
-using Darwin.Model;
 using Darwin.Wpf.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Darwin.Database;
+using Darwin.Wpf.Model;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -134,6 +134,28 @@ namespace Darwin.Wpf.ViewModel
 				RaisePropertyChanged("TraceTool");
 			}
 		}
+
+		private TraceStepType _traceStep;
+		public TraceStepType TraceStep
+		{
+			get => _traceStep;
+			set
+			{
+				_traceStep = value;
+				RaisePropertyChanged("TraceStep");
+			}
+		}
+
+		private float _normScale;
+		public float NormScale
+        {
+			get => _normScale;
+            set
+            {
+				_normScale = value;
+				RaisePropertyChanged("NormScale");
+            }
+        }
 
 		private bool _traceLocked;
 		public bool TraceLocked
@@ -260,6 +282,7 @@ namespace Darwin.Wpf.ViewModel
 		public TraceWindowViewModel()
         {
 			DatabaseFin = new DatabaseFin();
+			TraceStep = TraceStepType.TraceOutline;
 			AttachEvents();
 		}
 
@@ -271,6 +294,9 @@ namespace Darwin.Wpf.ViewModel
 			ImageLocked = false;
 			TraceLocked = false;
 
+			NormScale = 1.0f;
+
+			TraceStep = TraceStepType.TraceOutline;
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
@@ -287,6 +313,8 @@ namespace Darwin.Wpf.ViewModel
 			Outline = outline;
 			ImageLocked = imageLocked;
 			TraceLocked = traceLocked;
+			
+			NormScale = 1.0f;
 
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;

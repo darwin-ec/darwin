@@ -135,41 +135,6 @@ namespace Darwin
             Points.RemoveAt(position);
         }
 
-        /***008OL old version removed
-        ** new version IF EVER CREATED will use distance from first to 
-        ** middle point without trying to find tip first
-        ** currently, the normalizing is done at the Contour stage
-        /////////////////////////////////////////////////////////////////////
-        // normalizeContour()
-        // -- Rescales the distance between LE & Tip to 2000
-        //
-        void FloatContour::normalizeContour() {
-
-          Chain *temp = new Chain(this,3.0);
-          int tipPos = findTip(temp);
-          int beginLE = findLECutoff(temp,tipPos);
-          point_t tipPosPoint = temp->getSavedPoint(tipPos),
-            beginLEPoint = temp->getSavedPoint(beginLE);
-          delete temp;
-
-          // Get X,Y Position of tip and LE
-          float tipx = tipPosPoint.x , tipy = tipPosPoint.y;
-          float LEx = beginLEPoint.x , LEy  = beginLEPoint.y;
-
-          // Calculate distance and rescaling factor
-          float distance, factor;
-          distance = sqrt((tipx - LEx) * (tipx - LEx)
-            + ((tipy - LEy) * (tipy - LEy)));
-          factor = (float) 2000.0/distance;
-          int length = mPointVector.size(), i;
-          for( i = 0; i< length ; i++) {
-            mPointVector[i].x *= factor;
-            mPointVector[i].y *= factor;
-          }
-        }
-        */
-
-
         //********************************************************************
         // FindIndexFromChainPoint()
         // -- Given an <X,Y> Location from the chain, returns the closest

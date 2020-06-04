@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Darwin.Wpf"
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
-        xmlns:model="clr-namespace:Darwin.Model"
+        xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
         Title="TraceWindow" Height="450" Width="800">
@@ -55,7 +55,7 @@
         </Menu>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+            <!--<Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>-->
             <Button x:Name="UndoButton" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</TextBlock>
@@ -68,6 +68,23 @@
                     <TextBlock HorizontalAlignment="Center">Redo</TextBlock>
                 </StackPanel>
             </Button>
+
+            <StackPanel x:Name="StepPanel" Orientation="Horizontal">
+                <RadioButton x:Name="TraceStepButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.TraceOutline}}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                        <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" />
+                        <TextBlock HorizontalAlignment="Center">Trace Outline</TextBlock>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                        <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" />
+                        <TextBlock HorizontalAlignment="Center">Identify Features</TextBlock>
+                    </StackPanel>
+                </RadioButton>
+            </StackPanel>
         </StackPanel>
 
         <!--<StackPanel Orientation="Horizontal" Grid.Row="1">

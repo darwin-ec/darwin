@@ -89,7 +89,8 @@ namespace Darwin.Wavelet
 			/* copy source to dest to support doing multiple level transforms */
 			//memcpy(dest[0], source, length * sizeof(dtype));
 			//TODO: Verify this is correct.  Original memcpy is above.  Dest is multi-dimensional
-			Array.Copy(source, dest, length);
+			for (int z = 0; z < length; z++)
+				dest[0, z] = source[z];
 
 			for (pow2 = 1, level = 0; level < levels; level++, pow2 *= 2)
 			{

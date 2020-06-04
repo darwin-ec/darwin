@@ -201,13 +201,21 @@ namespace Darwin.Wavelet
         public static double[] Extract1DArray(double[,] source, int firstIndex, int length)
         {
             double[] dest = new double[length];
-            Array.Copy(source, firstIndex * length, dest, 0, length);
+
+            // Array.Copy(source, firstIndex * length, dest, 0, length);
+
+            for (int i = 0; i < length; i++)
+                dest[i] = source[firstIndex, i];
+
             return dest;
         }
 
         public static void Patch1DArray(double[] source, ref double[,] dest, int firstIndex, int length)
         {
-            Array.Copy(source, 0, dest, firstIndex * length, length);
+            //Array.Copy(source, 0, dest, firstIndex * length, length);
+
+            for (int i = 0; i < length; i++)
+                dest[firstIndex, i] = source[i];
         }
 
         public static double[] Extract1DArray(double[,,] source, int firstIndex, int secondIndex, int length)

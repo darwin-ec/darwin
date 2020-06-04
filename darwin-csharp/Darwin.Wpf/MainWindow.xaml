@@ -33,7 +33,7 @@
         <CommandBinding Command="commands:CustomCommands.Options" />
 
         <CommandBinding Command="commands:CustomCommands.Documentation" />
-        <CommandBinding Command="commands:CustomCommands.About" />
+        <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">

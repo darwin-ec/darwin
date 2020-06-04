@@ -1,0 +1,52 @@
+﻿<controls:CustomWindow x:Class="Darwin.Wpf.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Darwin.Wpf"
+        mc:Ignorable="d"
+        Title="" Height="540" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Image Grid.Column="0" Source="/Darwin.Wpf;component/Resources/Images/logo.png" />
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <StackPanel Margin="10,0,0,0" Orientation="Vertical">
+                <TextBlock FontSize="24">DARWIN</TextBlock>
+                <TextBlock FontSize="14">Version <Run Text="{Binding Version, Mode=OneWay}"/></TextBlock>
+                <TextBlock FontSize="14"><Hyperlink x:Name="DarwinWebsiteHyperlink" NavigateUri="http://darwin.eckerd.edu" RequestNavigate="DarwinWebsiteHyperlink_RequestNavigate">http://darwin.eckerd.edu</Hyperlink></TextBlock>
+            </StackPanel>
+            <StackPanel Margin="10,0,0,0" Orientation="Vertical">
+                <TextBlock xml:space="preserve">
+Research &amp; Programming by:
+    John H. Stewman
+        (Project Founder / Faculty Advisor : 1993-2015)
+    Kelly R. Debure
+        (Faculty Advisor : 1997-2015)
+
+    Mark C. Allen (1994-1996)
+    Rachel Stanley (1994)
+    Daniel J. Wilkin (1995-1999)
+    Andrew Cameron (1995)
+    Zach Roberts (1998-1999)
+    Adam Russell (2000-2002)
+    Kristen McCoy (2000-2001)
+    Henry Burroughs (2000)
+    Antonia Vassileva (2001-2002)
+    Ramesh Madhusudan (2002)
+    Scott Hale (2005-2008)
+    Joshua Gregory (2006)
+    RJ Nowling (2007-2008)
+
+Financial Support from:
+    National Science Foundation
+        Grants: IIS-9980031 &amp; DBI-0445126
+    National Marine Fisheries Service
+    Eckerd College</TextBlock>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</controls:CustomWindow>

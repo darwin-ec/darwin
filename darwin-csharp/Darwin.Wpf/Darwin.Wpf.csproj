@@ -24,9 +24,12 @@
     <None Remove="Resources\Images\eraser.png" />
     <None Remove="Resources\Images\finger.png" />
     <None Remove="Resources\Images\horizontal_flip.png" />
+    <None Remove="Resources\Images\logo.png" />
     <None Remove="Resources\Images\magnify.png" />
     <None Remove="Resources\Images\pencil.png" />
     <None Remove="Resources\Images\rotate_button.png" />
+    <None Remove="Resources\Images\trace.png" />
+    <None Remove="Resources\Images\view_points.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,9 +56,12 @@
     <Resource Include="Resources\Images\eraser.png" />
     <Resource Include="Resources\Images\finger.png" />
     <Resource Include="Resources\Images\horizontal_flip.png" />
+    <Resource Include="Resources\Images\logo.png" />
     <Resource Include="Resources\Images\magnify.png" />
     <Resource Include="Resources\Images\pencil.png" />
     <Resource Include="Resources\Images\rotate_button.png" />
+    <Resource Include="Resources\Images\trace.png" />
+    <Resource Include="Resources\Images\view_points.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -278,6 +278,36 @@ namespace Darwin
 			return totalDistance;
 		}
 
+		//////////////////////////////////////////////////////////////////////////
+		// normalizeContour: called to scale Contour up or down to standard
+		//    size (600 units from beginning of leading edge to tip of fin.
+		//
+		//***008OL new version of function
+		//
+		public float NormalizeContour()
+		{
+			// Get X,Y Position of pseudo tip (middle point on Contour)
+			float tipx = this[this.Length / 2].X, tipy = this[this.Length / 2].Y;
+			float basex = (float)(0.5 * (this[0].X + this[this.Length - 1].X)),
+				  basey = (float)(0.5 * (this[0].Y + this[this.Length - 1].Y));
+
+			// Calculate distance
+			float dx = tipx - basex, dy = tipy - basey;
+			float distance = (float)Math.Sqrt(dx * dx + dy * dy);
+
+			// Compute rescaling factor
+			float factor = 600 / distance;
+
+			for (var i = 0; i < _points.Count; i++)
+            {
+				_points[i] = new Darwin.Point(
+					(int)Math.Round(_points[i].X * factor),
+					(int)Math.Round(_points[i].Y * factor));
+            }
+
+			return factor; //***006NC
+		}
+
 		//*******************************************************************
 		//
 		// Contour* createScaledContour(Contour* contour, int scale)

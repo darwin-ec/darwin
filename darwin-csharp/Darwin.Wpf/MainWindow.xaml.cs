@@ -160,6 +160,18 @@ namespace Darwin.Wpf
             Application.Current.Shutdown();
         }
 
+        private void AboutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+        }
+
         private void DeleteFin_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to delete this fin from the database?", "Delete Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
