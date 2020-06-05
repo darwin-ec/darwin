@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
         Title="Outline Information" Height="550" Width="800">
@@ -16,6 +17,7 @@
             <x:Static Member="Brushes.Blue" />
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
+        <x:Static x:Key="chainBrush" Member="Brushes.Lime" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -41,6 +43,9 @@
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <Label>Chain Code</Label>
+                <Viewbox Stretch="Uniform" Margin="10,10,10,10">
+                    <controls:ChainCode Chain="{Binding DisplayChain}" Brush="{StaticResource chainBrush}" Width="300" Height="200" />
+                </Viewbox>
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal">

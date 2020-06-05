@@ -19,6 +19,17 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private Chain _displayChain;
+        public Chain DisplayChain
+        {
+            get => _displayChain;
+            set
+            {
+                _displayChain = value;
+                RaisePropertyChanged("DisplayChain");
+            }
+        }
+
         private DatabaseFin _databaseFin;
         public DatabaseFin DatabaseFin
         {
@@ -69,6 +80,12 @@ namespace Darwin.Wpf.ViewModel
             clippedContour?.SetFeaturePointPositions(featurePositions);
 
             DisplayContour = clippedContour;
+
+            Chain newChain = new Chain(DatabaseFin.FinOutline?.Chain);
+
+            newChain.Smooth7();
+
+            DisplayChain = newChain;
         }
 
         private void RaisePropertyChanged(string propertyName)
