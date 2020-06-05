@@ -53,6 +53,12 @@ namespace Darwin
 
         private FloatContour _remappedChainPoints;
         public FloatContour RemappedChainPoints { get => _remappedChainPoints; set => _remappedChainPoints = value; }
+        public double LeadingEdgeAngle { get => _LEAngle; set => _LEAngle = value; }
+        public int TipPosition { get => _tipPos; set => _tipPos = value; }
+        public int NotchPosition { get => _notchPos; set => _notchPos = value; }
+        public int BeginLeadingEdgePosition { get => _beginLE; set => _beginLE = value; }
+        public int EndLeadingEdgePosition { get => _endLE; set => _endLE = value; }
+        public int EndTrailingEdgePosition { get => _endTE; set => _endTE = value; }
 
         private int    // indices into chain or fl contour 
             _tipPos,

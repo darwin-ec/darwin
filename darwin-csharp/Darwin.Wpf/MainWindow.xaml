@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:Darwin.Wpf"
         xmlns:commands="clr-namespace:Darwin.Wpf.Commands"
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="850">
+        Title="Darwin" Height="550" Width="850">
     <Window.CommandBindings>
         <CommandBinding Command="commands:CustomCommands.NewDatabase" />
         
@@ -30,7 +31,7 @@
         
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
 
-        <CommandBinding Command="commands:CustomCommands.Options" />
+        <CommandBinding Command="commands:CustomCommands.Options" CanExecute="OptionsCommand_CanExecute" Executed="OptionsCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Documentation" />
         <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
@@ -44,6 +45,7 @@
             <x:Static Member="Brushes.Blue" />
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
+        <converters:NullConverter x:Key="NullConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -172,14 +174,16 @@
                         <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
                     </TabItem>
                     <TabItem Header="Outline">
-                        <Viewbox>
-                            <fe:PointVisuals Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
+                        <Button x:Name="OutlineButton" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Click="OutlineButton_Click" Background="Transparent" BorderThickness="0">
+                            <Viewbox>
+                                <fe:PointVisuals IsHitTestVisible="False" Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
                                          Background="Transparent"
                                          PointSize="3"
                                          ContourScale="{Binding SelectedContour.Scale}"
                                          ItemsSource="{Binding SelectedContour.Points}"     
                                          Brushes="{StaticResource brushes}" />
-                        </Viewbox>
+                            </Viewbox>
+                        </Button>
                     </TabItem>
                     <TabItem Header="Original Image">
                         <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />

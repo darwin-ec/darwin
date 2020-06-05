@@ -157,7 +157,13 @@ namespace Darwin.Wpf
 
         private void MatchingQueueCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            MessageBox.Show("Not yet implemented.");
+            var matchingQueueVM = new MatchingQueueViewModel
+            {
+
+            };
+
+            var matchingQueueWindow = new MatchingQueueWindow(matchingQueueVM);
+            matchingQueueWindow.Show();
         }
 
         private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -168,6 +174,23 @@ namespace Darwin.Wpf
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void OptionsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OptionsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var optionsVM = new OptionsWindowViewModel
+            {
+            
+            };
+
+            var optionsWindow = new OptionsWindow(optionsVM);
+            optionsWindow.Owner = this;
+            optionsWindow.ShowDialog();
         }
 
         private void AboutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -208,6 +231,22 @@ namespace Darwin.Wpf
         private void MatchingQueueToolbarButton_Click(object sender, RoutedEventArgs e)
         {
             MatchingQueueCommand_Executed(null, null);
+        }
+
+        private void Viewbox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void OutlineButton_Click(object sender, RoutedEventArgs e)
+        {
+            var outlineWindowVM = new OutlineWindowViewModel
+            {
+                DatabaseFin = _vm.SelectedFin
+            };
+
+            var outlineWindow = new OutlineWindow(outlineWindowVM);
+            outlineWindow.Show();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Darwin.Wpf.Commands
     public static class CustomCommands
     {
         public static readonly RoutedUICommand NewDatabase = new RoutedUICommand(
-            "New Database",
+            "New Database...",
             "New Database",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -18,7 +18,7 @@ namespace Darwin.Wpf.Commands
         );
 
         public static readonly RoutedUICommand OpenImage = new RoutedUICommand(
-            "Open Image",
+            "Open Image...",
             "Open Image",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -29,7 +29,7 @@ namespace Darwin.Wpf.Commands
         public static string OpenImageFilter = "Image files|*.jpg;*.bmp;*.png;*.tif;*.ppm|All files|*.*";
 
         public static readonly RoutedUICommand OpenTracedFin = new RoutedUICommand(
-            "Open Traced Fin",
+            "Open Traced Fin...",
             "Open Traced Fin",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -40,7 +40,7 @@ namespace Darwin.Wpf.Commands
         public static string OpenTracedFinFilter = "Finz files|*.finz";
 
         public static readonly RoutedUICommand OpenDatabase = new RoutedUICommand(
-            "Open Database",
+            "Open Database...",
             "Open Database",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -91,7 +91,7 @@ namespace Darwin.Wpf.Commands
         );
 
         public static readonly RoutedUICommand MatchingQueue = new RoutedUICommand(
-            "Matching Queue",
+            "Matching Queue...",
             "Matching Queue",
             typeof(CustomCommands),
             new InputGestureCollection()
@@ -121,7 +121,7 @@ namespace Darwin.Wpf.Commands
         );
 
         public static readonly RoutedUICommand Options = new RoutedUICommand(
-            "Options",
+            "Options...",
             "Options",
             typeof(CustomCommands),
             new InputGestureCollection()
