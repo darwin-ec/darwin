@@ -60,6 +60,20 @@ namespace Darwin
         public int EndLeadingEdgePosition { get => _endLE; set => _endLE = value; }
         public int EndTrailingEdgePosition { get => _endTE; set => _endTE = value; }
 
+        public List<int> FeaturePointPositions
+        {
+            get
+            {
+                var positions = new List<int>();
+                positions.Add(TipPosition);
+                positions.Add(NotchPosition);
+                positions.Add(BeginLeadingEdgePosition);
+                positions.Add(EndLeadingEdgePosition);
+                positions.Add(EndTrailingEdgePosition);
+                return positions;
+            }
+        }
+
         private int    // indices into chain or fl contour 
             _tipPos,
             _notchPos,

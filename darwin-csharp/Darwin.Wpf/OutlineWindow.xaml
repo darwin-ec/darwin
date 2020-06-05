@@ -3,9 +3,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="Outline Information" Height="450" Width="800">
+        Title="Outline Information" Height="550" Width="800">
+    <Window.Resources>
+        <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Lime" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -20,6 +31,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical">
                 <Label>Outline</Label>
+                <Viewbox Height="180" Margin="10,10,10,10">
+                    <fe:PointVisuals IsHitTestVisible="False" Width="{Binding DisplayContour.XMax}" Height="{Binding DisplayContour.YMax}"
+                                         Background="Transparent"
+                                         PointSize="3"
+                                         ItemsSource="{Binding DisplayContour.Points}"     
+                                         Brushes="{StaticResource brushes}" />
+                </Viewbox>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <Label>Chain Code</Label>

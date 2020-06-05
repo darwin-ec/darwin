@@ -25,6 +25,7 @@ namespace Darwin.Wpf
             InitializeComponent();
 
             _vm = vm;
+
             this.DataContext = _vm;
         }
 

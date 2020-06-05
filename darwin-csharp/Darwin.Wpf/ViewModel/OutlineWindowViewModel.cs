@@ -46,7 +46,30 @@ namespace Darwin.Wpf.ViewModel
             NumWaveletLevels = 7;
         }
 
+        public OutlineWindowViewModel(DatabaseFin databaseFin)
+        {
+            DatabaseFin = databaseFin;
+            NumWaveletLevels = 7;
+
+            SetupDisplayElements();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void SetupDisplayElements()
+        {
+            if (DatabaseFin == null)
+                return;
+
+            var featurePositions = DatabaseFin.FinOutline?.FeaturePointPositions;
+
+            var clippedContour = new Contour(DatabaseFin.FinOutline.ChainPoints);
+            clippedContour?.ClipToBounds();
+
+            clippedContour?.SetFeaturePointPositions(featurePositions);
+
+            DisplayContour = clippedContour;
+        }
 
         private void RaisePropertyChanged(string propertyName)
         {

@@ -240,10 +240,7 @@ namespace Darwin.Wpf
 
         private void OutlineButton_Click(object sender, RoutedEventArgs e)
         {
-            var outlineWindowVM = new OutlineWindowViewModel
-            {
-                DatabaseFin = _vm.SelectedFin
-            };
+            var outlineWindowVM = new OutlineWindowViewModel(_vm.SelectedFin);
 
             var outlineWindow = new OutlineWindow(outlineWindowVM);
             outlineWindow.Show();

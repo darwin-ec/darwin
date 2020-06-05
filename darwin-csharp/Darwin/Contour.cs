@@ -122,7 +122,7 @@ namespace Darwin
 				if (Points == null || Points.Count < 1)
 					return 0;
 
-				return Points.Min(p => p.Y);
+				return Points.Max(p => p.Y);
 			}
 		}
 
