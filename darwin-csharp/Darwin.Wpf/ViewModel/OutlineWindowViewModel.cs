@@ -8,8 +8,18 @@ namespace Darwin.Wpf.ViewModel
 {
     public class OutlineWindowViewModel : INotifyPropertyChanged
     {
-        private DatabaseFin _databaseFin;
+        private Contour _displayContour;
+        public Contour DisplayContour
+        {
+            get => _displayContour;
+            set
+            {
+                _displayContour = value;
+                RaisePropertyChanged("DisplayContour");
+            }
+        }
 
+        private DatabaseFin _databaseFin;
         public DatabaseFin DatabaseFin
         {
             get => _databaseFin;

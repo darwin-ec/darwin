@@ -13,6 +13,18 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <Label>Outline</Label>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Label>Chain Code</Label>
+            </StackPanel>
+        </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button x:Name="GenerateCoefficientsButton" Click="GenerateCoefficientsButton_Click">
                 Generate Coefficient Files

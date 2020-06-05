@@ -74,6 +74,14 @@ namespace Darwin
             IsEmpty = false;
         }
 
+        public Point(int x, int y, PointType type)
+        {
+            X = x;
+            Y = y;
+            Type = type;
+            IsEmpty = false;
+        }
+
         public static bool operator ==(Darwin.Point p1, Darwin.Point p2)
         {
             // If both are null, or both are same instance, return true.

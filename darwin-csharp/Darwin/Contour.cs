@@ -11,8 +11,10 @@
 using Darwin.Collections;
 using Darwin.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Darwin
 {
@@ -80,6 +82,50 @@ namespace Darwin
 			}
 		}
 
+		public int XMin
+        {
+			get
+            {
+				if (Points == null || Points.Count < 1)
+					return 0;
+
+				return Points.Min(p => p.X);
+            }
+        }
+
+		public int XMax
+		{
+			get
+			{
+				if (Points == null || Points.Count < 1)
+					return 0;
+
+				return Points.Max(p => p.X);
+			}
+		}
+
+		public int YMin
+		{
+			get
+			{
+				if (Points == null || Points.Count < 1)
+					return 0;
+
+				return Points.Min(p => p.Y);
+			}
+		}
+
+		public int YMax
+		{
+			get
+			{
+				if (Points == null || Points.Count < 1)
+					return 0;
+
+				return Points.Min(p => p.Y);
+			}
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public Contour()
@@ -128,6 +174,20 @@ namespace Darwin
 
 			foreach (var p in c.Points)
 				Points.Add(new Darwin.Point(p.X, p.Y));
+        }
+
+		public void SetFeaturePointPositions(List<int> featurePointPositions)
+        {
+			if (featurePointPositions == null)
+				throw new ArgumentNullException(nameof(featurePointPositions));
+
+			for (int i = 0; i < Points.Count; i++)
+            {
+				if (featurePointPositions.Contains(i))
+					Points[i].Type = PointType.Feature;
+				else
+					Points[i].Type = PointType.Normal;
+            }
         }
 
         public void Clear()
@@ -695,6 +755,20 @@ namespace Darwin
 
 			return newContour;
 		}
+
+		public void ClipToBounds()
+        {
+			if (Points == null || Points.Count < 1)
+				return;
+
+			int xMin = XMin;
+			int yMin = YMin;
+
+			for (int i = 0; i < Points.Count; i++)
+            {
+				Points[i] = new Point(Points[i].X - xMin, Points[i].Y - yMin, Points[i].Type);
+            }
+        }
 
 		//  bool trimAndReorder(Contour &c, Contour_point_t start, Contour_point_t end)
 		//  
