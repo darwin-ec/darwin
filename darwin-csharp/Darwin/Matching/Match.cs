@@ -719,7 +719,7 @@ namespace Darwin.Matching
 
             for (i = index1 - leadLen + 2, j = index2 - leadLen + 2, k = 0; k < comparisonLength; i++, j++, k++)
             {
-                temp = chain1[i] - chain2[j];
+                temp = chain1.RelativeData[i] - chain2.RelativeData[j];
                 sum += temp * temp;
             }
 
