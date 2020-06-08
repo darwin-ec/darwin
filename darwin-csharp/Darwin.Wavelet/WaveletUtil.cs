@@ -26,7 +26,7 @@ namespace Darwin.Wavelet
             Info = new WL_Struct { Name = "mz", Type = "sbfilter", PList = null },
             Length = 2,
             Offset = 0,
-            Coefs = new double[] { 2.0, 2.0 }
+            Coefs = new double[] { -2.0, 2.0 }
         };
 
         public static double[] NormalizationCoefficients = new double[] { 1.50, 1.12, 1.03, 1.01, 1.0 };
@@ -86,7 +86,8 @@ namespace Darwin.Wavelet
             }
         }
 
-        public static void WaveGenCoeffFiles(
+        public static void GenerateCoefficientFiles(
+            string baseFolder,
             string name,
             double[] chain,
             int levels)
@@ -97,8 +98,10 @@ namespace Darwin.Wavelet
             if (levels < 0)
                 throw new ArgumentOutOfRangeException(nameof(levels));
 
-            int numPoints = chain.Length;
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
 
+            int numPoints = chain.Length;
 
             // First, make a copy without the first value in the chain,
             // since the first value skews the rest of the chain and is
@@ -106,10 +109,9 @@ namespace Darwin.Wavelet
             double[] src = new double[numPoints - 1];
             Array.Copy(chain, 1, src, 0, numPoints - 1);
 
-
             // Now set up the variables needed to perform a wavelet
             // transform on the chain
-            double[,] continuousResult = new double[levels - 1, MathHelper.NextPowerOfTwo(numPoints - 1)];
+            double[,] continuousResult = new double[levels + 1, MathHelper.NextPowerOfTwo(numPoints - 1)];
 
             // Now perform the transformation
             WIRWavelet.WL_FrwtVector(src,
@@ -118,7 +120,8 @@ namespace Darwin.Wavelet
                       levels,
                       WaveletUtil.MZLowPassFilter, WaveletUtil.MZHighPassFilter);
 
-            var filename = string.Format("transforms/{0]-chain", name);
+            var filename = Path.Combine(baseFolder, string.Format("{0}-chain.chain", name));
+
             using (var file = new StreamWriter(filename))
             {
                 for (var c = 0; c < numPoints - 1; c++)
@@ -127,7 +130,7 @@ namespace Darwin.Wavelet
 
             for (int i = 1; i <= levels; i++)
             {
-                var fname = string.Format("transforms/{0}-level{1}", name, i);
+                var fname = Path.Combine(baseFolder, string.Format("{0}-level{1}.coeff", name, i));
                 using (var file = new StreamWriter(fname))
                 {
                     for (int j = 0; j < numPoints - 1; j++)

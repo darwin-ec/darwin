@@ -1,4 +1,5 @@
-﻿using Darwin.Wpf.ViewModel;
+﻿using Darwin.Wavelet;
+using Darwin.Wpf.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,7 +37,24 @@ namespace Darwin.Wpf
 
         private void GenerateCoefficientsButton_Click(object sender, RoutedEventArgs e)
         {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                dialog.Description = "Pick an output folder for the coefficient files.";
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    var s = dialog.SelectedPath;
+
+                    WaveletUtil.GenerateCoefficientFiles(
+                        dialog.SelectedPath,
+                        _vm.DatabaseFin.IDCode,
+                        _vm.DatabaseFin.FinOutline.Chain.Data,
+                        _vm.NumWaveletLevels);
+
+                    MessageBox.Show("Coefficient File Generation Complete", "Generate Coefficient Files", MessageBoxButton.OK);
+                }
+            }
         }
     }
 }
