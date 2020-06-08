@@ -567,7 +567,7 @@ namespace Darwin
             // except narrow ones opening up and forward. In effect, we have removed potential
             // discontinuities from the chain signal being sent into the wavelet code.
             //memcpy(src, &((*_chain)[_tipPos + 1]), numTrailingEdgePts * sizeof(double));
-            Array.Copy(_chain.Data, 1, src, 0, numTrailingEdgePts);
+            Array.Copy(_chain.Data, _tipPos + 1, src, 0, numTrailingEdgePts);
 
             //***1.95 - code to convert negative angles
             for (int di = 0; di < numTrailingEdgePts; di++)
@@ -1006,7 +1006,6 @@ namespace Darwin
             return _beginLE + 1;
         }
 
-
         public int FindPointOfInflection()
         {
             int numPoints = _chain.Length - _tipPos - 1;
@@ -1017,7 +1016,7 @@ namespace Darwin
             double[] der = new double[numPoints - 1];
 
             for (int i = _tipPos + 1, j = 0; i < smoothChain.Length - 1; i++, j++)
-                der[j] = smoothChain[i + 1] - smoothChain[i];
+                der[j] = smoothChain.RelativeData[i + 1] - smoothChain.RelativeData[i];
 
             List<ZeroCrossing> zeroCrossings = FindZeroCrossings(der, numPoints - 1);
             
