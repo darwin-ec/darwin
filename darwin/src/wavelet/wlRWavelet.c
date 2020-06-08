@@ -138,7 +138,7 @@ int WL_FrwtVector(
 	int length,
 	int levels,
 	WL_Filter *lowpass,
-	WL_Filter * hipass
+	WL_Filter *hipass
 )
 {
     dtype *temp;	/* extended source vector */

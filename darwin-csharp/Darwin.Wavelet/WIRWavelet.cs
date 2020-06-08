@@ -80,22 +80,16 @@ namespace Darwin.Wavelet
 			right = Math.Max(lowsize - lowoffset - 1, hisize - hioffset - 1);
 			temp = new double[length + (left + right) * pow2];
 
-			//printf("here2\n");
 			/* allocate memory for the lowpass & highpass filter coefficients */
 			hicoefs = new double[hisize * pow2];
 			lowcoefs = new double[lowsize * pow2];
 
-			//printf("here3 %d %d %d\n",dest, &source,length);
 			/* copy source to dest to support doing multiple level transforms */
-			//memcpy(dest[0], source, length * sizeof(dtype));
-			//TODO: Verify this is correct.  Original memcpy is above.  Dest is multi-dimensional
 			for (int z = 0; z < length; z++)
 				dest[0, z] = source[z];
 
 			for (pow2 = 1, level = 0; level < levels; level++, pow2 *= 2)
 			{
-				//printf("here pow2:%d level:%d\n",pow2,level);
-
 				/* dilate the filters */
 				Dilate_filter(lowpass.Coefs, ref lowcoefs, lowpass.Length, level);
 				Dilate_filter(hipass.Coefs, ref hicoefs, hipass.Length, level);
@@ -129,7 +123,7 @@ namespace Darwin.Wavelet
 						lowsum += temp[lowdata + j] * lowcoefs[j];
 					for (j = 0; j < hisize; j++)
 						hisum += temp[hidata + j] * hicoefs[j];
-					// TODO: Verify this is correct
+
 					dest[0, lowresult++] = lowsum;
 					dest[level + 1, hiresult++] = hisum;
 				}

@@ -549,17 +549,11 @@ namespace Darwin
             if (_userSetNotch)
                 throw new Exception("findNotch() [User selected notch in use]");
 
-
-            double[] src = null;
-            double[,] modMax = null;
-            double[] minVals = null;
-            int[] positions = null;
-
             // We're only going to be looking on the trailing edge
             // of the fin for the most significant notch, so we'll
             // build a source vector from that area
             int numTrailingEdgePts = _chain.Length - _tipPos - 1 - 5;
-            src = new double[numTrailingEdgePts];
+            double[] src = new double[numTrailingEdgePts];
 
             //***1.95 - JHS
             // The following original code copies the ABSOLUTE Chain angles into source.
@@ -601,7 +595,7 @@ namespace Darwin
                 for (int j = 0; j < numTrailingEdgePts; j++)
                     continuousResult[i, j] *= WaveletUtil.NormalizationCoeff(i);
 
-            modMax = new double[TransformLevels, numTrailingEdgePts];
+            double[,] modMax = new double[TransformLevels, numTrailingEdgePts];
 
             // ..and find its local minima and maxima
             for (i = 0; i < TransformLevels; i++)
@@ -612,7 +606,7 @@ namespace Darwin
 
                 WaveletUtil.ModulusMaxima(continousExtract, ref temp, numTrailingEdgePts);
 
-                WaveletUtil.Patch1DArray(temp, ref continuousResult, i + 1, numTrailingEdgePts);
+                WaveletUtil.Patch1DArray(temp, ref modMax, i, numTrailingEdgePts);
             }
 
             int level = TransformLevels / 2;
@@ -662,10 +656,10 @@ namespace Darwin
                 // Now, we'll take the lowest few mins, and look at how
                 // they change over the transform levels.
 
-                minVals = new double[mins.Count];
+                double[] minVals = new double[mins.Count];
 
                 for (i = 0; i < mins.Count; i++)
-                    minVals[i] = modMax[level, i];
+                    minVals[i] = modMax[level, mins[i]];
 
                 Array.Sort(minVals);
 
@@ -676,15 +670,15 @@ namespace Darwin
                 else
                     numMinsToTrack = NotchNumMinsToTrack;
 
-                positions = new int[numMinsToTrack];
+                int[] positions = new int[numMinsToTrack];
 
                 for (int count = 0; count < numMinsToTrack; count++)
                 {
                     for (i = 0; i < mins.Count; i++)
                     {
-                        if (minVals[count] == modMax[level, i])
+                        if (minVals[count] == modMax[level, mins[i]])
                         {
-                            positions[count] = i;
+                            positions[count] = mins[i];
                             break;
                         }
                     }
@@ -1026,8 +1020,12 @@ namespace Darwin
                 der[j] = smoothChain[i + 1] - smoothChain[i];
 
             List<ZeroCrossing> zeroCrossings = FindZeroCrossings(der, numPoints - 1);
+            
+            // Fallback if there was a problem finding zero crossings
+            if (zeroCrossings == null || zeroCrossings.Count < 1)
+                return _chain.Length - 1;
 
-            return zeroCrossings.Count - 1 + _tipPos;
+            return zeroCrossings[zeroCrossings.Count - 1].Position + _tipPos;
         }
 
         // return of -1 indicates inability to find a closest max
@@ -1173,7 +1171,6 @@ namespace Darwin
                     zc.Position = i;
 
                     zeroCrossings.Add(zc);
-
                 }
 
                 if (src[i] == 0.0)
@@ -1201,7 +1198,6 @@ namespace Darwin
                     return src[i];
 
             return 0;
-
         }
 
         static double FindRightExtremum(double[] src, int numPoints, int startPos)

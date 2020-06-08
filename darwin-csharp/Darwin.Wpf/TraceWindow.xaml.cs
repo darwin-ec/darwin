@@ -66,7 +66,7 @@ namespace Darwin.Wpf
 			//_backgroundColor = SKColors.Transparent;
 			//_imageOffset = new SKPoint(0, 0);
 			//_zoomedImageSize = SKSize.Empty;
-
+			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;
 			//_moveFirstRun = true;
 			//_moveDrawLine = false;
@@ -96,6 +96,7 @@ namespace Darwin.Wpf
 		{
 			InitializeComponent();
 
+			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;
 			//_moveFirstRun = true;
 			//_moveDrawLine = false;
@@ -815,7 +816,7 @@ namespace Darwin.Wpf
 		//
 		private void TraceMoveFeaturePointUpdate(Darwin.Point point)
 		{
-			if (_vm.Contour == null || FeaturePointType.NoFeature == _moveFeature)
+			if (_vm.Contour == null || FeaturePointType.NoFeature == _moveFeature || _movePosition == -1)
 				return;
 
 			if (point.IsEmpty)
@@ -1216,6 +1217,7 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceToolType.MoveFeature: //***006PM new case to move Notch
+					Mouse.Capture(TraceCanvas);
 					TraceMoveFeaturePointInit(clickedPoint); //***051TW
 					e.Handled = true;
 					break;
@@ -1345,6 +1347,7 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceToolType.MoveFeature: //***006PM new case to move Notch
+					TraceCanvas.ReleaseMouseCapture();
 					TraceMoveFeaturePointFinalize(bitmapPoint); //***051TW
 					e.Handled = true;
 					break;
