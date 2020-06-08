@@ -180,6 +180,9 @@ namespace Darwin.Database
         {
             get
             {
+                if (string.IsNullOrEmpty(ThumbnailFilename))
+                    return null;
+
                 return Path.Combine(Options.CurrentUserOptions.CurrentDataPath, ThumbnailFilename);
             }
         }

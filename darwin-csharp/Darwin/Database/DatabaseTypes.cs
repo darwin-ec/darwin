@@ -6,69 +6,71 @@ namespace Darwin.Database
 {
     public class DBIndividual
     {
-        public long id;
-        public string idcode;
-        public string name;
-        public long fkdamagecategoryid;
+        public long id { get; set; }
+        public string idcode { get; set; }
+        public string name { get; set; }
+        public long fkdamagecategoryid { get; set; }
     }
 
     public class DBDamageCategory
     {
-        public long id;
-        public int orderid;
-        public string name;
+        public long id { get; set; }
+        public int orderid { get; set; }
+        public string name { get; set; }
     }
     public class DBImage
     {
-        public long id;
-        public long fkindividualid;
-        public string imagefilename;
-        public string dateofsighting;
-        public string rollandframe;
-        public string locationcode;
-        public string shortdescription;
+        public long id { get; set; }
+        public long fkindividualid { get; set; }
+        public string imagefilename { get; set; }
+        public string dateofsighting { get; set; }
+        public string rollandframe { get; set; }
+        public string locationcode { get; set; }
+        public string shortdescription { get; set; }
     }
 
     public class DBThumbnail
     {
-        public long id;
-        public int rows;
-        public string pixmap;
-        public long fkimageid;
+        public long id { get; set; }
+        public int rows { get; set; }
+        public string pixmap { get; set; }
+        public long fkimageid { get; set; }
     }
     public class DBOutline
     {
-        public long id;
-        public int tipposition;
-        public int beginle;
-        public int endle;
-        public int notchposition;
-        public int endte;
-        public long fkindividualid;
+        public long id { get; set; }
+        public int tipposition { get; set; }
+        public int beginle { get; set; }
+        public int endle { get; set; }
+        public int notchposition { get; set; }
+        public int endte { get; set; }
+        public long fkindividualid { get; set; }
     }
 
     public class DBPoint
     {
-        public long id;
-        public float xcoordinate;
-        public float ycoordinate;
-        public long fkoutlineid;
-        public int orderid;
+        public long id { get; set; }
+        public float xcoordinate { get; set; }
+        public float ycoordinate { get; set; }
+        public long fkoutlineid { get; set; }
+        public int orderid { get; set; }
     }
+
     public class DBInfo
     {
-        public string key;
-        public string value;
+        public string key { get; set; }
+        public string value { get; set; }
     }
+
     public class DBImageModification
     {
-        public long id;
-        public int operation;
-        public int value1;
-        public int value2;
-        public int value3;
-        public int value4;
-        public int orderid;
-        public long fkimageid;
+        public long id { get; set; }
+        public int operation { get; set; }
+        public int value1 { get; set; }
+        public int value2 { get; set; }
+        public int value3 { get; set; }
+        public int value4 { get; set; }
+        public int orderid { get; set; }
+        public long fkimageid { get; set; }
     }
 }

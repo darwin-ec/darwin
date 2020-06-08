@@ -211,28 +211,32 @@
 
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <Label>ID Code:</Label>
-                <TextBox  Text="{Binding Path=SelectedFin.IDCode}" Margin="0,5,10,5"  />
+                <TextBox  Text="{Binding Path=DatabaseFin.IDCode}" Margin="0,5,10,5"  />
 
                 <Label>Name:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.Name}" Margin="0,5,10,5" />
+                <TextBox Text="{Binding Path=DatabaseFin.Name}" Margin="0,5,10,5" />
 
                 <Label>Date of Sighting:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.DateOfSighting}" Margin="0,5,10,5"  />
+                <TextBox Text="{Binding Path=DatabaseFin.DateOfSighting}" Margin="0,5,10,5"  />
 
                 <Label>Roll/Frame or Lat/Long:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.RollAndFrame}" Margin="0,5,10,5"  />
+                <TextBox Text="{Binding Path=DatabaseFin.RollAndFrame}" Margin="0,5,10,5"  />
 
                 <Label>Location Code:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.LocationCode}" Margin="0,5,10,5"  />
+                <TextBox Text="{Binding Path=DatabaseFin.LocationCode}" Margin="0,5,10,5"  />
 
                 <Label>Damage Category:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5"  />
+                <ComboBox ItemsSource="{Binding Categories, Mode=OneWay}"
+                          DisplayMemberPath="name"
+                          SelectedValuePath="name"
+                          SelectedValue="{Binding Path=DatabaseFin.DamageCategory}">
+                </ComboBox>
 
                 <Label>Short Description:</Label>
-                <TextBox Text="{Binding Path=SelectedFin.ShortDescription}" Margin="0,5,10,5"  />
+                <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}" Margin="0,5,10,5"  />
 
                 <Button x:Name="ExportDataButton">Export Data</Button>
-                <Button x:Name="MatchButton">Match</Button>
+                <Button x:Name="MatchButton" Click="MatchButton_Click">Match</Button>
                 <Button x:Name="SaveButton">Save</Button>
                 <Button x:Name="AddToDatabaseButton">Add to Database</Button>
             </StackPanel>

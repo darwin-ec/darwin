@@ -26,5 +26,38 @@ namespace Darwin.Wpf
             _vm = vm;
             this.DataContext = _vm;
         }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PauseButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SelectAllCategoriesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectableCategories != null)
+            {
+                foreach (var cat in _vm.SelectableCategories)
+                    cat.IsSelected = true;
+            }
+        }
+
+        private void ClearAllCategoriesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectableCategories != null)
+            {
+                foreach (var cat in _vm.SelectableCategories)
+                    cat.IsSelected = false;
+            }
+        }
     }
 }

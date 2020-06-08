@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Darwin.Database;
 using Darwin.Wpf.Model;
+using System.Collections.ObjectModel;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -279,18 +280,65 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private ObservableCollection<DBDamageCategory> _categories;
+		public ObservableCollection<DBDamageCategory> Categories
+		{
+			get => _categories;
+			set
+			{
+				_categories = value;
+				RaisePropertyChanged("Categories");
+			}
+		}
+
 		public TraceWindowViewModel()
         {
 			DatabaseFin = new DatabaseFin();
 			TraceStep = TraceStepType.TraceOutline;
+			Categories = new ObservableCollection<DBDamageCategory>();
 			AttachEvents();
 		}
 
-		public TraceWindowViewModel(Bitmap bitmap)
+		public TraceWindowViewModel(DatabaseFin fin)
+        {
+			DatabaseFin = fin;
+
+			DatabaseFin = new DatabaseFin();
+
+			Bitmap = fin.mFinImage ?? fin.ModifiedFinImage;
+			Contour = new Contour(fin.FinOutline.ChainPoints, fin.Scale);
+			Outline = fin.FinOutline;
+
+			List<DBDamageCategory> dummyCategories = new List<DBDamageCategory>();
+			dummyCategories.Add(new DBDamageCategory
+			{
+				name = fin?.DamageCategory
+			});
+			Categories = new ObservableCollection<DBDamageCategory>(dummyCategories);
+
+			ImageLocked = true;
+			TraceLocked = true;
+
+			NormScale = 1.0f;
+
+			TraceTool = TraceToolType.Hand;
+			ZoomRatio = 1.0f;
+			ZoomValues = new List<double>();
+
+			AttachEvents();
+		}
+
+		public TraceWindowViewModel(Bitmap bitmap, List<DBDamageCategory> categories)
 		{
 			DatabaseFin = new DatabaseFin();
 
+			if (categories != null && categories.Count > 0)
+				DatabaseFin.DamageCategory = categories[0].name;
+
 			Bitmap = bitmap;
+
+			Categories = new ObservableCollection<DBDamageCategory>(categories);
+
 			ImageLocked = false;
 			TraceLocked = false;
 
@@ -304,13 +352,25 @@ namespace Darwin.Wpf.ViewModel
 			AttachEvents();
 		}
 
-		public TraceWindowViewModel(Bitmap bitmap, Contour contour, Outline outline, bool imageLocked, bool traceLocked)
+		public TraceWindowViewModel(
+			Bitmap bitmap,
+			Contour contour,
+			Outline outline,
+			bool imageLocked,
+			bool traceLocked,
+			List<DBDamageCategory> categories)
         {
 			DatabaseFin = new DatabaseFin();
+
+			if (categories != null && categories.Count > 0)
+				DatabaseFin.DamageCategory = categories[0].name;
 
 			Bitmap = bitmap;
 			Contour = contour;
 			Outline = outline;
+
+			Categories = new ObservableCollection<DBDamageCategory>(categories);
+
 			ImageLocked = imageLocked;
 			TraceLocked = traceLocked;
 			

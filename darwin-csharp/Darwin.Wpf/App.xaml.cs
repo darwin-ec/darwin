@@ -80,12 +80,7 @@ namespace Darwin.Wpf
                         fin.ModifiedFinImage.SetResolution(96, 96);
 
                         // TODO: Move this logic into the constructor?
-                        var vm = new TraceWindowViewModel(
-                            fin.mFinImage ?? fin.ModifiedFinImage,
-                            new Contour(fin.FinOutline.ChainPoints, fin.Scale),
-                            fin.FinOutline,
-                            true,
-                            true);
+                        var vm = new TraceWindowViewModel(fin);
 
                         TraceWindow traceWindow = new TraceWindow(vm);
                         traceWindow.Show();

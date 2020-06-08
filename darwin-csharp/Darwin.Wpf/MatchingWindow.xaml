@@ -3,10 +3,88 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
+        xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="MatchingWindow" Height="450" Width="800">
+        Title="Matching" Height="450" Width="800">
+    <Window.Resources>
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Search ONLY Selected Categories</Label>
+                        <ItemsControl Width="440" ItemsSource="{Binding SelectableCategories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Width="110" Content="{Binding Name}" IsChecked="{Binding IsSelected}" Margin="0,5,0,0"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="SelectAllCategoriesButton" Click="SelectAllCategoriesButton_Click">
+                                Select All
+                            </Button>
+                            <Button x:Name="ClearAllCategoriesButton" Click="ClearAllCategoriesButton_Click">
+                                Clear All
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+                            <Label>Select a Search Method</Label>
+                            <RadioButton GroupName="SearchMethod" IsChecked="{Binding Path=SearchMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:SearchMethodType.AlignQuickDirty}}">
+                                Align Quick &amp; Dirty
+                            </RadioButton>
+                            <RadioButton GroupName="SearchMethod" IsChecked="{Binding Path=SearchMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:SearchMethodType.AlighIteratively}}">
+                                Align Iteratively
+                            </RadioButton>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>
+                                Range of Points used to compute<LineBreak/>
+                                the error for ranking results:<LineBreak/>
+                                -- These ONLY affect the<LineBreak/>
+                                -- Align Iteratively methods!
+                            </TextBlock>
+                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:RangeOfPointsType.AllPoints}}">
+                                All Points
+                            </RadioButton>
+                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:RangeOfPointsType.TrailingEdgeOnly}}">
+                                Trailing Edge Only
+                            </RadioButton>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Label>Registered Outlines</Label>
+                <CheckBox IsChecked="{Binding ShowRegistration}">Show Registration of Fin Outlines</CheckBox>
+            </StackPanel>
+        </Grid>
+        <ProgressBar Grid.Row="1" Minimum="0" Maximum="100" Value="75" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="StartButton" Click="StartButton_Click">Start</Button>
+            <Button x:Name="PauseButton" Click="PauseButton_Click">Pause</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+        </StackPanel>
     </Grid>
 </Window>
