@@ -2672,8 +2672,8 @@ double Match::meanSquaredErrorBetweenOutlineSegments(
 	for (k = 1; (k+1 < midPt->length()) && (! done); k++)
 	{
 		double 
-			unkX, unkY,
-			dbX, dbY;
+			unkX = 0, unkY = 0,
+			dbX = 0, dbY = 0;
 
 		double
 			mdx = (*midPt)[k+1].x - (*midPt)[k-1].x,
