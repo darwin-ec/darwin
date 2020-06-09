@@ -25,6 +25,7 @@ namespace Darwin.Wpf
             InitializeComponent();
 
             _vm = vm;
+            this.DataContext = _vm;
         }
 
         private void GridHeader_Click(object sender, RoutedEventArgs e)

@@ -28,7 +28,7 @@ namespace Darwin.Matching
 
     public class MatchResults
     {
-        public ObservableCollection<Result> Results { get; set; }
+        public List<Result> Results { get; set; }
 
         public MatchResults()
         {
@@ -63,7 +63,7 @@ namespace Darwin.Matching
         public void AddResult(Result r)
         {
             if (Results == null)
-                Results = new ObservableCollection<Result>();
+                Results = new List<Result>();
 
             Results.Add(r);
         }
@@ -93,9 +93,7 @@ namespace Darwin.Matching
             //int dummy = 0; Sort(mLastSortBy, ref dummy);
             // Sort by error
             //TODO: This is a little ugly
-            var resultsList = Results.ToList();
-            resultsList.Sort((x, y) => x.Error.CompareTo(y.Error));
-            Results = new ObservableCollection<Result>(resultsList);
+            Results.Sort((x, y) => x.Error.CompareTo(y.Error));
 
             SetRankings();
         }
