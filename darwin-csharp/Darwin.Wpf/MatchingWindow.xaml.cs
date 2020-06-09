@@ -90,12 +90,13 @@ namespace Darwin.Wpf
 
         private void MatchWork(object sender, DoWorkEventArgs e)
         {
-            for (int i = 0; i <= 100; i++)
+            bool done = false;
+            do
             {
                 if (_matchingWorker.CancellationPending)
                 {
                     e.Cancel = true;
-                    break;
+                    done = true;
                 }
                 else if (_vm.PauseMatching)
                 {
@@ -105,7 +106,6 @@ namespace Darwin.Wpf
                 else
                 {
                     // Do Work
-
                     float percentComplete = _vm.Match.MatchSingleFin(
                                       _vm.RegistrationMethod,
                                       (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
@@ -113,19 +113,40 @@ namespace Darwin.Wpf
                                       (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
                                       true);
 
-                    _matchingWorker.ReportProgress(i);
+                    int roundedProgress = (int)Math.Round(percentComplete * 100);
+
+                    _vm.MatchProgressPercent = roundedProgress;
+                    _matchingWorker.ReportProgress(roundedProgress);
+
+                    // TODO: Verify this comparison always works correctly
+                    if (percentComplete >= 1.0)
+                    {
+                        //***1.5 - sort the results here, ONCE, rather than as list is built
+                        _vm.Match.MatchResults.Sort();
+                        done = true;
+                    }
                 }
-            }
+            } while (!done);
         }
 
         private void MatchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (!_vm.CancelMatching)
             {
-                // Matching is done, go to the results window
-                var matchingResultsWindowVM = new MatchingResultsWindowViewModel(_vm.Database);
-                var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);
-                matchingResultsWindow.Show();
+                if (_vm.Match.MatchResults == null || _vm.Match.MatchResults.Count < 1)
+                {
+                    MessageBox.Show("Selected Catalog Categories are ALL EMPTY!");
+                }
+                else
+                {
+                    // Matching is done, go to the results window
+                    var matchingResultsWindowVM = new MatchingResultsWindowViewModel(
+                        _vm.DatabaseFin,
+                        _vm.Match.MatchResults,
+                        _vm.Database);
+                    var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);
+                    matchingResultsWindow.Show();
+                }
             }
 
             this.Close();

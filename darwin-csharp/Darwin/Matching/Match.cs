@@ -34,10 +34,10 @@ namespace Darwin.Matching
 
         protected ErrorBetweenOutlinesDelegate errorBetweenOutlines;
 
-        DatabaseFin mUnknownFin;
-        DarwinDatabase mDatabase;
-        protected int mCurrentFin;
-        MatchResults mMatchResults;
+        DatabaseFin UnknownFin { get; set; }
+        DarwinDatabase Database { get; set; }
+        protected int CurrentFinIndex { get; set; }
+        public MatchResults MatchResults { get; set; }
 
         //MatchingDialog* mMatchingDialog; // 043MA
 
@@ -63,9 +63,7 @@ namespace Darwin.Matching
         //
         //    CONSTRUCTOR
         //
-        public Match(
-                DatabaseFin unknownFin,
-                DarwinDatabase db)
+        public Match(DatabaseFin unknownFin, DarwinDatabase db)
         {
             if (unknownFin == null)
                 throw new ArgumentNullException(nameof(unknownFin));
@@ -73,28 +71,28 @@ namespace Darwin.Matching
             if (db == null)
                 throw new ArgumentNullException(nameof(db));
 
-            mUnknownFin = new DatabaseFin(unknownFin);
-            mDatabase = db;
+            UnknownFin = new DatabaseFin(unknownFin);
+            Database = db;
 
-            mCurrentFin = 0;
+            CurrentFinIndex = 0;
 
-            mMatchResults = new MatchResults(unknownFin.IDCode);
+            MatchResults = new MatchResults(unknownFin.IDCode);
 
             errorBetweenOutlines = MeanSquaredErrorBetweenOutlineSegments;
             // errorBetweenOutlines(meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++6.0
             // errorBetweenOutlines(&Match::meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++2011
 
-            mUnknownTipPosition = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
-            mUnknownNotchPosition = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
-            mUnknownBeginLE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
-            mUnknownEndLE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd); //***008OL
-            mUnknownEndTE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection); //***008OL
+            mUnknownTipPosition = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
+            mUnknownNotchPosition = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
+            mUnknownBeginLE = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
+            mUnknownEndLE = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd); //***008OL
+            mUnknownEndTE = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection); //***008OL
 
-            mUnknownTipPositionPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
-            mUnknownBeginLEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
-            mUnknownEndLEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeEnd); //***008OL
-            mUnknownNotchPositionPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
-            mUnknownEndTEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection); //***008OL
+            mUnknownTipPositionPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
+            mUnknownBeginLEPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
+            mUnknownEndLEPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeEnd); //***008OL
+            mUnknownNotchPositionPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
+            mUnknownEndTEPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection); //***008OL
 
             // just a pointer to the dialog for display purposes, this will be set
             // to point to the actual dialog IF and WHEN display is desired
@@ -157,22 +155,22 @@ namespace Darwin.Matching
                 // a non NULL fin is returned or until we reach the end of the list
                 do
                 {
-                    if (mCurrentFin >= (int)mDatabase.sizeAbsolute())
+                    if (CurrentFinIndex >= Database.AllFins.Count)
                         return 100.0f;
 
-                    thisDBFin = mDatabase.getItemAbsolute(mCurrentFin);
+                    thisDBFin = Database.AllFins[CurrentFinIndex];
 
                     if (null == thisDBFin)
-                        mCurrentFin++;
+                        CurrentFinIndex++;
                 }
                 while (null == thisDBFin);
             }
             else
             {
-                if (mCurrentFin >= (int)mDatabase.size())
+                if (CurrentFinIndex >= Database.AllFins.Count)
                     return 100.0f;
 
-                thisDBFin = mDatabase.GetItem(mCurrentFin);
+                thisDBFin = Database.AllFins[CurrentFinIndex];
             }
 
 
@@ -271,7 +269,7 @@ namespace Darwin.Matching
                         thisDBFin.ImageFilename,  //***001DB
                         thisDBFin.ThumbnailPixmap, //***1.0
                         thisDBFin.ThumbnailRows,    //***1.0
-                        mCurrentFin,
+                        CurrentFinIndex,
                         errorTemp,
                         thisDBFin.IDCode,
                         thisDBFin.Name,
@@ -284,26 +282,26 @@ namespace Darwin.Matching
                         result.B1, result.T1, result.E1,  // beginning, tip & end of unknown fin
                         result.B2, result.T2, result.E2); // beginning, tip & end of database fin
 
-                    mMatchResults.AddResult(r);
+                    MatchResults.AddResult(r);
 
                     //delete thisDBFin; ///***1.6 - old location, did not delete fins not tried
                 }
             }
 
-            mCurrentFin++;
+            CurrentFinIndex++;
 
             if (useAbsoluteOffsets)
             {
-                if (mCurrentFin == (int)mDatabase.sizeAbsolute())
+                if (CurrentFinIndex == Database.AllFins.Count)
                     return 1.0f;
 
-                return (float)mCurrentFin / mDatabase.sizeAbsolute();
+                return (float)CurrentFinIndex / Database.AllFins.Count;
             }
 
-            if (mCurrentFin == (int)mDatabase.size())
+            if (CurrentFinIndex == Database.AllFins.Count)
                 return 1.0f;
 
-            return (float)mCurrentFin / mDatabase.size();
+            return (float)CurrentFinIndex / Database.AllFins.Count;
         }
 
 
@@ -351,7 +349,7 @@ namespace Darwin.Matching
             dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
             dbNotchPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
 
-            var mappedContour = mUnknownFin.FinOutline.ChainPoints.MapContour(
+            var mappedContour = UnknownFin.FinOutline.ChainPoints.MapContour(
                     mUnknownTipPositionPoint,
                     mUnknownBeginLEPoint,
                     mUnknownNotchPositionPoint,
@@ -378,7 +376,7 @@ namespace Darwin.Matching
             MseInfo results = MeanSquaredErrorBetweenOutlines_Original( //***005CM
                                                                         //mappedContour,
                     c1, //***1.5
-                    mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip),
+                    UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip),
                     //floatDBContour, 
                     c2,
                     dbTipPosition);
@@ -465,7 +463,7 @@ namespace Darwin.Matching
             // reasoning : since the error is highly dependent on the ill defined 
             // beginning of the leading edge, we try several points
 
-            FloatContour preMapUnknown = new FloatContour(mUnknownFin.FinOutline.ChainPoints);
+            FloatContour preMapUnknown = new FloatContour(UnknownFin.FinOutline.ChainPoints);
 
             double newError; //***1.0LK
 
@@ -487,7 +485,7 @@ namespace Darwin.Matching
             results.T2 = dbTipPosition;
             results.E2 = dbEndTE;
 
-            Trace.WriteLine("matching unk " + mUnknownFin.IDCode + " to DB " + dbFin.IDCode);
+            Trace.WriteLine("matching unk " + UnknownFin.IDCode + " to DB " + dbFin.IDCode);
 
             //***055ER - found and fixed adjustment of Leading Edge Begin 
             // now all points prior to mUnknownBeginLE and dbBeginLE are ignored
@@ -1085,7 +1083,7 @@ namespace Darwin.Matching
 
             FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints);
 
-            FloatContour preMapUnknown = new FloatContour(mUnknownFin.FinOutline.ChainPoints);
+            FloatContour preMapUnknown = new FloatContour(UnknownFin.FinOutline.ChainPoints);
 
             FloatContour
                 mappedContour = null,
@@ -1152,7 +1150,7 @@ shiftedUnkTipMappedContour = null; //***1.1
 
             int jumpingOn = 0;   // 1=DBLead,2=UnkLead,3=DBTrail,4=UnkTrail,5=UnkTip
 
-            Trace.WriteLine("matching unk " + mUnknownFin.IDCode + " to DB " + dbFin.IDCode);
+            Trace.WriteLine("matching unk " + UnknownFin.IDCode + " to DB " + dbFin.IDCode);
 
             // set initial starting points on each leading edge
             startLeadUnk = mUnknownBeginLE;
@@ -1167,7 +1165,7 @@ shiftedUnkTipMappedContour = null; //***1.1
             endTrailDB = dbEndTE;
 
             // set initial position of unknown TIP
-            movedTipUnk = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
+            movedTipUnk = UnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
 
             //***055OP
             // find inital lengths (# of points) for each outline

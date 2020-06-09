@@ -64,7 +64,18 @@ namespace Darwin.Matching
             mResults.Add(r);
         }
 
-        int size()
+        public int Count
+        {
+            get
+            {
+                if (mResults == null)
+                    return 0;
+
+                return mResults.Count;
+            }
+        }
+
+        public int size()
         {
             if (mResults == null)
                 return 0;
@@ -73,9 +84,9 @@ namespace Darwin.Matching
         }
 
         // sort assumes sorting by last
-        public void sort() { int dummy = 0; sort(mLastSortBy, ref dummy); }
+        public void Sort() { int dummy = 0; Sort(mLastSortBy, ref dummy); }
 
-        public void sort(MatchResultSortType sortBy, ref int active)
+        public void Sort(MatchResultSortType sortBy, ref int active)
         {
             throw new NotImplementedException();
             //TODO

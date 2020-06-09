@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Matching;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,6 +42,28 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private DatabaseFin _databaseFin;
+        public DatabaseFin DatabaseFin
+        {
+            get => _databaseFin;
+            set
+            {
+                _databaseFin = value;
+                RaisePropertyChanged("DatabaseFin");
+            }
+        }
+
+        private MatchResults _matchResults;
+        public MatchResults MatchResults
+        {
+            get => _matchResults;
+            set
+            {
+                _matchResults = value;
+                RaisePropertyChanged("MatchResults");
+            }
+        }
+
         private DarwinDatabase _database;
         public DarwinDatabase Database
         {
@@ -54,12 +77,26 @@ namespace Darwin.Wpf.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MatchingResultsWindowViewModel(DarwinDatabase database)
+        public MatchingResultsWindowViewModel(
+            DatabaseFin unknownFin,
+            MatchResults matchResults,
+            DarwinDatabase database)
         {
+            if (unknownFin == null)
+                throw new ArgumentNullException(nameof(unknownFin));
+
+            if (matchResults == null)
+                throw new ArgumentNullException(nameof(matchResults));
+
+            if (database == null)
+                throw new ArgumentNullException(nameof(database));
+
             HideInfo = false;
             HideIDs = false;
             AutoScroll = false;
 
+            DatabaseFin = unknownFin;
+            MatchResults = matchResults;
             Database = database;
         }
 

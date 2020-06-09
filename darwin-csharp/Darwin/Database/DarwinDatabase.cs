@@ -56,9 +56,9 @@ namespace Darwin.Database
 
         public abstract List<DatabaseFin> GetAllFins();
 
-        public abstract DatabaseFin getItemAbsolute(int pos);
+        //public abstract DatabaseFin GetItemAbsolute(int pos);
 
-        public abstract DatabaseFin GetItem(int pos);
+        //public abstract DatabaseFin GetItem(int pos);
         // virtual DatabaseFin<ColorImage>* getItemByName(std::string name) = 0;  
 
         public void sort(DatabaseSortType sortBy)
@@ -66,21 +66,21 @@ namespace Darwin.Database
             mCurrentSort = sortBy;
         }
 
-        public int size()
-        {
-            if (mNameList == null)
-                return 0;
+        //public int size()
+        //{
+        //    if (mNameList == null)
+        //        return 0;
 
-            return mNameList.Count;
-        }
+        //    return mNameList.Count;
+        //}
 
-        public int sizeAbsolute() //***1.3 - size of absolute offset list
-        {
-            if (mAbsoluteOffset == null)
-                return 0;
+        //public int SizeAbsolute() //***1.3 - size of absolute offset list
+        //{
+        //    if (mAbsoluteOffset == null)
+        //        return 0;
 
-            return mAbsoluteOffset.Count;
-        }
+        //    return mAbsoluteOffset.Count;
+        //}
 
         public bool isEmpty()
         {
@@ -177,6 +177,8 @@ namespace Darwin.Database
         //public List<CatalogScheme> CatalogSchemes { get; set; }    // names of catalog categories
         public abstract List<DBDamageCategory> Categories { get; }
 
+        public abstract List<DatabaseFin> AllFins { get; }
+
         protected string mCatSchemeName;       // name of catalog scheme
 
         protected long mFooterPos;
@@ -210,72 +212,72 @@ namespace Darwin.Database
         // Returns item from list at given position
         //
 
-        public string getItemEntryFromList(DatabaseSortType whichList, int pos)
-        {
-            if (pos > this.size())
-                throw new ArgumentOutOfRangeException(nameof(pos));
+        //public string getItemEntryFromList(DatabaseSortType whichList, int pos)
+        //{
+        //    if (pos > this.size())
+        //        throw new ArgumentOutOfRangeException(nameof(pos));
 
-            switch (whichList)
-            {
-                case DatabaseSortType.DB_SORT_NAME:
-                    return mNameList[pos];
+        //    switch (whichList)
+        //    {
+        //        case DatabaseSortType.DB_SORT_NAME:
+        //            return mNameList[pos];
 
-                case DatabaseSortType.DB_SORT_ID:
-                    return mIDList[pos];
+        //        case DatabaseSortType.DB_SORT_ID:
+        //            return mIDList[pos];
 
-                case DatabaseSortType.DB_SORT_DATE:
-                    return mDateList[pos];
+        //        case DatabaseSortType.DB_SORT_DATE:
+        //            return mDateList[pos];
 
-                case DatabaseSortType.DB_SORT_ROLL:
-                    return mRollList[pos];
+        //        case DatabaseSortType.DB_SORT_ROLL:
+        //            return mRollList[pos];
 
-                case DatabaseSortType.DB_SORT_LOCATION:
-                    return mLocationList[pos];
+        //        case DatabaseSortType.DB_SORT_LOCATION:
+        //            return mLocationList[pos];
 
-                case DatabaseSortType.DB_SORT_DAMAGE:
-                    return mDamageList[pos];
+        //        case DatabaseSortType.DB_SORT_DAMAGE:
+        //            return mDamageList[pos];
 
-                case DatabaseSortType.DB_SORT_DESCRIPTION:
-                    return mDescriptionList[pos];
+        //        case DatabaseSortType.DB_SORT_DESCRIPTION:
+        //            return mDescriptionList[pos];
 
-                default: // it's not a valid sort type
-                    return string.Empty;
-            }
-        }
+        //        default: // it's not a valid sort type
+        //            return string.Empty;
+        //    }
+        //}
 
-        protected long listEntryToID(string entry)
-        {
-            if (string.IsNullOrEmpty(entry))
-                return 0;
+        //protected long listEntryToID(string entry)
+        //{
+        //    if (string.IsNullOrEmpty(entry))
+        //        return 0;
 
-            var split = entry.Split(' ');
+        //    var split = entry.Split(' ');
 
-            return Convert.ToInt64(split[split.Length - 1]);
-        }
+        //    return Convert.ToInt64(split[split.Length - 1]);
+        //}
 
         //*******************************************************************
         //***1.85 - returns position of id in mIDList as currently sorted
         //
 
-        public int getIDListPosit(string id)
-        {
-            // NOTE: this list in the database contains strings, but the strings
-            // are made up of two parts (The Dolphin ID -- a string -- and
-            // an integer that either the data offset in the old database
-            // or the unique numerical id of the fin 
-            // in the Invidiuals table in the SQLite database.)
-            if (mIDList == null)
-                return -1;
+        //public int getIDListPosit(string id)
+        //{
+        //    // NOTE: this list in the database contains strings, but the strings
+        //    // are made up of two parts (The Dolphin ID -- a string -- and
+        //    // an integer that either the data offset in the old database
+        //    // or the unique numerical id of the fin 
+        //    // in the Invidiuals table in the SQLite database.)
+        //    if (mIDList == null)
+        //        return -1;
 
-            for (int i = 0; i < mIDList.Count; i++)
-            {
-                if (listEntryToID(mIDList[i]).ToString() == id)
-                {
-                    return i;
-                }
-            }
+        //    for (int i = 0; i < mIDList.Count; i++)
+        //    {
+        //        if (listEntryToID(mIDList[i]).ToString() == id)
+        //        {
+        //            return i;
+        //        }
+        //    }
 
-            return -1;
-        }
+        //    return -1;
+        //}
     }
 }

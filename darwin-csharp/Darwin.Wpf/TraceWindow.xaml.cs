@@ -1602,7 +1602,8 @@ namespace Darwin.Wpf
 
         private void MatchButton_Click(object sender, RoutedEventArgs e)
         {
-			// TODO: Get up to date fin
+			// TODO: Get up to date fin images?
+			_vm.DatabaseFin.FinOutline = _vm.Outline;
 			var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
 			var matchingWindow = new MatchingWindow(matchingWindowVM);
 			this.Close();
