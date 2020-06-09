@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="MatchingQueueWindow" Height="450" Width="800">
+        Title="Matching Queue" Height="450" Width="800">
     <Grid>
         
     </Grid>

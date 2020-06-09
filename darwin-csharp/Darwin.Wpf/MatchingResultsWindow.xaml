@@ -1,0 +1,130 @@
+﻿<Window x:Class="Darwin.Wpf.MatchingResultsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
+        xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
+        xmlns:local="clr-namespace:Darwin.Wpf"
+        mc:Ignorable="d"
+        Title="Matching Results" Height="450" Width="800">
+    <Window.Resources>
+        <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Lime" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Yellow" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
+        <converters:NullConverter x:Key="NullConverter" />
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
+            <Label>Selected Fin</Label>
+            <Image></Image>
+            <Button x:Name="SelectedShowOriginalImage" Click="SelectedShowOriginalImage_Click">
+                Show Original Image
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+            <Label>Unknown Fin</Label>
+            <Image></Image>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="UknownShowOriginalImage" Click="UknownShowOriginalImage_Click">
+                    Show Original Image
+                </Button>
+                <Button x:Name="UknonwnMatchSelectedFinOrientation" Click="UknonwnMatchSelectedFinOrientation_Click">
+                    Match Selected Fin Orientation
+                </Button>
+            </StackPanel>
+        </StackPanel>
+        <controls:SortableListView Grid.Column="0" Grid.Row="1" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Image.Source>
+                                        <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                    </Image.Source>
+                                </Image>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                        <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                        <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
+                        <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
+                        <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </controls:SortableListView>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
+                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=HideInfo}">
+                    Info
+                </ToggleButton>
+                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=HideIDs}">
+                    Hide IDs
+                </ToggleButton>
+                <Button x:Name="PreviousButton" Click="PreviousButton_Click">
+                    Previous
+                </Button>
+                <Button x:Name="NextButton" Click="NextButton_Click">
+                    Next
+                </Button>
+                <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}">
+                    Auto Scroll
+                </ToggleButton>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label>Registered Outlines</Label>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">
+                    Matches Selected Fin
+                </Button>
+                <Button x:Name="NoMatchNewFinButton" Click="NoMatchNewFinButton_Click">
+                    No Match - New Fin
+                </Button>
+                <Button x:Name="ReturnToMatchingDialogButton" Click="ReturnToMatchingDialogButton_Click">
+                    Return to Matching Dialog
+                </Button>
+                <Button x:Name="SaveMatchResultsButton" Click="SaveMatchResultsButton_Click">
+                    Save Match Results
+                </Button>
+                <Button x:Name="DoneButton" Click="DoneButton_Click">
+                    Close and Discard
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -58,7 +58,7 @@ namespace Darwin.Database
 
         public abstract DatabaseFin getItemAbsolute(int pos);
 
-        public abstract DatabaseFin getItem(int pos);
+        public abstract DatabaseFin GetItem(int pos);
         // virtual DatabaseFin<ColorImage>* getItemByName(std::string name) = 0;  
 
         public void sort(DatabaseSortType sortBy)

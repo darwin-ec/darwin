@@ -140,7 +140,7 @@ namespace Darwin.Matching
                 if (mCurrentFin >= (int)mDatabase.size())
                     return 100.0f;
 
-                thisDBFin = mDatabase.getItem(mCurrentFin);
+                thisDBFin = mDatabase.GetItem(mCurrentFin);
             }
 
 

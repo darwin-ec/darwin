@@ -93,7 +93,7 @@ namespace Darwin.Database
                 var db = OpenDatabase(dbFilename, Options.CurrentUserOptions, false);
 
                 // First and only fin
-                var fin = db.getItem(0);
+                var fin = db.GetItem(0);
 
                 var baseimgfilename = Path.GetFileName(fin.ImageFilename);
                 fin.ImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
