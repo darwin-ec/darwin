@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 using System.Text;
 using System.Windows;
@@ -1604,6 +1605,7 @@ namespace Darwin.Wpf
         {
 			// TODO: Get up to date fin images?
 			_vm.DatabaseFin.FinOutline = _vm.Outline;
+			_vm.DatabaseFin.FinImage = new Bitmap(_vm.Bitmap);
 			var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
 			var matchingWindow = new MatchingWindow(matchingWindowVM);
 			this.Close();

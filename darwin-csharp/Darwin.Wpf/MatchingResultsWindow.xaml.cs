@@ -40,12 +40,12 @@ namespace Darwin.Wpf
 
         }
 
-        private void UknownShowOriginalImage_Click(object sender, RoutedEventArgs e)
+        private void UnknownShowOriginalImage_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void UknonwnMatchSelectedFinOrientation_Click(object sender, RoutedEventArgs e)
+        private void UnknownMatchSelectedFinOrientation_Click(object sender, RoutedEventArgs e)
         {
 
         }
@@ -82,7 +82,7 @@ namespace Darwin.Wpf
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();
         }
     }
 }

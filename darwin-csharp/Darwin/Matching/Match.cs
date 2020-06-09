@@ -261,16 +261,15 @@ namespace Darwin.Matching
                     double errorBetweenFins = result.Error; //***005CM
 
                     // Now, store the result
-                    string errorTemp = string.Format("{0:0.00}", errorBetweenFins);
+                    //string errorTemp = string.Format("{0:0.00}", errorBetweenFins);
 
                     Result r = new Result(
                         result.C1, //***005CM
                         result.C2, //***005CM
                         thisDBFin.ImageFilename,  //***001DB
-                        thisDBFin.ThumbnailPixmap, //***1.0
-                        thisDBFin.ThumbnailRows,    //***1.0
+                        thisDBFin.ThumbnailFilenameUri,
                         CurrentFinIndex,
-                        errorTemp,
+                        errorBetweenFins,
                         thisDBFin.IDCode,
                         thisDBFin.Name,
                         thisDBFin.DamageCategory,

@@ -57,7 +57,7 @@ namespace Darwin.Database
     {
         public decimal Version { get; set; } = 1.0m;
 
-        public Bitmap mFinImage;
+        public Bitmap FinImage;
 
         private Outline _finOutline;
         private string _IDCode;
@@ -266,7 +266,7 @@ namespace Darwin.Database
             //         does not exist or is unsupported type  --
             //         program now crashes when database image is misplaced or misnamed
 
-            mFinImage = new Bitmap(ImageFilename); //  001DB
+            FinImage = new Bitmap(ImageFilename); //  001DB
 
             FieldsChanged = false;
             // TODO
@@ -322,7 +322,7 @@ namespace Darwin.Database
             Scale = 1.0; //  1.4
             ModifiedFinImage = null; //  1.5
             FinFilename = string.Empty; //  1.6
-            mFinImage = null;
+            FinImage = null;
             IsAlternate = false; //  1.99
 
             FieldsChanged = false;
@@ -347,7 +347,7 @@ namespace Darwin.Database
         public DatabaseFin(DatabaseFin fin)
         {
             ImageFilename = fin.ImageFilename;        //  001DB
-			mFinImage = null;                          //   major change JHS
+			FinImage = null;                          //   major change JHS
             ModifiedFinImage = null; //  1.5
             DataPos = fin.DataPos;                    //  001DB
             FinOutline = new Outline(fin.FinOutline); //  006DF,008OL
@@ -381,8 +381,8 @@ namespace Darwin.Database
                 ModifiedFinImage = new Bitmap(fin.ModifiedFinImage);
 
             //  1.8 - and we create a COPY of the original image here
-            if (null != fin.mFinImage)
-                mFinImage = new Bitmap(fin.mFinImage);
+            if (null != fin.FinImage)
+                FinImage = new Bitmap(fin.FinImage);
 
             // TODO
             //for (int i = 0; i < fin.mThumbnailRows; i++)

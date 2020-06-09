@@ -10,39 +10,36 @@ namespace Darwin.Matching
         public FloatContour unknownContour;
         public FloatContour dbContour;
 
-        public char[,] mThumbnailPixmap;
+        public string ThumbnailFilenameUri { get; set; }
         public int mThumbnailRows;
 
-        public string mFilename;    //  001DB - image file for database fin
-        public int mPosition;            // position (index) of database fin in database file
+        public string ImageFilename { get; set; }    //  001DB - image file for database fin
+        public int mPosition { get; set; }            // position (index) of database fin in database file
 
-        public string
-            mError,
-            mIdCode,
-            mName,
-            mDamage,
-            mDate,
-            mLocation,
-            mRank; //  1.5
+        public double Error { get; set; }
+        public string IDCode { get; set; }
+        public string Name { get; set; }
+        public string Damage { get; set; }
+        public string Date { get; set; }
+        public string Location { get; set; }
+        public int Rank { get; set; } //  1.5
 
         //  1.1 - new members to track three point correspondences for final mapping in match
 
-        public int
-            mUnkShiftedLEBegin,
-            mUnkShiftedTip,
-            mUnkShiftedTEEnd,
-            mDBShiftedLEBegin,
-            mDBShiftedTip,
-            mDBShiftedTEEnd;
+        public int UnkShiftedLEBegin { get; set; }
+        public int UnkShiftedTip { get; set; }
+        public int UnkShiftedTEEnd { get; set; }
+        public int DBShiftedLEBegin { get; set; }
+        public int DBShiftedTip { get; set; }
+        public int DBShiftedTEEnd { get; set; }
 
         public Result(
             FloatContour unknown, //  005CM
             FloatContour db, //  005CM
             string filename,   //  001DB
-            char[,] thumbnailPixmap, //  1.0
-            int thumbnailRows, //  1.0
+            string thumbnailFilenameUri, //  1.0
             int position,
-            string error,
+            double error,
             string idcode,
             string name,
             string damage,
@@ -53,20 +50,21 @@ namespace Darwin.Matching
             unknownContour = new FloatContour(unknown); //  1.3 - Mem Leak - make copies now
             dbContour = new FloatContour(db);           //  1.3 - Mem Leak - make copies now
 
-            mFilename = filename; //  001DB
+            ImageFilename = filename; //  001DB
             mPosition = position;
-            mError = error;
-            mIdCode = idcode;
-            mName = name;
-            mDamage = damage;
-            mLocation = location;
-            mRank = string.Empty; //  1.5
-            mUnkShiftedLEBegin = 0; //  1.1 - following indices set to defaults by constructor
-            mUnkShiftedTip = 0;
-            mUnkShiftedTEEnd = 0;
-            mDBShiftedLEBegin = 0;
-            mDBShiftedTip = 0;
-            mDBShiftedTEEnd = 0;
+            Error = error;
+            IDCode = idcode;
+            Name = name;
+            Damage = damage;
+            Date = date;
+            Location = location;
+            Rank = 0; //  1.5
+            UnkShiftedLEBegin = 0; //  1.1 - following indices set to defaults by constructor
+            UnkShiftedTip = 0;
+            UnkShiftedTEEnd = 0;
+            DBShiftedLEBegin = 0;
+            DBShiftedTip = 0;
+            DBShiftedTEEnd = 0;
 
             // MAJOR change JHS
             // removed reloading of image and recreation of thumbnail here
@@ -81,31 +79,32 @@ namespace Darwin.Matching
 						delete temp;  //  001DB
 			*/
 
+            ThumbnailFilenameUri = thumbnailFilenameUri;
             //  1.0
-            if (null == thumbnailPixmap)
-            {
-                mThumbnailPixmap = null;
-                mThumbnailRows = 0;
-            }
-            else
-            {
-                // in the future we will revise this call and create a smaller version
-                // rather than copying or creating a pixelized larger version
-                // 
-                // makeDoubleSizePixmapString(thumbnailPixmap, mThumbnailPixmap, mThumbnailRows);
+            //if (null == thumbnailPixmap)
+            //{
+            //    ThumbnailFilenameUri = null;
+            //    mThumbnailRows = 0;
+            //}
+            //else
+            //{
+            //    // in the future we will revise this call and create a smaller version
+            //    // rather than copying or creating a pixelized larger version
+            //    // 
+            //    // makeDoubleSizePixmapString(thumbnailPixmap, mThumbnailPixmap, mThumbnailRows);
 
-                // simply copy the thumbnail for now and use 25 x 25 thumnails everywhere
+            //    // simply copy the thumbnail for now and use 25 x 25 thumnails everywhere
 
-                //TODO
-                //mThumbnailRows = thumbnailRows;
-                //mThumbnailPixmap = new char*[mThumbnailRows];
+            //    //TODO
+            //    //mThumbnailRows = thumbnailRows;
+            //    //mThumbnailPixmap = new char*[mThumbnailRows];
 
-                //for (int i = 0; i < mThumbnailRows; i++)
-                //{
-                //	mThumbnailPixmap[i] = new char[strlen(thumbnailPixmap[i]) + 1];
-                //	strcpy(mThumbnailPixmap[i], thumbnailPixmap[i]);
-                //}
-            }
+            //    //for (int i = 0; i < mThumbnailRows; i++)
+            //    //{
+            //    //	mThumbnailPixmap[i] = new char[strlen(thumbnailPixmap[i]) + 1];
+            //    //	strcpy(mThumbnailPixmap[i], thumbnailPixmap[i]);
+            //    //}
+            //}
         }
 
         /* 1.1 - this form of constructor is never used - JHS
@@ -131,23 +130,23 @@ namespace Darwin.Matching
 
         public Result(Result r)
         {
-            mFilename = r.mFilename;   //  001DB
+            ImageFilename = r.ImageFilename;   //  001DB
             mPosition = r.mPosition;
-            mError = r.mError;
-            mIdCode = r.mIdCode;
-            mName = r.mName;
-            mDamage = r.mDamage;
-            mLocation = r.mLocation;
-            mRank = r.mRank; //  1.5
+            Error = r.Error;
+            IDCode = r.IDCode;
+            Name = r.Name;
+            Damage = r.Damage;
+            Location = r.Location;
+            Rank = r.Rank; //  1.5
             unknownContour = new FloatContour(r.unknownContour); //  1.3 - Mem Leak - make copies now
             dbContour = new FloatContour(r.dbContour);           //  1.3 - Mem Leak - make copies now
-            mUnkShiftedLEBegin = r.mUnkShiftedLEBegin;
-            mUnkShiftedTip = r.mUnkShiftedTip;
-            mUnkShiftedTEEnd = r.mUnkShiftedTEEnd;
-            mDBShiftedLEBegin = r.mDBShiftedLEBegin;
-            mDBShiftedTip = r.mDBShiftedTip;
-            mDBShiftedTEEnd = r.mDBShiftedTEEnd;
-
+            UnkShiftedLEBegin = r.UnkShiftedLEBegin;
+            UnkShiftedTip = r.UnkShiftedTip;
+            UnkShiftedTEEnd = r.UnkShiftedTEEnd;
+            DBShiftedLEBegin = r.DBShiftedLEBegin;
+            DBShiftedTip = r.DBShiftedTip;
+            DBShiftedTEEnd = r.DBShiftedTEEnd;
+            ThumbnailFilenameUri = r.ThumbnailFilenameUri;
             // TODO
             //if (NULL == r.mThumbnailPixmap)
             //{
@@ -204,12 +203,12 @@ namespace Darwin.Matching
                 int unkLEBegin, int unkTip, int unkTEEnd,
                 int dbLEBegin, int dbTip, int dbTEEnd)
         {
-            mUnkShiftedLEBegin = unkLEBegin;
-            mUnkShiftedTip = unkTip;
-            mUnkShiftedTEEnd = unkTEEnd;
-            mDBShiftedLEBegin = dbLEBegin;
-            mDBShiftedTip = dbTip;
-            mDBShiftedTEEnd = dbTEEnd;
+            UnkShiftedLEBegin = unkLEBegin;
+            UnkShiftedTip = unkTip;
+            UnkShiftedTEEnd = unkTEEnd;
+            DBShiftedLEBegin = dbLEBegin;
+            DBShiftedTip = dbTip;
+            DBShiftedTEEnd = dbTEEnd;
         }
 
         //  1.1 - gets six indices for points used in final contour mapping
@@ -217,12 +216,12 @@ namespace Darwin.Matching
                 out int unkLEBegin, out int unkTip, out int unkTEEnd,
                 out int dbLEBegin, out int dbTip, out int dbTEEnd)
         {
-            unkLEBegin = mUnkShiftedLEBegin;
-            unkTip = mUnkShiftedTip;
-            unkTEEnd = mUnkShiftedTEEnd;
-            dbLEBegin = mDBShiftedLEBegin;
-            dbTip = mDBShiftedTip;
-            dbTEEnd = mDBShiftedTEEnd;
+            unkLEBegin = UnkShiftedLEBegin;
+            unkTip = UnkShiftedTip;
+            unkTEEnd = UnkShiftedTEEnd;
+            dbLEBegin = DBShiftedLEBegin;
+            dbTip = DBShiftedTip;
+            dbTEEnd = DBShiftedTEEnd;
         }
     }
 }

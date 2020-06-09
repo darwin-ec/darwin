@@ -100,7 +100,7 @@ namespace Darwin.Wpf
 
                     // TODO: Move this logic into the constructor?
                     var vm = new TraceWindowViewModel(
-                        fin.mFinImage ?? fin.ModifiedFinImage,
+                        fin.FinImage ?? fin.ModifiedFinImage,
                         new Contour(fin.FinOutline.ChainPoints, fin.Scale),
                         fin.FinOutline,
                         true,

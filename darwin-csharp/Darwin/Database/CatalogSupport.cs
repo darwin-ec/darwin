@@ -124,7 +124,7 @@ namespace Darwin.Database
 
 					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.OriginalImageFilename))
 					{
-						fin.mFinImage = new Bitmap(originalImageFromFile);
+						fin.FinImage = new Bitmap(originalImageFromFile);
 					}
 				}
 

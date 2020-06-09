@@ -316,7 +316,7 @@ namespace Darwin.Wpf.ViewModel
 
 			DatabaseFin = new DatabaseFin();
 
-			Bitmap = fin.mFinImage ?? fin.ModifiedFinImage;
+			Bitmap = fin.FinImage ?? fin.ModifiedFinImage;
 			Contour = new Contour(fin.FinOutline.ChainPoints, fin.Scale);
 			Outline = fin.FinOutline;
 

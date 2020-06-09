@@ -10,6 +10,8 @@
 using Darwin.Database;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 
 namespace Darwin.Matching
@@ -26,6 +28,8 @@ namespace Darwin.Matching
 
     public class MatchResults
     {
+        public ObservableCollection<Result> Results { get; set; }
+
         public MatchResults()
         {
             mLastSortBy = MatchResultSortType.MR_ERROR;
@@ -51,40 +55,50 @@ namespace Darwin.Matching
             mTimeTaken = results.mTimeTaken;
             mFinID = results.mFinID;
             // TODO: This should actually clone
-            mResults = results.mResults;
+            Results = results.Results;
             mTracedFinFile = results.mTracedFinFile;
             mDatabaseFile = results.mDatabaseFile;
         }
 
         public void AddResult(Result r)
         {
-            if (mResults == null)
-                mResults = new List<Result>();
+            if (Results == null)
+                Results = new ObservableCollection<Result>();
 
-            mResults.Add(r);
+            Results.Add(r);
         }
 
         public int Count
         {
             get
             {
-                if (mResults == null)
+                if (Results == null)
                     return 0;
 
-                return mResults.Count;
+                return Results.Count;
             }
         }
 
         public int size()
         {
-            if (mResults == null)
+            if (Results == null)
                 return 0;
 
-            return mResults.Count;
+            return Results.Count;
         }
 
         // sort assumes sorting by last
-        public void Sort() { int dummy = 0; Sort(mLastSortBy, ref dummy); }
+        public void Sort()
+        {
+            //int dummy = 0; Sort(mLastSortBy, ref dummy);
+            // Sort by error
+            //TODO: This is a little ugly
+            var resultsList = Results.ToList();
+            resultsList.Sort((x, y) => x.Error.CompareTo(y.Error));
+            Results = new ObservableCollection<Result>(resultsList);
+
+            SetRankings();
+        }
 
         public void Sort(MatchResultSortType sortBy, ref int active)
         {
@@ -210,26 +224,27 @@ namespace Darwin.Matching
             return mLastSortBy == MatchResultSortType.MR_ERROR;
         }
 
-        public void setRankings() //  1.5
+        public void SetRankings() //  1.5
         {
             if (mLastSortBy != MatchResultSortType.MR_ERROR)
                 return;
 
             int i = 1;
-            foreach (var r in mResults)
+            foreach (var r in Results)
             {
-                r.mRank = i.ToString();
+                r.Rank = i;
                 i++;
             }
         }
+
         // doesn't make a copy to save time... so DON'T DELETE
         // THE RESULT WHEN DONE
         public Result getResultNum(int resultNum)
         {
-            if (mResults == null || resultNum < 0 || resultNum >= mResults.Count)
+            if (Results == null || resultNum < 0 || resultNum >= Results.Count)
                 throw new ArgumentOutOfRangeException(nameof(resultNum));
 
-            return mResults[resultNum];
+            return Results[resultNum];
         }
 
         public void setTimeTaken(float timeTaken)
@@ -311,11 +326,11 @@ namespace Darwin.Matching
 
         public int findRank()
         {
-            for (int i = 0; i < mResults.Count; i++)
+            for (int i = 0; i < Results.Count; i++)
             {
                 Result r = getResultNum(i);
 
-                if (r.mIdCode.ToLower() == mFinID.ToLower())
+                if (r.IDCode.ToLower() == mFinID.ToLower())
                     return i + 1;
             }
 
@@ -580,7 +595,6 @@ namespace Darwin.Matching
         }
 
         private MatchResultSortType mLastSortBy;
-        private List<Result> mResults;
         private float mTimeTaken;
         private string mFinID; // this is the unknown fin ID
 

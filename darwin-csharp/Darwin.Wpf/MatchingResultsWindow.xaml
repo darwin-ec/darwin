@@ -32,24 +32,24 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
             <Label>Selected Fin</Label>
-            <Image></Image>
+            <Image x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
             <Button x:Name="SelectedShowOriginalImage" Click="SelectedShowOriginalImage_Click">
                 Show Original Image
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
             <Label>Unknown Fin</Label>
-            <Image></Image>
+            <Image x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="UknownShowOriginalImage" Click="UknownShowOriginalImage_Click">
+                <Button x:Name="UnknownShowOriginalImage" Click="UnknownShowOriginalImage_Click">
                     Show Original Image
                 </Button>
-                <Button x:Name="UknonwnMatchSelectedFinOrientation" Click="UknonwnMatchSelectedFinOrientation_Click">
+                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
                     Match Selected Fin Orientation
                 </Button>
             </StackPanel>
         </StackPanel>
-        <controls:SortableListView Grid.Column="0" Grid.Row="1" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+        <controls:SortableListView Grid.Column="0" Grid.Row="1" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -57,6 +57,9 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Rank}">
+                        <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                    </GridViewColumn>
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -74,14 +77,17 @@
                     <GridViewColumn DisplayMemberBinding="{Binding Name}">
                         <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                     </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
-                        <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                    </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
                         <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
                         <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                        <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Error}">
+                        <GridViewColumnHeader Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
