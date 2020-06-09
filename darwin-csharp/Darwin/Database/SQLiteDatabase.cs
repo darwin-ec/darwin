@@ -142,7 +142,7 @@ namespace Darwin.Database
             }
         }
 
-        public DBDamageCategory selectDamageCategoryByName(string name)
+        private DBDamageCategory SelectDamageCategoryByName(string name)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -150,26 +150,26 @@ namespace Darwin.Database
                 {
                     conn.Open();
 
-                    cmd.CommandText = "SELECT * FROM DamageCategories WHERE Name = '@Name';";
+                    cmd.CommandText = "SELECT * FROM DamageCategories WHERE Name = @Name;";
                     cmd.Parameters.AddWithValue("@Name", name);
-
-                    var rdr = cmd.ExecuteReader();
 
                     DBDamageCategory category = null;
 
-                    if (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        category = new DBDamageCategory
+                        if (rdr.Read())
                         {
-                            id = rdr.SafeGetInt("ID"),
-                            name = rdr.SafeGetString("Name"),
-                            orderid = rdr.SafeGetInt("OrderID")
-                        };
+                            category = new DBDamageCategory
+                            {
+                                id = rdr.SafeGetInt("ID"),
+                                name = rdr.SafeGetString("Name"),
+                                orderid = rdr.SafeGetInt("OrderID")
+                            };
+                        }
                     }
-
                     conn.Close();
 
-                    return category;
+                    return category;     
                 }
             }
         }
@@ -185,18 +185,19 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM DamageCategories WHERE ID = @ID;";
                     cmd.Parameters.AddWithValue("@ID", id);
 
-                    var rdr = cmd.ExecuteReader();
-
                     DBDamageCategory category = null;
 
-                    if (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        category = new DBDamageCategory
+                        if (rdr.Read())
                         {
-                            id = rdr.SafeGetInt("ID"),
-                            name = rdr.SafeGetString("Name"),
-                            orderid = rdr.SafeGetInt("OrderID")
-                        };
+                            category = new DBDamageCategory
+                            {
+                                id = rdr.SafeGetInt("ID"),
+                                name = rdr.SafeGetString("Name"),
+                                orderid = rdr.SafeGetInt("OrderID")
+                            };
+                        }
                     }
 
                     conn.Close();
@@ -216,23 +217,25 @@ namespace Darwin.Database
 
                     cmd.CommandText = "SELECT * FROM DamageCategories ORDER BY OrderID;";
 
-                    var rdr = cmd.ExecuteReader();
-
                     var categories = new List<DBDamageCategory>();
 
-                    while (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        var cat = new DBDamageCategory
+
+                        while (rdr.Read())
                         {
-                            id = rdr.SafeGetInt("ID"),
-                            name = rdr.SafeGetString("Name"),
-                            orderid = rdr.SafeGetInt("OrderID")
-                        };
+                            var cat = new DBDamageCategory
+                            {
+                                id = rdr.SafeGetInt("ID"),
+                                name = rdr.SafeGetString("Name"),
+                                orderid = rdr.SafeGetInt("OrderID")
+                            };
 
-                        categories.Add(cat);
+                            categories.Add(cat);
+                        }
+
+                        conn.Close();
                     }
-
-                    conn.Close();
 
                     return categories;
                 }
@@ -253,19 +256,20 @@ namespace Darwin.Database
 
                     cmd.CommandText = "SELECT * FROM DBInfo;";
 
-                    var rdr = cmd.ExecuteReader();
-
                     var infos = new List<DBInfo>();
-
-                    while (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        var inf = new DBInfo
-                        {
-                            key = rdr.SafeGetString("Key"),
-                            value = rdr.SafeGetString("Value")
-                        };
 
-                        infos.Add(inf);
+                        while (rdr.Read())
+                        {
+                            var inf = new DBInfo
+                            {
+                                key = rdr.SafeGetString("Key"),
+                                value = rdr.SafeGetString("Value")
+                            };
+
+                            infos.Add(inf);
+                        }
                     }
 
                     conn.Close();
@@ -408,7 +412,7 @@ namespace Darwin.Database
         // Populates given list<DBImage> with all rows from Images table where
         // the fkIndividualID equals the given int.
         //
-        public List<DBImage> selectImagesByFkIndividualID(long fkindividualid)
+        public List<DBImage> SelectImagesByFkIndividualID(long fkindividualid)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -419,24 +423,25 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM Images WHERE fkIndividualID = @fkIndividualID;";
                     cmd.Parameters.AddWithValue("@fkIndividualID", fkindividualid);
 
-                    var rdr = cmd.ExecuteReader();
-
                     var images = new List<DBImage>();
 
-                    while (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        var img = new DBImage
+                        while (rdr.Read())
                         {
-                            id = rdr.SafeGetInt("ID"),
-                            imagefilename = rdr.SafeGetString("ImageFilename"),
-                            dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
-                            rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
-                            locationcode = rdr.SafeGetStringStripNone("LocationCode"),
-                            shortdescription = rdr.SafeGetStringStripNone("ShortDescription"),
-                            fkindividualid = rdr.SafeGetInt("fkIndividualID")
-                        };
+                            var img = new DBImage
+                            {
+                                id = rdr.SafeGetInt("ID"),
+                                imagefilename = rdr.SafeGetString("ImageFilename"),
+                                dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
+                                rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
+                                locationcode = rdr.SafeGetStringStripNone("LocationCode"),
+                                shortdescription = rdr.SafeGetStringStripNone("ShortDescription"),
+                                fkindividualid = rdr.SafeGetInt("fkIndividualID")
+                            };
 
-                        images.Add(img);
+                            images.Add(img);
+                        }
                     }
 
                     conn.Close();
@@ -450,9 +455,9 @@ namespace Darwin.Database
         //
         // Returns DBImage of row with given fkIndividualID
         //
-        public DBImage selectImageByFkIndividualID(long fkindividualid)
+        private DBImage SelectImageByFkIndividualID(long fkindividualid)
         {
-            var images = selectImagesByFkIndividualID(fkindividualid);
+            var images = SelectImagesByFkIndividualID(fkindividualid);
 
             return images?.FirstOrDefault();
         }
@@ -514,22 +519,24 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM Outlines WHERE fkIndividualID = @fkIndividualID;";
                     cmd.Parameters.AddWithValue("@fkIndividualID", fkindividualid);
 
-                    var rdr = cmd.ExecuteReader();
 
                     DBOutline outline = null;
-
-                    if (rdr.Read())
+                    using (var rdr = cmd.ExecuteReader())
                     {
-                        outline = new DBOutline
+
+                        if (rdr.Read())
                         {
-                            id = rdr.SafeGetInt("ID"),
-                            tipposition = rdr.SafeGetInt("TipPosition"),
-                            beginle = rdr.SafeGetInt("BeginLE"),
-                            endle = rdr.SafeGetInt("EndLE"),
-                            notchposition = rdr.SafeGetInt("NotchPosition"),
-                            endte = rdr.SafeGetInt("EndTE"),
-                            fkindividualid = rdr.SafeGetInt("fkIndividualID")
-                        };
+                            outline = new DBOutline
+                            {
+                                id = rdr.SafeGetInt("ID"),
+                                tipposition = rdr.SafeGetInt("TipPosition"),
+                                beginle = rdr.SafeGetInt("BeginLE"),
+                                endle = rdr.SafeGetInt("EndLE"),
+                                notchposition = rdr.SafeGetInt("NotchPosition"),
+                                endte = rdr.SafeGetInt("EndTE"),
+                                fkindividualid = rdr.SafeGetInt("fkIndividualID")
+                            };
+                        }
                     }
 
                     conn.Close();
@@ -1003,7 +1010,7 @@ namespace Darwin.Database
         // Updates row in Individuals table using given DBIndividual struct.  Uses ID
         // field for identifying row.
         //
-        public void updateIndividual(DBIndividual individual)
+        private void UpdateDBIndividual(DBIndividual individual)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1333,7 +1340,7 @@ namespace Darwin.Database
 
             individual = selectIndividualByID(id);
             damagecategory = selectDamageCategoryByID(individual.fkdamagecategoryid);
-            image = selectImageByFkIndividualID(id);
+            image = SelectImageByFkIndividualID(id);
             outline = selectOutlineByFkIndividualID(id);
             thumbnail = selectThumbnailByFkImageID(image.id);
             List<DBPoint> points = selectPointsByFkOutlineID(outline.id);
@@ -1446,10 +1453,10 @@ namespace Darwin.Database
             // TODO
             //beginTransaction();
 
-            dmgCat = selectDamageCategoryByName(fin.DamageCategory);
+            dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
 
             if (dmgCat.id == -1)
-                dmgCat = selectDamageCategoryByName("NONE");
+                dmgCat = SelectDamageCategoryByName("NONE");
 
             DBIndividual individual = new DBIndividual();
             individual.idcode = fin.IDCode;
@@ -1513,7 +1520,7 @@ namespace Darwin.Database
         //
         // Updates DatabaseFin<ColorImage>
         //
-        public void update(DatabaseFin fin)
+        public override void Update(DatabaseFin fin)
         {
             DBImage image;
             DBOutline outline;
@@ -1523,14 +1530,14 @@ namespace Darwin.Database
             FloatContour fc;
             int i, numPoints;
 
-            dmgCat = selectDamageCategoryByName(fin.DamageCategory);
+            dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
 
             DBIndividual individual = new DBIndividual();
             individual.id = fin.DataPos; // mapping Individuals id to mDataPos
             individual.idcode = fin.IDCode;
             individual.name = fin.Name;
             individual.fkdamagecategoryid = dmgCat.id;
-            updateIndividual(individual);
+            UpdateDBIndividual(individual);
 
             finOutline = fin.FinOutline;
             // we do this as we don't know what the outline id is
@@ -1560,7 +1567,7 @@ namespace Darwin.Database
             insertPoints(points);
 
             // query db as we don't know the image id
-            image = selectImageByFkIndividualID(individual.id);
+            image = SelectImageByFkIndividualID(individual.id);
             image.dateofsighting = fin.DateOfSighting;
             image.imagefilename = fin.ImageFilename;
             image.locationcode = fin.LocationCode;
@@ -1585,6 +1592,17 @@ namespace Darwin.Database
             sortLists();
         }
 
+        public override void UpdateIndividual(DatabaseFin data)
+        {
+            var dmgCat = SelectDamageCategoryByName(data.DamageCategory);
+
+            DBIndividual individual = new DBIndividual();
+            individual.id = data.DataPos; // mapping Individuals id to mDataPos
+            individual.idcode = data.IDCode;
+            individual.name = data.Name;
+            individual.fkdamagecategoryid = dmgCat.id;
+            UpdateDBIndividual(individual);
+        }
 
         // *****************************************************************************
         //
@@ -1592,7 +1610,6 @@ namespace Darwin.Database
         //
         public override void Delete(DatabaseFin fin)
         {
-
             DBOutline outline;
             DBImage image;
             long id;
@@ -1604,7 +1621,7 @@ namespace Darwin.Database
             //beginTransaction();
 
             outline = selectOutlineByFkIndividualID(id);
-            image = selectImageByFkIndividualID(id);
+            image = SelectImageByFkIndividualID(id);
 
             deletePoints(outline.id);
             deleteOutlineByFkIndividualID(id);

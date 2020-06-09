@@ -48,7 +48,11 @@ namespace Darwin.Database
         public abstract void CreateEmptyDatabase(CatalogScheme catalogScheme);
 
         public abstract long Add(DatabaseFin data);
-        public abstract void Delete(DatabaseFin Fin);
+        public abstract void Update(DatabaseFin data);
+        public abstract void UpdateIndividual(DatabaseFin data);
+        public abstract void Delete(DatabaseFin fin);
+
+        //private abstract void UpdateDBIndividual(DBIndividual individual);
 
         public abstract List<DatabaseFin> GetAllFins();
 

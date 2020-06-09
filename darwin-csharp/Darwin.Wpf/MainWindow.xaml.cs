@@ -210,13 +210,23 @@ namespace Darwin.Wpf
         {
             if (MessageBox.Show("Are you sure you want to delete this fin from the database?", "Delete Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                // TODO: Delete
+                _vm.DarwinDatabase.Delete(_vm.SelectedFin);
+                var index = _vm.Fins.IndexOf(_vm.SelectedFin);
+                _vm.Fins.Remove(_vm.SelectedFin);
+
+                // TODO: The else doesn't work quite right.  Setting SelectedFin null
+                // doesn't actually clear out the values being displayed on the right.
+                if (index < _vm.Fins.Count)
+                    _vm.SelectedFin = _vm.Fins[index];
+                else
+                    _vm.SelectedFin = null;
             }
         }
 
         private void SaveFinData_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Save the fin
+            _vm.DarwinDatabase.UpdateIndividual(_vm.SelectedFin);
+            _vm.SelectedFin.FieldsChanged = false;
         }
 
         private void OpenImageToolbarButton_Click(object sender, RoutedEventArgs e)

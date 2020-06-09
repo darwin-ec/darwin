@@ -86,6 +86,17 @@ namespace Darwin.Database
 
         public bool IsAlternate; //  1.95 - allow designation of primary and alternate fins/images
 
+        private bool _fieldsChanged;
+        public bool FieldsChanged
+        {
+            get => _fieldsChanged;
+            set
+            {
+                _fieldsChanged = value;
+                OnPropertyChanged("FieldsChanged");
+            }
+        }
+
         public string IDCode
         {
             get => _IDCode;
@@ -93,6 +104,7 @@ namespace Darwin.Database
             {
                 _IDCode = value;
                 OnPropertyChanged("IDCode");
+                FieldsChanged = true;
             }
         }
 
@@ -103,6 +115,7 @@ namespace Darwin.Database
             {
                 _name = value;
                 OnPropertyChanged("Name");
+                FieldsChanged = true;
             }
         }
         public string DateOfSighting
@@ -112,6 +125,7 @@ namespace Darwin.Database
             {
                 _dateOfSighting = value;
                 OnPropertyChanged("DateOfSighting");
+                FieldsChanged = true;
             }
         }
 
@@ -122,6 +136,7 @@ namespace Darwin.Database
             {
                 _rollAndFrame = value;
                 OnPropertyChanged("RollAndFrame");
+                FieldsChanged = true;
             }
         }
 
@@ -132,6 +147,7 @@ namespace Darwin.Database
             {
                 _locationCode = value;
                 OnPropertyChanged("LocationCode");
+                FieldsChanged = true;
             }
         }
 
@@ -142,6 +158,7 @@ namespace Darwin.Database
             {
                 _damageCategory = value;
                 OnPropertyChanged("DamageCategory");
+                FieldsChanged = true;
             }
         }
 
@@ -152,6 +169,7 @@ namespace Darwin.Database
             {
                 _shortDescription = value;
                 OnPropertyChanged("ShortDescription");
+                FieldsChanged = true;
             }
         }
 
@@ -250,6 +268,7 @@ namespace Darwin.Database
 
             mFinImage = new Bitmap(ImageFilename); //  001DB
 
+            FieldsChanged = false;
             // TODO
             //FIN_IMAGE_TYPE* thumb = resizeWithBorderNN(
             //		mFinImage,
@@ -306,6 +325,7 @@ namespace Darwin.Database
             mFinImage = null;
             IsAlternate = false; //  1.99
 
+            FieldsChanged = false;
             // let's see what happens... -- rjn
             /*
             mFinImage=new FIN_IMAGE_TYPE(mImageFilename); //  001DB
@@ -370,6 +390,8 @@ namespace Darwin.Database
             //    mThumbnailPixmap[i] = new char[strlen(fin->mThumbnailPixmap[i]) + 1];
             //    strcpy(mThumbnailPixmap[i], fin->mThumbnailPixmap[i]);
             //}
+
+            FieldsChanged = false;
         }
 
         protected virtual void OnPropertyChanged(string propertyName)

@@ -93,17 +93,17 @@ namespace Darwin.Wpf.ViewModel
 
             if (Categories != null)
             {
-                bool firstRun = true;
+                //bool firstRun = true;
                 foreach (var cat in Categories)
                 {
                     SelectableCategories.Add(new SelectableDBDamageCategory
                     {
-                        IsSelected = firstRun,
+                        IsSelected = true,
                         Name = cat.name
                     });
 
-                    if (firstRun)
-                        firstRun = false;
+                    //if (firstRun)
+                    //    firstRun = false;
                 }
             }
         }

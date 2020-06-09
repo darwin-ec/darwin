@@ -2860,13 +2860,14 @@ shiftedUnkTipMappedContour = null; //***1.1
             bool prevWasXPt = false; // indicates wheter to use previous intersection point
             PointF prevXPt = new PointF();      // and this was the previous intesection point
             double
-dx1 = c2[i + 1].X - c2[i].X, // dbRay
-dy1 = c2[i + 1].Y - c2[i].Y,
-dx2 = c1[j + 1].X - c1[j].X, // unkRay
-dy2 = c1[j + 1].Y - c1[j].Y;
+                dx1 = c2[i + 1].X - c2[i].X, // dbRay
+                dy1 = c2[i + 1].Y - c2[i].Y,
+                dx2 = c1[j + 1].X - c1[j].X, // unkRay
+                dy2 = c1[j + 1].Y - c1[j].Y;
             double
                 dot,
-prevDot = dx2 * dy1 - dx1 * dy2; // unkRay X dbRay
+                prevDot = dx2 * dy1 - dx1 * dy2; // unkRay X dbRay
+
             i++;
             while ((i < end2) && (j < end1))
             {

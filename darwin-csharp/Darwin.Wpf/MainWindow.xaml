@@ -209,7 +209,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal">
-                        <Button x:Name="SaveFinData" Click="SaveFinData_Click">Save Changes</Button>
+                        <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}">Save Changes</Button>
                         <Button x:Name="DeleteFin" Click="DeleteFin_Click">Delete</Button>
                     </StackPanel>
                     <Label Grid.Row="1" Grid.Column="0">ID Code:</Label>
@@ -228,8 +228,9 @@
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=SelectedFin.LocationCode}" Margin="0,5,10,5"  />
 
                     <Label Grid.Row="6" Grid.Column="0">Damage Category:</Label>
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5"  />
-
+                    <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Path=DarwinDatabase.Categories}" DisplayMemberPath="name" SelectedValuePath="name"
+                              SelectedValue="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5" />
+                    
                     <Label Grid.Row="7" Grid.Column="0">Short Description:</Label>
                     <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=SelectedFin.ShortDescription}" Margin="0,5,10,5"  />
                 </Grid>
