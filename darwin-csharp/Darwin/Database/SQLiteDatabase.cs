@@ -691,7 +691,7 @@ namespace Darwin.Database
                     conn.Open();
 
                     cmd.CommandText = "INSERT INTO Individuals (ID, IDCode, Name, fkDamageCategoryID) " +
-                        "VALUES (NULL, '@IDCode', '@Name', @fkDamageCategoryID);";
+                        "VALUES (NULL, @IDCode, @Name, @fkDamageCategoryID);";
                     cmd.Parameters.AddWithValue("@IDCode", individual.idcode);
                     cmd.Parameters.AddWithValue("@Name", individual.name);
                     cmd.Parameters.AddWithValue("@fkDamageCategoryID", individual.fkdamagecategoryid);
@@ -721,7 +721,7 @@ namespace Darwin.Database
                     conn.Open();
 
                     cmd.CommandText = "INSERT INTO DamageCategories (ID, Name, OrderID)  " +
-                        "VALUES (NULL, '@Name', '@OrderID');";
+                        "VALUES (NULL, @Name, @OrderID);";
                     cmd.Parameters.AddWithValue("@Name", damagecategory.name);
                     cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
 
