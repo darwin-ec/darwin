@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
-        xmlns:model="clr-namespace:Darwin.Wpf.Model"
+        xmlns:matching="clr-namespace:Darwin.Matching;assembly=Darwin"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
@@ -61,10 +61,10 @@
                     <StackPanel Orientation="Horizontal">
                         <StackPanel Orientation="Vertical">
                             <Label>Select a Search Method</Label>
-                            <RadioButton GroupName="SearchMethod" IsChecked="{Binding Path=SearchMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:SearchMethodType.AlignQuickDirty}}">
+                            <RadioButton GroupName="RegistrationMethod" IsChecked="{Binding Path=RegistrationMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RegistrationMethodType.TrimFixedPercent}}">
                                 Align Quick &amp; Dirty
                             </RadioButton>
-                            <RadioButton GroupName="SearchMethod" IsChecked="{Binding Path=SearchMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:SearchMethodType.AlighIteratively}}">
+                            <RadioButton GroupName="RegistrationMethod" IsChecked="{Binding Path=RegistrationMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RegistrationMethodType.TrimOptimalTip}}">
                                 Align Iteratively
                             </RadioButton>
                         </StackPanel>
@@ -75,10 +75,10 @@
                                 -- These ONLY affect the<LineBreak/>
                                 -- Align Iteratively methods!
                             </TextBlock>
-                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:RangeOfPointsType.AllPoints}}">
+                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RangeOfPointsType.AllPoints}}">
                                 All Points
                             </RadioButton>
-                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:RangeOfPointsType.TrailingEdgeOnly}}">
+                            <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RangeOfPointsType.TrailingEdgeOnly}}">
                                 Trailing Edge Only
                             </RadioButton>
                         </StackPanel>
@@ -100,10 +100,10 @@
                 <CheckBox IsChecked="{Binding ShowRegistration}">Show Registration of Fin Outlines</CheckBox>
             </StackPanel>
         </Grid>
-        <ProgressBar Grid.Row="1" Minimum="0" Maximum="100" Value="75" />
+        <ProgressBar Grid.Row="1" Minimum="0" Maximum="100" Value="{Binding Path=MatchProgressPercent}" />
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="StartButton" Click="StartButton_Click">Start</Button>
-            <Button x:Name="PauseButton" Click="PauseButton_Click">Pause</Button>
+            <Button x:Name="PauseButton" IsEnabled="{Binding Path=MatchRunning}" Click="PauseButton_Click">Pause</Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>

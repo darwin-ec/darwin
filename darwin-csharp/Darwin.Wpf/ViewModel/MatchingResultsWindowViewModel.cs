@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Darwin.Database;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -40,13 +41,26 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private DarwinDatabase _database;
+        public DarwinDatabase Database
+        {
+            get => _database;
+            set
+            {
+                _database = value;
+                RaisePropertyChanged("Database");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MatchingResultsWindowViewModel()
+        public MatchingResultsWindowViewModel(DarwinDatabase database)
         {
             HideInfo = false;
             HideIDs = false;
             AutoScroll = false;
+
+            Database = database;
         }
 
         private void RaisePropertyChanged(string propertyName)

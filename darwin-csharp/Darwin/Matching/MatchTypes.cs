@@ -4,17 +4,28 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Darwin.Wpf.Model
+namespace Darwin.Matching
 {
-    public enum SearchMethodType
+    public enum RegistrationMethodType
     {
-        AlignQuickDirty = 0,
-        AlighIteratively = 1
+        Original3Point = 10,
+        TrimFixedPercent = 20,
+        TrimOptimal = 30,
+        TrimOptimalTotal = 40,
+        TrimOptimalTip = 41,
+        TrimOptimalInOut = 42,
+        TrimOptimalInOutTip = 43,
+        TrimOptimalArea = 45,
+        LeadingEdgeAngleMethod = 50,
+        SigShift = 60
     }
 
     public enum RangeOfPointsType
     {
-        AllPoints = 0,
+        AllPoints = 100,
+        LeadToTipOnly = 200,
+        LeadToNotchOnly = 300,
+        LeadThenTrail = 400,
         TrailingEdgeOnly = 1
     }
 

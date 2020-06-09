@@ -1603,7 +1603,7 @@ namespace Darwin.Wpf
         private void MatchButton_Click(object sender, RoutedEventArgs e)
         {
 			// TODO: Get up to date fin
-			var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Categories);
+			var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
 			var matchingWindow = new MatchingWindow(matchingWindowVM);
 			this.Close();
 			matchingWindow.Show();

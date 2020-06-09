@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Matching;
 using Darwin.Wpf.Model;
 using System;
 using System.Collections.Generic;
@@ -32,14 +33,14 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        private SearchMethodType _searchMethod;
-        public SearchMethodType SearchMethod
+        private RegistrationMethodType _registrationMethod;
+        public RegistrationMethodType RegistrationMethod
         {
-            get => _searchMethod;
+            get => _registrationMethod;
             set
             {
-                _searchMethod = value;
-                RaisePropertyChanged("SearchMethod");
+                _registrationMethod = value;
+                RaisePropertyChanged("RegistrationMethod");
             }
         }
 
@@ -76,14 +77,86 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private bool _matchRunning;
+        public bool MatchRunning
+        {
+            get => _matchRunning;
+            set
+            {
+                _matchRunning = value;
+                RaisePropertyChanged("MatchRunning");
+            }
+        }
+
+        private bool _pauseMatching;
+        public bool PauseMatching
+        {
+            get => _pauseMatching;
+            set
+            {
+                _pauseMatching = value;
+                RaisePropertyChanged("PauseMatching");
+            }
+        }
+
+        private bool _cancelMatching;
+        public bool CancelMatching
+        {
+            get => _cancelMatching;
+            set
+            {
+                _cancelMatching = value;
+                RaisePropertyChanged("CancelMatching");
+            }
+        }
+
+        private int _matchProgressPercent;
+        public int MatchProgressPercent
+        {
+            get => _matchProgressPercent;
+            set
+            {
+                _matchProgressPercent = value;
+                RaisePropertyChanged("MatchProgressPercent");
+            }
+        }
+
+        private Match _match;
+        public Match Match
+        {
+            get => _match;
+            set
+            {
+                _match = value;
+                RaisePropertyChanged("Match");
+            }
+        }
+
+        private DarwinDatabase _database;
+        public DarwinDatabase Database
+        {
+            get => _database;
+            set
+            {
+                _database = value;
+                RaisePropertyChanged("Database");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public MatchingWindowViewModel(DatabaseFin databaseFin, ObservableCollection<DBDamageCategory> categories)
+        public MatchingWindowViewModel(DatabaseFin databaseFin,
+            DarwinDatabase database,
+            ObservableCollection<DBDamageCategory> categories)
         {
             DatabaseFin = databaseFin;
             Categories = categories;
-            SearchMethod = SearchMethodType.AlighIteratively;
+            RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
             RangeOfPoints = RangeOfPointsType.AllPoints;
+            Database = database;
+
+            Match = new Match(DatabaseFin, Database);
+
             InitializeSelectableCategories();
         }
 

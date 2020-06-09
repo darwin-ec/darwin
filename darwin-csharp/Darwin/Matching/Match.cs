@@ -14,24 +14,11 @@ using Darwin.Database;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Darwin.Matching
 {
-    public enum RegistrationMethodType
-    {
-        ORIGINAL_3_POINT = 10,
-        TRIM_FIXED_PERCENT = 20,
-        TRIM_OPTIMAL = 30,
-        TRIM_OPTIMAL_TOTAL = 40,
-        TRIM_OPTIMAL_TIP = 41,
-        TRIM_OPTIMAL_IN_OUT = 42,
-        TRIM_OPTIMAL_IN_OUT_TIP = 43,
-        TRIM_OPTIMAL_AREA = 45,
-        LEADING_EDGE_ANGLE_METHOD = 50,
-        SIGSHIFT = 60
-    }
-
     public class Match
     {
         private const int IGNORE_MID_POSIT = 0;
@@ -69,6 +56,51 @@ namespace Darwin.Matching
             mUnknownBeginLEPoint,
             mUnknownEndLEPoint,
             mUnknownEndTEPoint;
+
+        //*******************************************************************
+        //
+        // Match::Match(...)
+        //
+        //    CONSTRUCTOR
+        //
+        public Match(
+                DatabaseFin unknownFin,
+                DarwinDatabase db)
+        {
+            if (unknownFin == null)
+                throw new ArgumentNullException(nameof(unknownFin));
+
+            if (db == null)
+                throw new ArgumentNullException(nameof(db));
+
+            mUnknownFin = new DatabaseFin(unknownFin);
+            mDatabase = db;
+
+            mCurrentFin = 0;
+
+            mMatchResults = new MatchResults(unknownFin.IDCode);
+
+            errorBetweenOutlines = MeanSquaredErrorBetweenOutlineSegments;
+            // errorBetweenOutlines(meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++6.0
+            // errorBetweenOutlines(&Match::meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++2011
+
+            mUnknownTipPosition = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***008OL
+            mUnknownNotchPosition = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch); //***008OL
+            mUnknownBeginLE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin); //***008OL
+            mUnknownEndLE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd); //***008OL
+            mUnknownEndTE = mUnknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection); //***008OL
+
+            mUnknownTipPositionPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip); //***008OL
+            mUnknownBeginLEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin); //***008OL
+            mUnknownEndLEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeEnd); //***008OL
+            mUnknownNotchPositionPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
+            mUnknownEndTEPoint = mUnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection); //***008OL
+
+            // just a pointer to the dialog for display purposes, this will be set
+            // to point to the actual dialog IF and WHEN display is desired
+            //mMatchingDialog = NULL;
+        }
+
 
         //*******************************************************************
         //
@@ -114,7 +146,7 @@ namespace Darwin.Matching
         //    database is later modified.
         //
         public float MatchSingleFin(RegistrationMethodType registrationMethod, int regSegmentsUsed,
-                                    bool[] categoryToMatch, bool useFullFinError,
+                                    List<SelectableDBDamageCategory> categoryToMatch, bool useFullFinError,
                                     bool useAbsoluteOffsets)
         {
             DatabaseFin thisDBFin;
@@ -144,11 +176,7 @@ namespace Darwin.Matching
             }
 
 
-            bool tryMatch = false;
-            for (int i = 0; i < mDatabase.Categories.Count && !tryMatch; i++)
-            {
-                tryMatch = thisDBFin.DamageCategory == mDatabase.Categories[i].name && categoryToMatch[i];
-            }
+            bool tryMatch = categoryToMatch.Exists(c => c.Name.ToLower() == thisDBFin.DamageCategory.ToLower());
 
             if (tryMatch)
             {
@@ -159,7 +187,7 @@ namespace Darwin.Matching
                 //***043 JHS - select version of error finding function
                 switch (registrationMethod)
                 {
-                    case RegistrationMethodType.ORIGINAL_3_POINT:
+                    case RegistrationMethodType.Original3Point:
                         // use beginning of leading edge, tip and largest trailing notch
                         // to map unknown outline to database outline, and then use
                         // version of meanSqError... that trims leading and trailing
@@ -168,7 +196,7 @@ namespace Darwin.Matching
                         // mapped points
                         result = FindErrorBetweenFins_Original3Point(thisDBFin, out timeTaken);
                         break;
-                    case RegistrationMethodType.TRIM_FIXED_PERCENT:
+                    case RegistrationMethodType.TrimFixedPercent:
                         // use a series of calls to meanSqError..., each with different amounts
                         // of the leading edge of each fin "ignored" in order to find the BEST
                         // choice of "leading edge beginning point" correspondence.  This prevents
@@ -192,7 +220,7 @@ namespace Darwin.Matching
 												useFullFinError);
 									break;
 					*/
-                    case RegistrationMethodType.TRIM_OPTIMAL_TOTAL:
+                    case RegistrationMethodType.TrimOptimalTotal:
                         // use an optimization process (essentially Newton-Raphson) to
                         // shorten the leading AND trailing edges of each fin to produce a correspondence
                         // that yeilds the BEST match.  A fin Outline walking approach
@@ -205,7 +233,7 @@ namespace Darwin.Matching
                                     false, false,
                                     useFullFinError);
                         break;
-                    case RegistrationMethodType.TRIM_OPTIMAL_TIP:
+                    case RegistrationMethodType.TrimOptimalTip:
                         //errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
                         errorBetweenOutlines = MeanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++2011
                                                                                        // NOTE: error function MUST be set prior to following call
@@ -214,7 +242,7 @@ namespace Darwin.Matching
                                     true, false,
                                     useFullFinError);
                         break;
-                    case RegistrationMethodType.TRIM_OPTIMAL_AREA: //***1.85 - new area based metric option
+                    case RegistrationMethodType.TrimOptimalArea: //***1.85 - new area based metric option
                                                                    //errorBetweenOutlines = areaBasedErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
                         errorBetweenOutlines = AreaBasedErrorBetweenOutlineSegments; //***1.85 -- vc++2011
                                                                                      // NOTE: error function MUST be set prior to following call
@@ -223,8 +251,8 @@ namespace Darwin.Matching
                                     true, false,
                                     useFullFinError);
                         break;
-                    case RegistrationMethodType.TRIM_OPTIMAL_IN_OUT:
-                    case RegistrationMethodType.TRIM_OPTIMAL_IN_OUT_TIP:
+                    case RegistrationMethodType.TrimOptimalInOut:
+                    case RegistrationMethodType.TrimOptimalInOutTip:
                     default:
                         gotResult = false;
                         break;

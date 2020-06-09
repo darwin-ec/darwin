@@ -1,7 +1,11 @@
-﻿using Darwin.Wpf.ViewModel;
+﻿using Darwin.Matching;
+using Darwin.Wpf.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,10 +22,17 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class MatchingWindow : Window
     {
+        private BackgroundWorker _matchingWorker = new BackgroundWorker();
+
         private MatchingWindowViewModel _vm;
         public MatchingWindow(MatchingWindowViewModel vm)
         {
             InitializeComponent();
+
+            _matchingWorker.WorkerReportsProgress = true;
+            //_matchingWorker.ProgressChanged += ProgressChanged;
+            _matchingWorker.DoWork += MatchWork;
+            _matchingWorker.RunWorkerCompleted += MatchWorker_RunWorkerCompleted;
 
             _vm = vm;
             this.DataContext = _vm;
@@ -29,17 +40,34 @@ namespace Darwin.Wpf
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-
+            _matchingWorker.RunWorkerAsync();
         }
 
         private void PauseButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (_vm.PauseMatching)
+            {
+                PauseButton.Content = "Pause";
+                _vm.PauseMatching = false;
+            }
+            else
+            {
+                PauseButton.Content = "Continue";
+                _vm.PauseMatching = true;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (_vm.MatchRunning)
+            {
+                _vm.CancelMatching = true;
+                _matchingWorker.CancelAsync();
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void SelectAllCategoriesButton_Click(object sender, RoutedEventArgs e)
@@ -58,6 +86,49 @@ namespace Darwin.Wpf
                 foreach (var cat in _vm.SelectableCategories)
                     cat.IsSelected = false;
             }
+        }
+
+        private void MatchWork(object sender, DoWorkEventArgs e)
+        {
+            for (int i = 0; i <= 100; i++)
+            {
+                if (_matchingWorker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else if (_vm.PauseMatching)
+                {
+                    // Sleep for a small amount of time
+                    Thread.Sleep(100);
+                }
+                else
+                {
+                    // Do Work
+
+                    float percentComplete = _vm.Match.MatchSingleFin(
+                                      _vm.RegistrationMethod,
+                                      (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
+                                      _vm.SelectableCategories.Where(c => c.IsSelected).ToList(),
+                                      (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
+                                      true);
+
+                    _matchingWorker.ReportProgress(i);
+                }
+            }
+        }
+
+        private void MatchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (!_vm.CancelMatching)
+            {
+                // Matching is done, go to the results window
+                var matchingResultsWindowVM = new MatchingResultsWindowViewModel(_vm.Database);
+                var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);
+                matchingResultsWindow.Show();
+            }
+
+            this.Close();
         }
     }
 }

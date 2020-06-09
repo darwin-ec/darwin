@@ -26,7 +26,7 @@ namespace Darwin.Matching
 
     public class MatchResults
     {
-        MatchResults()
+        public MatchResults()
         {
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
@@ -35,7 +35,7 @@ namespace Darwin.Matching
             mDatabaseFile = string.Empty;
         }
 
-        MatchResults(string id)
+        public MatchResults(string id)
         {
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
@@ -44,9 +44,8 @@ namespace Darwin.Matching
             mDatabaseFile = string.Empty;
         }
 
-
         //  008OL -- MatchResultsWindow calls constructor of this type and none existed
-        MatchResults(MatchResults results)
+        public MatchResults(MatchResults results)
         {
             mLastSortBy = results.mLastSortBy;
             mTimeTaken = results.mTimeTaken;

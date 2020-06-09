@@ -291,6 +291,17 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private DarwinDatabase _database;
+		public DarwinDatabase Database
+        {
+			get => _database;
+			set
+            {
+				_database = value;
+				RaisePropertyChanged("Database");
+			}
+        }
+
 		public TraceWindowViewModel()
         {
 			DatabaseFin = new DatabaseFin();
@@ -328,7 +339,7 @@ namespace Darwin.Wpf.ViewModel
 			AttachEvents();
 		}
 
-		public TraceWindowViewModel(Bitmap bitmap, List<DBDamageCategory> categories)
+		public TraceWindowViewModel(Bitmap bitmap, DarwinDatabase db, List<DBDamageCategory> categories)
 		{
 			DatabaseFin = new DatabaseFin();
 
@@ -338,6 +349,8 @@ namespace Darwin.Wpf.ViewModel
 			Bitmap = bitmap;
 
 			Categories = new ObservableCollection<DBDamageCategory>(categories);
+
+			Database = db;
 
 			ImageLocked = false;
 			TraceLocked = false;
@@ -358,6 +371,7 @@ namespace Darwin.Wpf.ViewModel
 			Outline outline,
 			bool imageLocked,
 			bool traceLocked,
+			DarwinDatabase db,
 			List<DBDamageCategory> categories)
         {
 			DatabaseFin = new DatabaseFin();
@@ -370,6 +384,8 @@ namespace Darwin.Wpf.ViewModel
 			Outline = outline;
 
 			Categories = new ObservableCollection<DBDamageCategory>(categories);
+
+			Database = db;
 
 			ImageLocked = imageLocked;
 			TraceLocked = traceLocked;

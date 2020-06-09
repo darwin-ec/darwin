@@ -67,7 +67,7 @@ namespace Darwin.Wpf
                 bitmap.SetResolution(96, 96);
 
                 // TODO: Move this logic into the constructor?
-                var vm = new TraceWindowViewModel(bitmap, _vm.DarwinDatabase?.Categories);
+                var vm = new TraceWindowViewModel(bitmap, _vm.DarwinDatabase, _vm.DarwinDatabase?.Categories);
 
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();
@@ -105,6 +105,7 @@ namespace Darwin.Wpf
                         fin.FinOutline,
                         true,
                         true,
+                        _vm.DarwinDatabase,
                         _vm.DarwinDatabase?.Categories);
 
                     TraceWindow traceWindow = new TraceWindow(vm);
