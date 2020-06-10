@@ -17,28 +17,6 @@ namespace Darwin.Wpf.ViewModel
 {
     public class MatchingResultsWindowViewModel : INotifyPropertyChanged
     {
-        private bool _hideInfo;
-        public bool HideInfo
-        {
-            get => _hideInfo;
-            set
-            {
-                _hideInfo = value;
-                RaisePropertyChanged("HideInfo");
-            }
-        }
-
-        private bool _hideIDs;
-        public bool HideIDs
-        {
-            get => _hideIDs;
-            set
-            {
-                _hideIDs = value;
-                RaisePropertyChanged("HideIDs");
-            }
-        }
-
         private bool _autoScroll;
         public bool AutoScroll
         {
@@ -92,6 +70,7 @@ namespace Darwin.Wpf.ViewModel
                 _selectedResult = value;
                 RaisePropertyChanged("SelectedResult");
 
+                CheckNextPreviousEnabled();
                 LoadSelectedResult();
             }
         }
@@ -118,6 +97,61 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private bool _showIDColumn;
+        public bool ShowIDColumn
+        {
+            get => _showIDColumn;
+            set
+            {
+                _showIDColumn = value;
+                RaisePropertyChanged("ShowIDColumn");
+            }
+        }
+
+        private bool _showInfoColumns;
+        public bool ShowInfoColumns
+        {
+            get => _showInfoColumns;
+            set
+            {
+                _showInfoColumns = value;
+                RaisePropertyChanged("ShowInfoColumns");
+            }
+        }
+
+        private bool _nextEnabled;
+        public bool NextEnabled
+        {
+            get => _nextEnabled;
+            set
+            {
+                _nextEnabled = value;
+                RaisePropertyChanged("NextEnabled");
+            }
+        }
+
+        private bool _previousEnabled;
+        public bool PreviousEnabled
+        {
+            get => _previousEnabled;
+            set
+            {
+                _previousEnabled = value;
+                RaisePropertyChanged("PreviousEnabled");
+            }
+        }
+
+        public int CurrentSelectedIndex
+        {
+            get
+            {
+                if (SelectedResult == null)
+                    return -1;
+
+                return MatchResults.Results.IndexOf(SelectedResult);
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingResultsWindowViewModel(
@@ -134,9 +168,12 @@ namespace Darwin.Wpf.ViewModel
             if (database == null)
                 throw new ArgumentNullException(nameof(database));
 
-            HideInfo = false;
-            HideIDs = false;
+            ShowIDColumn = true;
+            ShowInfoColumns = true;
             AutoScroll = false;
+
+            NextEnabled = true;
+            PreviousEnabled = true;
 
             DatabaseFin = unknownFin;
 
@@ -151,6 +188,21 @@ namespace Darwin.Wpf.ViewModel
                 SelectedResult = MatchResults.Results[0];
                 LoadSelectedResult();
             }
+        }
+
+        private void CheckNextPreviousEnabled()
+        {
+            int curIndex = CurrentSelectedIndex;
+
+            if (curIndex <= 0)
+                PreviousEnabled = false;
+            else if (MatchResults.Results != null && MatchResults.Results.Count > 0)
+                PreviousEnabled = true;
+
+            if (MatchResults.Results != null && MatchResults.Results.Count > 0 && curIndex < MatchResults.Results.Count - 1)
+                NextEnabled = true;
+            else
+                NextEnabled = false;
         }
 
         private void LoadSelectedResult()

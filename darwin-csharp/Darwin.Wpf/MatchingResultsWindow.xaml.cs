@@ -53,12 +53,18 @@ namespace Darwin.Wpf
 
         private void PreviousButton_Click(object sender, RoutedEventArgs e)
         {
+            int currentIndex = _vm.CurrentSelectedIndex;
 
+            if (currentIndex >= 1)
+                _vm.SelectedResult = _vm.MatchResults.Results[currentIndex - 1];
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
+            int currentIndex = _vm.CurrentSelectedIndex;
 
+            if (currentIndex >= 0)
+                _vm.SelectedResult = _vm.MatchResults.Results[currentIndex + 1];
         }
 
         private void MatchesSelectedFinButton_Click(object sender, RoutedEventArgs e)

@@ -8,7 +8,7 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="Matching Results" Height="450" Width="800">
+        Title="Matching Results" Height="650" Width="900">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Lime" />
@@ -20,6 +20,8 @@
         </x:Array>
         <converters:NullConverter x:Key="NullConverter" />
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
+        <converters:GridViewColumnWidthConverter x:Key="GridViewColumnWidthConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -74,22 +76,33 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                        <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                        <GridViewColumnHeader
+                            Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            Width="{Binding Path=ShowIDColumn, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=55}"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
-                        <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        <GridViewColumnHeader
+                            Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
-                        <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                        <GridViewColumnHeader
+                            Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=60}" />
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
-                        <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        <GridViewColumnHeader
+                            Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
-                        <GridViewColumnHeader Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                        <GridViewColumnHeader
+                            Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
@@ -97,36 +110,68 @@
 
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <StackPanel Orientation="Vertical" Margin="10,0,0,10">
-                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=HideInfo}">
+                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)">
                     Info
                 </ToggleButton>
-                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=HideIDs}">
+                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes">
                     Hide IDs
                 </ToggleButton>
-                <Button x:Name="PreviousButton" Click="PreviousButton_Click">
+                <Button x:Name="PreviousButton" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
                     Previous
                 </Button>
-                <Button x:Name="NextButton" Click="NextButton_Click">
+                <Button x:Name="NextButton" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
                     Next
                 </Button>
                 <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}">
+                    <ToggleButton.ToolTip>
+                        <TextBlock>
+                            Start or stop an automatically scrolling<LineBreak/>
+                            slide show of selected fins
+                        </TextBlock>
+                    </ToggleButton.ToolTip>
                     Auto Scroll
                 </ToggleButton>
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <Label>Registered Outlines</Label>
             </StackPanel>
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Margin="10,0,0,10">
                 <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            The selected fin matches the unknown fin.  Add the<LineBreak/>
+                            unknown fin image to the database as an alternate<LineBreak/>
+                            image of hte selected fin.  Save sighting data, if desired.
+                        </TextBlock>  
+                    </Button.ToolTip>
                     Matches Selected Fin
                 </Button>
                 <Button x:Name="NoMatchNewFinButton" Click="NoMatchNewFinButton_Click">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            No fins match the unknown fin.  Add this unknown dolphin<LineBreak/>
+                            to the database as a new entry.  Save the sighting data, if<LineBreak/>
+                            desired.
+                        </TextBlock>
+                    </Button.ToolTip>
                     No Match - New Fin
                 </Button>
                 <Button x:Name="ReturnToMatchingDialogButton" Click="ReturnToMatchingDialogButton_Click">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Return to the Matching window, so another<LineBreak/>
+                            match technique can be initiated with the same<LineBreak/>
+                            unknown.
+                        </TextBlock>
+                    </Button.ToolTip>
                     Return to Matching Dialog
                 </Button>
                 <Button x:Name="SaveMatchResultsButton" Click="SaveMatchResultsButton_Click">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Save the match results for future review or match confirmation
+                        </TextBlock>
+                    </Button.ToolTip>
                     Save Match Results
                 </Button>
                 <Button x:Name="DoneButton" Click="DoneButton_Click">

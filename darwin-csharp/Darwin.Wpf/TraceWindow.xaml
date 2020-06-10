@@ -235,10 +235,28 @@
                 <Label>Short Description:</Label>
                 <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}" Margin="0,5,10,5"  />
 
-                <Button x:Name="ExportDataButton">Export Data</Button>
-                <Button x:Name="MatchButton" Click="MatchButton_Click">Match</Button>
-                <Button x:Name="SaveButton">Save</Button>
-                <Button x:Name="AddToDatabaseButton">Add to Database</Button>
+                <Button x:Name="ExportDataButton">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Export the sighting data and append it to the<LineBreak/>
+                            survey area's master data file
+                        </TextBlock>
+                    </Button.ToolTip>
+                    Export Data
+                </Button>
+                <Button x:Name="MatchButton" Click="MatchButton_Click" ToolTip="Attempt to match this fin against those in the database">Match</Button>
+                <Button x:Name="SaveButton">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Save this traced fin to a separate file<LineBreak/>
+                            (NOTE: If you want to build a match queue or access this<LineBreak/>
+                            traced fin for processing at a later time, then use this<LineBreak/>
+                            option BEFORE adding fin to database or attempting a match)
+                        </TextBlock>
+                    </Button.ToolTip>
+                    Save
+                </Button>
+                <Button x:Name="AddToDatabaseButton" ToolTip="Add this fin to the database without attempting to match it">Add to Database</Button>
             </StackPanel>
         </Grid>
 
