@@ -246,7 +246,13 @@ namespace Darwin.Wpf.FrameworkElements
             //                                                 RenderSize.Height * dataPoint.Y);
 
             dc.Close();
-            visualChildren.Add(drawingVisual);
+
+            // If it's a feature point, add it, otherwise insert so the Feature points have
+            // the highest ZIndex
+            if (point.Type == PointType.Feature || point.Type == PointType.FeatureMoving)
+                visualChildren.Add(drawingVisual);
+            else
+                visualChildren.Insert(0, drawingVisual);
         }
 
         private void DrawMovingLines(Darwin.Point dataPoint, DrawingContext dc)

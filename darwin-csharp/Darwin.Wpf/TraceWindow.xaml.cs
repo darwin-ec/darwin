@@ -1603,13 +1603,62 @@ namespace Darwin.Wpf
 
         private void MatchButton_Click(object sender, RoutedEventArgs e)
         {
-			// TODO: Get up to date fin images?
-			_vm.DatabaseFin.FinOutline = _vm.Outline;
-			_vm.DatabaseFin.FinImage = new Bitmap(_vm.Bitmap);
-			var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
-			var matchingWindow = new MatchingWindow(matchingWindowVM);
-			this.Close();
-			matchingWindow.Show();
+			if (_vm.Contour == null && _vm.Outline == null)
+			{
+				MessageBox.Show("You must trace your image before it can be matched.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+			else
+			{
+				if (_vm.Outline == null)
+                {
+					_vm.TraceLocked = true;
+					TraceFinalize();
+                }
+
+				// TODO: Get up to date fin images?
+				_vm.DatabaseFin.FinOutline = _vm.Outline;
+				_vm.DatabaseFin.FinImage = new Bitmap(_vm.Bitmap);
+				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
+				var matchingWindow = new MatchingWindow(matchingWindowVM);
+				this.Close();
+				matchingWindow.Show();
+			}
         }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+			if (_vm.Contour == null && _vm.Outline == null)
+			{
+				MessageBox.Show("You must trace your image before it can be saved.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+			else
+			{
+				if (_vm.Outline == null)
+				{
+					_vm.TraceLocked = true;
+					TraceFinalize();
+				}
+
+				// TODO
+			}
+		}
+
+        private void AddToDatabaseButton_Click(object sender, RoutedEventArgs e)
+        {
+			if (_vm.Contour == null && _vm.Outline == null)
+			{
+				MessageBox.Show("You must trace your image before it can be added to the database.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+			else
+			{
+				if (_vm.Outline == null)
+				{
+					_vm.TraceLocked = true;
+					TraceFinalize();
+				}
+
+				// TODO
+			}
+		}
     }
 }
