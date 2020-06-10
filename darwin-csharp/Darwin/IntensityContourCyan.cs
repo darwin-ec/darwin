@@ -8,12 +8,8 @@
 //
 //*******************************************************************
 
-using System;
-using System.Collections.Generic;
+using Darwin.Extensions;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Darwin
 {
@@ -23,8 +19,9 @@ namespace Darwin
             int left, int top, int right, int bottom)
             : base(bitmap, contour, left, top, right, bottom)
         {
-            // TODO
-            throw new NotImplementedException();
+            DirectBitmap cyanImage = new DirectBitmap(bitmap);
+            cyanImage.ToCyanIntensity();
+            GetPointsFromBitmap(ref cyanImage, contour, left, top, right, bottom);
         }
     }
 }

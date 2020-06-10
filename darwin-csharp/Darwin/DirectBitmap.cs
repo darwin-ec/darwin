@@ -64,6 +64,20 @@ namespace Darwin
             IsLocked = false;
         }
 
+        public DirectBitmap(DirectBitmap source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (source.Bitmap == null)
+                throw new ArgumentNullException("source.Bitmap");
+
+            _bitmap = new Bitmap(source.Bitmap);
+            Width = _bitmap.Width;
+            Height = _bitmap.Height;
+            IsLocked = false;
+        }
+
         public Color GetPixel(int x, int y)
         {
             if (!IsLocked && _pixelData == null && _bitmap != null)

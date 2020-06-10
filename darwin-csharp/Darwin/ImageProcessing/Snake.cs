@@ -22,7 +22,7 @@ namespace Darwin.ImageProcessing
         private const float BigFloat = 1.0e20f;
 
         public static float EnergyCalc(
-            Bitmap edgeImage,
+            DirectBitmap edgeImage,
             float[] energyWeights,
             int xprevpt,
             int yprevpt,
@@ -94,7 +94,7 @@ namespace Darwin.ImageProcessing
         public static bool MoveContour(
             ref Contour contour,   // The contour we'd like to move
 
-            Bitmap edgeImage, // Edge strength image used for energy calculations
+            DirectBitmap edgeImage, // Edge strength image used for energy calculations
 
             int neighborhoodSize,   // Neighborhood window size
                                     // neighborhoodSize x neighborhoodSize

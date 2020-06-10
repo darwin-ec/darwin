@@ -29,7 +29,7 @@ namespace Darwin.ImageProcessing
 		* NAME: Mike Heath
 		* DATE: 2/15/96
 		*******************************************************************************/
-		public static void FollowEdges(ref Bitmap bitmap, int edgemapptr, int edgemagptr, short lowval,
+		public static void FollowEdges(ref DirectBitmap bitmap, int edgemapptr, int edgemagptr, short lowval,
 				 int cols)
 		{
 			int tempmagptr;
@@ -59,9 +59,9 @@ namespace Darwin.ImageProcessing
 		* NAME: Mike Heath
 		* DATE: 2/15/96
 		*******************************************************************************/
-		public static Bitmap ApplyHysteresis(
+		public static DirectBitmap ApplyHysteresis(
 				short[] mag,
-				Bitmap nms,
+				DirectBitmap nms,
 				int rows,
 				int cols,
 				float tlow,
@@ -74,7 +74,7 @@ namespace Darwin.ImageProcessing
 			short maximum_mag = 0;
 
 			// This GrayImage will hold the edge detection image
-			Bitmap edge = new Bitmap(cols, rows);
+			DirectBitmap edge = new DirectBitmap(cols, rows);
 
 			/****************************************************************************
 			* Initialize the edge map to possible edges everywhere the non-maximal
@@ -196,7 +196,7 @@ namespace Darwin.ImageProcessing
 		* NAME: Mike Heath
 		* DATE: 2/15/96
 		*******************************************************************************/
-		public static Bitmap NonMaxSupp(
+		public static DirectBitmap NonMaxSupp(
 				short[] mag,
 				short[] gradx,
 				short[] grady,
@@ -217,7 +217,7 @@ namespace Darwin.ImageProcessing
 			int resultrowptr = ncols + 1;
 			int resultptr;
 
-			Bitmap dstImage = new Bitmap(ncols, nrows);
+			DirectBitmap dstImage = new DirectBitmap(ncols, nrows);
 
 			/****************************************************************************
 			* Suppress non-maximum points.
@@ -397,6 +397,5 @@ namespace Darwin.ImageProcessing
 
 			return dstImage;
 		}
-
     }
 }

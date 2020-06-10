@@ -192,16 +192,16 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
-		private bool _imageLocked;
-		public bool ImageLocked
-		{
-			get => _imageLocked;
-			set
-			{
-				_imageLocked = value;
-				RaisePropertyChanged("ImageLocked");
-			}
-		}
+		//private bool _imageLocked;
+		//public bool ImageLocked
+		//{
+		//	get => _imageLocked;
+		//	set
+		//	{
+		//		_imageLocked = value;
+		//		RaisePropertyChanged("ImageLocked");
+		//	}
+		//}
 
 		private float _zoomRatio;
 		public float ZoomRatio
@@ -327,7 +327,7 @@ namespace Darwin.Wpf.ViewModel
 			});
 			Categories = new ObservableCollection<DBDamageCategory>(dummyCategories);
 
-			ImageLocked = true;
+			//ImageLocked = true;
 			TraceLocked = true;
 
 			NormScale = 1.0f;
@@ -352,7 +352,7 @@ namespace Darwin.Wpf.ViewModel
 
 			Database = db;
 
-			ImageLocked = false;
+			//ImageLocked = false;
 			TraceLocked = false;
 
 			NormScale = 1.0f;
@@ -369,7 +369,7 @@ namespace Darwin.Wpf.ViewModel
 			Bitmap bitmap,
 			Contour contour,
 			Outline outline,
-			bool imageLocked,
+			//bool imageLocked,
 			bool traceLocked,
 			DarwinDatabase db,
 			List<DBDamageCategory> categories)
@@ -387,7 +387,7 @@ namespace Darwin.Wpf.ViewModel
 
 			Database = db;
 
-			ImageLocked = imageLocked;
+			//ImageLocked = imageLocked;
 			TraceLocked = traceLocked;
 			
 			NormScale = 1.0f;

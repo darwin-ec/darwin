@@ -37,8 +37,6 @@ namespace Darwin.Wpf
 		System.Windows.Point? lastMousePositionOnTarget;
 		System.Windows.Point? lastDragPoint;
 
-		private ImagingProvider imagingProviderIndexador = new ImagingProvider();
-
 		private const int PointSize = 2;
 		private const int SpaceBetweenPoints = 3;
 		private const int EraserBrushSize = 9; // krd 10/28/05
@@ -48,6 +46,7 @@ namespace Darwin.Wpf
 		private int _zoomRatioOld = 100;
 
 		private int _movePosition;
+		private bool _drawingWithPencil;
 
 		private int _chopPosition;
 		private int _chopLead;
@@ -77,7 +76,6 @@ namespace Darwin.Wpf
 				Bitmap = null,
 				Contour = null,
 				TraceTool = TraceToolType.Hand,
-				ImageLocked = true,
 				TraceLocked = false,
 				ZoomRatio = 1.0f,
 				ZoomValues = new List<double>()
@@ -112,50 +110,6 @@ namespace Darwin.Wpf
 			_vm.ZoomValues.Add(0.50);
 
 			this.DataContext = _vm;
-		}
-
-		private void img_MouseWheel(object sender, MouseWheelEventArgs e)
-		{
-			//ImagingProvider.MouseWheel(imgCanvas, imgTransformGroup, e);
-
-		}
-
-		private void Img_MouseMove(object sender, MouseEventArgs e)
-		{
-			//imagingProviderIndexador.MouseMoveMagnifier(imgCanvas, imgObj, imgCanvasMagnifier, imgMagnifier, e);
-
-
-		}
-
-		private void Img_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			//imagingProviderIndexador.MouseDown(imgCanvas, imgObj, imgTranslateTransform, e);
-		}
-
-		private void Img_MouseUp(object sender, MouseButtonEventArgs e)
-		{
-			imagingProviderIndexador.MouseUp(TraceImage, e);
-		}
-
-		private void btnZoomIn_Click(object sender, RoutedEventArgs e)
-		{
-			ImagingProvider.ZoomIn(imgTransformGroup);
-		}
-
-		private void btnZoomOut_Click(object sender, RoutedEventArgs e)
-		{
-			ImagingProvider.ZoomOut(imgTransformGroup);
-		}
-
-		private void btnRotate_Click(object sender, RoutedEventArgs e)
-		{
-			ImagingProvider.Rotate(imgRotateTransform);
-
-		}
-
-		private void btnFTW_Click(object sender, RoutedEventArgs e)
-		{
-			//ImagingProvider.FitToContentMagnifier(imgObj, imgTransformGroup, imgCanvas, imgCanvasMagnifier, imgMagnifier);
 		}
 
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)
@@ -218,7 +172,10 @@ namespace Darwin.Wpf
 		private void TraceReset()
 		{
 			if (_vm.Contour != null)
+			{
+				AddContourUndo(_vm.Contour);
 				_vm.Contour = null;
+			}
 
 			//***1.4 - new code to remove Outline, if loaded from fin file
 			if (_vm.Outline != null)
@@ -415,7 +372,7 @@ namespace Darwin.Wpf
 
 		private void TraceAddNormalPoint(Darwin.Point point)
 		{
-			if (point.IsEmpty)
+			if (!_drawingWithPencil || point.IsEmpty)
 				return;
 
 			if (_vm.Contour == null)
@@ -445,18 +402,18 @@ namespace Darwin.Wpf
 			};
 
 			// full size and currently viewed scale edgeMagImage
-			Bitmap EdgeMagImage;
-			Bitmap smallEdgeMagImage;
-			Bitmap temp;
+			DirectBitmap EdgeMagImage;
+			DirectBitmap smallEdgeMagImage;
+			DirectBitmap temp = new DirectBitmap(_vm.Bitmap);
 
 			if (useCyan)
-				temp = _vm.Bitmap.ToCyanIntensity(); //***1.96 - copy to cyan
+				temp.ToCyanIntensity(); //***1.96 - copy to cyan
 			else
-				temp = _vm.Bitmap.ToGrayscale(); //***1.96 - copy to grayscale
+				temp.ToGrayscale(); //***1.96 - copy to grayscale
 
-			Bitmap temp2 = BitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
+			DirectBitmap temp2 = DirectBitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
 
-			Bitmap EdgeImage = EdgeDetection.CannyEdgeDetection(
+			DirectBitmap EdgeImage = EdgeDetection.CannyEdgeDetection(
 					//temp,
 					temp2, //***1.96
 					out EdgeMagImage,
@@ -514,7 +471,7 @@ namespace Darwin.Wpf
 
 				// resize EdgeMagImage to current scale
 				if (ratio != 100)
-					smallEdgeMagImage = BitmapHelper.ResizePercentageNearestNeighbor(EdgeMagImage, ratio);
+					smallEdgeMagImage = new DirectBitmap(BitmapHelper.ResizePercentageNearestNeighbor(EdgeMagImage.Bitmap, ratio));
 				else
 					smallEdgeMagImage = EdgeMagImage;
 
@@ -1189,12 +1146,17 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceToolType.Pencil:
-					if (_vm.ImageLocked && !_vm.TraceLocked)
+					if (!_vm.TraceLocked)
 					{ //***051TW
 						if (_vm.Contour != null && _vm.Contour.Length > 0) //***1.4TW - empty is OK to reuse
+						{
 							ShowOutlineDeleteDialog();
+						}
 						else
+						{
+							_drawingWithPencil = true;
 							TraceAddNormalPoint(bitmapPoint);
+						}
 					}
 					e.Handled = true;
 					break;
@@ -1317,6 +1279,8 @@ namespace Darwin.Wpf
 			switch (_vm.TraceTool)
 			{
 				case TraceToolType.Pencil:
+					_drawingWithPencil = false;
+
 					if (!_vm.TraceSnapped)
 					{ //***051TW
 					  // it is possible for user to trace completely OUTSIDE of the image, so Contour is never created
@@ -1488,7 +1452,7 @@ namespace Darwin.Wpf
 							Contour = new Contour(_vm.Contour)
 						});
 
-						_vm.Contour = new Contour(mod.Contour);
+						_vm.Contour = (mod.Contour == null) ? null : new Contour(mod.Contour);
 						break;
 
 					case ModificationType.Image:
@@ -1517,7 +1481,7 @@ namespace Darwin.Wpf
 						_vm.RedoItems.Push(new Modification
 						{
 							ModificationType = ModificationType.Contour,
-							Contour = new Contour(_vm.Contour)
+							Contour = (_vm.Contour == null) ? null : new Contour(_vm.Contour)
 						});
 
 						_vm.Contour = new Contour(mod.Contour);

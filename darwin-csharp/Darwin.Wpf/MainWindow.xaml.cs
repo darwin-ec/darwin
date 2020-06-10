@@ -103,7 +103,7 @@ namespace Darwin.Wpf
                         fin.FinImage ?? fin.ModifiedFinImage,
                         new Contour(fin.FinOutline.ChainPoints, fin.Scale),
                         fin.FinOutline,
-                        true,
+                        //true,
                         true,
                         _vm.DarwinDatabase,
                         _vm.DarwinDatabase?.Categories);

@@ -61,8 +61,8 @@ namespace Darwin.ImageProcessing
         * NAME: Mike Heath
         * DATE: 2/15/96
         *******************************************************************************/
-        public static Bitmap CannyEdgeDetection(Bitmap image,
-                        out Bitmap magImage,
+        public static DirectBitmap CannyEdgeDetection(DirectBitmap image,
+                        out DirectBitmap magImage,
                         bool saveMagImage,
                         float sigma,
                         float tlow,
@@ -129,12 +129,12 @@ namespace Darwin.ImageProcessing
             /****************************************************************************
             * Perform non-maximal suppression.
             ****************************************************************************/
-            Bitmap nms = Hysteresis.NonMaxSupp(magnitude, delta_x, delta_y, num_rows, num_cols);
+            DirectBitmap nms = Hysteresis.NonMaxSupp(magnitude, delta_x, delta_y, num_rows, num_cols);
 
             /****************************************************************************
             * Use hysteresis to mark the edge pixels.
             ****************************************************************************/
-            Bitmap edge = Hysteresis.ApplyHysteresis(magnitude, nms, num_rows, num_cols, tlow, thigh);
+            DirectBitmap edge = Hysteresis.ApplyHysteresis(magnitude, nms, num_rows, num_cols, tlow, thigh);
 
             return edge;
         }
@@ -258,9 +258,9 @@ namespace Darwin.ImageProcessing
         //    Converts a magnitude representation (which is an array of shorts) to
         //    a GrayImage which is made up of bytes.
         //
-        private static Bitmap ConvertMagnitude(short[] magnitude, int rows, int cols)
+        private static DirectBitmap ConvertMagnitude(short[] magnitude, int rows, int cols)
         {
-            Bitmap dstImage = new Bitmap(cols, rows);
+            DirectBitmap dstImage = new DirectBitmap(cols, rows);
 
             int pos, r, c;
             int max = magnitude[0];
@@ -365,7 +365,7 @@ namespace Darwin.ImageProcessing
         * NAME: Mike Heath
         * DATE: 2/15/96
         *******************************************************************************/
-        private static short[] GaussianSmooth(Bitmap image, float sigma)
+        private static short[] GaussianSmooth(DirectBitmap image, float sigma)
         {
             int r, c, rr, cc,       /* Counter variables. */
                 windowsize,     /* Dimension of the gaussian kernel. */
