@@ -30,6 +30,25 @@ namespace Darwin
             }
         }
 
+        public IntensityHistogram(DirectBitmap bmp)
+        {
+            if (bmp == null)
+                throw new ArgumentNullException(nameof(bmp));
+
+            if (bmp.Width < 1 || bmp.Height < 1)
+                throw new ArgumentOutOfRangeException(nameof(bmp));
+
+            _histogram = new int[byte.MaxValue + 1];
+
+            for (var x = 0; x < bmp.Width; x++)
+            {
+                for (var y = 0; y < bmp.Height; y++)
+                {
+                    _histogram[bmp.GetPixel(x, y).GetIntensity()] += 1;
+                }
+            }
+        }
+
         public int FindMaxPeak()
         {
             int maxIndex = -1;

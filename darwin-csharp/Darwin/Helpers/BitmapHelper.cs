@@ -17,7 +17,7 @@ namespace Darwin.Helpers
         private const PixelOffsetMode _PixelOffsetMode = PixelOffsetMode.Default;
         private const CompositingQuality _CompositingQuality = CompositingQuality.Default;
 
-        public static Bitmap ResizePercentageNearestNeighboar(Bitmap bmp, float percentage)
+        public static Bitmap ResizePercentageNearestNeighbor(Bitmap bmp, float percentage)
         {
             if (bmp == null)
                 throw new ArgumentNullException(nameof(bmp));
@@ -85,127 +85,6 @@ namespace Darwin.Helpers
                 yoffset,
                 Convert.ToInt32((float)right / factor),
                 Convert.ToInt32((float)bottom / factor));
-        }
-
-        /*
-         * Find all black pixels that touch (seedrow,seedcol).
-         * (seedrow,seedcol) should be black, otherwise an empty image and an area of 0 are returned.
-         * 
-         * @param srcImg The image in which to look for contigous black pixels
-         * 		NOTE: srcImg is changed. Do not pass *this
-         * 		TODO: Check that the code works correctly with srcImg being changed
-         * @param seedrow the row of the (row,col) pair at which to start
-         * @param seedcol the column of the (row,col) pair at which to start
-         * @return a pointer to a Feature containing an BinaryImage of all contigous black pixels touching (seedrow,seedcol)
-         */
-        public static Feature FindBlob(Bitmap srcImg, int seedrow, int seedcol)
-        {
-            //Based on code from deburekr
-            Stack<Darwin.PointF> nbr_stack = new Stack<Darwin.PointF>();
-            int cr, cc; // removed done & j
-            int l, r, t, b;  /*left, right, top , bottom neighbor */
-            int area;
-            int map_val = 0;
-
-            Bitmap map = new Bitmap(srcImg.Width, srcImg.Height);
-            using (var graphics = Graphics.FromImage(map))
-            {
-                graphics.FillRectangle(Brushes.White, 0, 0, map.Width, map.Height);
-            }
-
-            nbr_stack.Push(new Darwin.PointF(seedcol, seedrow));
-            area = 0;
-            while (nbr_stack.Count > 0)
-            {
-                Darwin.PointF pt = nbr_stack.Pop();
-                cr = (int)Math.Round(pt.Y);
-                cc = (int)Math.Round(pt.X);
-
-                if (srcImg.GetPixel(cc, cr).GetIntensity() != 255)
-                {  /* may already have been pushed & processed */
-                    srcImg.SetPixel(cc, cr, Color.White);
-
-                    var mapPixel = Color.FromArgb(map_val, map_val, map_val);
-                    map.SetPixel(cc, cr, mapPixel);
-
-                    area++;
-                    r = cc + 1;
-                    l = cc - 1;
-                    t = cr - 1;
-                    b = cr + 1;
-                    /* process 4 neighbors in R,B,L,T (ESWN) order */
-                    if (r < srcImg.Width)
-                    { /* border? */
-                        if (srcImg.GetPixel(r, cr).GetIntensity() != 255)
-                        {
-                            nbr_stack.Push(new Darwin.PointF(r, cr));
-                        }
-                    }
-                    if (b < srcImg.Height)
-                    {
-                        if (srcImg.GetPixel(cc, b).GetIntensity() != 255)
-                        {
-                            nbr_stack.Push(new Darwin.PointF(cc, b));
-                        }
-                    }
-                    if (l >= 0)
-                    {
-                        if (srcImg.GetPixel(l, cr).GetIntensity() != 255)
-                        {
-                            nbr_stack.Push(new Darwin.PointF(l, cr));
-                        }
-                    }
-                    if (t >= 0)
-                    {
-                        if (srcImg.GetPixel(cc, t).GetIntensity() != 255)
-                        {
-                            nbr_stack.Push(new Darwin.PointF(cc, t));
-                        }
-                    }
-                }
-            } /* end while */
-            //printf("Area = %d\n", area);
-
-            return new Feature
-            {
-                Area = area,
-                Mask = map
-            };
-        }
-
-        public static Feature FindLargestFeature(Bitmap bitmap)
-        {
-            Feature largest = null;
-            Feature current = null;
-
-            //Feature* largest = NULL, *current = NULL;
-            //BinaryImage imgCpy(this);
-
-            // TODO: Should we modify the FindBlob method so it doesn't try to operate
-            // on the bitmap parameter
-            Bitmap imgCpy = new Bitmap(bitmap);
-
-            for (int r = 10; r < bitmap.Height - 10; r++)
-            {
-                if (r % 100 == 0)
-                    Trace.Write("."); //***1.96a - progress feedback for user
-
-                for (int c = 10; c < bitmap.Width - 10; c++)
-                {
-                    if (imgCpy.GetPixel(c, r).GetIntensity() == 0)
-                    {
-                        current = FindBlob(imgCpy, r, c);
-
-                        //BinaryImage notMask((current->mask));
-                        //notMask.doNot();
-                        //imgCpy.doAnd(notMask);
-                        if (largest == null || current.Area > largest.Area)
-                            largest = current;
-                    }
-                }
-            }
-
-            return largest;
         }
     }
 }

@@ -10,6 +10,7 @@
 
 using Darwin.Extensions;
 using Darwin.Helpers;
+using Darwin.ImageProcessing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,8 +29,9 @@ namespace Darwin
         public IntensityContour(Bitmap bitmap, Contour contour,
             int left, int top, int right, int bottom)
         {
-            Bitmap grayImage = bitmap.ToGrayscale();
-            GetPointsFromBitmap(grayImage, contour, left, top, right, bottom);
+            DirectBitmap grayImage = new DirectBitmap(bitmap);
+            DirectBitmapHelper.ConvertToGrayscale(ref grayImage);
+            GetPointsFromBitmap(ref grayImage, contour, left, top, right, bottom);
         }
 
         /* TODO: References spots in old code
@@ -64,33 +66,30 @@ namespace Darwin
          * 		if its length is greater than 0.
          * 
          */
-        public Contour GetPointsFromBitmap(Bitmap bmp, Contour ctour, int left, int top, int right, int bottom)
+        public Contour GetPointsFromBitmap(ref DirectBitmap bmp, Contour ctour, int left, int top, int right, int bottom)
         {
             // Resample the image to lower resolution
             int width = right - left;
 
             int factor = 1;
-            while (width / (float)factor > /*800*/1024)
+            while (width / (float)factor > 1024)
             { //***1.96 - changed magic num JHS
                 factor *= 2;
             }
 
-            Bitmap workingBmp = null;
+            DirectBitmap workingBmp = null;
 
             if (factor > 1)
-                workingBmp = BitmapHelper.ResizePercentageNearestNeighboar(bmp, 100.0f / factor);
+                workingBmp = new DirectBitmap(BitmapHelper.ResizePercentageNearestNeighbor(bmp.Bitmap, 100.0f / factor));
             else
-                workingBmp = new Bitmap(bmp);
-
-            //workingBmp.Save(@"c:\Users\Adam Russell\Desktop\2workingBmp.png");
+                workingBmp = new DirectBitmap(bmp.Bitmap);
 
             int xoffset;
             int yoffset;
 
-            workingBmp = BitmapHelper.ApplyBounds(workingBmp, left, top, right, bottom, factor,
+            workingBmp = DirectBitmapHelper.ApplyBounds(workingBmp, left, top, right, bottom, factor,
                 out xoffset, out yoffset);
 
-            //workingBmp.Save(@"c:\Users\Adam Russell\Desktop\3workingBmp.png");
             IntensityHistogram histogram = new IntensityHistogram(workingBmp);
 
             Range lowestRange = histogram.FindNextValley(0);
@@ -117,10 +116,11 @@ namespace Darwin
             }
 
             // use the range to threshold
-            Bitmap binaryBmp = workingBmp.ToThresholdRange(lowestRange);
-            Bitmap saveBinaryBmp = new Bitmap(binaryBmp);
+            DirectBitmapHelper.ThresholdRange(ref workingBmp, lowestRange);
 
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\4binarybmp.png");
+
+            DirectBitmap saveBinaryBmp = new DirectBitmap(workingBmp.Bitmap);
+
             /* ----------------------------------------------------
              * Open the image (erode and dilate)
              * ----------------------------------------------------
@@ -133,52 +133,42 @@ namespace Darwin
 
             for (i = 0; i < iterations; i++)
             {
-                ecount = binaryBmp.Erode(i % 2);
+                ecount = MorphologicalOperators.Erode(ref workingBmp, i % 2);
             }
 
             // Shrink all other regions with less than 5 neighbor black pixles
             while (ecount != 0)
             {
-                ecount = binaryBmp.Erode(5);
+                ecount = MorphologicalOperators.Erode(ref workingBmp, 5);
                 itcount++;
             }
 
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\5AfterErode.png");
-
             for (i = 0; i < iterations; i++)
             {
-                dcount = binaryBmp.Dilate(i % 2);
+                dcount = MorphologicalOperators.Dilate(ref workingBmp, i % 2);;
             }
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\6AfterDilate.png");
 
             // AND opended image with orginal
-            binaryBmp.And(saveBinaryBmp);
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\7AfterAnd.png");
+            MorphologicalOperators.And(ref workingBmp, saveBinaryBmp);
 
             //Trace.WriteLine("Starting feature recognition...");
 
-            var largestFeature = BitmapHelper.FindLargestFeature(binaryBmp);
+            var largestFeature = FeatureIdentification.FindLargestFeature(workingBmp);
 
             Trace.WriteLine("Feature recognition complete.");
 
             // now binImg can be reset to the mask of the NEW largestFeature
-            binaryBmp = largestFeature.Mask;
+            DirectBitmap binaryBmp = largestFeature.Mask;
 
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\8feature.png");
-
-            Bitmap outline = new Bitmap(binaryBmp);
+            DirectBitmap outline = new DirectBitmap(binaryBmp.Bitmap);
 
             ecount = 0;
             for (i = 0; i < 1; i++)
             {
-                ecount = outline.Erode(0);
+                ecount = MorphologicalOperators.Erode(ref outline, 0);
             }
 
-            //outline.Save(@"c:\Users\Adam Russell\Desktop\9outlineerode.png");
-
-            binaryBmp.Xor(outline);
-
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\10afterexor.png");
+            MorphologicalOperators.Xor(ref binaryBmp, outline);
 
             //***1.0LK - a bit of a mess - JHS
             // at this point binImg points to the largestFeature->mask (eroded and XORed).
@@ -192,8 +182,9 @@ namespace Darwin
 
             //cout << "Looking for 2nd Fin Candidate: ";
 
-            Feature oldLargest = largestFeature; //***1.0LK 
-            largestFeature = BitmapHelper.FindLargestFeature(binaryBmp);
+            //Feature oldLargest = largestFeature; //***1.0LK 
+
+            var finalLargestFeature = FeatureIdentification.FindLargestFeature(binaryBmp);
 
             if (largestFeature == null)
             {
@@ -203,12 +194,10 @@ namespace Darwin
             }
 
             // now binImg can be reset to the mask of the NEW largestFeature
-            binaryBmp = largestFeature.Mask;
-
-            //binaryBmp.Save(@"c:\Users\Adam Russell\Desktop\11newlargestfeature.png");
+            DirectBitmap finalWorkingBmp = largestFeature.Mask;
 
             int row = 0, col = 0;
-            int rows = binaryBmp.Height, cols = binaryBmp.Width;
+            int rows = finalWorkingBmp.Height, cols = finalWorkingBmp.Width;
             bool done = false;
 
             width = 15;
@@ -231,12 +220,11 @@ namespace Darwin
             int maxy = (sty > endy) ? sty : endy; // Math.max(sty,endy);
             midx = Convert.ToInt32((endx + stx) * .5);
 
-            //binaryBmp.Save(@"c:\users\adam russell\desktop\blah.png");
             //find black pixel closest to bottom in column midx
             row = maxy;
             while (!done && row >= 0)
             {
-                if (binaryBmp.GetPixel(midx, row).GetIntensity() == 0)
+                if (finalWorkingBmp.GetPixel(midx, row).GetIntensity() == 0)
                 {
                     midy = row;
                     done = true;
@@ -267,7 +255,7 @@ namespace Darwin
             int st2x = col;
 
             // Walk from point (row,col)
-            binaryBmp.SetPixel(col, row, Color1);
+            finalWorkingBmp.SetPixel(col, row, Color1);
 
             /* Prioritize direction of movement
 
@@ -284,7 +272,6 @@ namespace Darwin
             done = false;
             while (!done)
             {
-
                 /* Prioritize direction of movement
 
                         4 | 3 | 2
@@ -293,24 +280,22 @@ namespace Darwin
                         -- --  --
                         4 | 3 | 2
                 */
-
-
-                if (col + 1 < cols && binaryBmp.GetPixel(col + 1, row).GetIntensity() == 0)
+                if (col + 1 < cols && finalWorkingBmp.GetPixel(col + 1, row).GetIntensity() == 0)
                 {//E
                     foundPoint = true;
                     col = col + 1;
                 }
-                else if (row - 1 >= 0 && binaryBmp.GetPixel(col, row - 1).GetIntensity() == 0)
+                else if (row - 1 >= 0 && finalWorkingBmp.GetPixel(col, row - 1).GetIntensity() == 0)
                 {//N
                     foundPoint = true;
                     row = row - 1;
                 }
-                else if (row + 1 < rows && binaryBmp.GetPixel(col, row + 1).GetIntensity() == 0)
+                else if (row + 1 < rows && finalWorkingBmp.GetPixel(col, row + 1).GetIntensity() == 0)
                 {//S
                     foundPoint = true;
                     row = row + 1;
                 }
-                else if (col - 1 >= 0 && binaryBmp.GetPixel(col - 1, row).GetIntensity() == 0)
+                else if (col - 1 >= 0 && finalWorkingBmp.GetPixel(col - 1, row).GetIntensity() == 0)
                 {//W
                     foundPoint = true;
                     col = col - 1;
@@ -341,7 +326,7 @@ namespace Darwin
                     {
                         AddPoint(factor * (col + xoffset), factor * (row + yoffset));
                     }
-                    binaryBmp.SetPixel(col, row, Color128);
+                    finalWorkingBmp.SetPixel(col, row, Color128);
                     if (row == maxy)
                     {
                         //done with this direction
@@ -362,7 +347,6 @@ namespace Darwin
                 i++;
             } // end loop until done
 
-            // TODO: Is this right?
             TrimAndReorder(ctour[0], ctour[1]);
 
             Trace.WriteLine("IntensityContour::GetPointsFromBitmap COMPLETE");

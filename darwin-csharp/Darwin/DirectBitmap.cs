@@ -1,96 +1,169 @@
-﻿// Modified Disposal, Constructor, etc./
-
-
-// Based on the StackOverflow answer by A. Konzel at
-// https://stackoverflow.com/questions/24701703/c-sharp-faster-alternatives-to-setpixel-and-getpixel-for-bitmaps-for-windows-f
-// Original license CC BY-SA 3.0 https://creativecommons.org/licenses/by-sa/3.0/
-
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace Darwin
 {
-    public class DirectBitmap : IDisposable
+    public class DirectBitmap
     {
-        public Bitmap Bitmap { get; private set; }
-        public int[] Bits { get; private set; }
-        public int Height { get; private set; }
-        public int Width { get; private set; }
-
-        protected GCHandle BitsHandle { get; private set; }
-        private bool isDisposed;
-
-        public DirectBitmap(int width, int height)
+        private Bitmap _bitmap;
+        public Bitmap Bitmap
         {
-            isDisposed = false;
-            Width = width;
-            Height = height;
-            Bits = new Int32[width * height];
-            BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
-            Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
-        }
-
-        public DirectBitmap(Bitmap bitmap)
-        {
-            if (bitmap == null)
-                throw new ArgumentNullException(nameof(bitmap));
-
-            isDisposed = false;
-            Width = bitmap.Width;
-            Height = bitmap.Height;
-            Bits = new Int32[bitmap.Width * bitmap.Height];
-            BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
-            Bitmap = new Bitmap(Height, Width, Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
-
-            using (var g = Graphics.FromImage(Bitmap))
+            get
             {
-                g.DrawImage(bitmap,
-                    new Rectangle(0, 0, Width, Height));
+                if (IsLocked)
+                    UnlockBits();
+
+                return _bitmap;
+            }
+
+            set
+            {
+                if (IsLocked)
+                    UnlockBits();
+
+                _bitmap = value;
+
+                Width = _bitmap.Width;
+                Height = _bitmap.Height;
             }
         }
 
-        public void SetPixel(int x, int y, Color colour)
+        public int Stride { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int BitsPerPixel { get; private set; }
+        public int BytesPerPixel
         {
-            int index = x + (y * Width);
-            int col = colour.ToArgb();
+            get
+            {
+                return BitsPerPixel / 8;
+            }
+        }
 
-            Bits[index] = col;
+        public bool IsLocked { get; private set; }
+
+        private byte[] _pixelData { get; set; }
+        IntPtr _dataPtr;
+        BitmapData _bitmapData;
+
+        public DirectBitmap(int width, int height)
+        {
+            Width = width;
+            Height = height;
+            _bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
+            IsLocked = false;
+        }
+
+        public DirectBitmap(Bitmap source)
+        {
+            _bitmap = new Bitmap(source);
+            Width = _bitmap.Width;
+            Height = _bitmap.Height;
+            IsLocked = false;
         }
 
         public Color GetPixel(int x, int y)
         {
-            int index = x + (y * Width);
-            int col = Bits[index];
-            Color result = Color.FromArgb(col);
+            if (!IsLocked && _pixelData == null && _bitmap != null)
+                LockBits();
 
-            return result;
-        }
+            // Get start index of the specified pixel
+            int i = (y * Stride) + x * BytesPerPixel;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            if (i > _pixelData.Length - BytesPerPixel)
+                throw new IndexOutOfRangeException();
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (isDisposed)
-                return;
-
-            if (disposing)
+            if (BitsPerPixel == 32)
             {
-                Bitmap.Dispose();
-                BitsHandle.Free();
+                byte b = _pixelData[i];
+                byte g = _pixelData[i + 1];
+                byte r = _pixelData[i + 2];
+                byte a = _pixelData[i + 3];
+                return Color.FromArgb(a, r, g, b);
+            }
+            
+            if (BitsPerPixel == 24)
+            {
+                byte b = _pixelData[i];
+                byte g = _pixelData[i + 1];
+                byte r = _pixelData[i + 2];
+                return Color.FromArgb(r, g, b);
+            }
+            
+            if (BitsPerPixel == 8)
+            {
+                byte c = _pixelData[i];
+                return Color.FromArgb(c, c, c);
             }
 
-            isDisposed = true;
+            throw new NotImplementedException();
         }
 
-        ~DirectBitmap()
+        public void SetPixel(int x, int y, Color color)
         {
-            Dispose(false);
+            if (!IsLocked)
+                LockBits();
+
+            int i = (y * Stride) + x * BytesPerPixel;
+
+            if (BitsPerPixel == 32)
+            {
+                _pixelData[i] = color.B;
+                _pixelData[i + 1] = color.G;
+                _pixelData[i + 2] = color.R;
+                _pixelData[i + 3] = color.A;
+            }
+            else if (BitsPerPixel == 24)
+            {
+                _pixelData[i] = color.B;
+                _pixelData[i + 1] = color.G;
+                _pixelData[i + 2] = color.R;
+            }
+            else if (BitsPerPixel == 8)
+            {
+                _pixelData[i] = color.B;
+            }
+        }
+
+        private void LockBits()
+        {
+            if (IsLocked)
+                return;
+
+            BitsPerPixel = Image.GetPixelFormatSize(_bitmap.PixelFormat);
+
+            if (BitsPerPixel != 8 && BitsPerPixel != 24 && BitsPerPixel != 32)
+                throw new NotImplementedException("Unsupported color depth");
+
+            // Lock bitmap and return bitmap data
+            _bitmapData = _bitmap.LockBits(new Rectangle(0, 0, Width, Height),
+                ImageLockMode.ReadWrite,
+                _bitmap.PixelFormat);
+
+            Stride = Math.Abs(_bitmapData.Stride);
+
+            int bytes = Math.Abs(Stride) * Height;
+            _pixelData = new byte[bytes];
+
+            _dataPtr = _bitmapData.Scan0;
+
+            Marshal.Copy(_dataPtr, _pixelData, 0, _pixelData.Length);
+
+            IsLocked = true;
+        }
+
+        private void UnlockBits()
+        {
+            if (!IsLocked)
+                return;
+
+            Marshal.Copy(_pixelData, 0, _dataPtr, _pixelData.Length);
+
+            _bitmap.UnlockBits(_bitmapData);
+
+            IsLocked = false;
         }
     }
 }

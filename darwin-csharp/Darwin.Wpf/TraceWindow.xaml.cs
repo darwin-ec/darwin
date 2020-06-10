@@ -514,7 +514,7 @@ namespace Darwin.Wpf
 
 				// resize EdgeMagImage to current scale
 				if (ratio != 100)
-					smallEdgeMagImage = BitmapHelper.ResizePercentageNearestNeighboar(EdgeMagImage, ratio);
+					smallEdgeMagImage = BitmapHelper.ResizePercentageNearestNeighbor(EdgeMagImage, ratio);
 				else
 					smallEdgeMagImage = EdgeMagImage;
 
