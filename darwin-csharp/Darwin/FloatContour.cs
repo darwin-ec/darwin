@@ -232,7 +232,7 @@ namespace Darwin
         //********************************************************************
         // minX()
         //
-        private float MinX()
+        public float MinX()
         {
 
             if (Length <= 0)
@@ -275,7 +275,7 @@ namespace Darwin
             if (Length <= 0)
                 return 0.0f;
 
-            return _points.Min(x => x.Y);
+            return _points.Max(x => x.Y);
         }
 
         //********************************************************************

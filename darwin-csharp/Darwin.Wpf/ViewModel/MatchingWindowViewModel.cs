@@ -155,6 +155,29 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+
+        private Contour _unknownContour;
+        public Contour UnknownContour
+        {
+            get => _unknownContour;
+            set
+            {
+                _unknownContour = value;
+                RaisePropertyChanged("UnknownContour");
+            }
+        }
+
+        private Contour _dbContour;
+        public Contour DBContour
+        {
+            get => _dbContour;
+            set
+            {
+                _dbContour = value;
+                RaisePropertyChanged("DBContour");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingWindowViewModel(DatabaseFin databaseFin,
@@ -167,11 +190,48 @@ namespace Darwin.Wpf.ViewModel
             RangeOfPoints = RangeOfPointsType.AllPoints;
             Database = database;
 
-            Match = new Match(DatabaseFin, Database);
+            Match = new Match(DatabaseFin, Database, UpdateOutlines);
 
             ProgressBarVisibility = Visibility.Hidden;
 
             InitializeSelectableCategories();
+        }
+
+        private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
+        {
+            if (unknownContour == null || dbContour == null)
+                return;
+
+            float
+                xMax = (dbContour.MaxX() > (float)unknownContour.MaxX()) ? dbContour.MaxX() : (float)unknownContour.MaxX(),
+                yMax = (dbContour.MaxY() > (float)unknownContour.MaxY()) ? dbContour.MaxY() : (float)unknownContour.MaxY(),
+                xMin = (dbContour.MinX() < (float)unknownContour.MinX()) ? dbContour.MinX() : (float)unknownContour.MinX(),
+                yMin = (dbContour.MinY() < (float)unknownContour.MinY()) ? dbContour.MinY() : (float)unknownContour.MinY();
+
+            // TODO: Get these from the window
+            int drawingWidth = 200;
+            int drawingHeight = 200;
+
+            float
+                xRange = xMax - xMin + 8, //***1.5 - added POINT_SIZE
+                yRange = yMax - yMin + 8; //***1.5 - added POINT_SIZE
+
+            float
+                heightRatio = drawingWidth / yRange,
+                widthRatio = drawingHeight / xRange;
+
+            float ratio;
+            if (heightRatio < widthRatio)
+            {
+                ratio = heightRatio;
+            }
+            else
+            {
+                ratio = widthRatio;
+            }
+
+            UnknownContour = new Contour(unknownContour, ratio);
+            DBContour = new Contour(dbContour, ratio);
         }
 
         private void InitializeSelectableCategories()

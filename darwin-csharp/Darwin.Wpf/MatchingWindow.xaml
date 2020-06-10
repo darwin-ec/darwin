@@ -11,6 +11,14 @@
         Title="Matching" Height="450" Width="800">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Yellow" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
+        <x:Array Type="Brush" x:Key="dbBrushes">
             <x:Static Member="Brushes.Lime" />
             <x:Static Member="Brushes.Crimson" />
             <x:Static Member="Brushes.Yellow" />
@@ -18,7 +26,6 @@
             <x:Static Member="Brushes.Blue" />
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
-            
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
     </Window.Resources>
     <Grid>
@@ -89,12 +96,21 @@
                 <Label>Registered Outlines</Label>
 
                 <Viewbox>
-                    <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
+                    <Grid>
+                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="200" Height="200"
                                          Background="Transparent"
                                          PointSize="3"
-                                         ContourScale="{Binding SelectedContour.Scale}"
-                                         ItemsSource="{Binding SelectedContour.Points}"     
+                                         ContourScale="{Binding UnknownContour.Scale}"
+                                         ItemsSource="{Binding UnknownContour.Points}"     
                                          Brushes="{StaticResource brushes}" />
+
+                        <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
+                                         Background="Transparent"
+                                         PointSize="3"
+                                         ContourScale="{Binding DBContour.Scale}"
+                                         ItemsSource="{Binding DBContour.Points}"     
+                                         Brushes="{StaticResource brushes}" />
+                    </Grid>
                 </Viewbox>
 
                 <CheckBox IsChecked="{Binding ShowRegistration}">Show Registration of Fin Outlines</CheckBox>

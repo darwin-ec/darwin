@@ -34,6 +34,10 @@ namespace Darwin.Matching
 
         protected ErrorBetweenOutlinesDelegate errorBetweenOutlines;
 
+        public delegate void UpdateOutlinesDelegate(FloatContour unknownContour, FloatContour databaseContour);
+
+        protected UpdateOutlinesDelegate _updateOutlines;
+
         DatabaseFin UnknownFin { get; set; }
         DarwinDatabase Database { get; set; }
         protected int CurrentFinIndex { get; set; }
@@ -63,13 +67,15 @@ namespace Darwin.Matching
         //
         //    CONSTRUCTOR
         //
-        public Match(DatabaseFin unknownFin, DarwinDatabase db)
+        public Match(DatabaseFin unknownFin, DarwinDatabase db, UpdateOutlinesDelegate updateOutlines)
         {
             if (unknownFin == null)
                 throw new ArgumentNullException(nameof(unknownFin));
 
             if (db == null)
                 throw new ArgumentNullException(nameof(db));
+
+            _updateOutlines = updateOutlines;
 
             UnknownFin = new DatabaseFin(unknownFin);
             Database = db;
@@ -643,12 +649,8 @@ namespace Darwin.Matching
                                             mappedContour,startLeadUnk,mUnknownEndTE));
                 */
 
-                // TODO
-                //if (mMatchingDialog != NULL)
-                //{
-                //	// show the display of the outline registration in the dialog
-                //	mMatchingDialog->showOutlines(mappedContour, floatDBContour);
-                //}
+                if (_updateOutlines != null)
+                    _updateOutlines(mappedContour, floatDBContour);
 
                 //***1.0LK - this if-else revised to fix memory leaks - JHS
                 if (0 == matchNum)
@@ -1212,17 +1214,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                 }
             }
 
-            // TODO
-            //if (mMatchingDialog != NULL)
-            //{
-            // show the display of the outline registration in the dialog
-            //	mMatchingDialog->showOutlines(mappedContour, floatDBContour);
-
-            // this hook is for screen capturing first alignments - JHS
-            //char dummy;
-            //cin >> dummy;
-
-            //}
+            if (_updateOutlines != null)
+                _updateOutlines(mappedContour, floatDBContour);
 
             // now try shortenning one or the other of the leading or trailing edges to 
             // find a more optimal mapping (one with smaller error)
@@ -1258,12 +1251,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                // TODO
-                //if (mMatchingDialog != NULL)
-                //{
-                //	// show the display of the outline registration in the dialog
-                //	mMatchingDialog->showOutlines(shortenedDBMappedContour, floatDBContour);
-                //}
+                if (_updateOutlines != null)
+                    _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
                 // shorten UNKNOWN leading edge by 1% and test error
 
@@ -1291,12 +1280,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                // TODO
-                //if (mMatchingDialog != NULL)
-                //{
-                //	// show the display of the outline registration in the dialog
-                //	mMatchingDialog->showOutlines(shortenedUnkMappedContour, floatDBContour);
-                //}
+                if (_updateOutlines != null)
+                    _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
                 // shorten DATABASE trailing edge by 1% and test error
 
@@ -1324,12 +1309,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                         dbTipPosition, //***1.85
                         endTrailDB -/*onePercentDB*/testIncDB); //***1.5
 
-                // TODO
-                //if (mMatchingDialog != NULL)
-                //{
-                //	// show the display of the outline registration in the dialog
-                //	mMatchingDialog->showOutlines(shortenedDBMappedContour, floatDBContour);
-                //}
+                if (_updateOutlines != null)
+                    _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
                 // shorten UNKNOWN trailing edge by 1% and test error
 
@@ -1358,12 +1339,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                // TODO
-                //if (mMatchingDialog != NULL)
-                //{
-                //	// show the display of the outline registration in the dialog
-                //	mMatchingDialog->showOutlines(shortenedUnkMappedContour, floatDBContour);
-                //}
+                if (_updateOutlines != null)
+                    _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
                 // shift UNKNOWN tip by 1% and compute error (test both directions)
 
@@ -1682,12 +1659,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                                 dbTipPosition, //***1.85
                                 jumpEndTrailDB);
 
-                        //TODO
-                        //if (mMatchingDialog != NULL)
-                        //{
-                        //	// show the display of the outline registration in the dialog
-                        //	mMatchingDialog->showOutlines(jumpMappedContour, floatDBContour);
-                        //}
+                        if (_updateOutlines != null)
+                            _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
                         if (jumpError < error)
                         {
@@ -1861,13 +1834,8 @@ shiftedUnkTipMappedContour = null; //***1.1
                         endTrailDB);
             }
 
-            // TODO
-            //if (mMatchingDialog != NULL)
-            //{
-            //	// show the display of the outline registration in the dialog
-            //	mMatchingDialog->showOutlines(mappedContour, floatDBContour);
-            //	Trace.WriteLine("DONE");
-            //}
+            if (_updateOutlines != null)
+                _updateOutlines(shortenedDBMappedContour, floatDBContour);
 
             /*
                     // for now this is removed - JHS
