@@ -40,6 +40,7 @@ namespace Darwin.Wpf
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
+            _vm.ProgressBarVisibility = Visibility.Visible;
             _matchingWorker.RunWorkerAsync();
         }
 
@@ -91,6 +92,7 @@ namespace Darwin.Wpf
         private void MatchWork(object sender, DoWorkEventArgs e)
         {
             bool done = false;
+            _vm.MatchRunning = true;
             do
             {
                 if (_matchingWorker.CancellationPending)

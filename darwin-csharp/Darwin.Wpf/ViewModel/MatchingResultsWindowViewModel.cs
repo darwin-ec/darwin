@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -144,6 +145,12 @@ namespace Darwin.Wpf.ViewModel
 
             MatchResults = matchResults;
             Database = database;
+
+            if (MatchResults.Results != null && MatchResults.Results.Count > 0)
+            {
+                SelectedResult = MatchResults.Results[0];
+                LoadSelectedResult();
+            }
         }
 
         private void LoadSelectedResult()
@@ -170,7 +177,17 @@ namespace Darwin.Wpf.ViewModel
 
                             CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentDataPath, tempFin);
 
-                            var img = System.Drawing.Image.FromFile(fullImageFilename);
+                            var realOriginalImageFilename = string.Empty;
+                            if (tempFin != null && !string.IsNullOrEmpty(tempFin.ImageFilename))
+                            {
+                                realOriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, tempFin.ImageFilename);
+                            }
+
+                            System.Drawing.Image img;
+                            if (!string.IsNullOrEmpty(realOriginalImageFilename) && File.Exists(realOriginalImageFilename))
+                                img = System.Drawing.Image.FromFile(realOriginalImageFilename);
+                            else
+                                img = System.Drawing.Image.FromFile(fullImageFilename);
 
                             var bitmap = new Bitmap(img);
                             // TODO: Hack for HiDPI -- this should be more intelligent.

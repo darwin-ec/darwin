@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
+using System.Windows;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -143,6 +144,17 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private Visibility _progressBarVisibility;
+        public Visibility ProgressBarVisibility
+        {
+            get => _progressBarVisibility;
+            set
+            {
+                _progressBarVisibility = value;
+                RaisePropertyChanged("ProgressBarVisibility");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingWindowViewModel(DatabaseFin databaseFin,
@@ -156,6 +168,8 @@ namespace Darwin.Wpf.ViewModel
             Database = database;
 
             Match = new Match(DatabaseFin, Database);
+
+            ProgressBarVisibility = Visibility.Hidden;
 
             InitializeSelectableCategories();
         }

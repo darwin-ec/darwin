@@ -32,15 +32,17 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
             <Label>Selected Fin</Label>
-            <Image x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
-            <Button x:Name="SelectedShowOriginalImage" Click="SelectedShowOriginalImage_Click">
-                Show Original Image
-            </Button>
+            <Image x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" Height="320" Width="400" />
+            <StackPanel Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
+                <Button x:Name="SelectedShowOriginalImage" Click="SelectedShowOriginalImage_Click">
+                    Show Original Image
+                </Button>
+            </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
             <Label>Unknown Fin</Label>
-            <Image x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
-            <StackPanel Orientation="Horizontal">
+            <Image x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" Height="320" Width="400" />
+            <StackPanel Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
                 <Button x:Name="UnknownShowOriginalImage" Click="UnknownShowOriginalImage_Click">
                     Show Original Image
                 </Button>
@@ -86,7 +88,7 @@
                     <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
                         <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                     </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Error}">
+                    <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
                         <GridViewColumnHeader Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
                     </GridViewColumn>
                 </GridView>
@@ -94,7 +96,7 @@
         </controls:SortableListView>
 
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Margin="10,0,0,10">
                 <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=HideInfo}">
                     Info
                 </ToggleButton>

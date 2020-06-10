@@ -35,8 +35,11 @@ namespace Darwin.Database
         {
             get
             {
+                // TODO: The thumbnail part should be temporary
                 if (_allFins == null)
-                    _allFins = GetAllFins();
+                    _allFins = GetAllFins()
+                        .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
+                        .ToList();
 
                 return _allFins;
             }
