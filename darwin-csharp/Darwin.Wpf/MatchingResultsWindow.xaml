@@ -11,6 +11,14 @@
         Title="Matching Results" Height="650" Width="900">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Yellow" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
+        <x:Array Type="Brush" x:Key="dbBrushes">
             <x:Static Member="Brushes.Lime" />
             <x:Static Member="Brushes.Crimson" />
             <x:Static Member="Brushes.Yellow" />
@@ -134,6 +142,27 @@
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <Label>Registered Outlines</Label>
+                <Viewbox Width="200" Height="200">
+                    <Grid>
+                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="200" Height="200"
+                                         Background="Transparent"
+                                         PointSize="1"
+                                         ContourScale="{Binding UnknownContour.Scale}"
+                                         ItemsSource="{Binding UnknownContour.Points}"     
+                                         Brushes="{StaticResource brushes}"
+                                         XOffset="{Binding ContourXOffset}"
+                                         YOffset="{Binding ContourYOffset}"/>
+
+                        <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
+                                         Background="Transparent"
+                                         PointSize="1"
+                                         ContourScale="{Binding DBContour.Scale}"
+                                         ItemsSource="{Binding DBContour.Points}"     
+                                         Brushes="{StaticResource dbBrushes}"
+                                         XOffset="{Binding ContourXOffset}"
+                                         YOffset="{Binding ContourYOffset}"/>
+                    </Grid>
+                </Viewbox>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="10,0,0,10">
                 <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">

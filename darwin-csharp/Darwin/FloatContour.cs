@@ -463,6 +463,48 @@ namespace Darwin
             return dstContour;
         }
 
+        public static void FitContoursToSize(FloatContour unknownContour, FloatContour dbContour,
+            out Contour displayUnknownContour, out Contour displayDBContour,
+            out double xOffset, out double yOffset)
+        {
+            float
+                xMax = (dbContour.MaxX() > (float)unknownContour.MaxX()) ? dbContour.MaxX() : (float)unknownContour.MaxX(),
+                yMax = (dbContour.MaxY() > (float)unknownContour.MaxY()) ? dbContour.MaxY() : (float)unknownContour.MaxY(),
+                xMin = (dbContour.MinX() < (float)unknownContour.MinX()) ? dbContour.MinX() : (float)unknownContour.MinX(),
+                yMin = (dbContour.MinY() < (float)unknownContour.MinY()) ? dbContour.MinY() : (float)unknownContour.MinY();
+
+            // TODO: Get these from the window
+            int drawingWidth = 200;
+            int drawingHeight = 200;
+
+            float
+                xRange = xMax - xMin + 8, //***1.5 - added POINT_SIZE
+                yRange = yMax - yMin + 8; //***1.5 - added POINT_SIZE
+
+            float
+                heightRatio = drawingWidth / yRange,
+                widthRatio = drawingHeight / xRange;
+
+            float ratio;
+            if (heightRatio < widthRatio)
+            {
+                ratio = heightRatio;
+                xOffset = (drawingWidth - ratio * xRange) / 2 - xMin * ratio;
+                yOffset = 0 - yMin * ratio;
+            }
+            else
+            {
+                ratio = widthRatio;
+                xOffset = 0 - xMin * ratio;
+                yOffset = (drawingHeight - ratio * yRange) / 2 - yMin * ratio;
+            }
+
+            float ratioInverse = 1 / ratio;
+
+            displayUnknownContour = new Contour(unknownContour, ratioInverse);
+            displayDBContour = new Contour(dbContour, ratioInverse);
+        }
+
         //***006FC next function moved from header
 
         //********************************************************************

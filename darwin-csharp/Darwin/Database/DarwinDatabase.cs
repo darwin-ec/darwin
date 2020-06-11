@@ -11,6 +11,7 @@
 //
 //*******************************************************************
 
+using Darwin.Matching;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -176,6 +177,7 @@ namespace Darwin.Database
         //public CatalogScheme CurrentCatalogScheme { get; set; }
         //public List<CatalogScheme> CatalogSchemes { get; set; }    // names of catalog categories
         public abstract List<DBDamageCategory> Categories { get; }
+        public abstract List<SelectableDBDamageCategory> SelectableCategories { get; }
 
         public abstract List<DatabaseFin> AllFins { get; }
 

@@ -178,6 +178,28 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private double _contourXOffset;
+        public double ContourXOffset
+        {
+            get => _contourXOffset;
+            set
+            {
+                _contourXOffset = value;
+                RaisePropertyChanged("ContourXOffset");
+            }
+        }
+
+        private double _contourYOffset;
+        public double ContourYOffset
+        {
+            get => _contourYOffset;
+            set
+            {
+                _contourYOffset = value;
+                RaisePropertyChanged("ContourYOffset");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingWindowViewModel(DatabaseFin databaseFin,
@@ -202,36 +224,14 @@ namespace Darwin.Wpf.ViewModel
             if (unknownContour == null || dbContour == null)
                 return;
 
-            float
-                xMax = (dbContour.MaxX() > (float)unknownContour.MaxX()) ? dbContour.MaxX() : (float)unknownContour.MaxX(),
-                yMax = (dbContour.MaxY() > (float)unknownContour.MaxY()) ? dbContour.MaxY() : (float)unknownContour.MaxY(),
-                xMin = (dbContour.MinX() < (float)unknownContour.MinX()) ? dbContour.MinX() : (float)unknownContour.MinX(),
-                yMin = (dbContour.MinY() < (float)unknownContour.MinY()) ? dbContour.MinY() : (float)unknownContour.MinY();
+            Contour unk, db;
+            double xOffset, yOffset;
+            FloatContour.FitContoursToSize(unknownContour, dbContour, out unk, out db, out xOffset, out yOffset);
 
-            // TODO: Get these from the window
-            int drawingWidth = 200;
-            int drawingHeight = 200;
-
-            float
-                xRange = xMax - xMin + 8, //***1.5 - added POINT_SIZE
-                yRange = yMax - yMin + 8; //***1.5 - added POINT_SIZE
-
-            float
-                heightRatio = drawingWidth / yRange,
-                widthRatio = drawingHeight / xRange;
-
-            float ratio;
-            if (heightRatio < widthRatio)
-            {
-                ratio = heightRatio;
-            }
-            else
-            {
-                ratio = widthRatio;
-            }
-
-            UnknownContour = new Contour(unknownContour, ratio);
-            DBContour = new Contour(dbContour, ratio);
+            ContourXOffset = xOffset;
+            ContourYOffset = yOffset;
+            UnknownContour = unk;
+            DBContour = db;
         }
 
         private void InitializeSelectableCategories()

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Darwin.Database;
+using Darwin.Matching;
 using Darwin.Utilities;
 
 namespace Darwin.Database
@@ -27,6 +28,20 @@ namespace Darwin.Database
                     _categories = SelectAllDamageCategories();
 
                 return _categories;
+            }
+        }
+
+        public override List<SelectableDBDamageCategory> SelectableCategories
+        {
+            get
+            {
+                return Categories
+                    .Select(x => new SelectableDBDamageCategory
+                            {
+                                IsSelected = true,
+                                Name = x.name
+                            })
+                    .ToList();
             }
         }
 

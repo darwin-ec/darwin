@@ -6,11 +6,29 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows.Media;
 using Darwin.Wpf.Extensions;
+using Darwin.Matching;
 
 namespace Darwin.Wpf.ViewModel
 {
     public class MatchingQueueViewModel : INotifyPropertyChanged
     {
+        private List<Match> _matches;
+        public List<Match> Matches
+        {
+            get
+            {
+                if (_matches == null)
+                    _matches = new List<Match>();
+
+                return _matches;
+            }
+            set
+            {
+                _matches = value;
+                RaisePropertyChanged("Matches");
+            }
+        }
+
         private ObservableNotifiableCollection<DatabaseFin> _fins;
         public ObservableNotifiableCollection<DatabaseFin> Fins
         {
@@ -27,6 +45,7 @@ namespace Darwin.Wpf.ViewModel
                 RaisePropertyChanged("Fins");
             }
         }
+
         private DatabaseFin _selectedFin;
         public DatabaseFin SelectedFin
         {
@@ -75,6 +94,79 @@ namespace Darwin.Wpf.ViewModel
                 _currentUnknownPercent = value;
                 RaisePropertyChanged("CurrentUnknownPercent");
             }
+        }
+
+        private bool _matchRunning;
+        public bool MatchRunning
+        {
+            get => _matchRunning;
+            set
+            {
+                _matchRunning = value;
+                RaisePropertyChanged("MatchRunning");
+            }
+        }
+
+        private bool _pauseMatching;
+        public bool PauseMatching
+        {
+            get => _pauseMatching;
+            set
+            {
+                _pauseMatching = value;
+                RaisePropertyChanged("PauseMatching");
+            }
+        }
+
+        private bool _cancelMatching;
+        public bool CancelMatching
+        {
+            get => _cancelMatching;
+            set
+            {
+                _cancelMatching = value;
+                RaisePropertyChanged("CancelMatching");
+            }
+        }
+
+        private DarwinDatabase _database;
+        public DarwinDatabase Database
+        {
+            get => _database;
+            set
+            {
+                _database = value;
+                RaisePropertyChanged("Database");
+            }
+        }
+
+        private RegistrationMethodType _registrationMethod;
+        public RegistrationMethodType RegistrationMethod
+        {
+            get => _registrationMethod;
+            set
+            {
+                _registrationMethod = value;
+                RaisePropertyChanged("RegistrationMethod");
+            }
+        }
+
+        private RangeOfPointsType _rangeOfPoints;
+        public RangeOfPointsType RangeOfPoints
+        {
+            get => _rangeOfPoints;
+            set
+            {
+                _rangeOfPoints = value;
+                RaisePropertyChanged("RangeOfPoints");
+            }
+        }
+
+        public MatchingQueueViewModel()
+        {
+            Database = CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, Options.CurrentUserOptions, false);
+            RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
+            RangeOfPoints = RangeOfPointsType.AllPoints;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -15,13 +15,6 @@ namespace Darwin.Database
     {
 		public const string FinzDatabaseFilename = "database.db";
 
-		public const string SurveyAreasFolderName = "surveyAreas";
-		public const string CatalogFolderName = "catalog";
-		public const string TracedFinsFolderName = "tracedFins";
-		public const string MatchQueuesFolderName = "matchQueues";
-		public const string MatchQResultsFolderName = "matchQResults";
-		public const string SightingsFolderName = "sightings";
-
         public static DarwinDatabase OpenDatabase(string databaseFilename, Options o, bool create, string area = "default")
         {
 			CatalogScheme cat = new CatalogScheme();
@@ -127,6 +120,11 @@ namespace Darwin.Database
 					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.OriginalImageFilename))
 					{
 						fin.FinImage = new Bitmap(originalImageFromFile);
+
+						if (fin.ImageMods != null)
+                        {
+							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.FinImage, fin.ImageMods);
+                        }
 					}
 				}
 
@@ -169,16 +167,16 @@ namespace Darwin.Database
 
 			Trace.WriteLine("Creating folders...");
 
-			var surveyAreasPath = Path.Combine(new string[] { home, SurveyAreasFolderName, area });
+			var surveyAreasPath = Path.Combine(new string[] { home, Options.SurveyAreasFolderName, area });
 
 			// Note that CreateDirectory won't do anything if the path already exists, so no need
 			// to check first.
 			Directory.CreateDirectory(surveyAreasPath);
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, CatalogFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, TracedFinsFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, MatchQueuesFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, MatchQResultsFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, SightingsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.CatalogFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.TracedFinsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQueuesFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQResultsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.SightingsFolderName));
 		}
 	}
 }

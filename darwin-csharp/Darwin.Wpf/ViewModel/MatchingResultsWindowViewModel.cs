@@ -152,6 +152,50 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private Contour _unknownContour;
+        public Contour UnknownContour
+        {
+            get => _unknownContour;
+            set
+            {
+                _unknownContour = value;
+                RaisePropertyChanged("UnknownContour");
+            }
+        }
+
+        private Contour _dbContour;
+        public Contour DBContour
+        {
+            get => _dbContour;
+            set
+            {
+                _dbContour = value;
+                RaisePropertyChanged("DBContour");
+            }
+        }
+
+        private double _contourXOffset;
+        public double ContourXOffset
+        {
+            get => _contourXOffset;
+            set
+            {
+                _contourXOffset = value;
+                RaisePropertyChanged("ContourXOffset");
+            }
+        }
+
+        private double _contourYOffset;
+        public double ContourYOffset
+        {
+            get => _contourYOffset;
+            set
+            {
+                _contourYOffset = value;
+                RaisePropertyChanged("ContourYOffset");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingResultsWindowViewModel(
@@ -209,6 +253,8 @@ namespace Darwin.Wpf.ViewModel
         {
             if (SelectedResult != null)
             {
+                UpdateOutlines(SelectedResult.unknownContour, SelectedResult.dbContour);
+
                 // TODO: Cache images?
                 if (!string.IsNullOrEmpty(SelectedResult.ImageFilename))
                 {
@@ -260,6 +306,21 @@ namespace Darwin.Wpf.ViewModel
                     }
                 }
             }
+        }
+
+        private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
+        {
+            if (unknownContour == null || dbContour == null)
+                return;
+
+            Contour unk, db;
+            double xOffset, yOffset;
+            FloatContour.FitContoursToSize(unknownContour, dbContour, out unk, out db, out xOffset, out yOffset);
+
+            ContourXOffset = xOffset;
+            ContourYOffset = yOffset;
+            UnknownContour = unk;
+            DBContour = db;
         }
 
         private void RaisePropertyChanged(string propertyName)

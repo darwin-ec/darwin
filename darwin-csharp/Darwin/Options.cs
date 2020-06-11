@@ -12,6 +12,12 @@ namespace Darwin
     public class Options
     {
         public const string DarwinDataFolderName = "darwinPhotoIdData";
+        public const string SurveyAreasFolderName = "surveyAreas";
+        public const string CatalogFolderName = "catalog";
+        public const string TracedFinsFolderName = "tracedFins";
+        public const string MatchQueuesFolderName = "matchQueues";
+        public const string MatchQResultsFolderName = "matchQResults";
+        public const string SightingsFolderName = "sightings";
 
         // TODO: This gets overwritten by finz stuff.  Might want to change
         //public string DatabaseFileName { get; set; }
