@@ -10,6 +10,7 @@
         Title="Matching Queue" Height="450" Width="800">
     <Window.Resources>
         <converters:NullConverter x:Key="NullConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -65,10 +66,10 @@
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="RunMatchButton">Run Match</Button>
-            <Button x:Name="ViewResultsButton">View Results</Button>
-            <Button x:Name="SaveQueueButton">Save Queue</Button>
-            <Button x:Name="LoadQueueButton">Load Queue</Button>
+            <Button x:Name="RunMatchButton" IsEnabled="{Binding QueueRunnable}" Click="RunMatchButton_Click">Run Match</Button>
+            <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click">View Results</Button>
+            <Button x:Name="SaveQueueButton" IsEnabled="{Binding QueueRunnable}" Click="SaveQueueButton_Click">Save Queue</Button>
+            <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click">Load Queue</Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>

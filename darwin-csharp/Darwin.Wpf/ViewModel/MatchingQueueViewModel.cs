@@ -43,6 +43,18 @@ namespace Darwin.Wpf.ViewModel
             {
                 _fins = value;
                 RaisePropertyChanged("Fins");
+                CheckQueueRunnable();
+            }
+        }
+
+        private bool _queueRunnable;
+        public bool QueueRunnable
+        {
+            get => _queueRunnable;
+            set
+            {
+                _queueRunnable = value;
+                RaisePropertyChanged("QueueRunnable");
             }
         }
 
@@ -60,6 +72,8 @@ namespace Darwin.Wpf.ViewModel
                     SelectedImageSource = null;
                 else
                     SelectedImageSource = _selectedFin.ModifiedFinImage.ToImageSource();
+
+                CheckQueueRunnable();
             }
         }
 
@@ -104,6 +118,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _matchRunning = value;
                 RaisePropertyChanged("MatchRunning");
+                CheckQueueRunnable();
             }
         }
 
@@ -170,6 +185,18 @@ namespace Darwin.Wpf.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void CheckQueueRunnable()
+        {
+            if (_fins != null && _fins.Count > 0 && !MatchRunning)
+            {
+                QueueRunnable = true;
+            }
+            else
+            {
+                QueueRunnable = false;
+            }
+        }
 
         private void RaisePropertyChanged(string propertyName)
         {

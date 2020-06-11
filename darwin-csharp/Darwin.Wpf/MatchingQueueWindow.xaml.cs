@@ -51,7 +51,15 @@ namespace Darwin.Wpf
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            if (_vm.MatchRunning)
+            {
+                _vm.CancelMatching = true;
+                _matchingWorker.CancelAsync();
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -63,6 +71,8 @@ namespace Darwin.Wpf
         private void AddFinzButton_Click(object sender, RoutedEventArgs e)
         {
             var openDialog = new OpenFileDialog();
+            openDialog.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+
             openDialog.Filter = CustomCommands.OpenTracedFinFilter;
             if (openDialog.ShowDialog() == true)
             {
@@ -164,6 +174,51 @@ namespace Darwin.Wpf
             }
 
             this.Close();
+        }
+
+        private void SaveQueueButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.InitialDirectory = Options.CurrentUserOptions.CurrentMatchQueuePath;
+            dlg.FileName = "Untitled";
+            dlg.DefaultExt = ".que";
+            dlg.Filter = CustomCommands.QueueFilenameFilter;
+
+            // Process save file dialog box results
+            if (dlg.ShowDialog() == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+            }
+        }
+
+        private void LoadQueueButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openQueueDialog = new OpenFileDialog();
+            openQueueDialog.Filter = CustomCommands.QueueFilenameFilter;
+            openQueueDialog.InitialDirectory = Options.CurrentUserOptions.CurrentMatchQueuePath;
+
+            if (openQueueDialog.ShowDialog() == true)
+            {
+                //OpenDatabase(openDatabaseDialog.FileName, true);
+            }
+        }
+
+        private void ViewResultsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openQueueResultsDialog = new OpenFileDialog();
+            openQueueResultsDialog.Filter = CustomCommands.QueueResultsFilenameFilter;
+            openQueueResultsDialog.InitialDirectory = Options.CurrentUserOptions.CurrentMatchQueueResultsPath;
+
+            if (openQueueResultsDialog.ShowDialog() == true)
+            {
+                //OpenDatabase(openDatabaseDialog.FileName, true);
+            }
+        }
+
+        private void RunMatchButton_Click(object sender, RoutedEventArgs e)
+        {
+            _matchingWorker.RunWorkerAsync();
         }
     }
 }

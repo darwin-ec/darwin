@@ -27,6 +27,43 @@ namespace Darwin
 
         public string CurrentSurveyArea { get; set; } = string.Empty;
 
+        [JsonIgnore]
+        public string CurrentMatchQueueResultsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDataPath, MatchQResultsFolderName);
+            }
+        }
+
+        [JsonIgnore]
+        public string CurrentMatchQueuePath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDataPath, MatchQueuesFolderName);
+            }
+        }
+
+        [JsonIgnore]
+        public string CurrentTracedFinsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDataPath, TracedFinsFolderName);
+            }
+        }
+
+
         [DefaultValue(0)]
         public int DefaultCatalogScheme { get; set; } = 0;
         public List<CatalogScheme> CatalogSchemes { get; set; }

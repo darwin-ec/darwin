@@ -100,6 +100,9 @@ namespace Darwin.Wpf.Commands
             }
         );
 
+        public static string QueueFilenameFilter = "Darwin Queue (*.que)|*.que";
+        public static string QueueResultsFilenameFilter = "Darwin Queue Results (*.res)|*.res";
+
         public static readonly RoutedUICommand Backup = new RoutedUICommand(
             "Backup",
             "Backup",
