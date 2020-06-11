@@ -82,7 +82,28 @@ namespace Darwin.Database
         public List<ImageMod> ImageMods;    //  1.8 - for list of image modifications
         public string OriginalImageFilename; //  1.8 - filename of original unmodified image
 
-        public string FinFilename;   //  1.6 - for name of fin file if fin saved outside DB
+        private string _finFilename;
+
+        public string FinFilename   //  1.6 - for name of fin file if fin saved outside DB
+        {
+            get => _finFilename;
+            set
+            {
+                _finFilename = value;
+                OnPropertyChanged("FinFilename");
+            }
+        }
+
+        public string FinFilenameOnly
+        {
+            get
+            {
+                if (_finFilename == null)
+                    return null;
+
+                return Path.GetFileName(_finFilename);
+            }
+        }
 
         public bool IsAlternate; //  1.95 - allow designation of primary and alternate fins/images
 

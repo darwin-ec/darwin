@@ -95,6 +95,8 @@ namespace Darwin.Database
                 // First and only fin
                 var fin = db.AllFins[0];
 
+				fin.FinFilename = filename;
+
                 var baseimgfilename = Path.GetFileName(fin.ImageFilename);
                 fin.ImageFilename = Path.Combine(fullDirectoryName, baseimgfilename);
 

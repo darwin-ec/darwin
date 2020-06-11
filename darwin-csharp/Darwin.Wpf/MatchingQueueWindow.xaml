@@ -3,10 +3,73 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
         Title="Matching Queue" Height="450" Width="800">
+    <Window.Resources>
+        <converters:NullConverter x:Key="NullConverter" />
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <Label>Traced Fins</Label>
+                <controls:SortableListView Grid.Column="0" Height="300" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <!--<GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image.Source>
+                                                <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                            </Image.Source>
+                                        </Image>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>-->
+                            <GridViewColumn DisplayMemberBinding="{Binding FinFilenameOnly}">
+                                <GridViewColumnHeader Content="Filename" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="100" />
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </controls:SortableListView>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="AddFinzButton" Click="AddFinzButton_Click">Add...</Button>
+                    <Button x:Name="RemoveButton" Click="RemoveButton_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Remove</Button>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0">
+                <Image x:Name="FinImage" Source="{Binding Path=SelectedImageSource}" Height="200" />
+                <Label>Percent of Queue Processed</Label>
+                <ProgressBar x:Name="QueueProcessedProgress" Value="{Binding QueueProgressPercent}" Height="28" />
+                <TextBlock>
+                    Percent of Database Matched<LineBreak/>
+                    Against Current Unknown:
+                </TextBlock>
+                <ProgressBar x:Name="CurrentUnknownProgress" Height="28" />
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
+            <Button x:Name="RunMatchButton">Run Match</Button>
+            <Button x:Name="ViewResultsButton">View Results</Button>
+            <Button x:Name="SaveQueueButton">Save Queue</Button>
+            <Button x:Name="LoadQueueButton">Load Queue</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+        </StackPanel>
     </Grid>
 </Window>
