@@ -68,7 +68,10 @@ namespace Darwin
                 positions.Add(TipPosition);
                 positions.Add(NotchPosition);
                 positions.Add(BeginLeadingEdgePosition);
-                positions.Add(EndLeadingEdgePosition);
+
+                // Omitting end leading edge
+                //positions.Add(EndLeadingEdgePosition);
+
                 positions.Add(EndTrailingEdgePosition);
                 return positions;
             }

@@ -20,6 +20,23 @@ namespace Darwin.Wpf.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+		private string _windowTitle;
+		public string WindowTitle
+        {
+			get
+			{
+				if (!string.IsNullOrEmpty(_windowTitle))
+					return _windowTitle;
+
+				return "Trace";
+			}
+			set
+            {
+				_windowTitle = value;
+				RaisePropertyChanged("WindowTitle");
+            }
+        }
+
 		private Bitmap _bitmap;
 		public Bitmap Bitmap
 		{
@@ -329,6 +346,8 @@ namespace Darwin.Wpf.ViewModel
 
 		private void LoadFin(DatabaseFin fin)
         {
+			WindowTitle = fin.IDCode;
+
 			// TODO: Hack for HiDPI
 			fin.ModifiedFinImage.SetResolution(96, 96);
 
@@ -349,7 +368,7 @@ namespace Darwin.Wpf.ViewModel
 				});
 			}
 
-			//ImageLocked = true;
+			// ImageLocked = true;
 			TraceLocked = true;
 			TraceFinalized = true;
 
@@ -358,7 +377,6 @@ namespace Darwin.Wpf.ViewModel
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
-
 		}
 
 		public TraceWindowViewModel(Bitmap bitmap, DarwinDatabase db, List<DBDamageCategory> categories)

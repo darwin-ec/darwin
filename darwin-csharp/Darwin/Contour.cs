@@ -178,9 +178,6 @@ namespace Darwin
 
 			if (outline?.FeaturePointPositions.Count > 0)
 				SetFeaturePointPositions(outline.FeaturePointPositions);
-
-			//foreach (var p in c.Points)
-			//	_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
 		}
 
 		public void ApplyScale()

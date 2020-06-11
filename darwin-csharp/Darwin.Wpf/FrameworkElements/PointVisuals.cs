@@ -60,7 +60,7 @@ namespace Darwin.Wpf.FrameworkElements
         public PointVisuals()
         {
             visualChildren = new VisualCollection(this);
-            ToolTip = string.Empty;
+            //ToolTip = string.Empty;
         }
 
         public ObservableNotifiableCollection<Darwin.Point> ItemsSource
@@ -350,24 +350,24 @@ namespace Darwin.Wpf.FrameworkElements
                 dc.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
-        protected override void OnToolTipOpening(ToolTipEventArgs e)
-        {
-            HitTestResult result = VisualTreeHelper.HitTest(this, Mouse.GetPosition(this));
+        //protected override void OnToolTipOpening(ToolTipEventArgs e)
+        //{
+        //    HitTestResult result = VisualTreeHelper.HitTest(this, Mouse.GetPosition(this));
 
-            if (result.VisualHit is DrawingVisualPlus)
-            {
-                DrawingVisualPlus drawingVisual = result.VisualHit as DrawingVisualPlus;
-                Darwin.Point dataPoint = drawingVisual.DataPoint;
-                ToolTip = String.Format("X={0}, Y={1}", dataPoint.X / ContourScale, dataPoint.Y / ContourScale);
-            }
-            base.OnToolTipOpening(e);
-        }
+        //    if (result.VisualHit is DrawingVisualPlus)
+        //    {
+        //        DrawingVisualPlus drawingVisual = result.VisualHit as DrawingVisualPlus;
+        //        Darwin.Point dataPoint = drawingVisual.DataPoint;
+        //        ToolTip = String.Format("X={0}, Y={1}", dataPoint.X / ContourScale, dataPoint.Y / ContourScale);
+        //    }
+        //    base.OnToolTipOpening(e);
+        //}
 
-        protected override void OnToolTipClosing(ToolTipEventArgs e)
-        {
-            ToolTip = string.Empty;
-            base.OnToolTipClosing(e);
-        }
+        //protected override void OnToolTipClosing(ToolTipEventArgs e)
+        //{
+        //    ToolTip = string.Empty;
+        //    base.OnToolTipClosing(e);
+        //}
 
         class DrawingVisualPlus : DrawingVisual
         {
