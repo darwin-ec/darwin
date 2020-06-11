@@ -100,20 +100,20 @@
                         <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="200" Height="200"
                                          Background="Transparent"
                                          PointSize="1"
+                                         XOffset="{Binding ContourXOffset}"
+                                         YOffset="{Binding ContourYOffset}"
                                          ContourScale="{Binding UnknownContour.Scale}"
                                          ItemsSource="{Binding UnknownContour.Points}"     
-                                         Brushes="{StaticResource brushes}"
-                                         XOffset="{Binding ContourXOffset}"
-                                         YOffset="{Binding ContourYOffset}"/>
+                                         Brushes="{StaticResource brushes}" />
 
                         <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
                                          Background="Transparent"
                                          PointSize="1"
+                                         XOffset="{Binding ContourXOffset}"
+                                         YOffset="{Binding ContourYOffset}"
                                          ContourScale="{Binding DBContour.Scale}"
                                          ItemsSource="{Binding DBContour.Points}"     
-                                         Brushes="{StaticResource dbBrushes}"
-                                         XOffset="{Binding ContourXOffset}"
-                                         YOffset="{Binding ContourYOffset}"/>
+                                         Brushes="{StaticResource dbBrushes}" />
                     </Grid>
                 </Viewbox>
 

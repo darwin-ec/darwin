@@ -89,7 +89,7 @@ namespace Darwin.Utilities
 						swapf(irow, l, icol, l, ref a);
 
 					for (l = 0; l < m; l++)
-						swapf(irow, 1, icol, 1, ref b);
+						swapf(irow, l, icol, l, ref b);
 				}
 
 				// We are now ready to divide the pivot row by the pivot element,
@@ -114,6 +114,7 @@ namespace Darwin.Utilities
 
 				// Now, we reduce the rows...
 				for (ll = 0; ll < n; ll++)
+				{
 					// ... except for the pivot one, of course.
 					if (ll != icol)
 					{
@@ -126,6 +127,7 @@ namespace Darwin.Utilities
 						for (l = 0; l < m; l++)
 							b[ll, l] -= b[icol, l] * dum;
 					}
+				}
 			}
 
 			// This is the end of the main loop over columns of reduction.
@@ -136,8 +138,10 @@ namespace Darwin.Utilities
 			for (l = n - 1; l >= 0; l--)
 			{
 				if (indxr[l] != indxc[l])
+				{
 					for (k = 0; k < n; k++)
 						swapf(k, indxr[l], k, indxc[l], ref a);
+				}
 			}
 
 			return true;
