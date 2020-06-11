@@ -111,6 +111,7 @@ namespace Darwin.Database
 				using (var imageFromFile = (Bitmap)Image.FromFile(fin.ImageFilename))
 				{
 					fin.ModifiedFinImage = new Bitmap(imageFromFile);
+					fin.ModifiedFinImage?.SetResolution(96, 96);
 				}
 
 				if (!string.IsNullOrEmpty(originalFilename))
@@ -124,7 +125,9 @@ namespace Darwin.Database
 						if (fin.ImageMods != null)
                         {
 							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.FinImage, fin.ImageMods);
-                        }
+						}
+
+						fin.FinImage?.SetResolution(96, 96);
 					}
 				}
 

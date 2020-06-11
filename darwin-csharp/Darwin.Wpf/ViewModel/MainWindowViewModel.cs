@@ -127,7 +127,11 @@ namespace Darwin.Wpf.ViewModel
 
                             // TODO: Refactor this so we're not doing it every time, which is a little crazy
                             if (SelectedFin.ImageMods != null && SelectedFin.ImageMods.Count > 0)
+                            {
                                 bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, SelectedFin.ImageMods);
+                               // TODO: HiDPI hack
+                                bitmap.SetResolution(96, 96);
+                            }
 
                             // We're directly changing the source, not the bitmap property on DatabaseFin
                             SelectedImageSource = bitmap.ToImageSource();

@@ -180,7 +180,7 @@
                                          Background="Transparent"
                                          PointSize="3"
                                          ContourScale="{Binding SelectedContour.Scale}"
-                                         ItemsSource="{Binding SelectedContour.Points}"     
+                                         ItemsSource="{Binding SelectedContour.Points}"
                                          Brushes="{StaticResource brushes}" />
                             </Viewbox>
                         </Button>
