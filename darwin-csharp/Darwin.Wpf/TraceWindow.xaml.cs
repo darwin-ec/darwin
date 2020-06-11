@@ -109,7 +109,13 @@ namespace Darwin.Wpf
 			_vm.ZoomValues.Add(0.75);
 			_vm.ZoomValues.Add(0.50);
 
-			this.DataContext = _vm;
+            if (_vm.TraceLocked)
+            {
+                _vm.TraceTool = TraceToolType.MoveFeature;
+                _vm.TraceStep = TraceStepType.IdentifyFeatures;
+            }
+
+            this.DataContext = _vm;
 		}
 
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)
@@ -1428,9 +1434,12 @@ namespace Darwin.Wpf
 					break;
 
 				case TraceStepType.IdentifyFeatures:
-					_vm.TraceLocked = true;
-					TraceFinalize();
-					_vm.TraceTool = TraceToolType.MoveFeature;
+					if (!_vm.TraceFinalized)
+					{
+						_vm.TraceLocked = true;
+						TraceFinalize();
+						_vm.TraceTool = TraceToolType.MoveFeature;
+					}
 					break;
             }
 		}

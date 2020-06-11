@@ -90,21 +90,11 @@ namespace Darwin.Wpf
                 // TODO: Better error messages?
                 if (fin == null)
                 {
-                    var result = MessageBox.Show("Problem opening finz file.");
-                    System.Windows.Application.Current.Shutdown();
+                    MessageBox.Show("Problem opening finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    // TODO: Hack for HiDPI
-                    fin.ModifiedFinImage.SetResolution(96, 96);
-
-                    // TODO: Move this logic into the constructor?
-                    var vm = new TraceWindowViewModel(
-                        fin.FinImage ?? fin.ModifiedFinImage,
-                        new Contour(fin.FinOutline.ChainPoints, fin.Scale),
-                        fin.FinOutline,
-                        //true,
-                        true,
+                    var vm = new TraceWindowViewModel(fin,
                         _vm.DarwinDatabase,
                         _vm.DarwinDatabase?.Categories);
 
@@ -142,6 +132,9 @@ namespace Darwin.Wpf
                 .GetAllFins()
                 .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
                 .ToList());
+
+            if (_vm.Fins?.Count > 0)
+                _vm.SelectedFin = _vm.Fins[0];
 
             if (saveOptions)
             {

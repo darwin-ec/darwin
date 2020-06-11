@@ -76,10 +76,6 @@ namespace Darwin.Wpf
                     }
                     else
                     {
-                        // TODO: Hack for HiDPI
-                        fin.ModifiedFinImage.SetResolution(96, 96);
-
-                        // TODO: Move this logic into the constructor?
                         var vm = new TraceWindowViewModel(fin);
 
                         TraceWindow traceWindow = new TraceWindow(vm);

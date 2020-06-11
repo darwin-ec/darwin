@@ -165,6 +165,35 @@ namespace Darwin
 			//	_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
 		}
 
+		public Contour(Outline outline, double normalizationScale)
+		{
+			_scale = normalizationScale;
+			_points = new ObservableNotifiableCollection<Darwin.Point>();
+
+			if (outline?.ChainPoints.Length > 0)
+			{
+				foreach (var p in outline.ChainPoints.Points)
+					_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
+			}
+
+			if (outline?.FeaturePointPositions.Count > 0)
+				SetFeaturePointPositions(outline.FeaturePointPositions);
+
+			//foreach (var p in c.Points)
+			//	_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
+		}
+
+		public void ApplyScale()
+        {
+			if (_scale != 1.0 && Points?.Count > 0)
+            {
+				for (int i = 0; i < Points.Count; i++)
+                {
+					Points[i] = new Darwin.Point((int)Math.Round(Points[i].X / _scale), (int)Math.Round(Points[i].Y / _scale));
+				}
+            }
+        }
+
 		public void ReloadPoints(Contour c)
         {
 			if (c == null)
@@ -370,6 +399,7 @@ namespace Darwin
 		//
 		public float NormalizeContour()
 		{
+			ApplyScale();
 			// Get X,Y Position of pseudo tip (middle point on Contour)
 			float tipx = this[this.Length / 2].X, tipy = this[this.Length / 2].Y;
 			float basex = (float)(0.5 * (this[0].X + this[this.Length - 1].X)),

@@ -312,31 +312,53 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel(DatabaseFin fin)
         {
+			LoadFin(fin);
+
+			AttachEvents();
+		}
+
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, List<DBDamageCategory> categories)
+        {
+			Database = db;
+			Categories = new ObservableCollection<DBDamageCategory>(categories);
+
+			LoadFin(fin);
+			
+			AttachEvents();
+		}
+
+		private void LoadFin(DatabaseFin fin)
+        {
+			// TODO: Hack for HiDPI
+			fin.ModifiedFinImage.SetResolution(96, 96);
+
 			DatabaseFin = fin;
 
-			DatabaseFin = new DatabaseFin();
-
 			Bitmap = fin.FinImage ?? fin.ModifiedFinImage;
-			Contour = new Contour(fin.FinOutline.ChainPoints, fin.Scale);
+			Contour = new Contour(fin.FinOutline, fin.Scale);
 			Outline = fin.FinOutline;
 
-			List<DBDamageCategory> dummyCategories = new List<DBDamageCategory>();
-			dummyCategories.Add(new DBDamageCategory
+			if (Categories == null)
+				Categories = new ObservableCollection<DBDamageCategory>();
+
+			if (!Categories.Any(c => c.name == fin?.DamageCategory))
 			{
-				name = fin?.DamageCategory
-			});
-			Categories = new ObservableCollection<DBDamageCategory>(dummyCategories);
+				Categories.Add(new DBDamageCategory
+				{
+					name = fin?.DamageCategory
+				});
+			}
 
 			//ImageLocked = true;
 			TraceLocked = true;
+			TraceFinalized = true;
 
-			NormScale = 1.0f;
+			NormScale = (float)fin.Scale;
 
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
 
-			AttachEvents();
 		}
 
 		public TraceWindowViewModel(Bitmap bitmap, DarwinDatabase db, List<DBDamageCategory> categories)
@@ -388,7 +410,9 @@ namespace Darwin.Wpf.ViewModel
 			Database = db;
 
 			//ImageLocked = imageLocked;
+			// TODO: Clean these flags up, maybe?
 			TraceLocked = traceLocked;
+			TraceFinalized = traceLocked;
 			
 			NormScale = 1.0f;
 
