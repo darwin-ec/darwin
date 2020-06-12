@@ -8,12 +8,14 @@
 //                                            *
 
 using Darwin.Database;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Darwin.Matching
@@ -34,6 +36,7 @@ namespace Darwin.Matching
 
         public MatchResults()
         {
+            Results = new List<Result>();
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = string.Empty;
@@ -43,6 +46,7 @@ namespace Darwin.Matching
 
         public MatchResults(string id)
         {
+            Results = new List<Result>();
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = id;
@@ -52,6 +56,7 @@ namespace Darwin.Matching
 
         public MatchResults(string id, string tracedFinFile, string databaseFile)
         {
+            Results = new List<Result>();
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = id;
@@ -282,7 +287,7 @@ namespace Darwin.Matching
             {
                 if (!string.IsNullOrEmpty(_finID))
                 {
-                    writer.WriteLine("Results for ID: ");
+                    writer.WriteLine("Results for ID: " + (_finID ?? "NONE"));
 
                     writer.WriteLine("fin FILE: " + TracedFinFile);
                     writer.WriteLine(" db FILE: " + DatabaseFile);
@@ -313,7 +318,7 @@ namespace Darwin.Matching
                     writer.WriteLine("  " + (i + 1).ToString()
                         + "\t" + Results[i].Error.ToString("N2")
                         + "\t" + Results[i].IDCode
-                        + "\t" + Results[i].Position
+                        + "\t" + (Results[i].Position + 1) // Important -- match the way old Darwin does this
                         + "\t" + uBegin
                         + "\t" + uTip
                         + "\t" + uEnd
@@ -340,259 +345,205 @@ namespace Darwin.Matching
 
         //  1.1 - the following functions used in MatchQueue context
 
-        //public void SetFinFilename(string fname) //  1.1
-        //{
-        //    _tracedFinFile = fname;
-        //}
-
-        //public void SetDatabaseFilename(string fname) //  1.1
-        //{
-        //    _databaseFile = fname;
-        //}
-
-        public DatabaseFin Load(DarwinDatabase db, string fileName)
+        public static MatchResults Load(string fileName, out DarwinDatabase db, out DatabaseFin databaseFin)
         {
-            throw new NotImplementedException();
-            //TODO
-            //try
+            MatchResults result = new MatchResults();
+            db = null;
+            databaseFin = null;
+
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentNullException(nameof(fileName));
+
+            if (!File.Exists(fileName))
+                throw new ArgumentOutOfRangeException(nameof(fileName));
+
+            var lines = File.ReadAllLines(fileName);
+
+            if (lines.Length < 6 || !lines[0].StartsWith("Results for ID:"))
+                return result;
+
+            result._finID = lines[0].Substring(lines[0].LastIndexOf(":") + 1).Trim();
+
+            result.TracedFinFile = lines[1].Substring(lines[1].IndexOf(":") + 1).Trim();
+            result.DatabaseFile = lines[2].Substring(lines[2].IndexOf(":") + 1).Trim();
+
+            db = CatalogSupport.OpenDatabase(result.DatabaseFile, Options.CurrentUserOptions, false);
+
+            //***2.2 - if we can, determine if database path has just changed drive letter
+            // or some part of path that is a prefix to the SurveyArea.  If the database
+            // is in the same SurveyArea and has the same database name, then we can
+            // proceed with the building of the MatchResults
+            //int p = mDatabaseFile.find("surveyAreas");
+            //string rqdAreaAndDB = mDatabaseFile.substr(p);  // survey area and database name
+            //string rqdPreamble = mDatabaseFile.substr(0, p);    // strip it to get preamble
+
+            //string currentDBFile = db->getFilename();
+            //p = currentDBFile.find("surveyAreas");
+            //string currentAreaAndDB = currentDBFile.substr(p); // survey area and catalog name
+            //string currentPreamble = currentDBFile.substr(0, p); // strip it to get preamble
+
+            //if (db.Filename.ToLower() != DatabaseFile.ToLower())
             //{
+            //    //cout << mDatabaseFile << endl;
+            //    //cout << rqdPreamble << "   " << rqdAreaAndDB << endl;
+            //    //cout << currentDBFile << endl;
+            //    //cout << currentPreamble << "   " << currentAreaAndDB << endl;
 
-            //	ifstream inFile(fileName.c_str());
+            //    if (currentAreaAndDB == rqdAreaAndDB)
+            //    {
+            //        string msg = "The Survey Area and Catalog for the match results appear corrrect,\n";
+            //        msg += "but the path to DARWIN's home folder seems to have changed.\n";
+            //        msg += "Is it OK to open the indicated catalog in the current location\n";
+            //        msg += "as shown below?\n\n";
+            //        msg += (currentPreamble + rqdAreaAndDB);
 
-            //	if (!inFile)
-            //		throw Error("Problem reading from file: " + fileName
-            //				+ "\n In MatchResults::load()");
+            //        Trace.WriteLine(msg);
+            //        //ErrorDialog *err = new ErrorDialog(msg);
+            //        //err->show();
 
-            //	string line = "";
-            //	int pos;
+            //        //***2.2 - path possibly has to be fixed to FIN file as well
+            //        if ((currentDBFile != mDatabaseFile) && (currentAreaAndDB == rqdAreaAndDB))
+            //        {
+            //            //add preamble of current DARWINHOME to FINs relative location
+            //            p = mTracedFinFile.find("surveyAreas");
+            //            string currentFinAreaPlus = mTracedFinFile.substr(p);
+            //            mTracedFinFile = currentPreamble + currentFinAreaPlus;
+            //            cout << mTracedFinFile << endl;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        string msg = "The WRONG database is currently loaded for viewing these results ...\n\n";
+            //        msg += "LOADED DB:\n    " + db->getFilename() + "\n\n";
+            //        msg += "REQUIRED DB:\n    " + mDatabaseFile + "\n\n";
+            //        msg += "Please load the required database from the main window\n";
+            //        msg += "and then reload the desired results file.";
 
-            //	getline(inFile, line);
-            //	pos = line.find(":") + 2; // position of finID
-            //	mFinID = line.substr(pos);
-            //	//cout << "finID[" << mFinID << "]\n";
-
-            //	string test = line.substr(0, pos - 1);
-            //	if (test != "Results for ID:")
-            //		return NULL;
-
-            //	getline(inFile, line);
-            //	pos = line.find(":") + 2; // position of fin filename
-            //	mTracedFinFile = line.substr(pos);
-            //	//cout << "finFilename[" << mTracedFinFile << "]\n";
-
-            //	//***1.85 - do this AFTER making sure correct database is loaded
-            //	//DatabaseFin<ColorImage> *unkFin = new DatabaseFin<ColorImage>(mTracedFinFile);
-
-            //	getline(inFile, line);
-            //	pos = line.find(":") + 2; // position of database filename
-            //	mDatabaseFile = line.substr(pos);
-
-            //	//***2.2 - if we can, determine if database path has just changed drive letter
-            //	// or some part of path that is a prefix to the SurveyArea.  If the database
-            //	// is in the same SurveyArea and has the same database name, then we can
-            //	// proceed with the building of the MatchResults
-            //	int p = mDatabaseFile.find("surveyAreas");
-            //	string rqdAreaAndDB = mDatabaseFile.substr(p);  // survey area and database name
-            //	string rqdPreamble = mDatabaseFile.substr(0, p);    // strip it to get preamble
-
-            //	string currentDBFile = db->getFilename();
-            //	p = currentDBFile.find("surveyAreas");
-            //	string currentAreaAndDB = currentDBFile.substr(p); // survey area and catalog name
-            //	string currentPreamble = currentDBFile.substr(0, p); // strip it to get preamble
-
-            //	//***1.85 - if database used in match is not currently loaded, abort quietly  
-            //	if (db->getFilename() != mDatabaseFile)
-            //	{
-            //		//cout << mDatabaseFile << endl;
-            //		//cout << rqdPreamble << "   " << rqdAreaAndDB << endl;
-            //		//cout << currentDBFile << endl;
-            //		//cout << currentPreamble << "   " << currentAreaAndDB << endl;
-
-            //		if (currentAreaAndDB == rqdAreaAndDB)
-            //		{
-            //			string msg = "The Survey Area and Catalog for the match results appear corrrect,\n";
-            //			msg += "but the path to DARWIN's home folder seems to have changed.\n";
-            //			msg += "Is it OK to open the indicated catalog in the current location\n";
-            //			msg += "as shown below?\n\n";
-            //			msg += (currentPreamble + rqdAreaAndDB);
-
-            //			cout << msg << endl;
-            //			//ErrorDialog *err = new ErrorDialog(msg);
-            //			//err->show();
-
-            //			//***2.2 - path possibly has to be fixed to FIN file as well
-            //			if ((currentDBFile != mDatabaseFile) && (currentAreaAndDB == rqdAreaAndDB))
-            //			{
-            //				//add preamble of current DARWINHOME to FINs relative location
-            //				p = mTracedFinFile.find("surveyAreas");
-            //				string currentFinAreaPlus = mTracedFinFile.substr(p);
-            //				mTracedFinFile = currentPreamble + currentFinAreaPlus;
-            //				cout << mTracedFinFile << endl;
-            //			}
-            //		}
-            //		else
-            //		{
-            //			string msg = "The WRONG database is currently loaded for viewing these results ...\n\n";
-            //			msg += "LOADED DB:\n    " + db->getFilename() + "\n\n";
-            //			msg += "REQUIRED DB:\n    " + mDatabaseFile + "\n\n";
-            //			msg += "Please load the required database from the main window\n";
-            //			msg += "and then reload the desired results file.";
-
-            //			//ErrorDialog *err = new ErrorDialog(msg);
-            //			//err->show();
-            //			//***2.22 - replacing own ErrorDialog with GtkMessageDialogs
-            //			GtkWidget* errd = gtk_message_dialog_new(NULL,
-            //									GTK_DIALOG_DESTROY_WITH_PARENT,
-            //									GTK_MESSAGE_ERROR,
-            //									GTK_BUTTONS_CLOSE,
-            //									msg.c_str());
-            //			gtk_dialog_run(GTK_DIALOG(errd));
-            //			gtk_widget_destroy(errd);
-            //			return NULL;
-            //		}
-            //	}
-
-            //	DatabaseFin<ColorImage>* unkFin;
-            //	//***1.85 - NOW create the database fin for the unknown
-            //	if (mTracedFinFile.rfind(".finz") == string::npos)
-            //		unkFin = new DatabaseFin<ColorImage>(mTracedFinFile);
-            //	else
-            //		unkFin = openFinz(mTracedFinFile);
-
-
-            //	getline(inFile, line); // skip Ranking
-            //	getline(inFile, line); // skip headers
-            //	getline(inFile, line); // skip line separator
-
-            //	// get match info on each matched database fin
-            //	while (getline(inFile, line))
-            //	{
-
-            //		pos = line.find("\t");
-            //		string rank = line.substr(0, pos);
-            //		line = line.substr(pos + 1);
-
-            //		pos = line.find("\t");
-            //		string error = line.substr(0, pos);
-            //		line = line.substr(pos + 1);
-
-            //		pos = line.find("\t");
-            //		string dbFinID = line.substr(0, pos);
-            //		line = line.substr(pos + 1);
-
-            //		cout << "dbFinID[" << dbFinID << "]"; //*** 2.2 - show for now
-
-
-            //		string numStr;
-            //		int
-            //			dbFinPosition,
-            //			uBegin, uTip, uEnd,
-            //			dbBegin, dbTip, dbEnd;
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		line = line.substr(pos + 1);
-            //		dbFinPosition = atoi(numStr.c_str());
-            //		cout << "[" << dbFinPosition << "]" << endl; //*** 2.2 - show for now 
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		uBegin = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << uBegin << "]";
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		uTip = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << uTip << "]";
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		uEnd = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << uEnd << "]";
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		dbBegin = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << dbBegin << "]";
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		dbTip = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << dbTip << "]";
-
-            //		pos = line.find("\t");
-            //		numStr = line.substr(0, pos);
-            //		dbEnd = atoi(numStr.c_str());
-            //		line = line.substr(pos + 1);
-            //		//cout << "[" << dbEnd << "]";
-
-            //		string damage = line;
-            //		//cout << "[" << damage << "]" << endl;
-
-            //		line = "";
-
-            //		DatabaseFin<ColorImage>* thisDBFin = db->getItemAbsolute(dbFinPosition);
-
-            //		if (NULL == thisDBFin)
-            //		{
-            //			cout << "Skipping matched fin that has been DELETED from the database!\n";
-            //			continue;
-            //		}
-
-            //		if (thisDBFin->getID() != dbFinID)
-            //			cout << "Disaster " << thisDBFin->getID()
-            //				 << " " << dbFinID << "\n";
-
-            //		FloatContour* mappedUnknownContour = mapContour(
-            //				unkFin->mFinOutline->getFloatContour(),
-            //				(*(unkFin->mFinOutline->getFloatContour()))[uTip],
-            //				(*(unkFin->mFinOutline->getFloatContour()))[uBegin],
-            //				(*(unkFin->mFinOutline->getFloatContour()))[uEnd],
-            //				(*(thisDBFin->mFinOutline->getFloatContour()))[dbTip],
-            //				(*(thisDBFin->mFinOutline->getFloatContour()))[dbBegin],
-            //				(*(thisDBFin->mFinOutline->getFloatContour()))[dbEnd]);
-
-            //		Result r(
-            //				mappedUnknownContour,                      //***1.3 - Mem Leak - constructor make copy now
-            //				thisDBFin->mFinOutline->getFloatContour(), //***1.3 - Mem Leak - constructor make copy now
-            //				thisDBFin->mImageFilename,
-            //				thisDBFin->mThumbnailPixmap,
-            //				thisDBFin->mThumbnailRows,
-            //				dbFinPosition, // position of fin in database
-            //				error,
-            //				thisDBFin->mIDCode,
-            //				thisDBFin->mName,
-            //				thisDBFin->mDamageCategory,
-            //				thisDBFin->mDateOfSighting,
-            //				thisDBFin->mLocationCode);
-
-            //		r.setMappingControlPoints(
-            //				uBegin, uTip, uEnd,  // beginning, tip & end of unknown fin
-            //				dbBegin, dbTip, dbEnd); // beginning, tip & end of database fin
-
-            //		addResult(r);
-
-            //		delete mappedUnknownContour; //***1.3 - Mem Leak
-            //		delete thisDBFin;
-            //	}
-
-            //	//***1.5 - moved sort here after list built, rather than calling from inside addResult()
-            //	//sort(); //***1.5 - results in the file are already sorted
-
-            //	return unkFin;
-
-
+            //        //ErrorDialog *err = new ErrorDialog(msg);
+            //        //err->show();
+            //        //***2.22 - replacing own ErrorDialog with GtkMessageDialogs
+            //        GtkWidget* errd = gtk_message_dialog_new(NULL,
+            //                                GTK_DIALOG_DESTROY_WITH_PARENT,
+            //                                GTK_MESSAGE_ERROR,
+            //                                GTK_BUTTONS_CLOSE,
+            //                                msg.c_str());
+            //        gtk_dialog_run(GTK_DIALOG(errd));
+            //        gtk_widget_destroy(errd);
+            //        return NULL;
+            //    }
             //}
-            //catch (...) {
 
-            //	return NULL;
-            //	throw;
-            //}
+            DatabaseFin unkFin = CatalogSupport.OpenFinz(result.TracedFinFile);
+
+            // get match info on each matched database fin
+            // After skipping some of the headers
+            for (int i = 6; i < lines.Length; i++)
+            {
+                string line = lines[i];
+
+                int pos = line.IndexOf("\t");
+                //string rank = line.Substring(0, pos);
+                line = line.Substring(pos + 1);
+
+                pos = line.IndexOf("\t");
+                string error = line.Substring(0, pos);
+                line = line.Substring(pos + 1);
+
+                pos = line.IndexOf("\t");
+                string dbFinID = line.Substring(0, pos);
+                line = line.Substring(pos + 1);
+
+                //cout << "dbFinID[" << dbFinID << "]"; //*** 2.2 - show for now
+
+                string numStr;
+                int
+                    dbFinPosition,
+                    uBegin, uTip, uEnd,
+                    dbBegin, dbTip, dbEnd;
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                line = line.Substring(pos + 1);
+                dbFinPosition = int.Parse(numStr);
+                //cout << "[" << dbFinPosition << "]" << endl; //*** 2.2 - show for now 
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                uBegin = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << uBegin << "]";
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                uTip = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << uTip << "]";
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                uEnd = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << uEnd << "]";
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                dbBegin = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << dbBegin << "]";
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                dbTip = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << dbTip << "]";
+
+                pos = line.IndexOf("\t");
+                numStr = line.Substring(0, pos);
+                dbEnd = int.Parse(numStr);
+                line = line.Substring(pos + 1);
+                //cout << "[" << dbEnd << "]";
+
+                //string damage = line;
+                //cout << "[" << damage << "]" << endl;
+
+                // The position is written starting at 1, but our index is 0 based
+                DatabaseFin thisDBFin = db.AllFins[dbFinPosition - 1];
+
+                // TODO: Should this throw an exception instead?
+                if (thisDBFin.IDCode != dbFinID)
+                    Trace.WriteLine("Disaster " + thisDBFin.IDCode + " " + dbFinID);
+
+                FloatContour mappedUnknownContour = unkFin.FinOutline.ChainPoints.MapContour(
+                        unkFin.FinOutline.ChainPoints[uTip],
+                        unkFin.FinOutline.ChainPoints[uBegin],
+                        unkFin.FinOutline.ChainPoints[uEnd],
+                        thisDBFin.FinOutline.ChainPoints[dbTip],
+                        thisDBFin.FinOutline.ChainPoints[dbBegin],
+                        thisDBFin.FinOutline.ChainPoints[dbEnd]);
+
+                Result r = new Result(
+                        mappedUnknownContour,                      //***1.3 - Mem Leak - constructor make copy now
+                        thisDBFin.FinOutline.ChainPoints, //***1.3 - Mem Leak - constructor make copy now
+                        thisDBFin.ImageFilename,
+                        thisDBFin.ThumbnailFilenameUri,
+                        dbFinPosition - 1, // position of fin in database
+                        double.Parse(error),
+                        thisDBFin.IDCode,
+                        thisDBFin.Name,
+                        thisDBFin.DamageCategory,
+                        thisDBFin.DateOfSighting,
+                        thisDBFin.LocationCode);
+
+                r.SetMappingControlPoints(
+                        uBegin, uTip, uEnd,  // beginning, tip & end of unknown fin
+                        dbBegin, dbTip, dbEnd); // beginning, tip & end of database fin
+
+                result.Results.Add(r);
+            }
+
+            databaseFin = unkFin;
+            result.SetRankings();
+            return result;
         }
 
         private MatchResultSortType mLastSortBy;

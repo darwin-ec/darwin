@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="Matching Queue" Height="450" Width="800">
+        Title="Matching Queue" Height="485" Width="800">
     <Window.Resources>
         <converters:NullConverter x:Key="NullConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
@@ -22,9 +22,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Vertical">
+            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0">
                 <Label>Traced Fins</Label>
-                <controls:SortableListView Grid.Column="0" Height="300" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding MatchingQueue.Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                <controls:SortableListView Grid.Column="0" Height="340" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding MatchingQueue.Fins}" GridViewColumnHeader.Click="GridHeader_Click">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -49,30 +49,30 @@
                         </GridView>
                     </ListView.View>
                 </controls:SortableListView>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="AddFinzButton" Click="AddFinzButton_Click">Add...</Button>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <Button x:Name="AddFinzButton" Click="AddFinzButton_Click" Margin="10,0,10,0">Add...</Button>
                     <Button x:Name="RemoveButton" Click="RemoveButton_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Remove</Button>
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0">
-                <Image x:Name="FinImage" Source="{Binding Path=SelectedImageSource}" Height="200" />
+                <Image x:Name="FinImage" Source="{Binding Path=SelectedImageSource}" Height="300" />
 
                 <TextBlock>
-                    Percent of Database Matched<LineBreak/>
+                    Percent of Database Matched
                     Against Current Unknown:
                 </TextBlock>
                 <ProgressBar x:Name="CurrentUnknownProgress" Value="{Binding CurrentUnknownPercent}" Height="28" />
 
-                <Label>Percent of Queue Processed</Label>
+                <Label>Percent of Queue Processed:</Label>
                 <ProgressBar x:Name="QueueProcessedProgress" Value="{Binding QueueProgressPercent}" Height="28" />
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="RunMatchButton_Click">Run Match</Button>
-            <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click">View Results</Button>
-            <Button x:Name="SaveQueueButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="SaveQueueButton_Click">Save Queue</Button>
-            <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click">Load Queue</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+            <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="RunMatchButton_Click" Margin="10,0,0,0">Run Match</Button>
+            <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click" Margin="10,0,0,0">View Results</Button>
+            <Button x:Name="SaveQueueButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="SaveQueueButton_Click" Margin="10,0,0,0">Save Queue</Button>
+            <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click" Margin="10,0,0,0">Load Queue</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="10,0,0,0">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

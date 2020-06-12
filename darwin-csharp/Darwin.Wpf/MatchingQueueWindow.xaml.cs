@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -119,15 +120,15 @@ namespace Darwin.Wpf
                     // TODO: Put this logic inside the MatchingQueue class?
                     if (_vm.MatchingQueue.Matches.Count < currentIndex + 1)
                     {
+                        _vm.MatchingQueue.Matches.Add(new Match(
+                            _vm.MatchingQueue.Fins[currentIndex],
+                            _vm.MatchingQueue.Database, null));
+
                         // This needs to run on the UI thread since it affects dependency objects
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
                             _vm.SelectedFin = _vm.MatchingQueue.Fins[currentIndex];
                         }), DispatcherPriority.Background);
-
-                        _vm.MatchingQueue.Matches.Add(new Match(
-                            _vm.MatchingQueue.Fins[currentIndex],
-                            _vm.MatchingQueue.Database, null));
                     }
 
                     // Do Work
@@ -171,16 +172,10 @@ namespace Darwin.Wpf
         {
             if (!_vm.CancelMatching)
             {
-                // TODO
-
-                    // Matching is done, go to the results window
-                //    var matchingResultsWindowVM = new MatchingResultsWindowViewModel(
-                //        _vm.DatabaseFin,
-                //        _vm.Match.MatchResults,
-                //        _vm.Database);
-                //    var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);
-                //    matchingResultsWindow.Show();
-                //}
+                MessageBox.Show("Your matching queue has finished.\nYour results are in the " +
+                    Options.MatchQResultsFolderName + " folder.", "Queue Complete", MessageBoxButton.OK);
+                // TODO ?
+                // Should this do something other than show a message and close?
             }
 
             this.Close();
@@ -220,7 +215,35 @@ namespace Darwin.Wpf
 
             if (openQueueResultsDialog.ShowDialog() == true)
             {
-                //OpenDatabase(openDatabaseDialog.FileName, true);
+                try
+                {
+                    DarwinDatabase resultsDB;
+                    DatabaseFin databaseFin;
+                    MatchResults results = _vm.LoadMatchResults(openQueueResultsDialog.FileName, out resultsDB, out databaseFin);
+
+                    if (resultsDB == null || databaseFin == null || results == null)
+                        throw new Exception("Missing object");
+
+                    if (resultsDB.Filename.ToLower() != _vm.MatchingQueue.Database.Filename.ToLower())
+                        MessageBox.Show(
+                            "Warning: This queue was run against a different database " + Environment.NewLine +
+                            "the currently loaded database.  The database used for the queue " + Environment.NewLine +
+                            "is being loaded to view the results.  This will not change the " + Environment.NewLine +
+                            "database you have loaded.",
+                            "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    var matchingResultsWindowVM = new MatchingResultsWindowViewModel(
+                        databaseFin,
+                        results,
+                        resultsDB);
+                    var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);
+                    matchingResultsWindow.Show();
+                }
+                catch (Exception ex)
+                {
+                    Trace.Write(ex);
+                    MessageBox.Show("There was a problem loading your results.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

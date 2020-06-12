@@ -8,12 +8,13 @@ using System.Text;
 using System.Windows.Media;
 using Darwin.Wpf.Extensions;
 using Darwin.Matching;
+using System.Diagnostics;
 
 namespace Darwin.Wpf.ViewModel
 {
     public class MatchingQueueViewModel : INotifyPropertyChanged
     {
-
+        private static Object selectedFinSync = new Object();
 
         private DatabaseFin _selectedFin;
         public DatabaseFin SelectedFin
@@ -21,16 +22,28 @@ namespace Darwin.Wpf.ViewModel
             get => _selectedFin;
             set
             {
-                _selectedFin = value;
+                lock (selectedFinSync)
+                {
+                    try
+                    {
+                        _selectedFin = value;
 
-                RaisePropertyChanged("SelectedFin");
+                        RaisePropertyChanged("SelectedFin");
 
-                if (_selectedFin == null)
-                    SelectedImageSource = null;
-                else
-                    SelectedImageSource = _selectedFin.ModifiedFinImage.ToImageSource();
-
-                MatchingQueue.CheckQueueRunnable();
+                        if (_selectedFin == null)
+                            SelectedImageSource = null;
+                        else
+                            SelectedImageSource = _selectedFin.FinImage.ToImageSource();
+                    }
+                    catch (Exception ex)
+                    {
+                        // The above can throw exceptions if the bitmaps are large,
+                        // since we're running an update on a separate thread and 
+                        // possibly modifying the Bitmaps elsewhere.
+                        Trace.WriteLine(ex);
+                    }
+                    MatchingQueue.CheckQueueRunnable();
+                }
             }
         }
 
@@ -122,6 +135,12 @@ namespace Darwin.Wpf.ViewModel
 
             if (MatchingQueue.Fins?.Count > 0)
                 SelectedFin = MatchingQueue.Fins.First();
+        }
+
+        // Pass-through
+        public MatchResults LoadMatchResults(string filename, out DarwinDatabase database, out DatabaseFin databaseFin)
+        {
+            return MatchResults.Load(filename, out database, out databaseFin);
         }
 
         public void SaveMatchResults()
