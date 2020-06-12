@@ -24,7 +24,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical">
                 <Label>Traced Fins</Label>
-                <controls:SortableListView Grid.Column="0" Height="300" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                <controls:SortableListView Grid.Column="0" Height="300" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding MatchingQueue.Fins}" GridViewColumnHeader.Click="GridHeader_Click">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -56,19 +56,21 @@
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0">
                 <Image x:Name="FinImage" Source="{Binding Path=SelectedImageSource}" Height="200" />
-                <Label>Percent of Queue Processed</Label>
-                <ProgressBar x:Name="QueueProcessedProgress" Value="{Binding QueueProgressPercent}" Height="28" />
+
                 <TextBlock>
                     Percent of Database Matched<LineBreak/>
                     Against Current Unknown:
                 </TextBlock>
-                <ProgressBar x:Name="CurrentUnknownProgress" Height="28" />
+                <ProgressBar x:Name="CurrentUnknownProgress" Value="{Binding CurrentUnknownPercent}" Height="28" />
+
+                <Label>Percent of Queue Processed</Label>
+                <ProgressBar x:Name="QueueProcessedProgress" Value="{Binding QueueProgressPercent}" Height="28" />
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="RunMatchButton" IsEnabled="{Binding QueueRunnable}" Click="RunMatchButton_Click">Run Match</Button>
+            <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="RunMatchButton_Click">Run Match</Button>
             <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click">View Results</Button>
-            <Button x:Name="SaveQueueButton" IsEnabled="{Binding QueueRunnable}" Click="SaveQueueButton_Click">Save Queue</Button>
+            <Button x:Name="SaveQueueButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="SaveQueueButton_Click">Save Queue</Button>
             <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click">Load Queue</Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>

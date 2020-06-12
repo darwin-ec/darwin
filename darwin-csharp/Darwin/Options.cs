@@ -13,6 +13,7 @@ namespace Darwin
     {
         public const string DarwinDataFolderName = "darwinPhotoIdData";
         public const string SurveyAreasFolderName = "surveyAreas";
+        public const string DefaultSurveyAreaName = "default";
         public const string CatalogFolderName = "catalog";
         public const string TracedFinsFolderName = "tracedFins";
         public const string MatchQueuesFolderName = "matchQueues";
@@ -22,6 +23,7 @@ namespace Darwin
         // TODO: This gets overwritten by finz stuff.  Might want to change
         //public string DatabaseFileName { get; set; }
 
+        public string CurrentDarwinHome { get; set; }
         public string DatabaseFileName { get; set; } = string.Empty;
         public string CurrentDataPath { get; set; }
 
@@ -63,6 +65,21 @@ namespace Darwin
             }
         }
 
+        [JsonIgnore]
+        public string CurrentSurveyAreasPath
+        {
+            get
+            {
+                // We're going to walk back up one level from the data path
+                var dirInfo = new DirectoryInfo(Path.GetDirectoryName(CurrentDataPath));
+
+                // Fall back if there's a problem getting the parent
+                if (dirInfo == null || dirInfo.Parent == null)
+                    return Path.GetDirectoryName(CurrentDataPath);
+                else
+                    return dirInfo.Parent.FullName;
+            }
+        }
 
         [DefaultValue(0)]
         public int DefaultCatalogScheme { get; set; } = 0;
@@ -123,6 +140,7 @@ namespace Darwin
                 if (_currentUserOptions == null)
                     _currentUserOptions = new Options();
 
+                CheckCurrentDarwinHome(ref _currentUserOptions);
                 CheckCurrentDataPath(ref _currentUserOptions);
                 CheckCatalogSchemes(ref _currentUserOptions);
 
@@ -148,7 +166,7 @@ namespace Darwin
         {
             DatabaseFileName = filename;
 
-            // W're going to walk back up one level
+            // We're going to walk back up one level
             var dirInfo = new DirectoryInfo(Path.GetDirectoryName(filename));
 
             // Fall back if there's a problem getting the parent
@@ -176,9 +194,46 @@ namespace Darwin
                     string myDocumentsWithDarwinPhotoId = Path.Combine(myDocumentsPath, DarwinDataFolderName);
 
                     if (Directory.Exists(myDocumentsWithDarwinPhotoId))
+                    {
                         options.CurrentDataPath = myDocumentsWithDarwinPhotoId;
+                    }
                     else
+                    {
                         options.CurrentDataPath = myDocumentsPath;
+                    }
+                }
+            }
+        }
+
+        private static void CheckCurrentDarwinHome(ref Options options)
+        {
+            if (options == null)
+                return;
+
+            if (string.IsNullOrEmpty(options.CurrentDarwinHome))
+            {
+                var myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+                if (Directory.Exists(myDocumentsPath))
+                {
+                    string myDocumentsWithDarwinPhotoId = Path.Combine(myDocumentsPath, DarwinDataFolderName);
+
+                    if (Directory.Exists(myDocumentsWithDarwinPhotoId))
+                    {
+                        options.CurrentDarwinHome = myDocumentsWithDarwinPhotoId;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(myDocumentsWithDarwinPhotoId);
+                            options.CurrentDarwinHome = myDocumentsWithDarwinPhotoId;
+                        }
+                        catch
+                        {
+                            options.CurrentDarwinHome = myDocumentsPath;
+                        }
+                    }
                 }
             }
         }

@@ -11,6 +11,8 @@ using Darwin.Database;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -34,18 +36,27 @@ namespace Darwin.Matching
         {
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
-            mFinID = string.Empty;
-            mTracedFinFile = string.Empty;
-            mDatabaseFile = string.Empty;
+            _finID = string.Empty;
+            TracedFinFile = string.Empty;
+            DatabaseFile = string.Empty;
         }
 
         public MatchResults(string id)
         {
             mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
-            mFinID = id;
-            mTracedFinFile = string.Empty;
-            mDatabaseFile = string.Empty;
+            _finID = id;
+            TracedFinFile = string.Empty;
+            DatabaseFile = string.Empty;
+        }
+
+        public MatchResults(string id, string tracedFinFile, string databaseFile)
+        {
+            mLastSortBy = MatchResultSortType.MR_ERROR;
+            mTimeTaken = -1.00f;
+            _finID = id;
+            TracedFinFile = tracedFinFile;
+            DatabaseFile = databaseFile;
         }
 
         //  008OL -- MatchResultsWindow calls constructor of this type and none existed
@@ -53,11 +64,11 @@ namespace Darwin.Matching
         {
             mLastSortBy = results.mLastSortBy;
             mTimeTaken = results.mTimeTaken;
-            mFinID = results.mFinID;
-            // TODO: This should actually clone
+            _finID = results._finID;
+            // TODO: This should probably clone
             Results = results.Results;
-            mTracedFinFile = results.mTracedFinFile;
-            mDatabaseFile = results.mDatabaseFile;
+            TracedFinFile = results.TracedFinFile;
+            DatabaseFile = results.DatabaseFile;
         }
 
         public void AddResult(Result r)
@@ -78,6 +89,9 @@ namespace Darwin.Matching
                 return Results.Count;
             }
         }
+
+        public string TracedFinFile { get; set; }
+        public string DatabaseFile { get; set; }
 
         public int size()
         {
@@ -237,7 +251,7 @@ namespace Darwin.Matching
 
         // doesn't make a copy to save time... so DON'T DELETE
         // THE RESULT WHEN DONE
-        public Result getResultNum(int resultNum)
+        public Result GetResultNum(int resultNum)
         {
             if (Results == null || resultNum < 0 || resultNum >= Results.Count)
                 throw new ArgumentOutOfRangeException(nameof(resultNum));
@@ -245,7 +259,7 @@ namespace Darwin.Matching
             return Results[resultNum];
         }
 
-        public void setTimeTaken(float timeTaken)
+        public void SetTimeTaken(float timeTaken)
         {
             mTimeTaken = timeTaken;
         }
@@ -253,82 +267,71 @@ namespace Darwin.Matching
         // getTimeTaken
         // 	A return of -1.00 indicates that the amount of
         // 	time is undefined.
-        public float getTimeTaken()
+        public float GetTimeTaken()
         {
             return mTimeTaken;
         }
 
-        public void save(string fileName)
+        /// <summary>
+        /// This will overwrite if the filename matches
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void Save(string fileName)
         {
-            throw new NotImplementedException();
-            //TODO
-            //try
-            //{
-            //	ofstream outFile(fileName.c_str());
+            using (StreamWriter writer = new StreamWriter(fileName, true))
+            {
+                if (!string.IsNullOrEmpty(_finID))
+                {
+                    writer.WriteLine("Results for ID: ");
 
-            //	if (!outFile)
-            //	{
-            //		throw Error("Problem writing to file: " + fileName
-            //				+ "\n In MatchResults::save()");
-            //	}
+                    writer.WriteLine("fin FILE: " + TracedFinFile);
+                    writer.WriteLine(" db FILE: " + DatabaseFile);
 
-            //	if (mFinID != "")
-            //	{
-            //		outFile << "Results for ID: " << mFinID << endl;
-            //		outFile << "fin FILE: " << this->mTracedFinFile << endl;
-            //		outFile << " db FILE: " << this->mDatabaseFile << endl;
+                    int rank = FindRank();
 
-            //		int rank = this->findRank();
+                    if (rank == -1)
+                        writer.WriteLine("ID does not match any in the results list.");
+                    else
+                        writer.WriteLine("The ID is ranked " + rank);
+                }
 
-            //		if (rank == -1)
-            //			outFile << "ID does not match any in the results list." << endl;
-            //		else
-            //			outFile << "The ID is ranked " << rank << endl;
-            //	}
 
-            //	if (mTimeTaken > 0.0)
-            //		outFile << "Match Time: " << mTimeTaken << endl << endl;
+                if (mTimeTaken > 0.0)
+                    writer.WriteLine("Match Time: " + mTimeTaken + Environment.NewLine);
 
-            //	outFile << " Rank\tError\tID\tDBPosit\tunkBegin\tunkTip\tunkEnd\tdbBegin\tdbTip\tdbEnd\tDamage\n";
-            //	outFile << "_____________________________________________________________________\n";
+                writer.WriteLine(" Rank\tError\tID\tDBPosit\tunkBegin\tunkTip\tunkEnd\tdbBegin\tdbTip\tdbEnd\tDamage");
+                writer.WriteLine("_____________________________________________________________________");
 
-            //	for (int i = 0; i < (int)mResults.size(); i++)
-            //	{
+                for (int i = 0; i < Results.Count; i++)
+                {
+                    int
+                        uBegin, uTip, uEnd,
+                        dbBegin, dbTip, dbEnd;
 
-            //		Result* r = this->getResultNum(i);
-            //		int
-            //			uBegin, uTip, uEnd,
-            //			dbBegin, dbTip, dbEnd;
+                    Results[i].GetMappingControlPoints(out uBegin, out uTip, out uEnd, out dbBegin, out dbTip, out dbEnd);
 
-            //		r->getMappingControlPoints(uBegin, uTip, uEnd, dbBegin, dbTip, dbEnd);
-
-            //		outFile << "  " << i + 1
-            //			<< "\t" << r->getError()
-            //			<< "\t" << r->getIdCode()
-            //			<< "\t" << r->getPosition()
-            //			<< "\t" << uBegin
-            //			<< "\t" << uTip
-            //			<< "\t" << uEnd
-            //			<< "\t" << dbBegin
-            //			<< "\t" << dbTip
-            //			<< "\t" << dbEnd
-            //			<< "\t" << r->getDamage()
-            //			<< endl;
-            //	}
-
-            //}
-            //catch (...) {
-            //	throw;
-            //}
+                    writer.WriteLine("  " + (i + 1).ToString()
+                        + "\t" + Results[i].Error.ToString("N2")
+                        + "\t" + Results[i].IDCode
+                        + "\t" + Results[i].Position
+                        + "\t" + uBegin
+                        + "\t" + uTip
+                        + "\t" + uEnd
+                        + "\t" + dbBegin
+                        + "\t" + dbTip
+                        + "\t" + dbEnd
+                        + "\t" + Results[i].Damage);
+                }
+            }
         }
 
-        public int findRank()
+        public int FindRank()
         {
             for (int i = 0; i < Results.Count; i++)
             {
-                Result r = getResultNum(i);
+                Result r = GetResultNum(i);
 
-                if (r.IDCode.ToLower() == mFinID.ToLower())
+                if (r.IDCode.ToLower() == _finID.ToLower())
                     return i + 1;
             }
 
@@ -337,17 +340,17 @@ namespace Darwin.Matching
 
         //  1.1 - the following functions used in MatchQueue context
 
-        public void setFinFilename(string fname) //  1.1
-        {
-            mTracedFinFile = fname;
-        }
+        //public void SetFinFilename(string fname) //  1.1
+        //{
+        //    _tracedFinFile = fname;
+        //}
 
-        public void setDatabaseFilename(string fname) //  1.1
-        {
-            mDatabaseFile = fname;
-        }
+        //public void SetDatabaseFilename(string fname) //  1.1
+        //{
+        //    _databaseFile = fname;
+        //}
 
-        public DatabaseFin load(DarwinDatabase db, string fileName)
+        public DatabaseFin Load(DarwinDatabase db, string fileName)
         {
             throw new NotImplementedException();
             //TODO
@@ -594,12 +597,6 @@ namespace Darwin.Matching
 
         private MatchResultSortType mLastSortBy;
         private float mTimeTaken;
-        private string mFinID; // this is the unknown fin ID
-
-        // following is used by save() to write info into saved results of 
-        // MatchQueue initiated match
-
-        private string mTracedFinFile; //  1.1 - "" or file containing saved unknown DatabaseFin
-        private string mDatabaseFile; //  1.1 - "" or database file matched by MatchQueue
+        private string _finID; // this is the unknown fin ID
     }
 }

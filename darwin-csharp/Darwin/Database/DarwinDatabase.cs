@@ -106,11 +106,6 @@ namespace Darwin.Database
             throw new NotImplementedException();
         }
 
-        public string getFilename() //***1.85
-        {
-            return mFilename;
-        }
-
         //public abstract bool openStream();
         //public abstract bool closeStream();
 
@@ -171,7 +166,7 @@ namespace Darwin.Database
 
         protected DatabaseStatusType mDBStatus; //***1.85
 
-        protected string mFilename;
+        public string Filename { get; set; }
 
         //***1.99 - the catalog scheme for this database (moved from Options)
         //public CatalogScheme CurrentCatalogScheme { get; set; }

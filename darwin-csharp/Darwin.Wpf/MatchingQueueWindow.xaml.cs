@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Darwin.Wpf
 {
@@ -51,7 +52,7 @@ namespace Darwin.Wpf
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_vm.MatchRunning)
+            if (_vm.MatchingQueue.MatchRunning)
             {
                 _vm.CancelMatching = true;
                 _matchingWorker.CancelAsync();
@@ -65,7 +66,7 @@ namespace Darwin.Wpf
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             if (_vm.SelectedFin != null)
-                _vm.Fins.Remove(_vm.SelectedFin);
+                _vm.MatchingQueue.Fins.Remove(_vm.SelectedFin);
         }
 
         private void AddFinzButton_Click(object sender, RoutedEventArgs e)
@@ -85,19 +86,19 @@ namespace Darwin.Wpf
                 }
                 else
                 {
-                    _vm.Fins.Add(fin);
-                    _vm.SelectedFin = _vm.Fins.Last();
+                    _vm.MatchingQueue.Fins.Add(fin);
+                    _vm.SelectedFin = _vm.MatchingQueue.Fins.Last();
                 }
             }
         }
 
         private void MatchWork(object sender, DoWorkEventArgs e)
         {
-            if (_vm.Fins.Count < 1)
+            if (_vm.MatchingQueue.Fins.Count < 1)
                 return;
 
             bool done = false;
-            _vm.MatchRunning = true;
+            _vm.MatchingQueue.MatchRunning = true;
 
             int currentIndex = 0;
 
@@ -115,38 +116,47 @@ namespace Darwin.Wpf
                 }
                 else
                 {
-                    if (_vm.Matches.Count < currentIndex - 1)
+                    // TODO: Put this logic inside the MatchingQueue class?
+                    if (_vm.MatchingQueue.Matches.Count < currentIndex + 1)
+                    {
+                        // This needs to run on the UI thread since it affects dependency objects
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            _vm.SelectedFin = _vm.MatchingQueue.Fins[currentIndex];
+                        }), DispatcherPriority.Background);
 
-                        _vm.Matches.Add(new Match(_vm.Fins[currentIndex], _vm.Database, null));
-
+                        _vm.MatchingQueue.Matches.Add(new Match(
+                            _vm.MatchingQueue.Fins[currentIndex],
+                            _vm.MatchingQueue.Database, null));
+                    }
 
                     // Do Work
                     // TODO: The registration method is hardcoded here.
-                    float percentComplete = _vm.Matches[currentIndex].MatchSingleFin(
-                                        _vm.RegistrationMethod,
+                    float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleFin(
+                                        _vm.MatchingQueue.RegistrationMethod,
                                         (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
-                                        _vm.Database.SelectableCategories.Where(c => c.IsSelected).ToList(),
-                                        (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
+                                        _vm.MatchingQueue.Database.SelectableCategories.Where(c => c.IsSelected).ToList(),
+                                        (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
                                         true);
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 
                     _vm.CurrentUnknownPercent = roundedProgress;
 
-                    var totalProgress = (int)Math.Round(((float)currentIndex / _vm.Fins.Count + percentComplete / _vm.Fins.Count) * 100);
+                    var totalProgress = (int)Math.Round(((float)currentIndex / _vm.MatchingQueue.Fins.Count + percentComplete / _vm.MatchingQueue.Fins.Count) * 100);
 
                     _vm.QueueProgressPercent = totalProgress;
                     _matchingWorker.ReportProgress(roundedProgress);
 
-                    // TODO: Verify this comparison always works correctly
                     if (percentComplete >= 1.0)
                     {
                         //***1.5 - sort the results here, ONCE, rather than as list is built
-                        _vm.Matches[currentIndex].MatchResults.Sort();
+                        _vm.MatchingQueue.Matches[currentIndex].MatchResults.Sort();
 
-                        if (currentIndex >= _vm.Fins.Count - 1)
+                        if (currentIndex >= _vm.MatchingQueue.Fins.Count - 1)
                         {
-                            done = true;
+                            _vm.SaveMatchResults();
+                            done = true; 
                         }
                         else
                         {
@@ -184,11 +194,9 @@ namespace Darwin.Wpf
             dlg.DefaultExt = ".que";
             dlg.Filter = CustomCommands.QueueFilenameFilter;
 
-            // Process save file dialog box results
             if (dlg.ShowDialog() == true)
             {
-                // Save document
-                string filename = dlg.FileName;
+                _vm.SaveQueue(dlg.FileName);
             }
         }
 
@@ -200,7 +208,7 @@ namespace Darwin.Wpf
 
             if (openQueueDialog.ShowDialog() == true)
             {
-                //OpenDatabase(openDatabaseDialog.FileName, true);
+                _vm.LoadQueue(openQueueDialog.FileName);
             }
         }
 

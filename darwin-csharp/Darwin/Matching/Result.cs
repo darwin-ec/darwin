@@ -14,7 +14,7 @@ namespace Darwin.Matching
         public int mThumbnailRows;
 
         public string ImageFilename { get; set; }    //  001DB - image file for database fin
-        public int mPosition { get; set; }            // position (index) of database fin in database file
+        public int Position { get; set; }            // position (index) of database fin in database file
 
         public double Error { get; set; }
         public string IDCode { get; set; }
@@ -51,7 +51,7 @@ namespace Darwin.Matching
             dbContour = new FloatContour(db);           //  1.3 - Mem Leak - make copies now
 
             ImageFilename = filename; //  001DB
-            mPosition = position;
+            Position = position;
             Error = error;
             IDCode = idcode;
             Name = name;
@@ -66,72 +66,13 @@ namespace Darwin.Matching
             DBShiftedTip = 0;
             DBShiftedTEEnd = 0;
 
-            // MAJOR change JHS
-            // removed reloading of image and recreation of thumbnail here
-            /*
-						ColorImage *temp = new ColorImage(filename); //  001DB
-									convColorToPixmapString(
-									temp,   //  001DB
-									MATCHRESULTS_THUMB_HEIGHT,
-									MATCHRESULTS_THUMB_WIDTH,
-									mThumbnailPixmap,
-									mThumbnailRows);
-						delete temp;  //  001DB
-			*/
-
             ThumbnailFilenameUri = thumbnailFilenameUri;
-            //  1.0
-            //if (null == thumbnailPixmap)
-            //{
-            //    ThumbnailFilenameUri = null;
-            //    mThumbnailRows = 0;
-            //}
-            //else
-            //{
-            //    // in the future we will revise this call and create a smaller version
-            //    // rather than copying or creating a pixelized larger version
-            //    // 
-            //    // makeDoubleSizePixmapString(thumbnailPixmap, mThumbnailPixmap, mThumbnailRows);
-
-            //    // simply copy the thumbnail for now and use 25 x 25 thumnails everywhere
-
-            //    //TODO
-            //    //mThumbnailRows = thumbnailRows;
-            //    //mThumbnailPixmap = new char*[mThumbnailRows];
-
-            //    //for (int i = 0; i < mThumbnailRows; i++)
-            //    //{
-            //    //	mThumbnailPixmap[i] = new char[strlen(thumbnailPixmap[i]) + 1];
-            //    //	strcpy(mThumbnailPixmap[i], thumbnailPixmap[i]);
-            //    //}
-            //}
         }
-
-        /* 1.1 - this form of constructor is never used - JHS
-				Result(
-					int position,
-					string error,
-					string idcode,
-					string name,
-					string damage,
-					string date,
-					string location	
-				) :
-					mThumbnailPixmap(NULL),
-					mThumbnailRows(0),
-					mPosition(position),
-					mError(error),
-					mIdCode(idcode),
-					mName(name),
-					mDamage(damage),
-					mLocation(location)
-				{ }
-		*/
 
         public Result(Result r)
         {
             ImageFilename = r.ImageFilename;   //  001DB
-            mPosition = r.mPosition;
+            Position = r.Position;
             Error = r.Error;
             IDCode = r.IDCode;
             Name = r.Name;

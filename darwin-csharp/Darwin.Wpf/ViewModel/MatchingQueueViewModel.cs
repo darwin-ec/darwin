@@ -2,6 +2,7 @@
 using Darwin.Database;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Media;
@@ -12,51 +13,7 @@ namespace Darwin.Wpf.ViewModel
 {
     public class MatchingQueueViewModel : INotifyPropertyChanged
     {
-        private List<Match> _matches;
-        public List<Match> Matches
-        {
-            get
-            {
-                if (_matches == null)
-                    _matches = new List<Match>();
 
-                return _matches;
-            }
-            set
-            {
-                _matches = value;
-                RaisePropertyChanged("Matches");
-            }
-        }
-
-        private ObservableNotifiableCollection<DatabaseFin> _fins;
-        public ObservableNotifiableCollection<DatabaseFin> Fins
-        {
-            get
-            {
-                if (_fins == null)
-                    _fins = new ObservableNotifiableCollection<DatabaseFin>();
-
-                return _fins;
-            }
-            set
-            {
-                _fins = value;
-                RaisePropertyChanged("Fins");
-                CheckQueueRunnable();
-            }
-        }
-
-        private bool _queueRunnable;
-        public bool QueueRunnable
-        {
-            get => _queueRunnable;
-            set
-            {
-                _queueRunnable = value;
-                RaisePropertyChanged("QueueRunnable");
-            }
-        }
 
         private DatabaseFin _selectedFin;
         public DatabaseFin SelectedFin
@@ -73,7 +30,7 @@ namespace Darwin.Wpf.ViewModel
                 else
                     SelectedImageSource = _selectedFin.ModifiedFinImage.ToImageSource();
 
-                CheckQueueRunnable();
+                MatchingQueue.CheckQueueRunnable();
             }
         }
 
@@ -110,18 +67,6 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        private bool _matchRunning;
-        public bool MatchRunning
-        {
-            get => _matchRunning;
-            set
-            {
-                _matchRunning = value;
-                RaisePropertyChanged("MatchRunning");
-                CheckQueueRunnable();
-            }
-        }
-
         private bool _pauseMatching;
         public bool PauseMatching
         {
@@ -144,59 +89,47 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        private DarwinDatabase _database;
-        public DarwinDatabase Database
+        private MatchingQueue _matchingQueue;
+        public MatchingQueue MatchingQueue
         {
-            get => _database;
+            get => _matchingQueue;
             set
             {
-                _database = value;
-                RaisePropertyChanged("Database");
-            }
-        }
-
-        private RegistrationMethodType _registrationMethod;
-        public RegistrationMethodType RegistrationMethod
-        {
-            get => _registrationMethod;
-            set
-            {
-                _registrationMethod = value;
-                RaisePropertyChanged("RegistrationMethod");
-            }
-        }
-
-        private RangeOfPointsType _rangeOfPoints;
-        public RangeOfPointsType RangeOfPoints
-        {
-            get => _rangeOfPoints;
-            set
-            {
-                _rangeOfPoints = value;
-                RaisePropertyChanged("RangeOfPoints");
+                _matchingQueue = value;
+                RaisePropertyChanged("MatchingQueue");
             }
         }
 
         public MatchingQueueViewModel()
         {
-            Database = CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, Options.CurrentUserOptions, false);
-            RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
-            RangeOfPoints = RangeOfPointsType.AllPoints;
+            MatchingQueue = new MatchingQueue(
+                CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, Options.CurrentUserOptions, false),
+                RegistrationMethodType.TrimOptimalTip,
+                RangeOfPointsType.AllPoints);
+        }
+
+        // Pass-through
+        public void SaveQueue(string filename)
+        {
+            MatchingQueue.SaveQueue(filename);
+        }
+
+        // Pass-through
+        public void LoadQueue(string filename)
+        {
+            SelectedFin = null;
+            MatchingQueue.LoadQueue(filename);
+
+            if (MatchingQueue.Fins?.Count > 0)
+                SelectedFin = MatchingQueue.Fins.First();
+        }
+
+        public void SaveMatchResults()
+        {
+            MatchingQueue.SaveMatchResults(Options.CurrentUserOptions.CurrentMatchQueueResultsPath);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private void CheckQueueRunnable()
-        {
-            if (_fins != null && _fins.Count > 0 && !MatchRunning)
-            {
-                QueueRunnable = true;
-            }
-            else
-            {
-                QueueRunnable = false;
-            }
-        }
 
         private void RaisePropertyChanged(string propertyName)
         {

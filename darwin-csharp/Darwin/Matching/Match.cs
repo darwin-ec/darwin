@@ -38,14 +38,10 @@ namespace Darwin.Matching
 
         protected UpdateOutlinesDelegate _updateOutlines;
 
-        DatabaseFin UnknownFin { get; set; }
+        public DatabaseFin UnknownFin { get; set; }
         DarwinDatabase Database { get; set; }
         protected int CurrentFinIndex { get; set; }
         public MatchResults MatchResults { get; set; }
-
-        //MatchingDialog* mMatchingDialog; // 043MA
-
-        //Options* mOptions; // 054
 
         protected int
             mUnknownTipPosition,
@@ -67,7 +63,9 @@ namespace Darwin.Matching
         //
         //    CONSTRUCTOR
         //
-        public Match(DatabaseFin unknownFin, DarwinDatabase db, UpdateOutlinesDelegate updateOutlines)
+        public Match(DatabaseFin unknownFin,
+            DarwinDatabase db,
+            UpdateOutlinesDelegate updateOutlines)
         {
             if (unknownFin == null)
                 throw new ArgumentNullException(nameof(unknownFin));
@@ -82,7 +80,7 @@ namespace Darwin.Matching
 
             CurrentFinIndex = 0;
 
-            MatchResults = new MatchResults(unknownFin.IDCode);
+            MatchResults = new MatchResults(unknownFin.IDCode, unknownFin?.FinFilename, db?.Filename);
 
             errorBetweenOutlines = MeanSquaredErrorBetweenOutlineSegments;
             // errorBetweenOutlines(meanSquaredErrorBetweenOutlineSegments) //***1.85 -- vc++6.0
@@ -99,24 +97,7 @@ namespace Darwin.Matching
             mUnknownEndLEPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeEnd); //***008OL
             mUnknownNotchPositionPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch); //***008OL
             mUnknownEndTEPoint = UnknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection); //***008OL
-
-            // just a pointer to the dialog for display purposes, this will be set
-            // to point to the actual dialog IF and WHEN display is desired
-            //mMatchingDialog = NULL;
         }
-
-
-        //*******************************************************************
-        //
-        // void Match::displayOutlinesHere(MatchingDialog *mDialog)
-        //
-        //    parameter is a pointer to the dialog where outlines are to be
-        //    displayed during matching (NULL for no display)
-        //
-        //void Match::setDisplay(MatchingDialog* mDialog)
-        //{
-        //	mMatchingDialog = mDialog;
-        //}
 
         //*******************************************************************
         //
@@ -308,19 +289,6 @@ namespace Darwin.Matching
 
             return (float)CurrentFinIndex / Database.AllFins.Count;
         }
-
-
-        //*******************************************************************
-        //
-        // MatchResults* Match::getMatchResults()
-        //
-        //    Simply return the pointer to the matching results (NOT A COPY).
-        //
-        //	MatchResults* Match::getMatchResults()
-        //{
-        //		return mMatchResults;
-        //	}
-
 
         //*******************************************************************
         // 

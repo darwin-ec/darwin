@@ -70,7 +70,7 @@ namespace Darwin.Database
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            mFilename = filename;
+            Filename = filename;
 
             // We're using ConnectionStringBuilder to avoid injection attacks
             var builder = new SQLiteConnectionStringBuilder();
