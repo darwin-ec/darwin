@@ -33,7 +33,7 @@
 
         <CommandBinding Command="commands:CustomCommands.Options" CanExecute="OptionsCommand_CanExecute" Executed="OptionsCommand_Executed" />
 
-        <CommandBinding Command="commands:CustomCommands.Documentation" />
+        <CommandBinding Command="commands:CustomCommands.Documentation" CanExecute="DocumentationCommand_CanExecute" Executed="DocumentationCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
     <Window.Resources>

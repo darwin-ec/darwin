@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,13 @@ namespace Darwin
     // TODO: Move the image processing stuff out of this
     public static class AppSettings
     {
+        public static string DocumentationUrl
+        {
+            get
+            {
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Documentation\\usersguide.htm");
+            }
+        }
         public const int MaxZoom = 1600;
         public const int MinZoom = 6;
 

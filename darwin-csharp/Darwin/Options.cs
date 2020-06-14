@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Testing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace Darwin
         public string CurrentDataPath { get; set; }
 
         public string CurrentSurveyArea { get; set; } = string.Empty;
+
+        public IndividualIDSettingsType IndividualIDSettings { get; set; } = IndividualIDSettingsType.ShowIDs;
 
         [JsonIgnore]
         public string CurrentMatchQueueResultsPath
@@ -148,7 +151,40 @@ namespace Darwin
             }
         }
 
-        public void Save()
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="options"></param>
+        public Options(Options options)
+        {
+            if (options == null)
+                return;
+
+            CurrentDarwinHome = options.CurrentDarwinHome;
+            DatabaseFileName = options.DatabaseFileName;
+            CurrentDataPath = options.CurrentDataPath;
+            CurrentSurveyArea = options.CurrentSurveyArea;
+
+            CannyHighThreshold = options.CannyHighThreshold;
+            CannyLowThreshold = options.CannyLowThreshold;
+            GaussianStdDev = options.GaussianStdDev;
+
+            DrawingPointSize = options.DrawingPointSize;
+
+            SnakeEnergyContinuity = options.SnakeEnergyContinuity;
+            SnakeEnergyEdge = options.SnakeEnergyEdge;
+            SnakeEnergyLinearity = options.SnakeEnergyLinearity;
+            SnakeMaximumIterations = options.SnakeMaximumIterations;
+
+            DefaultCatalogScheme = options.DefaultCatalogScheme;
+
+            if (options.CatalogSchemes != null)
+                CatalogSchemes = new List<CatalogScheme>(options.CatalogSchemes);
+
+            IndividualIDSettings = options.IndividualIDSettings;
+        }
+
+        public void Save(bool reloadOptions = false)
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
@@ -160,6 +196,11 @@ namespace Darwin
                     writer.Write(serializedJson);
                 }
             }
+
+            // Null out _currentUserOptions so they'll be reloaded next
+            // time they're accessed.
+            if (reloadOptions)
+                _currentUserOptions = null;
         }
 
         public void SetLastDatabaseFilename(string filename)

@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using System.Drawing;
 using Darwin.Collections;
 using System.ComponentModel;
+using Darwin.Utilities;
 
 namespace Darwin.Wpf
 {
@@ -178,10 +179,7 @@ namespace Darwin.Wpf
 
         private void OptionsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var optionsVM = new OptionsWindowViewModel
-            {
-            
-            };
+            var optionsVM = new OptionsWindowViewModel(Options.CurrentUserOptions);
 
             var optionsWindow = new OptionsWindow(optionsVM);
             optionsWindow.Owner = this;
@@ -198,6 +196,16 @@ namespace Darwin.Wpf
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
+        }
+
+        private void DocumentationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void DocumentationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            UrlHelper.OpenUrl(AppSettings.DocumentationUrl);
         }
 
         private void DeleteFin_Click(object sender, RoutedEventArgs e)

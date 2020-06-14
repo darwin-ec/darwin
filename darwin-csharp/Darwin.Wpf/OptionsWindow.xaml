@@ -1,13 +1,98 @@
 ﻿<controls:CustomWindow x:Class="Darwin.Wpf.OptionsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:talex="http://schemas.talex-soft.com/2010/xaml/presentation"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:testing="clr-namespace:Darwin.Testing;assembly=Darwin"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="" Height="450" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="" Height="350" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="0">Dolphin ID Settings:</Label>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,6,0,0">
+                        <RadioButton GroupName="IndividualIDSettings" IsChecked="{Binding Path=Options.IndividualIDSettings, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static testing:IndividualIDSettingsType.ShowIDs}}">
+                            Show Dolphin IDs in all windows
+                        </RadioButton>
+                        <RadioButton GroupName="IndividualIDSettings" IsChecked="{Binding Path=Options.IndividualIDSettings, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static testing:IndividualIDSettingsType.HideIDs}}">
+                            Hide / use fake IDs (for blind testing)
+                        </RadioButton>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Tracing">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">Active Contour</Label>
+                    
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1">Maximum Number of Iterations:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Path=Options.SnakeMaximumIterations,Mode=TwoWay}" Minimum="0" Maximum="100" DecimalPlaces="0" />
 
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2">Continuity Energy Weight:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="2" Value="{Binding Path=Options.SnakeEnergyContinuity,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1"  />
+
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3">Linearity Energy Weight:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="3" Value="{Binding Path=Options.SnakeEnergyLinearity,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1" />
+
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="4">Edge Energy Weight:</Label>
+                        <talex:NumericUpDown Grid.Column="1" Grid.Row="4" Value="{Binding Path=Options.SnakeEnergyEdge,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1" />
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Image Processing">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">Canny Edge Detector</Label>
+
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1">Guassian Standard Deviation:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Path=Options.GaussianStdDev,Mode=TwoWay}" Minimum="0" Maximum="100" DecimalPlaces="0" />
+
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2">Low Threshold:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="2" Value="{Binding Path=Options.CannyLowThreshold,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1"  />
+
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3">High Threshold:</Label>
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="3" Value="{Binding Path=Options.CannyHighThreshold,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
+            <Button x:Name="OKButton" Click="OKButton_Click" Margin="0,0,10,0">OK</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+        </StackPanel>
     </Grid>
 </controls:CustomWindow>

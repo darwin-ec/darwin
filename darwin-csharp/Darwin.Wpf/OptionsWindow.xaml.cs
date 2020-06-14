@@ -35,6 +35,15 @@ namespace Darwin.Wpf
             base.OnSourceInitialized(e);
         }
 
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.Options.Save(true);
+            Close();
+        }
 
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

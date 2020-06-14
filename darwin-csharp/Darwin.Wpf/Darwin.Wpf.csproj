@@ -38,6 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="TAlex.WPF.Controls" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Cursors\autotrace_cursor.cur" />
     <Resource Include="Resources\Cursors\chopoutline_cursor.cur" />
     <Resource Include="Resources\Cursors\eraser_cursor.cur" />
@@ -75,5 +79,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Darwin\Darwin.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Content Include="..\Documentation\**\*.*">
+      <Link>Documentation\%(RecursiveDir)%(FileName)%(Extension)</Link>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
