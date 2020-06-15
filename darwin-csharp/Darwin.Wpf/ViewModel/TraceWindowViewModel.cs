@@ -429,6 +429,18 @@ namespace Darwin.Wpf.ViewModel
 			DatabaseFin.Scale = NormScale;
 			DatabaseFin.FinOutline = Outline;
 			DatabaseFin.FinImage = new Bitmap(Bitmap);
+
+			if (UndoItems == null)
+			{
+				DatabaseFin.ImageMods = new List<ImageMod>();
+			}
+			else
+            {
+				DatabaseFin.ImageMods = UndoItems
+					.Where(u => u.ImageMod != null && (u.ModificationType == ModificationType.Image || u.ModificationType == ModificationType.Both))
+					.Select(u => u.ImageMod)
+					.ToList();
+            }
 		}
 
 		private void LoadFin(DatabaseFin fin)

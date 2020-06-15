@@ -18,6 +18,36 @@ namespace Darwin.Utilities
             return Convert.ToInt32(rdr[colIndex]);
         }
 
+        public static long SafeGetInt64(this SQLiteDataReader rdr, string columnName)
+        {
+            var colIndex = rdr.GetOrdinal(columnName);
+
+            if (rdr.IsDBNull(colIndex))
+                return default(long);
+
+            return Convert.ToInt64(rdr[colIndex]);
+        }
+
+        public static double SafeGetDouble(this SQLiteDataReader rdr, string columnName)
+        {
+            var colIndex = rdr.GetOrdinal(columnName);
+
+            if (rdr.IsDBNull(colIndex))
+                return default(double);
+
+            return Convert.ToDouble(rdr[colIndex]);
+        }
+
+        public static double SafeGetDouble(this SQLiteDataReader rdr, string columnName, double defaultValue)
+        {
+            var colIndex = rdr.GetOrdinal(columnName);
+
+            if (rdr.IsDBNull(colIndex))
+                return defaultValue;
+
+            return Convert.ToDouble(rdr[colIndex]);
+        }
+
         public static int? SafeGetNullableInt(this SQLiteDataReader rdr, string columnName)
         {
             var colIndex = rdr.GetOrdinal(columnName);

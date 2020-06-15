@@ -18,6 +18,8 @@ namespace Darwin.Database
     // eliminate some duplication.
     public class SQLiteDatabase : DarwinDatabase
     {
+        public const int CurrentDBVersion = 2;
+
         private List<DBDamageCategory> _categories;
 
         public override List<DBDamageCategory> Categories
@@ -37,10 +39,10 @@ namespace Darwin.Database
             {
                 return Categories
                     .Select(x => new SelectableDBDamageCategory
-                            {
-                                IsSelected = true,
-                                Name = x.name
-                            })
+                    {
+                        IsSelected = true,
+                        Name = x.name
+                    })
                     .ToList();
             }
         }
@@ -84,24 +86,62 @@ namespace Darwin.Database
 
                 CreateEmptyDatabase(cat);
             }
-
-            // Let's make sure we can open it
-            // We're using all synchronous code, and we're going to rely on connection pooling,
-            // so we're going to try opening/closing the connection as quickly as possible throughout.
-            using (var conn = new SQLiteConnection(_connectionString))
+            else
             {
-                conn.Open();
+                // Let's make sure we can open it, and also check the version number and upgrade it if necessary
+                using (var conn = new SQLiteConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    CheckVersionAndUpgrade(conn);
+
+                    conn.Close();
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA2100:Review SQL queries for security vulnerabilities", Justification = "<Pending>")]
+        private void SetVersion(SQLiteConnection conn, long version)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "PRAGMA user_version = " + version.ToString();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void CheckVersionAndUpgrade(SQLiteConnection conn)
+        {
+            long version = 0;
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "PRAGMA user_version;";
+                var rdr = cmd.ExecuteReader();
+
+                if (rdr.Read())
+                    version = (long)rdr[0];
+            }
+
+            // Maybe this should be a little more generic, but just hardcoding version upgrades right now
+            if (version < 2)
+                UpgradeToVersion2(conn);
+        }
+
+        private void UpgradeToVersion2(SQLiteConnection conn)
+        {
+            try
+            {
+                const string AddScaleToOutlines = "ALTER TABLE Outlines ADD COLUMN Scale REAL DEFAULT NULL";
 
                 using (var cmd = new SQLiteCommand(conn))
                 {
-                    cmd.CommandText = "pragma quick_check;";
+                    cmd.CommandText = AddScaleToOutlines;
                     cmd.ExecuteNonQuery();
                 }
 
-                conn.Close();
+                SetVersion(conn, 2);
             }
-
-            LoadLists();
+            catch { }
         }
 
         // *****************************************************************************
@@ -114,7 +154,7 @@ namespace Darwin.Database
             DBIndividual individual;
             DBImage image;
             DBOutline outline;
-            DBThumbnail thumbnail;
+            //DBThumbnail thumbnail;
             DBDamageCategory damagecategory;
             Outline finOutline;
             FloatContour fc = new FloatContour();
@@ -162,6 +202,26 @@ namespace Darwin.Database
                 image.shortdescription,
                 individual.id);
 
+            // TODO: Move/look at constructors
+            fin.Scale = outline.scale;
+
+            if (image != null)
+            {
+                var imageMods = SelectImageModificationsByFkImageID(image.id);
+
+                var finMods = new List<ImageMod>();
+
+                if (imageMods != null)
+                {
+                    foreach (var mod in imageMods)
+                    {
+                        finMods.Add(new ImageMod((ImageModType)mod.operation, mod.value1, mod.value2, mod.value3, mod.value4));
+                    }
+                }
+
+                fin.ImageMods = finMods;
+            }
+
             return fin;
         }
 
@@ -193,14 +253,12 @@ namespace Darwin.Database
             DBDamageCategory dmgCat;
             Outline finOutline;
             FloatContour fc;
-            int i, numPoints;
+            int numPoints;
 
             //***054 - assume that the image filename contains path
             // information which must be stripped BEFORE saving fin
             fin.ImageFilename = Path.GetFileName(fin.ImageFilename);
 
-            // TODO
-            //beginTransaction();
             DBIndividual individual = new DBIndividual();
 
             using (var conn = new SQLiteConnection(_connectionString))
@@ -221,6 +279,7 @@ namespace Darwin.Database
                     finOutline = fin.FinOutline;
 
                     DBOutline outline = new DBOutline();
+                    outline.scale = fin.Scale;
                     outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
                     outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
                     outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
@@ -232,7 +291,7 @@ namespace Darwin.Database
                     List<DBPoint> points = new List<DBPoint>();
                     numPoints = finOutline.Length;
                     fc = finOutline.ChainPoints;
-                    for (i = 0; i < numPoints; i++)
+                    for (int i = 0; i < numPoints; i++)
                     {
                         points.Add(new DBPoint
                         {
@@ -253,16 +312,14 @@ namespace Darwin.Database
                     image.fkindividualid = individual.id;
                     InsertImage(conn, ref image);
 
+                    // TODO: Better thumbnail handling?
                     DBThumbnail thumbnail = new DBThumbnail();
-                    //thumbnail.rows = fin.ThumbnailRows;
-                    //thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray()); ;
                     thumbnail.rows = 1;
                     thumbnail.pixmap = "0";
                     thumbnail.fkimageid = image.id;
                     InsertThumbnail(conn, ref thumbnail);
 
-                    //TODO
-                    //commitTransaction();
+                    InsertImageModifications(conn, image.id, fin.ImageMods);
 
                     transaction.Commit();
                 }
@@ -284,7 +341,6 @@ namespace Darwin.Database
             DBOutline outline;
             DBThumbnail thumbnail;
             DBDamageCategory dmgCat;
-            Outline finOutline;
             FloatContour fc;
             int i, numPoints;
 
@@ -303,20 +359,21 @@ namespace Darwin.Database
                     individual.fkdamagecategoryid = dmgCat.id;
                     UpdateDBIndividual(conn, individual);
 
-                    finOutline = fin.FinOutline;
                     // we do this as we don't know what the outline id is
                     outline = SelectOutlineByFkIndividualID(individual.id);
-                    outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-                    outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
-                    outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
-                    outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
-                    outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+                    outline.scale = fin.Scale;
+                    outline.beginle = fin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+                    outline.endle = fin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+                    outline.notchposition = fin.FinOutline.GetFeaturePoint(FeaturePointType.Notch);
+                    outline.tipposition = fin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+                    outline.endte = fin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
                     outline.fkindividualid = individual.id;
                     UpdateOutline(conn, outline);
 
                     List<DBPoint> points = new List<DBPoint>();
-                    numPoints = finOutline.Length;
-                    fc = finOutline.ChainPoints;
+                    numPoints = fin.FinOutline.Length;
+                    fc = fin.FinOutline.ChainPoints;
+
                     for (i = 0; i < numPoints; i++)
                     {
                         points.Add(new DBPoint
@@ -348,17 +405,13 @@ namespace Darwin.Database
 
                     UpdateThumbnail(conn, thumbnail);
 
+                    DeleteImageModifications(conn, image.id);
+                    InsertImageModifications(conn, image.id, fin.ImageMods);
+
                     transaction.Commit();
                 }
-                    conn.Close();
+                conn.Close();
             }
-            // loadLists(); // reload and re-sort lists.
-
-            //deleteFinFromLists(individual.id);
-            //AddFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
-            //    image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
-
-            //SortLists();
         }
 
         public override void UpdateIndividual(DatabaseFin data)
@@ -512,7 +565,7 @@ namespace Darwin.Database
                     }
                     conn.Close();
 
-                    return category;     
+                    return category;
                 }
             }
         }
@@ -668,7 +721,7 @@ namespace Darwin.Database
         // Populates given list<DBImageModification> with all rows from 
         // ImageModifications table where fkImageID equals the given int.
         //
-        private List<DBImageModification> SelectImageModificationsByFkImageID(int fkimageid)
+        private List<DBImageModification> SelectImageModificationsByFkImageID(long fkimageid)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -676,7 +729,7 @@ namespace Darwin.Database
                 {
                     conn.Open();
 
-                    cmd.CommandText = "SELECT * FROM ImageModifications WHERE fkImageID = @fkImageID;";
+                    cmd.CommandText = "SELECT * FROM ImageModifications WHERE fkImageID = @fkImageID ORDER BY OrderID;";
                     cmd.Parameters.AddWithValue("@fkImageID", fkimageid);
 
                     var modifications = new List<DBImageModification>();
@@ -827,6 +880,7 @@ namespace Darwin.Database
                             var outline = new DBOutline
                             {
                                 id = rdr.SafeGetInt("ID"),
+                                scale = rdr.SafeGetDouble("Scale", 1.0),
                                 tipposition = rdr.SafeGetInt("TipPosition"),
                                 beginle = rdr.SafeGetInt("BeginLE"),
                                 endle = rdr.SafeGetInt("EndLE"),
@@ -871,6 +925,7 @@ namespace Darwin.Database
                             outline = new DBOutline
                             {
                                 id = rdr.SafeGetInt("ID"),
+                                scale = rdr.SafeGetDouble("Scale", 1.0),
                                 tipposition = rdr.SafeGetInt("TipPosition"),
                                 beginle = rdr.SafeGetInt("BeginLE"),
                                 endle = rdr.SafeGetInt("EndLE"),
@@ -912,8 +967,8 @@ namespace Darwin.Database
                             var point = new DBPoint
                             {
                                 id = rdr.SafeGetInt("ID"),
-                                xcoordinate = rdr.SafeGetInt("XCoordinate"),
-                                ycoordinate = rdr.SafeGetInt("YCoordinate"),
+                                xcoordinate = (float)rdr.SafeGetDouble("XCoordinate"),
+                                ycoordinate = (float)rdr.SafeGetDouble("YCoordinate"),
                                 fkoutlineid = rdr.SafeGetInt("fkOutlineID"),
                                 orderid = rdr.SafeGetInt("fkOutlineID")
                             };
@@ -1111,8 +1166,10 @@ namespace Darwin.Database
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                cmd.CommandText = "INSERT INTO Outlines (ID, TipPosition, BeginLE, EndLE, NotchPosition, EndTE, fkIndividualID) " +
-                    "VALUES (NULL, @TipPosition, @BeginLE, @EndLE, @NotchPosition, @EndTE, @fkIndividualID);";
+                cmd.CommandText = "INSERT INTO Outlines (ID, Scale, TipPosition, BeginLE, EndLE, NotchPosition, EndTE, fkIndividualID) " +
+                    "VALUES (NULL, @Scale, @TipPosition, @BeginLE, @EndLE, @NotchPosition, @EndTE, @fkIndividualID);";
+
+                cmd.Parameters.AddWithValue("@Scale", outline.scale);
                 cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
                 cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
                 cmd.Parameters.AddWithValue("@EndLE", outline.endle);
@@ -1150,6 +1207,35 @@ namespace Darwin.Database
                 image.id = conn.LastInsertRowId;
 
                 return image.id;
+            }
+        }
+
+        private void InsertImageModifications(SQLiteConnection conn, long imageId, List<ImageMod> mods)
+        {
+            if (mods != null)
+            {
+                List<DBImageModification> modifications = new List<DBImageModification>();
+
+                for (var j = 0; j < mods.Count; j++)
+                {
+                    ImageModType modType;
+                    int val1, val2, val3, val4;
+
+                    mods[j].Get(out modType, out val1, out val2, out val3, out val4);
+
+                    modifications.Add(new DBImageModification
+                    {
+                        fkimageid = imageId,
+                        operation = (int)modType,
+                        value1 = val1,
+                        value2 = val2,
+                        value3 = val3,
+                        value4 = val4,
+                        orderid = j + 1
+                    });
+                }
+
+                InsertImageModifications(conn, modifications);
             }
         }
 
@@ -1232,10 +1318,11 @@ namespace Darwin.Database
         // Updates outline in Outlines table  
         //
         private void UpdateOutline(SQLiteConnection conn, DBOutline outline)
-        { 
+        {
             using (var cmd = new SQLiteCommand(conn))
             {
                 cmd.CommandText = "UPDATE Outlines SET " +
+                    "Scale = @Scale, " +
                     "TipPosition = @TipPosition, " +
                     "BeginLE = @BeginLE, " +
                     "EndLE = @EndLE, " +
@@ -1243,6 +1330,7 @@ namespace Darwin.Database
                     "fkIndividualID = @fkIndividualID " +
                     "WHERE ID = @ID";
 
+                cmd.Parameters.AddWithValue("@Scale", outline.scale);
                 cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
                 cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
                 cmd.Parameters.AddWithValue("@EndLE", outline.endle);
@@ -1518,6 +1606,17 @@ namespace Darwin.Database
             }
         }
 
+        private void DeleteImageModifications(SQLiteConnection conn, long fkImageID)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "DELETE FROM ImageModifications WHERE fkImageID = @fkImageID";
+                cmd.Parameters.AddWithValue("@fkImageID", fkImageID);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         // *****************************************************************************
         //
         // Delete thumbnail from Thumbnails table using id  
@@ -1547,207 +1646,6 @@ namespace Darwin.Database
                 cmd.ExecuteNonQuery();
             }
         }
-
-        //public void AddFinToLists(DatabaseFin fin)
-        //{
-        //    AddFinToLists(fin.DataPos, fin.Name, fin.IDCode, fin.DateOfSighting,
-        //        fin.RollAndFrame, fin.LocationCode, fin.DamageCategory,
-        //        fin.ShortDescription);
-        //}
-
-        //*******************************************************************
-        //
-        // Adds a fin to the sort lists. Does not resort the lists.
-        //
-        //public void AddFinToLists(long datapos, string name, string id, string date, string roll,
-        //                                   string location, string damage, string description)
-        //{
-        //    mNameList.Add((name ?? "NONE") + " " + datapos);
-        //    mIDList.Add((id ?? "NONE") + " " + datapos);
-        //    mDateList.Add((date ?? "NONE") + " " + datapos);
-        //    mRollList.Add((roll ?? "NONE") + " " + datapos);
-        //    mLocationList.Add((location ?? "NONE") + " " + datapos);
-        //    mDamageList.Add((damage ?? "NONE") + " " + datapos);
-        //    mDescriptionList.Add((description ?? "NONE") + " " + datapos);
-
-        //    //***2.2 -- make room for HOLES, unused primary Keys
-        //    // mAbsoluteOffset.push_back(datapos); // the way RJ did it
-
-        //    // TODO
-        //    //mAbsoluteOffset[datapos] = datapos;
-        //}
-
-        //private void DeleteEntry(ref List<string> lst, long id)
-        //{
-        //    for (var i = 0; i < lst.Count; i++)
-        //    {
-        //        if (listEntryToID(lst[i]) == id)
-        //        {
-        //            lst.RemoveAt(i);
-        //            break;
-        //        }
-        //    }
-        //}
-
-        //public void deleteFinFromLists(long id)
-        //{
-        //    DeleteEntry(ref mNameList, id);
-        //    DeleteEntry(ref mIDList, id);
-        //    DeleteEntry(ref mDateList, id);
-        //    DeleteEntry(ref mRollList, id);
-        //    DeleteEntry(ref mLocationList, id);
-        //    DeleteEntry(ref mDamageList, id);
-        //    DeleteEntry(ref mDescriptionList, id);
-
-        //    // TODO
-        //    //***2.2 - replace all of above
-        //    //if (id < mAbsoluteOffset.Count)
-        //    //    mAbsoluteOffset[id] = -1;
-        //}
-
-        //*******************************************************************
-        //
-        // Rebuilds the lists from the database and sorts them.
-        //
-        private void LoadLists()
-        {
-            List<DatabaseFin> fins;
-
-            if (mNameList == null)
-                mNameList = new List<string>();
-            else
-                mNameList.Clear();
-
-            if (mIDList == null)
-                mIDList = new List<string>();
-            else
-                mIDList.Clear();
-
-            if (mDateList == null)
-                mDateList = new List<string>();
-            else
-                mDateList.Clear();
-
-            if (mRollList == null)
-                mRollList = new List<string>();
-            else
-                mRollList.Clear();
-
-            if (mLocationList == null)
-                mLocationList = new List<string>();
-            else
-                mLocationList.Clear();
-
-            if (mDamageList == null)
-                mDamageList = new List<string>();
-            else
-                mDamageList.Clear();
-
-            if (mDescriptionList == null)
-                mDescriptionList = new List<string>();
-            else
-                mDescriptionList.Clear();
-
-            if (mAbsoluteOffset == null)
-                mAbsoluteOffset = new List<long>();
-            else
-                mAbsoluteOffset.Clear();
-
-            fins = GetAllFins();
-
-            //if (fins != null)
-            //{
-            //    foreach (var fin in fins)
-            //    {
-            //        AddFinToLists(fin);
-            //    }
-            //}
-
-            //SortLists();
-        }
-
-        //public void SortLists()
-        //{
-        //    if (mNameList != null)
-        //        mNameList.Sort();
-        //    if (mIDList != null)
-        //        mIDList.Sort();
-        //    if (mDateList != null)
-        //        mDateList.Sort();
-        //    if (mRollList != null)
-        //        mRollList.Sort();
-        //    if (mLocationList != null)
-        //        mLocationList.Sort();
-        //    if (mDamageList != null)
-        //        mDamageList.Sort();
-        //    if (mDescriptionList != null)
-        //        mDescriptionList.Sort();
-        //}
-
-        // *****************************************************************************
-        //
-        // Returns fin from database.  pos refers to position within one of the sort
-        // lists.
-        //
-        //public override DatabaseFin GetItem(int pos)
-        //{
-        //    long id;
-
-        //    switch (mCurrentSort)
-        //    {
-        //        case DatabaseSortType.DB_SORT_NAME:
-        //            id = listEntryToID(mNameList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_ID:
-        //            id = listEntryToID(mIDList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_DATE:
-        //            id = listEntryToID(mDateList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_ROLL:
-        //            id = listEntryToID(mRollList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_LOCATION:
-        //            id = listEntryToID(mLocationList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_DAMAGE:
-        //            id = listEntryToID(mDamageList[pos]);
-        //            break;
-
-        //        case DatabaseSortType.DB_SORT_DESCRIPTION:
-        //            id = listEntryToID(mDescriptionList[pos]);
-        //            break;
-
-        //        default:
-        //            throw new NotImplementedException();
-        //    }
-
-        //    return GetFin(id);
-        //}
-
-        //*******************************************************************
-        //
-        // Looks up row id in AbsoluteOffset list and then uses getFin(int)
-        // to retrieve that fin from the database.
-        //
-        //public override DatabaseFin GetItemAbsolute(int pos)
-        //{
-        //    throw new NotImplementedException();
-        //    //if (pos > this->mAbsoluteOffset.size())
-        //    //    throw BoundsError();
-
-        //    //if (mAbsoluteOffset[pos] == -1)
-        //    //    return NULL;               // this is a HOLE, a previously deleted fin
-
-        //    //DatabaseFin<ColorImage>* fin = getFin(this->mAbsoluteOffset[pos]);
-
-        //    //return fin;
-        //}
 
         private void InvalidateAllFins()
         {
@@ -1801,6 +1699,7 @@ namespace Darwin.Database
 
                     CREATE TABLE IF NOT EXISTS Outlines (
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Scale REAL DEFAULT NULL,
                         TipPosition INTEGER,
                         BeginLE INTEGER,
                         EndLE INTEGER,
@@ -1846,6 +1745,10 @@ namespace Darwin.Database
 
                     transaction.Commit();
                 }
+
+                // Set the DB versioning to the latest
+                SetVersion(conn, CurrentDBVersion);
+
                 // At this point, the Database class already contains the catalog scheme 
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS

@@ -97,9 +97,12 @@ namespace Darwin.Database
 				float normScale;
 
 				PngHelper.ParsePngText(fin.ImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
-				
-				fin.ImageMods = imageMods;
-				fin.Scale = normScale;
+
+				if (imageMods != null && imageMods.Count > 0)
+					fin.ImageMods = imageMods;
+
+				if (normScale != 1.0)
+					fin.Scale = normScale;
 
 				// TODO: Do something with thumbOnly?
 
@@ -121,7 +124,7 @@ namespace Darwin.Database
 						fin.FinImage = new Bitmap(originalImageFromFile);
 
 						if (fin.ImageMods != null)
-                        {
+						{
 							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.FinImage, fin.ImageMods);
 						}
 
@@ -129,7 +132,7 @@ namespace Darwin.Database
 					}
 				}
 
-                return fin;
+				return fin;
             }
 			catch
             {

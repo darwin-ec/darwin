@@ -39,6 +39,7 @@ namespace Darwin.Database
     public class DBOutline
     {
         public long id { get; set; }
+        public double scale { get; set; }
         public int tipposition { get; set; }
         public int beginle { get; set; }
         public int endle { get; set; }
