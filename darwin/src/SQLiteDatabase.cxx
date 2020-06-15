@@ -16,6 +16,9 @@ static char nullStr[] = "NULL"; //***2.25 - used instead of dynamically allocate
 // Ensures that the given character array is valid, otherwise returns "NULL".
 //
 char* SQLiteDatabase::handleNull(char *in) {
+	if (in == NULL)
+		return nullStr;
+
 	//***2.25 - this approach caused memory leak so now we return pointer to static char array
 	//char* nullStr = new char[5];
 	//strcpy(nullStr,"NULL");

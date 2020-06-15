@@ -204,7 +204,8 @@ void ExportFinzDialog::copyCList(GtkCList *clist)
 		char **thumbCopy = copy_thumbnail(thumbnail);
 
 		//***1.85 - attach thumbnail copy to drawable
-		gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
+		if (thumbCopy != NULL)
+			gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
 
 		// append the new data for the redisplay of the CList
 		gtk_clist_append(GTK_CLIST(mCList), itemInfo);
@@ -288,7 +289,8 @@ void ExportFinzDialog::refreshDatabaseDisplayNew(bool sizeChanged)
 				char **thumbCopy = copy_thumbnail(fin->mThumbnailPixmap);
 
 				//***1.85 - attach thumbnail copy to drawable
-				gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
+				if (thumbCopy != NULL)
+					gdk_drawable_set_data(GDK_DRAWABLE(pixmap),"thumb",thumbCopy,free_thumbnail);
 	
 				gchar *idCode, *name, *damage, *date, *location;
 
@@ -476,7 +478,8 @@ void ExportFinzDialog::refreshDatabaseDisplayNew(bool sizeChanged)
 				char **thumbCopy = copy_thumbnail(thumbnail);
 
 				//***1.85 - attach thumbnail copy to drawable
-				gdk_drawable_set_data(GDK_DRAWABLE(pixmap[id]),"thumb",thumbCopy,free_thumbnail);
+				if (thumbCopy != NULL)
+					gdk_drawable_set_data(GDK_DRAWABLE(pixmap[id]),"thumb",thumbCopy,free_thumbnail);
 
 				id++; //***1.95 - increment position in new clist
 			}

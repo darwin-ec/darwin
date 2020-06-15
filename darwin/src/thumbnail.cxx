@@ -33,16 +33,23 @@ char** copy_thumbnail(char **data)
 {
 	int width, height, colors, rows;
 
-	sscanf(data[0],"%d %d %d", &width, &height, &colors);
-
-	rows = height + colors + 1;
-
-	char **thumbCopy = new char* [rows];
-	for (int ti = 0; ti < rows; ti++)
+	try
 	{
-		thumbCopy[ti] = new char [strlen(data[ti]) + 1];
-		strcpy(thumbCopy[ti], data[ti]);
-	} 
+		sscanf(data[0], "%d %d %d", &width, &height, &colors);
 
-	return thumbCopy;
+		rows = height + colors + 1;
+
+		char** thumbCopy = new char* [rows];
+		for (int ti = 0; ti < rows; ti++)
+		{
+			thumbCopy[ti] = new char[strlen(data[ti]) + 1];
+			strcpy(thumbCopy[ti], data[ti]);
+		}
+
+		return thumbCopy;
+	}
+	catch (...)
+	{
+		return NULL;
+	}
 }

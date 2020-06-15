@@ -988,7 +988,8 @@ bool ImageFile<PIXEL_TYPE>::loadPNG(const std::string &filename)
 		delete temp; //  1.95
 	}
 
-	delete [] comment;
+	if (num_comments > 0)
+		delete [] comment;
 
 	delete [] ppbImageData; // free allocated memory
 
