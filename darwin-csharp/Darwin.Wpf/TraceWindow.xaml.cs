@@ -33,6 +33,10 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class TraceWindow : Window
     {
+		private const string NoTraceErrorMessageDatabase = "You must trace your image before it can be added to the database.";
+		private const string NoIDErrorMessage = "You must enter an ID Code before\nyou can add a fin to the database.";
+		private const string NoCategoryErrorMessage = "You must select a category before proceeding.";
+
 		private CroppingAdorner _cropSelector;
 		System.Windows.Point? lastCenterPositionOnTarget;
 		System.Windows.Point? lastMousePositionOnTarget;
@@ -1611,19 +1615,43 @@ namespace Darwin.Wpf
 
         private void AddToDatabaseButton_Click(object sender, RoutedEventArgs e)
         {
-			if (_vm.Contour == null && _vm.Outline == null)
+			try
 			{
-				MessageBox.Show("You must trace your image before it can be added to the database.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
-			else
-			{
-				if (_vm.Outline == null)
+				if (_vm.Contour == null && _vm.Outline == null)
 				{
-					_vm.TraceLocked = true;
-					TraceFinalize();
+					MessageBox.Show(NoTraceErrorMessageDatabase, "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
+				else if (_vm.DatabaseFin == null || string.IsNullOrEmpty(_vm.DatabaseFin.IDCode))
+				{
+					MessageBox.Show(NoIDErrorMessage, "No ID", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+				else if (string.IsNullOrEmpty(_vm.DatabaseFin.DamageCategory) || _vm.Categories.Count < 1 || _vm.DatabaseFin.DamageCategory.ToUpper() == _vm.Categories[0]?.name?.ToUpper())
+				{
+					MessageBox.Show(NoCategoryErrorMessage, "No Category", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+				else
+				{
+					if (_vm.Outline == null)
+					{
+						_vm.TraceLocked = true;
+						TraceFinalize();
+					}
 
-				// TODO
+					_vm.SaveToDatabase();
+
+					// Refresh main window
+					var mainWindow = Application.Current.MainWindow as MainWindow;
+
+                    if (mainWindow != null)
+                        mainWindow.RefreshDatabase();
+
+					Close();
+				}
+			}
+			catch (Exception ex)
+            {
+				Trace.WriteLine(ex);
+				MessageBox.Show("Sorry, something went wrong adding to the database.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
     }

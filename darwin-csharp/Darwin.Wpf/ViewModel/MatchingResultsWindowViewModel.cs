@@ -221,8 +221,8 @@ namespace Darwin.Wpf.ViewModel
 
             DatabaseFin = unknownFin;
 
-            if (DatabaseFin != null && DatabaseFin.FinImage != null)
-                UnknownImageSource = DatabaseFin.FinImage.ToImageSource();
+            if (DatabaseFin != null && DatabaseFin.OriginalFinImage != null)
+                UnknownImageSource = DatabaseFin.OriginalFinImage.ToImageSource();
 
             MatchResults = matchResults;
             Database = database;

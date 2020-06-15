@@ -415,6 +415,8 @@ namespace Darwin.Wpf.ViewModel
 			bitmap.SetResolution(96, 96);
 
 			Bitmap = bitmap;
+
+			DatabaseFin.OriginalFinImage = new Bitmap(bitmap);
 			DatabaseFin.ImageFilename = DatabaseFin.OriginalImageFilename = filename;
 		}
 
@@ -423,6 +425,12 @@ namespace Darwin.Wpf.ViewModel
 			UpdateDatabaseFin();
 			CatalogSupport.SaveFinz(DatabaseFin, filename);
         }
+
+		public void SaveToDatabase()
+        {
+			UpdateDatabaseFin();
+			CatalogSupport.SaveToDatabase(Database, DatabaseFin);
+		}
 
 		public void UpdateDatabaseFin()
         {
@@ -448,11 +456,11 @@ namespace Darwin.Wpf.ViewModel
 			WindowTitle = fin.IDCode;
 
 			// TODO: Hack for HiDPI
-			fin.ModifiedFinImage.SetResolution(96, 96);
+			fin.FinImage.SetResolution(96, 96);
 
 			DatabaseFin = fin;
 
-			Bitmap = fin.FinImage ?? fin.ModifiedFinImage;
+			Bitmap = fin.FinImage ?? fin.OriginalFinImage;
 			Contour = new Contour(fin.FinOutline, fin.Scale);
 			Outline = fin.FinOutline;
 

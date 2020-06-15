@@ -18,7 +18,7 @@ namespace Darwin.Database
     // eliminate some duplication.
     public class SQLiteDatabase : DarwinDatabase
     {
-        public const int CurrentDBVersion = 2;
+        public const int LatestDBVersion = 2;
 
         private List<DBDamageCategory> _categories;
 
@@ -123,7 +123,7 @@ namespace Darwin.Database
             }
 
             // Maybe this should be a little more generic, but just hardcoding version upgrades right now
-            if (version < 2)
+            if (version < LatestDBVersion)
                 UpgradeToVersion2(conn);
         }
 
@@ -137,6 +137,13 @@ namespace Darwin.Database
                 {
                     cmd.CommandText = AddScaleToOutlines;
                     cmd.ExecuteNonQuery();
+                }
+
+                const string AddOriginalImageFilename = "ALTER TABLE Images ADD COLUMN OriginalImageFilename TEXT DEFAULT NULL";
+                using (var cmd2 = new SQLiteCommand(conn))
+                {
+                    cmd2.CommandText = AddOriginalImageFilename;
+                    cmd2.ExecuteNonQuery();
                 }
 
                 SetVersion(conn, 2);
@@ -204,6 +211,7 @@ namespace Darwin.Database
 
             // TODO: Move/look at constructors
             fin.Scale = outline.scale;
+            fin.OriginalImageFilename = image.original_imagefilename;
 
             if (image != null)
             {
@@ -306,16 +314,17 @@ namespace Darwin.Database
                     DBImage image = new DBImage();
                     image.dateofsighting = fin.DateOfSighting;
                     image.imagefilename = fin.ImageFilename;
+                    image.original_imagefilename = fin.OriginalImageFilename;
                     image.locationcode = fin.LocationCode;
                     image.rollandframe = fin.RollAndFrame;
                     image.shortdescription = fin.ShortDescription;
                     image.fkindividualid = individual.id;
                     InsertImage(conn, ref image);
 
-                    // TODO: Better thumbnail handling?
+                    // Fake thumbnail to keep the old version working
                     DBThumbnail thumbnail = new DBThumbnail();
-                    thumbnail.rows = 1;
-                    thumbnail.pixmap = "0";
+                    thumbnail.rows = 433;
+                    thumbnail.pixmap = FakeThumbnail;
                     thumbnail.fkimageid = image.id;
                     InsertThumbnail(conn, ref thumbnail);
 
@@ -392,6 +401,7 @@ namespace Darwin.Database
                     image = SelectImageByFkIndividualID(individual.id);
                     image.dateofsighting = fin.DateOfSighting;
                     image.imagefilename = fin.ImageFilename;
+                    image.original_imagefilename = fin.OriginalImageFilename;
                     image.locationcode = fin.LocationCode;
                     image.rollandframe = fin.RollAndFrame;
                     image.shortdescription = fin.ShortDescription;
@@ -785,6 +795,7 @@ namespace Darwin.Database
                             {
                                 id = rdr.SafeGetInt("ID"),
                                 imagefilename = rdr.SafeGetString("ImageFilename"),
+                                original_imagefilename = rdr.SafeGetString("OriginalImageFilename"),
                                 dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
                                 rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
                                 locationcode = rdr.SafeGetStringStripNone("LocationCode"),
@@ -829,6 +840,7 @@ namespace Darwin.Database
                             {
                                 id = rdr.SafeGetInt("ID"),
                                 imagefilename = rdr.SafeGetString("ImageFilename"),
+                                original_imagefilename = rdr.SafeGetString("OriginalImageFilename"),
                                 dateofsighting = rdr.SafeGetStringStripNone("DateOfSighting"),
                                 rollandframe = rdr.SafeGetStringStripNone("RollAndFrame"),
                                 locationcode = rdr.SafeGetStringStripNone("LocationCode"),
@@ -1193,9 +1205,10 @@ namespace Darwin.Database
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                cmd.CommandText = "INSERT INTO Images(ID, ImageFilename, DateOfSighting, RollAndFrame, LocationCode, ShortDescription, fkIndividualID) " +
-                    "VALUES (NULL, @ImageFilename, @DateOfSighting, @RollAndFrame, @LocationCode, @ShortDescription, @fkIndividualID);";
+                cmd.CommandText = "INSERT INTO Images(ID, ImageFilename, OriginalImageFilename, DateOfSighting, RollAndFrame, LocationCode, ShortDescription, fkIndividualID) " +
+                    "VALUES (NULL, @ImageFilename, @OriginalImageFilename, @DateOfSighting, @RollAndFrame, @LocationCode, @ShortDescription, @fkIndividualID);";
                 cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
+                cmd.Parameters.AddWithValue("@OriginalImageFilename", image.original_imagefilename);
                 cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
                 cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
                 cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
@@ -1398,6 +1411,7 @@ namespace Darwin.Database
             {
                 cmd.CommandText = "UPDATE Images SET " +
                     "ImageFilename = @ImageFilename, " +
+                    "OriginalImageFilename = @OriginalImageFilename, " +
                     "DateOfSighting = @DateOfSighting, " +
                     "RollAndFrame = @RollAndFrame, " +
                     "LocationCode = @LocationCode, " +
@@ -1406,6 +1420,7 @@ namespace Darwin.Database
                     "WHERE ID = @ID";
 
                 cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
+                cmd.Parameters.AddWithValue("@OriginalImageFilename", image.original_imagefilename);
                 cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
                 cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
                 cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
@@ -1673,6 +1688,7 @@ namespace Darwin.Database
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         fkIndividualID INTEGER,
                         ImageFilename TEXT,
+                        OriginalImageFilename TEXT DEFAULT NULL,
                         DateOfSighting TEXT,
                         RollAndFrame TEXT,
                         LocationCode TEXT,
@@ -1747,7 +1763,7 @@ namespace Darwin.Database
                 }
 
                 // Set the DB versioning to the latest
-                SetVersion(conn, CurrentDBVersion);
+                SetVersion(conn, LatestDBVersion);
 
                 // At this point, the Database class already contains the catalog scheme 
                 // specification.  It was set in the Database(...) constructor from 
@@ -1769,5 +1785,444 @@ namespace Darwin.Database
                 conn.Close();
             }
         }
+
+        private const string FakeThumbnail = @"25 25 407 2
+!! c #000000
+!# c #4A5D6B
+!$ c #5E7F86
+!% c #9CC7AC
+!& c #C0DCD0
+!'' c #E7FBF2
+!(c #F2FBF6
+!) c #FEFFFF
+!* c #FEFFFA
+!+ c #F4FFEF
+!, c #FEFEFC
+!- c #FDFDFB
+!. c #EFFDEE
+!/ c #F3FFE6
+!0 c #C9EECF
+!1 c #AADACE
+!2 c #98BEA5
+!3 c #AFD9CD
+!4 c #CCE2CB
+!5 c #C5EFD7
+!6 c #C3E5D7
+!7 c #C0E0DB
+!8 c #B4DFB2
+!9 c #A2C9AE
+!: c #B1D0BE
+!; c #878B8E
+!< c #839B83
+!= c #84A4A3
+!> c #739887
+!? c #7A9C81
+!@ c #B1BEB7
+!A c #ADC2AF
+!B c #DAFBF2
+!C c #DCFBD9
+!D c #C5FADE
+!E c #F1FCEE
+!F c #EEFDE6
+!G c #EBFFF3
+!H c #C4E2BC
+!I c #A5CFAB
+!J c #BEFADE
+!K c #D9FFDB
+!L c #E3FFF3
+!M c #F1FFFA
+!N c #FBFDEF
+!O c #F6FFFD
+!P c #FBFDF0
+!Q c #F6FFFC
+!R c #F1FFF9
+!S c #8EACAC
+!T c #A3B5A9
+!U c #ABC6BF
+!V c #C1D7CA
+!W c #E1F1D4
+!X c #E8FFEA
+!Y c #DEFAE1
+!Z c #B9E0CE
+![c #8BBBA1
+!\ c #82B094
+!]
+        c #7AA47C
+!^ c #88B29E
+!_ c #BADEC4
+!` c #EEFFED
+!a c #FDFDFD
+!b c #FAFFF6
+!c c #B283A5
+!d c #160D3A
+!e c #0B0231
+!f c #0D042F
+!g c #0A052E
+!h c #FFFFFB
+!i c #FEFFF5
+!j c #A9C5B7
+!k c #ABC7B8
+!l c #E7F7DC
+!m c #CBF3D9
+!n c #799A89
+!o c #56716A
+!p c #5B7F59
+!q c #486B4A
+!r c #56794F
+!s c #668971
+!t c #6D948F
+!u c #6D9477
+!v c #7CA793
+!w c #93B5A4
+!x c #BCDACE
+!y c #CEF8E2
+!z c #CBC2B1
+!{ c #130A3F
+!| c #08012D
+!}
+    c #070127
+!~c #050126
+! c #0D022D
+#! c #B2DBB9
+## c #DAFBCC
+#$ c #A8AC9E
+#% c #B4CFD6
+#& c #99BEAD
+#'' c #AAD8BB
+#( c #C5E7D9
+#) c #D7F3DD
+#* c #D0F1DE
+#+ c #B9DBDC
+#, c #B9DAD3
+#- c #BEDCDA
+#. c #A4CCC3
+#/ c #84B6B7
+#0 c #90B594
+#1 c #7EA391
+#2 c #7AA87A
+#3 c #2A1D53
+#4 c #07002C
+#5 c #060223
+#6 c #05021F
+#7 c #03001F
+#8 c #060121
+#9 c #050122
+#: c #CBFCCF
+#; c #E2FAE2
+#< c #DEFFFB
+#= c #A6C3CB
+#> c #97B8B1
+#? c #A0BCB0
+#@ c #ACD1C0
+#A c #D7E9E9
+#B c #F0FDEC
+#C c #D3F1D7
+#D c #E5F4DD
+#E c #E5FAE9
+#F c #E0F7E3
+#G c #D9EEDF
+#H c #D0E4C8
+#I c #E4FDDD
+#J c #D2E6CA
+#K c #0F023A
+#L c #030024
+#M c #060024
+#N c #050124
+#O c #231B40
+#P c #D4E9DA
+#Q c #D3F1D5
+#R c #D9F1D7
+#S c #A4C9A0
+#T c #D5E7D7
+#U c #E9FEEB
+#V c #FCFFEE
+#W c #F7FEEC
+#X c #DEF9EA
+#Y c #DEF2CD
+#Z c #CAE5BC
+#[ c #EDF3D1
+#\ c #E9FFEE
+#] c #E7FCED
+#^ c #D1ECE7
+#_ c #DAF6DD
+#` c #09032F
+#a c #0B0430
+#b c #040021
+#c c #050221
+#d c #070029
+#e c #E3FAF0
+#f c #EEFFF7
+#g c #DCFDE2
+#h c #DAFCE4
+#i c #C0DABD
+#j c #D1DFCE
+#k c #C4DCDC
+#l c #B5D4C5
+#m c #BADFD7
+#n c #95ACA2
+#o c #86A898
+#p c #8FA895
+#q c #678778
+#r c #789D8B
+#s c #A7D0B2
+#t c #CAE4CB
+#u c #080031
+#v c #060029
+#w c #060028
+#x c #060022
+#y c #050021
+#z c #06011F
+#{ c #91A5A3
+#| c #FEFFF7
+#} c #FEFFF9
+#~ c #FEFEFE
+# c #FFFFFD
+$! c #9FB0A8
+$# c #768888
+$$ c #6F9073
+$% c #81A192
+$& c #91B99E
+$'' c #99C19F
+$(c #D7F0D3
+$) c #DAF7DB
+$* c #EEFFEA
+$+ c #F6FFFB
+$, c #EBFFF0
+$- c #0B002D
+$. c #060026
+$/ c #DAF5CA
+$0 c #E7FEEE
+$1 c #E5FCE2
+$2 c #EAFDE1
+$3 c #E7FFE4
+$4 c #CEE9E0
+$5 c #DDF5E7
+$6 c #D5E4CF
+$7 c #BCE3D1
+$8 c #B8CECC
+$9 c #AAD0D1
+$: c #92B7AF
+$; c #83B3A5
+$< c #9DAA99
+$= c #8EB19D
+$> c #0C013D
+$? c #090329
+$@ c #07002E
+$A c #040020
+$B c #070123
+$C c #E2F8E3
+$D c #E0FBD8
+$E c #F0FFF4
+$F c #E2FBE5
+$G c #C6E2D3
+$H c #90A499
+$I c #98B5B1
+$J c #789C80
+$K c #70807F
+$L c #87A186
+$M c #A7CFC7
+$N c #C8EED7
+$O c #C2D3C0
+$P c #D1EBE0
+$Q c #130238
+$R c #090327
+$S c #030325
+$T c #060129
+$U c #06002C
+$V c #030126
+$W c #BBDDBC
+$X c #BFE8CA
+$Y c #C0E5BC
+$Z c #A9CEAC
+$[c #84B190
+$\ c #A4C9AA
+$]
+    c #99A4B8
+$^ c #C0D7C7
+$_ c #CDEBE3
+$` c #C7DBBF
+$a c #B6DABE
+$b c #B1D9BF
+$c c #C7DED6
+$d c #DDF7EC
+$e c #15063F
+$f c #060227
+$g c #04001D
+$h c #04001B
+$i c #070026
+$j c #B7D0B0
+$k c #FFF9F2
+$l c #ABC8AA
+$m c #FAFFFF
+$n c #68985E
+$o c #D0E8DB
+$p c #C7E1D4
+$q c #C5E0CF
+$r c #CBE3D5
+$s c #C6E8DA
+$t c #D1EAE4
+$u c #BFE4C5
+$v c #0E0137
+$w c #060225
+$x c #04001F
+$y c #2F2B42
+$z c #98BD9B
+${ c #A4C5AA
+$| c #9DBEAB
+$}
+c #F4F4F2
+$~c #6B817E
+$ c #607475
+%! c #6B886A
+%# c #647F90
+%$ c #76A07A
+%% c #7F8981
+%& c #0B0133
+%'' c #0C0227
+%(c #050020
+%) c #040229
+%* c #05002B
+%+ c #08012B
+%, c #261839
+%- c #588252
+%. c #7DA07F
+%/ c #73A08C
+%0 c #688F5A
+%1 c #587771
+%2 c #475258
+%3 c #5F815C
+%4 c #506B5C
+%5 c #667467
+%6 c #0A0231
+%7 c #040120
+%8 c #06021D
+%9 c #050025
+%: c #06012A
+%; c #040322
+%< c #070125
+%= c #86816D
+%> c #689368
+%? c #94B48F
+%@ c #68895C
+%A c #557357
+%B c #375C64
+%C c #466659
+%D c #3D574C
+%E c #0D023E
+%F c #040027
+%G c #050028
+%H c #050029
+%I c #040028
+%J c #1A0838
+%K c #D5C496
+%L c #A0C2AA
+%M c #B5D1A8
+%N c #4A5456
+%O c #395B43
+%P c #567150
+%Q c #070030
+%R c #07031E
+%S c #07012F
+%T c #070033
+%U c #090029
+%V c #190835
+%W c #1E0839
+%X c #220931
+%Y c #2C1438
+%Z c #351A39
+%[c #CCA878
+%\ c #516A67
+%] c #738C88
+%^ c #1F0A4B
+%_ c #10002F
+%` c #090031
+%a c #170338
+%b c #1C0A32
+%c c #1C0533
+%d c #150B47
+%e c #11052D
+%f c #07022B
+%g c #05002F
+%h c #412244
+%i c #41183A
+%j c #3D2034
+%k c #55254F
+%l c #522E48
+%m c #5F3751
+%n c #6D4C61
+%o c #6F7978
+%p c #1F0737
+%q c #271135
+%r c #18012D
+%s c #1B0128
+%t c #290F32
+%u c #28113F
+%v c #220C32
+%w c #21002B
+%x c #351C53
+%y c #35194C
+%z c #3A1646
+%{ c #320C47
+%| c #030221
+%} c #0A012C
+%~ c #130127
+% c #371838
+&! c #93749D
+&# c #A39185
+&$ c #4E2A38
+&% c #6A4264
+&& c #8D63A2
+&'' c #663855
+&( c #37143E
+&) c #270A36
+&* c #1B0931
+&+ c #281040
+&, c #1D0535
+&- c #1E0235
+&. c #260A33
+&/ c #220F3D
+&0 c #1D0F42
+&1 c #290A43
+&2 c #4E2A4E
+&3 c #41264F
+&4 c #A0839F
+&5 c #2E133C
+&6 c #3E0E42
+&7 c #DAE4E6
+&8 c #EAD9C7
+&9 c #FAFFD7
+&: c #573454
+&; c #AD82DB
+&< c #533453
+&= c #5B3564
+&> c #714A5F
+&? c #877680
+&@ c #5F4A71
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!#!$!%!&!''!(!)!*!+!,!*!-!.!/!0!1!2!3!4!5!6!7!8!9!:
+!;!<!=!>!?!@!A!B!C!D!E!F!)!G!H!I!J!K!L!M!N!O!P!Q!R
+!S!T!U!V!W!X!Y!Z![!\!]!^!_!`!a!,!*!b!c!d!e!f!g!h!i
+!j!k!l!m!n!o!p!q!r!s!t!u!v!w!x!y!z!{!|!}!~!~!#!##
+#$#%#&#''#(#)#*#+#,#-#.#/#0#1#2#3#4#5#6#7#8#9#:#;#<
+#=#>#?#@#A#B#C#D#E#F#G#H#I#J#K#4#L#M#9#9#N#O#P#Q#R
+#S#T#U#V#W#X#Y#Z#[#\#]#^#_#`#a!}!~#b#c#6#d#e#f#g#h
+#i#j#k#l#m#n#o#p#q#r#s#t#u#v#w#d#x#y#z#x#{#|#}#~#
+$!$#$$$%$&$''$($)$*$+$,$-#4#d$.!~#9#8#M#z$/$0$1$2$3
+$4$5$6$7$8$9$:$;$<$=$>$?$@$A#9#9#9#M$.$B$C$D$E$F$G
+$H$I$J$K$L$M$N$O$P$Q$R$S$T#9#9$U#9!}$V$W$X$Y$Z$[$\
+$]$^$_$`$a$b$c$d$e$.#d$B#z#M#8$f$g#8$h$i$j$k$l$m$n
+$o$p$q$r$s$t$u$v#d#M!}!~#8#9#9$w#x#d$x#z$y$z${$|$}
+$~$%!%#%$%%%&%''$T$B#d$.#x!}#b%(%)%*$B%+%,%-%.%/%0
+%1%2%3%4%5%6#8%7%8!}#y!}%9$T#y%:!~#N%;#L%<%=%>%?%@
+%A%B%C%D%E!~#N!~#c$T%F%G!~%H$T$U%G#9#c%I#d%J%K%L%M
+%N%O%P%Q%R!~!~#9#7!}#N$f$f%S%I%T$f!~%U%V%W%X%Y%Z%[
+%\%]%^%_%`%a%b%c%d%e$.!~%f%g$w%H#9%:%h%i%j%k%l%m%n
+%o%p%q%r%s%t%u%v%w%x%y%z%{%|#5%:%}%~%&!&#&$&%&&&''
+&(&)&*&+&,&-&.&/&0&1&2&3&4&5&6&7&8&9&:&;&<&=&>&?&@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+";
     }
 }

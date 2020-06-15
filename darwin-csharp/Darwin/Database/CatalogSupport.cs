@@ -34,7 +34,9 @@ namespace Darwin.Database
 
 		public static void UpdateFinFieldsFromImage(string basePath, DatabaseFin fin)
         {
-			if (fin.Version < 2.0m)
+			// TODO:
+			// Probably not the best "flag" to look at.  We're saving OriginalImageFilename in the database for newer fins
+			if (string.IsNullOrEmpty(fin.OriginalImageFilename))
 			{
 				List<ImageMod> imageMods;
 				bool thumbOnly;
@@ -52,13 +54,15 @@ namespace Darwin.Database
 				// the filename below.
 				var bottomDirectoryName = Path.GetFileName(Path.GetDirectoryName(fullFilename));
 
-				originalFilename = Path.Combine(bottomDirectoryName, originalFilename);
+				if (!string.IsNullOrEmpty(originalFilename))
+				{
+					originalFilename = Path.Combine(bottomDirectoryName, originalFilename);
 
-				// TODO Original isn't right -- need to replay imagemods, maybe?
-				fin.OriginalImageFilename = originalFilename;
-				fin.ImageFilename = originalFilename;
-				fin.Version = 2.0m;
-				// TODO: Save these changes back to the database
+					// TODO Original isn't right -- need to replay imagemods, maybe?
+					fin.OriginalImageFilename = originalFilename;
+					fin.ImageFilename = originalFilename;
+				}
+				// TODO: Save these changes back to the database?
 			}
 		}
 
@@ -111,8 +115,8 @@ namespace Darwin.Database
 				// then copy it over to our actual working object.
 				using (var imageFromFile = (Bitmap)Image.FromFile(fin.ImageFilename))
 				{
-					fin.ModifiedFinImage = new Bitmap(imageFromFile);
-					fin.ModifiedFinImage?.SetResolution(96, 96);
+					fin.FinImage = new Bitmap(imageFromFile);
+					fin.FinImage?.SetResolution(96, 96);
 				}
 
 				if (!string.IsNullOrEmpty(originalFilename))
@@ -121,14 +125,14 @@ namespace Darwin.Database
 
 					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.OriginalImageFilename))
 					{
-						fin.FinImage = new Bitmap(originalImageFromFile);
+						fin.OriginalFinImage = new Bitmap(originalImageFromFile);
+						fin.OriginalFinImage?.SetResolution(96, 96);
 
 						if (fin.ImageMods != null)
 						{
-							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.FinImage, fin.ImageMods);
+							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.OriginalFinImage, fin.ImageMods);
+							fin.FinImage?.SetResolution(96, 96);
 						}
-
-						fin.FinImage?.SetResolution(96, 96);
 					}
 				}
 
@@ -183,9 +187,9 @@ namespace Darwin.Database
 
 				// replace ".finz" with "_wDarwinMods.png" for modified image filename
 
-				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + "_wDarwinMods.png");
+				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppend);
 
-				fin.FinImage.Save(fin.ImageFilename);
+				fin.OriginalFinImage.Save(fin.ImageFilename);
 
 				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
 
@@ -235,6 +239,74 @@ namespace Darwin.Database
 				}
 			}
 		}
+
+		public static void SaveToDatabase(DarwinDatabase database, DatabaseFin databaseFin)
+        {
+			if (database == null)
+				throw new ArgumentNullException(nameof(database));
+
+			if (databaseFin == null)
+				throw new ArgumentNullException(nameof(databaseFin));
+
+			if (string.IsNullOrEmpty(databaseFin.OriginalImageFilename) || databaseFin.OriginalFinImage == null)
+				throw new ArgumentOutOfRangeException(nameof(databaseFin));
+
+			// First, copy the images to the catalog folder
+
+			// Check the original image.  If we still have the actual original image file, just copy it.  If
+			// not, then save the one we have in memory to the folder.
+
+			string originalImageSaveAs = Path.Combine(Options.CurrentUserOptions.CurrentCatalogPath, Path.GetFileName(databaseFin.OriginalImageFilename));
+
+			// If we already have an item in the database with the same filename, try a few others
+			if (File.Exists(originalImageSaveAs))
+            {
+				const int MaxFilenameTries = 20;
+
+				for (int i = 0; i < MaxFilenameTries; i++)
+                {
+					var newFilenameTry = originalImageSaveAs.Insert(originalImageSaveAs.LastIndexOf("."), " (" + i.ToString() + ")");
+
+					if (!File.Exists(newFilenameTry))
+                    {
+						originalImageSaveAs = newFilenameTry;
+						break;
+                    }
+
+					if (i + 1 == MaxFilenameTries)
+						throw new Exception("Filename " + originalImageSaveAs + " already exists!");
+                }
+            }
+
+			if (File.Exists(databaseFin.OriginalImageFilename))
+            {
+				File.Copy(databaseFin.OriginalImageFilename, originalImageSaveAs);
+            }
+			else
+            {
+				databaseFin.OriginalFinImage.Save(originalImageSaveAs);
+            }
+
+			// Now save the modified image (or the original if for some reason we don't have the modified one)
+			string modifiedImageSaveAs = Path.Combine(Options.CurrentUserOptions.CurrentCatalogPath,
+				Path.GetFileNameWithoutExtension(originalImageSaveAs) + AppSettings.DarwinModsFilenameAppend);
+
+			if (databaseFin.FinImage != null)
+            {
+				databaseFin.FinImage.Save(modifiedImageSaveAs);
+            }
+			else
+            {
+				databaseFin.OriginalFinImage.Save(modifiedImageSaveAs);
+            }
+
+			// Now let's overwrite the filenames without any paths
+			databaseFin.OriginalImageFilename = Path.GetFileName(originalImageSaveAs);
+			databaseFin.ImageFilename = Path.GetFileName(modifiedImageSaveAs);
+
+			// Finally, add it to the database
+			database.Add(databaseFin);
+        }
 
 		public static void RebuildFolders(string home, string area)
 		{

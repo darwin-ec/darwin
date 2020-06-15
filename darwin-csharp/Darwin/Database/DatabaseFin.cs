@@ -55,9 +55,8 @@ namespace Darwin.Database
 {
     public class DatabaseFin : INotifyPropertyChanged
     {
-        public decimal Version { get; set; } = 1.0m;
-
-        public Bitmap FinImage;
+        public Bitmap OriginalFinImage;
+        public Bitmap FinImage;      // modified fin image from TraceWin, ...
 
         private Outline _finOutline;
         private string _IDCode;
@@ -77,7 +76,6 @@ namespace Darwin.Database
         public bool mLeft, mFlipped;              // left side or flipped internally to swim left
         public double XMin, YMin, XMax, YMax; // internal cropping bounds
         public double Scale;                     // image to Outline scale change
-        public Bitmap ModifiedFinImage;      // modified fin image from TraceWin, ...
 
         public List<ImageMod> ImageMods;    //  1.8 - for list of image modifications
         public string OriginalImageFilename; //  1.8 - filename of original unmodified image
@@ -282,7 +280,7 @@ namespace Darwin.Database
             YMin = 0.0; //  1.4
             YMax = 0.0; //  1.4
             Scale = 1.0; //  1.4
-            ModifiedFinImage = null; //  1.5
+            FinImage = null; //  1.5
             FinFilename = string.Empty; //  1.6
             IsAlternate = false; //  1.95
 
@@ -290,7 +288,7 @@ namespace Darwin.Database
             //         does not exist or is unsupported type  --
             //         program now crashes when database image is misplaced or misnamed
 
-            FinImage = new Bitmap(ImageFilename); //  001DB
+            OriginalFinImage = new Bitmap(ImageFilename); //  001DB
 
             FieldsChanged = false;
             // TODO
@@ -338,9 +336,9 @@ namespace Darwin.Database
             YMin= 0.0; //  1.4
             YMax = 0.0; //  1.4
             Scale = 1.0; //  1.4
-            ModifiedFinImage = null; //  1.5
+            FinImage = null; //  1.5
             FinFilename = string.Empty; //  1.6
-            FinImage = null;
+            OriginalFinImage = null;
             IsAlternate = false; //  1.99
 
             FieldsChanged = false;
@@ -365,8 +363,8 @@ namespace Darwin.Database
         public DatabaseFin(DatabaseFin fin)
         {
             ImageFilename = fin.ImageFilename;        //  001DB
-			FinImage = null;                          //   major change JHS
-            ModifiedFinImage = null; //  1.5
+			OriginalFinImage = null;                          //   major change JHS
+            FinImage = null; //  1.5
             DataPos = fin.DataPos;                    //  001DB
             FinOutline = new Outline(fin.FinOutline); //  006DF,008OL
             IDCode = fin.IDCode;
@@ -395,12 +393,12 @@ namespace Darwin.Database
 
             //  1.5 - just set pointer to original copy from TraceWindow
             //  1.8 - we actually create a COPY of the modified image here
-            if (null != fin.ModifiedFinImage)
-                ModifiedFinImage = new Bitmap(fin.ModifiedFinImage);
-
-            //  1.8 - and we create a COPY of the original image here
             if (null != fin.FinImage)
                 FinImage = new Bitmap(fin.FinImage);
+
+            //  1.8 - and we create a COPY of the original image here
+            if (null != fin.OriginalFinImage)
+                OriginalFinImage = new Bitmap(fin.OriginalFinImage);
 
             // TODO
             //for (int i = 0; i < fin.mThumbnailRows; i++)

@@ -23,6 +23,7 @@ namespace Darwin.Database
         public long id { get; set; }
         public long fkindividualid { get; set; }
         public string imagefilename { get; set; }
+        public string original_imagefilename { get; set; }
         public string dateofsighting { get; set; }
         public string rollandframe { get; set; }
         public string locationcode { get; set; }

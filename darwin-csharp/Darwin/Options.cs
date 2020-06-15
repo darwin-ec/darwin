@@ -45,6 +45,18 @@ namespace Darwin
         }
 
         [JsonIgnore]
+        public string CurrentCatalogPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDataPath, CatalogFolderName);
+            }
+        }
+
+        [JsonIgnore]
         public string CurrentMatchQueuePath
         {
             get

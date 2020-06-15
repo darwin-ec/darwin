@@ -21,6 +21,8 @@ namespace Darwin
         public const int MaxZoom = 1600;
         public const int MinZoom = 6;
 
+        public const string DarwinModsFilenameAppend = "_wDarwinMods.png";
+
         public static readonly float[][] GrayscaleConversionMatrix = new float[][] {
                 new float[] { 0.299f, 0.299f, 0.299f, 0, 0 },
                 new float[] { 0.587f, 0.587f, 0.587f, 0, 0 },

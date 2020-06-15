@@ -20,6 +20,7 @@ using System.Drawing;
 using Darwin.Collections;
 using System.ComponentModel;
 using Darwin.Utilities;
+using System.Diagnostics;
 
 namespace Darwin.Wpf
 {
@@ -36,8 +37,18 @@ namespace Darwin.Wpf
 
             _vm = new MainWindowViewModel();
 
-            if (!string.IsNullOrEmpty(Options.CurrentUserOptions.DatabaseFileName))
-                OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false);
+            try
+            {
+                if (!string.IsNullOrEmpty(Options.CurrentUserOptions.DatabaseFileName))
+                    OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+                MessageBox.Show("There was a problem opening the database. It may have been moved or deleted.\n\n" +
+                    "Please use Open Database to find an existing database, or use New Database to create a new one.",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             this.DataContext = _vm;
         }
@@ -138,6 +149,15 @@ namespace Darwin.Wpf
 
                 Options.CurrentUserOptions.Save();
             }
+        }
+
+        public void RefreshDatabase()
+        {
+            _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
+                _vm.DarwinDatabase
+                .GetAllFins()
+                .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
+                .ToList());
         }
 
         private void MatchingQueueCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
