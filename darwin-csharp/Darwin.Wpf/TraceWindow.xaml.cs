@@ -33,6 +33,7 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class TraceWindow : Window
     {
+		private const int ImagePadding = 20;
 		private const string NoTraceErrorMessageDatabase = "You must trace your image before it can be added to the database.";
 		private const string NoIDErrorMessage = "You must enter an ID Code before\nyou can add a fin to the database.";
 		private const string NoCategoryErrorMessage = "You must select a category before proceeding.";
@@ -118,6 +119,27 @@ namespace Darwin.Wpf
 			_vm.ZoomValues.Add(0.50);
 			_vm.ZoomValues.Add(0.25);
 
+			// We need to wait until the window is loaded before the scroll viewer will have ActualWidth and ActualHeight
+			// so that we can compare to the bitmap to compute the initial zoom ratio, if needed.
+			Loaded += delegate
+			{
+				if (_vm.Bitmap != null && ((_vm.Bitmap.Width + ImagePadding) > TraceScrollViewer.ActualWidth || (_vm.Bitmap.Height + ImagePadding) > TraceScrollViewer.ActualHeight))
+				{
+
+					var heightRatio = TraceScrollViewer.ActualHeight / (_vm.Bitmap.Height + ImagePadding);
+					var widthRatio = TraceScrollViewer.ActualWidth / (_vm.Bitmap.Width + ImagePadding);
+					if (widthRatio < heightRatio)
+					{
+						// the width is the restrictive dimension
+						_vm.ZoomRatio = (float)Math.Round(widthRatio, 2);
+					}
+					else
+					{
+						_vm.ZoomRatio = (float)Math.Round(heightRatio, 2);
+					}
+				}
+			};
+
 			this.DataContext = _vm;
 		}
 
@@ -173,17 +195,6 @@ namespace Darwin.Wpf
 			//***1.4 - new code to remove Outline, if loaded from fin file
 			if (_vm.Outline != null)
 				_vm.Outline = null;
-
-			// TODO
-			//***1.95 - new code to remove DatabaseFin, if loaded from fin file
-			// or if created for a previous Save or Add To Database operation
-			// from which we have returned to setp 1 (Modifiy the image)
-			//
-			/*if (NULL != mFin)
-			{
-				delete mFin;
-				mFin = NULL;
-			}*/
 
 			// TODO
 			_vm.TraceSnapped = false; //***051TW
@@ -301,20 +312,6 @@ namespace Darwin.Wpf
 				StatusBarMessage.Text = "Make any Needed Corrections to Outline Trace using Tools Above";
 
 			} //102AT
-		}
-
-		private void ZoomIn(System.Windows.Point point)
-		{
-			lastMousePositionOnTarget = point;
-
-			ZoomSlider.Value += 1;
-		}
-
-		private void ZoomOut(System.Windows.Point point)
-		{
-			lastMousePositionOnTarget = point;
-
-			ZoomSlider.Value -= 1;
 		}
 
 		// TODO: Do we really need this, or is this not ported correctly?
@@ -966,52 +963,71 @@ namespace Darwin.Wpf
 			}
 		}
 
+		private void ZoomIn(System.Windows.Point point)
+		{
+			lastMousePositionOnTarget = point;
+
+			double newValue = ZoomSlider.Value * 2;
+
+			if (newValue > ZoomSlider.Maximum)
+				newValue = ZoomSlider.Maximum;
+
+			ZoomSlider.Value = newValue;
+		}
+
+		private void ZoomOut(System.Windows.Point point)
+		{
+			lastMousePositionOnTarget = point;
+
+			double newValue = ZoomSlider.Value / 2;
+
+			if (newValue < ZoomSlider.Minimum)
+				newValue = ZoomSlider.Minimum;
+
+			ZoomSlider.Value = newValue;
+		}
+
 		private void TraceScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
 			if (e.ExtentHeightChange != 0 || e.ExtentWidthChange != 0)
 			{
-				System.Windows.Point? targetBefore = null;
-				System.Windows.Point? targetNow = null;
+                System.Windows.Point? targetBefore = null;
+                System.Windows.Point? targetNow = null;
 
-				if (!lastMousePositionOnTarget.HasValue)
-				{
-					if (lastCenterPositionOnTarget.HasValue)
-					{
-						var centerOfViewport = new System.Windows.Point(TraceScrollViewer.ViewportWidth / 2, TraceScrollViewer.ViewportHeight / 2);
-						System.Windows.Point centerOfTargetNow = TraceScrollViewer.TranslatePoint(centerOfViewport, imgViewBox);
+                if (lastMousePositionOnTarget == null)
+                {
+                    if (lastCenterPositionOnTarget != null)
+                    {
+                        var centerOfViewport = new System.Windows.Point(TraceScrollViewer.ViewportWidth / 2, TraceScrollViewer.ViewportHeight / 2);
+                        System.Windows.Point centerOfTargetNow = TraceScrollViewer.TranslatePoint(centerOfViewport, ImageViewBox);
 
-						targetBefore = lastCenterPositionOnTarget;
-						targetNow = centerOfTargetNow;
-					}
-				}
-				else
-				{
-					targetBefore = lastMousePositionOnTarget;
-					targetNow = Mouse.GetPosition(imgViewBox);
+                        targetBefore = lastCenterPositionOnTarget;
+                        targetNow = centerOfTargetNow;
+                    }
+                }
+                else
+                {
+                    targetBefore = lastMousePositionOnTarget;
+                    targetNow = Mouse.GetPosition(ImageViewBox);
 
-					lastMousePositionOnTarget = null;
-				}
+                    lastMousePositionOnTarget = null;
+                }
 
-				if (targetBefore.HasValue)
-				{
+                if (targetBefore != null)
+                {
 					double dXInTargetPixels = targetNow.Value.X - targetBefore.Value.X;
 					double dYInTargetPixels = targetNow.Value.Y - targetBefore.Value.Y;
 
-					double multiplicatorX = e.ExtentWidth / imgViewBox.Width;
-					double multiplicatorY = e.ExtentHeight / imgViewBox.Height;
+                    double newOffsetX = TraceScrollViewer.HorizontalOffset - dXInTargetPixels * ScaleTransform.ScaleX;
+                    double newOffsetY = TraceScrollViewer.VerticalOffset - dYInTargetPixels * ScaleTransform.ScaleY;
 
-					double newOffsetX = TraceScrollViewer.HorizontalOffset - dXInTargetPixels * multiplicatorX;
-					double newOffsetY = TraceScrollViewer.VerticalOffset - dYInTargetPixels * multiplicatorY;
-
-					if (double.IsNaN(newOffsetX) || double.IsNaN(newOffsetY))
-					{
-						return;
+                    if (!double.IsNaN(newOffsetX) && !double.IsNaN(newOffsetY))
+                    {
+						TraceScrollViewer.ScrollToHorizontalOffset(newOffsetX);
+						TraceScrollViewer.ScrollToVerticalOffset(newOffsetY);
 					}
-
-					TraceScrollViewer.ScrollToHorizontalOffset(newOffsetX);
-					TraceScrollViewer.ScrollToVerticalOffset(newOffsetY);
-				}
-			}
+                }
+            }
 		}
 
 		private void TraceScrollViewer_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -1048,16 +1064,10 @@ namespace Darwin.Wpf
 
 		private void TraceScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
 		{
-			lastMousePositionOnTarget = Mouse.GetPosition(imgViewBox);
-
 			if (e.Delta > 0)
-			{
-				ZoomSlider.Value += 1;
-			}
-			if (e.Delta < 0)
-			{
-				ZoomSlider.Value -= 1;
-			}
+				ZoomIn(e.GetPosition(ImageViewBox));
+			else if (e.Delta < 0)
+				ZoomOut(e.GetPosition(ImageViewBox));
 
 			e.Handled = true;
 		}
@@ -1102,7 +1112,7 @@ namespace Darwin.Wpf
 				ScaleTransform.ScaleY = e.NewValue;
 
 				var centerOfViewport = new System.Windows.Point(TraceScrollViewer.ViewportWidth / 2, TraceScrollViewer.ViewportHeight / 2);
-				lastCenterPositionOnTarget = TraceScrollViewer.TranslatePoint(centerOfViewport, imgViewBox);
+				lastCenterPositionOnTarget = TraceScrollViewer.TranslatePoint(centerOfViewport, ImageViewBox);
 			}
 		}
 

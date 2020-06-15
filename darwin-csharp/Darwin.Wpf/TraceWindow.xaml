@@ -27,7 +27,7 @@
         </x:Array>
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="TopGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -185,7 +185,7 @@
                 </Grid.ColumnDefinitions>
                 <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="0.25" Maximum="16" Value="{Binding Path=ZoomRatio, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
                 <ScrollViewer x:Name="TraceScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
-                    <Viewbox x:Name="imgViewBox" Stretch="None">
+                    <Viewbox x:Name="ImageViewBox" Stretch="None">
                         <Viewbox.LayoutTransform>
                             <TransformGroup x:Name="imgTransformGroup">
                                 <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
