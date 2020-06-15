@@ -18,9 +18,7 @@ namespace Darwin.Database
         public static DarwinDatabase OpenDatabase(string databaseFilename, Options o, bool create, string area = "default")
         {
 			CatalogScheme cat = new CatalogScheme();
-			DarwinDatabase db = null;
-
-			if (create)
+            if (create)
 			{
 				RebuildFolders(o.CurrentDataPath, area);
 				//// should ONLY end up here with IFF we are NOT converting an old database
@@ -29,9 +27,9 @@ namespace Darwin.Database
 				//cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
 			}
 
-			db = new SQLiteDatabase(databaseFilename, o, o.CatalogSchemes[o.DefaultCatalogScheme], create);
+            DarwinDatabase db = new SQLiteDatabase(databaseFilename, o.CatalogSchemes[o.DefaultCatalogScheme], create);
 
-			return db;
+            return db;
 		}
 
 		public static void UpdateFinFieldsFromImage(string basePath, DatabaseFin fin)
@@ -157,6 +155,81 @@ namespace Darwin.Database
 					Trace.Write("Couldn't remove temporary files:");
 					Trace.WriteLine(ex);
                 }
+			}
+		}
+
+		public static void SaveFinz(DatabaseFin fin, string filename)
+        {
+			if (fin == null)
+				throw new ArgumentNullException(nameof(fin));
+
+			if (string.IsNullOrEmpty(filename))
+				throw new ArgumentNullException(nameof(filename));
+
+			if (!filename.ToLower().EndsWith(".finz"))
+				filename += ".finz";
+
+			string uniqueDirectoryName = Path.GetFileName(filename).Replace(".", string.Empty) + "_" + Guid.NewGuid().ToString().Replace("-", string.Empty);
+			string fullDirectoryName = Path.Combine(Path.GetTempPath(), uniqueDirectoryName);
+
+			try
+			{
+				Directory.CreateDirectory(fullDirectoryName);
+
+				File.Copy(fin.OriginalImageFilename, Path.Combine(fullDirectoryName, Path.GetFileName(fin.OriginalImageFilename)));
+
+				// replace ".finz" with "_wDarwinMods.png" for modified image filename
+
+				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + "_wDarwinMods.png");
+
+				fin.FinImage.Save(fin.ImageFilename);
+
+				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
+
+				CatalogScheme cat = Options.CurrentUserOptions.CatalogSchemes[Options.CurrentUserOptions.DefaultCatalogScheme];
+
+				if (cat == null)
+					cat = new CatalogScheme();
+
+				if (cat.CategoryNames == null)
+					cat.CategoryNames = new List<string>();
+
+				if (!cat.CategoryNames.Exists(c => c != null && c.ToUpper() == fin.DamageCategory.ToUpper()))
+				{
+					cat.CategoryNames.Add(fin.DamageCategory);
+				}
+
+				SQLiteDatabase db = new SQLiteDatabase(dbFilename, cat, true);
+				db.Add(fin);
+
+				// The below before we try to create a ZIP is because SQLite tries to hold onto the database file
+				// even after the connections are closed
+				SQLiteConnection.ClearAllPools();
+
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+
+				ZipFile.CreateFromDirectory(fullDirectoryName, filename);
+			}
+			finally
+			{
+				try
+				{
+					Trace.WriteLine("Trying to remove temporary files for finz file.");
+
+					SQLiteConnection.ClearAllPools();
+
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+
+					if (Directory.Exists(fullDirectoryName))
+						Directory.Delete(fullDirectoryName, true);
+				}
+				catch (Exception ex)
+				{
+					Trace.Write("Couldn't remove temporary files:");
+					Trace.WriteLine(ex);
+				}
 			}
 		}
 

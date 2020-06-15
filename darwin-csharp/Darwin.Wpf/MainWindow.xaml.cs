@@ -61,14 +61,8 @@ namespace Darwin.Wpf
             openDialog.Filter = CustomCommands.OpenImageFilter;
             if (openDialog.ShowDialog() == true)
             {
-                var img = System.Drawing.Image.FromFile(openDialog.FileName);
-
-                var bitmap = new Bitmap(img);
-                // TODO: Hack for HiDPI -- this should be more intelligent.
-                bitmap.SetResolution(96, 96);
-
                 // TODO: Move this logic into the constructor?
-                var vm = new TraceWindowViewModel(bitmap, _vm.DarwinDatabase, _vm.DarwinDatabase?.Categories);
+                var vm = new TraceWindowViewModel(openDialog.FileName, _vm.DarwinDatabase, _vm.DarwinDatabase?.Categories);
 
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();
@@ -83,7 +77,7 @@ namespace Darwin.Wpf
         private void OpenTracedFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var openDialog = new OpenFileDialog();
-            openDialog.Filter = CustomCommands.OpenTracedFinFilter;
+            openDialog.Filter = CustomCommands.TracedFinFilter;
             if (openDialog.ShowDialog() == true)
             {
                 var fin = CatalogSupport.OpenFinz(openDialog.FileName);

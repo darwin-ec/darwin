@@ -62,13 +62,10 @@ namespace Darwin.Database
 
         private string _connectionString;
 
-        public SQLiteDatabase(string filename, Options options, CatalogScheme cat = null, bool createEmptyDB = false)
+        public SQLiteDatabase(string filename, CatalogScheme cat = null, bool createEmptyDB = false)
         {
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentNullException(nameof(filename));
-
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
 
             Filename = filename;
 
@@ -127,7 +124,7 @@ namespace Darwin.Database
             damagecategory = SelectDamageCategoryByID(individual.fkdamagecategoryid);
             image = SelectImageByFkIndividualID(id);
             outline = SelectOutlineByFkIndividualID(id);
-            thumbnail = SelectThumbnailByFkImageID(image.id);
+            //thumbnail = SelectThumbnailByFkImageID(image.id);
             List<DBPoint> points = SelectPointsByFkOutlineID(outline.id);
 
             // Although having both of these blocks of code seems uesless, this ensures that
@@ -154,19 +151,6 @@ namespace Darwin.Database
             finOutline.SetFeaturePoint(FeaturePointType.PointOfInflection, outline.endte);
             finOutline.SetLEAngle(0.0, true);
 
-            // Based on thumbnail size in DatabaseFin<ColorImage>
-            int pixmapCols = thumbnail.pixmap.Length / thumbnail.rows;
-            char[,] pixmap = new char[pixmapCols, thumbnail.rows];
-
-            // Could be done faster with array.copy
-            for (int i = 0; i < thumbnail.rows; i++)
-            {
-                for (int j = 0; j < pixmapCols; j++)
-                {
-                    pixmap[j, i] = thumbnail.pixmap[j + i * pixmapCols];
-                }
-            }
-
             fin = new DatabaseFin(image.imagefilename,
                 finOutline,
                 individual.idcode,
@@ -176,9 +160,7 @@ namespace Darwin.Database
                 image.locationcode,
                 damagecategory.name,
                 image.shortdescription,
-                individual.id, // mDataPos field will be used to map to id in db for individuals
-                pixmap,
-                thumbnail.rows);
+                individual.id);
 
             return fin;
         }
@@ -219,66 +201,73 @@ namespace Darwin.Database
 
             // TODO
             //beginTransaction();
-
-            dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
-
-            if (dmgCat.id == -1)
-                dmgCat = SelectDamageCategoryByName("NONE");
-
             DBIndividual individual = new DBIndividual();
-            individual.idcode = fin.IDCode;
-            individual.name = fin.Name;
-            individual.fkdamagecategoryid = dmgCat.id;
-            InsertIndividual(ref individual);
 
-            finOutline = fin.FinOutline;
-
-            DBOutline outline = new DBOutline();
-            outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
-            outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
-            outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
-            outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
-            outline.fkindividualid = individual.id;
-            InsertOutline(ref outline);
-
-            List<DBPoint> points = new List<DBPoint>();
-            numPoints = finOutline.Length;
-            fc = finOutline.ChainPoints;
-            for (i = 0; i < numPoints; i++)
+            using (var conn = new SQLiteConnection(_connectionString))
             {
-                points.Add(new DBPoint
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
                 {
-                    xcoordinate = fc[i].X,
-                    ycoordinate = fc[i].Y,
-                    orderid = i,
-                    fkoutlineid = outline.id
-                });
+                    dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
+
+                    if (dmgCat.id == -1)
+                        dmgCat = SelectDamageCategoryByName("NONE");
+
+                    individual.idcode = fin.IDCode;
+                    individual.name = fin.Name;
+                    individual.fkdamagecategoryid = dmgCat.id;
+                    InsertIndividual(conn, ref individual);
+
+                    finOutline = fin.FinOutline;
+
+                    DBOutline outline = new DBOutline();
+                    outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+                    outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+                    outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
+                    outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
+                    outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+                    outline.fkindividualid = individual.id;
+                    InsertOutline(conn, ref outline);
+
+                    List<DBPoint> points = new List<DBPoint>();
+                    numPoints = finOutline.Length;
+                    fc = finOutline.ChainPoints;
+                    for (i = 0; i < numPoints; i++)
+                    {
+                        points.Add(new DBPoint
+                        {
+                            xcoordinate = fc[i].X,
+                            ycoordinate = fc[i].Y,
+                            orderid = i,
+                            fkoutlineid = outline.id
+                        });
+                    }
+                    InsertPoints(conn, points);
+
+                    DBImage image = new DBImage();
+                    image.dateofsighting = fin.DateOfSighting;
+                    image.imagefilename = fin.ImageFilename;
+                    image.locationcode = fin.LocationCode;
+                    image.rollandframe = fin.RollAndFrame;
+                    image.shortdescription = fin.ShortDescription;
+                    image.fkindividualid = individual.id;
+                    InsertImage(conn, ref image);
+
+                    DBThumbnail thumbnail = new DBThumbnail();
+                    //thumbnail.rows = fin.ThumbnailRows;
+                    //thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray()); ;
+                    thumbnail.rows = 1;
+                    thumbnail.pixmap = "0";
+                    thumbnail.fkimageid = image.id;
+                    InsertThumbnail(conn, ref thumbnail);
+
+                    //TODO
+                    //commitTransaction();
+
+                    transaction.Commit();
+                }
+                conn.Close();
             }
-            InsertPoints(points);
-
-            DBImage image = new DBImage();
-            image.dateofsighting = fin.DateOfSighting;
-            image.imagefilename = fin.ImageFilename;
-            image.locationcode = fin.LocationCode;
-            image.rollandframe = fin.RollAndFrame;
-            image.shortdescription = fin.ShortDescription;
-            image.fkindividualid = individual.id;
-            InsertImage(ref image);
-
-            DBThumbnail thumbnail = new DBThumbnail();
-            thumbnail.rows = fin.ThumbnailRows;
-            thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray()); ;
-            thumbnail.fkimageid = image.id;
-            InsertThumbnail(ref thumbnail);
-
-            //TODO
-            //commitTransaction();
-
-            AddFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
-                image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
-
-            SortLists();
 
             return individual.id; // mDataPos field will be used to map to id in db for individuals
         }
@@ -299,66 +288,77 @@ namespace Darwin.Database
             FloatContour fc;
             int i, numPoints;
 
-            dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
-
-            DBIndividual individual = new DBIndividual();
-            individual.id = fin.DataPos; // mapping Individuals id to mDataPos
-            individual.idcode = fin.IDCode;
-            individual.name = fin.Name;
-            individual.fkdamagecategoryid = dmgCat.id;
-            UpdateDBIndividual(individual);
-
-            finOutline = fin.FinOutline;
-            // we do this as we don't know what the outline id is
-            outline = SelectOutlineByFkIndividualID(individual.id);
-            outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
-            outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
-            outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
-            outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
-            outline.fkindividualid = individual.id;
-            UpdateOutline(outline);
-
-            List<DBPoint> points = new List<DBPoint>();
-            numPoints = finOutline.Length;
-            fc = finOutline.ChainPoints;
-            for (i = 0; i < numPoints; i++)
+            using (var conn = new SQLiteConnection(_connectionString))
             {
-                points.Add(new DBPoint
+                conn.Open();
+
+                using (var transaction = conn.BeginTransaction())
                 {
-                    xcoordinate = fc[i].X,
-                    ycoordinate = fc[i].Y,
-                    orderid = i,
-                    fkoutlineid = outline.id
-                });
+                    dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
+
+                    DBIndividual individual = new DBIndividual();
+                    individual.id = fin.DataPos; // mapping Individuals id to mDataPos
+                    individual.idcode = fin.IDCode;
+                    individual.name = fin.Name;
+                    individual.fkdamagecategoryid = dmgCat.id;
+                    UpdateDBIndividual(conn, individual);
+
+                    finOutline = fin.FinOutline;
+                    // we do this as we don't know what the outline id is
+                    outline = SelectOutlineByFkIndividualID(individual.id);
+                    outline.beginle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+                    outline.endle = finOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+                    outline.notchposition = finOutline.GetFeaturePoint(FeaturePointType.Notch);
+                    outline.tipposition = finOutline.GetFeaturePoint(FeaturePointType.Tip);
+                    outline.endte = finOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+                    outline.fkindividualid = individual.id;
+                    UpdateOutline(conn, outline);
+
+                    List<DBPoint> points = new List<DBPoint>();
+                    numPoints = finOutline.Length;
+                    fc = finOutline.ChainPoints;
+                    for (i = 0; i < numPoints; i++)
+                    {
+                        points.Add(new DBPoint
+                        {
+                            xcoordinate = fc[i].X,
+                            ycoordinate = fc[i].Y,
+                            orderid = i,
+                            fkoutlineid = outline.id
+                        });
+                    }
+                    DeletePoints(conn, outline.id);
+
+                    InsertPoints(conn, points);
+
+                    // query db as we don't know the image id
+                    image = SelectImageByFkIndividualID(individual.id);
+                    image.dateofsighting = fin.DateOfSighting;
+                    image.imagefilename = fin.ImageFilename;
+                    image.locationcode = fin.LocationCode;
+                    image.rollandframe = fin.RollAndFrame;
+                    image.shortdescription = fin.ShortDescription;
+                    image.fkindividualid = individual.id;
+                    UpdateImage(conn, image);
+
+                    // query db as we don't know the thumbnail id
+                    thumbnail = SelectThumbnailByFkImageID(image.id);
+                    thumbnail.rows = fin.ThumbnailRows;
+                    thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray());
+
+                    UpdateThumbnail(conn, thumbnail);
+
+                    transaction.Commit();
+                }
+                    conn.Close();
             }
-            DeletePoints(outline.id);
-            InsertPoints(points);
-
-            // query db as we don't know the image id
-            image = SelectImageByFkIndividualID(individual.id);
-            image.dateofsighting = fin.DateOfSighting;
-            image.imagefilename = fin.ImageFilename;
-            image.locationcode = fin.LocationCode;
-            image.rollandframe = fin.RollAndFrame;
-            image.shortdescription = fin.ShortDescription;
-            image.fkindividualid = individual.id;
-            UpdateImage(image);
-
-            // query db as we don't know the thumbnail id
-            thumbnail = SelectThumbnailByFkImageID(image.id);
-            thumbnail.rows = fin.ThumbnailRows;
-            thumbnail.pixmap = new string(fin.ThumbnailPixmap.Cast<char>().ToArray());
-
-            UpdateThumbnail(thumbnail);
-
             // loadLists(); // reload and re-sort lists.
 
             //deleteFinFromLists(individual.id);
-            AddFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
-                image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
+            //AddFinToLists(individual.id, individual.name, individual.idcode, image.dateofsighting,
+            //    image.rollandframe, image.locationcode, dmgCat.name, image.shortdescription);
 
-            SortLists();
+            //SortLists();
         }
 
         public override void UpdateIndividual(DatabaseFin data)
@@ -372,7 +372,13 @@ namespace Darwin.Database
             individual.idcode = data.IDCode;
             individual.name = data.Name;
             individual.fkdamagecategoryid = dmgCat.id;
-            UpdateDBIndividual(individual);
+
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                conn.Open();
+                UpdateDBIndividual(conn, individual);
+                conn.Close();
+            }
         }
 
         // *****************************************************************************
@@ -390,23 +396,26 @@ namespace Darwin.Database
             // mDataPos field will be used to map to id in db for individuals
             id = fin.DataPos;
 
-            //TODO
-            //beginTransaction();
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                conn.Open();
 
-            outline = SelectOutlineByFkIndividualID(id);
-            image = SelectImageByFkIndividualID(id);
+                using (var transaction = conn.BeginTransaction())
+                {
+                    outline = SelectOutlineByFkIndividualID(id);
+                    image = SelectImageByFkIndividualID(id);
 
-            DeletePoints(outline.id);
-            DeleteOutlineByFkIndividualID(id);
-            DeleteThumbnailByFkImageID(image.id);
-            DeleteImage(image.id);
-            DeleteIndividual(id);
+                    DeletePoints(conn, outline.id);
+                    DeleteOutlineByFkIndividualID(conn, id);
+                    DeleteThumbnailByFkImageID(conn, image.id);
+                    DeleteImage(conn, image.id);
+                    DeleteIndividual(conn, id);
 
-            //TODO
-            //commitTransaction();
+                    transaction.Commit();
+                }
 
-            // TODO
-            //deleteFinFromLists(id);
+                conn.Close();
+            }
         }
 
         private List<DBIndividual> SelectAllIndividuals()
@@ -1014,28 +1023,21 @@ namespace Darwin.Database
         //
         // Inserts Individual into Individuals table.  id needs to be unique.
         //
-        private long InsertIndividual(ref DBIndividual individual)
+        private long InsertIndividual(SQLiteConnection conn, ref DBIndividual individual)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO Individuals (ID, IDCode, Name, fkDamageCategoryID) " +
+                    "VALUES (NULL, @IDCode, @Name, @fkDamageCategoryID);";
+                cmd.Parameters.AddWithValue("@IDCode", individual.idcode);
+                cmd.Parameters.AddWithValue("@Name", individual.name);
+                cmd.Parameters.AddWithValue("@fkDamageCategoryID", individual.fkdamagecategoryid);
 
-                    cmd.CommandText = "INSERT INTO Individuals (ID, IDCode, Name, fkDamageCategoryID) " +
-                        "VALUES (NULL, @IDCode, @Name, @fkDamageCategoryID);";
-                    cmd.Parameters.AddWithValue("@IDCode", individual.idcode);
-                    cmd.Parameters.AddWithValue("@Name", individual.name);
-                    cmd.Parameters.AddWithValue("@fkDamageCategoryID", individual.fkdamagecategoryid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                individual.id = conn.LastInsertRowId;
 
-                    individual.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return individual.id;
-                }
+                return individual.id;
             }
         }
 
@@ -1044,27 +1046,20 @@ namespace Darwin.Database
         // Inserts DamageCategory into DamageCategories table.  Ignores id as
         // this is autoincremented in the database.
         //
-        private long InsertDamageCategory(ref DBDamageCategory damagecategory)
+        private long InsertDamageCategory(SQLiteConnection conn, ref DBDamageCategory damagecategory)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO DamageCategories (ID, Name, OrderID)  " +
+                    "VALUES (NULL, @Name, @OrderID);";
+                cmd.Parameters.AddWithValue("@Name", damagecategory.name);
+                cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
 
-                    cmd.CommandText = "INSERT INTO DamageCategories (ID, Name, OrderID)  " +
-                        "VALUES (NULL, @Name, @OrderID);";
-                    cmd.Parameters.AddWithValue("@Name", damagecategory.name);
-                    cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                damagecategory.id = conn.LastInsertRowId;
 
-                    damagecategory.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return damagecategory.id;
-                }
+                return damagecategory.id;
             }
         }
 
@@ -1072,29 +1067,22 @@ namespace Darwin.Database
         //
         // Inserts DBPoint into Points table
         //
-        private long InsertPoint(ref DBPoint point)
+        private long InsertPoint(SQLiteConnection conn, ref DBPoint point)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO Points (ID, XCoordinate, YCoordinate, fkOutlineID, OrderID) " +
+                    "VALUES (NULL, @XCoordinate, @YCoordinate, @fkOutlineID, @OrderID);";
+                cmd.Parameters.AddWithValue("@XCoordinate", point.xcoordinate);
+                cmd.Parameters.AddWithValue("@YCoordinate", point.ycoordinate);
+                cmd.Parameters.AddWithValue("@fkOutlineID", point.fkoutlineid);
+                cmd.Parameters.AddWithValue("@OrderID", point.orderid);
 
-                    cmd.CommandText = "INSERT INTO Points (ID, XCoordinate, YCoordinate, fkOutlineID, OrderID) " +
-                        "VALUES (NULL, @XCoordinate, @YCoordinate, @fkOutlineID, @OrderID);";
-                    cmd.Parameters.AddWithValue("@XCoordinate", point.xcoordinate);
-                    cmd.Parameters.AddWithValue("@YCoordinate", point.ycoordinate);
-                    cmd.Parameters.AddWithValue("@fkOutlineID", point.fkoutlineid);
-                    cmd.Parameters.AddWithValue("@OrderID", point.orderid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                point.id = conn.LastInsertRowId;
 
-                    point.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return point.id;
-                }
+                return point.id;
             }
         }
 
@@ -1102,23 +1090,16 @@ namespace Darwin.Database
         //
         // Inserts DBInfo into DBInfo table
         //
-        private void InsertDBInfo(DBInfo dbinfo)
+        private void InsertDBInfo(SQLiteConnection conn, DBInfo dbinfo)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO DBInfo (Key, Value) " +
+                    "VALUES (@Key, @Value);";
+                cmd.Parameters.AddWithValue("@Key", dbinfo.key);
+                cmd.Parameters.AddWithValue("@Value", dbinfo.value);
 
-                    cmd.CommandText = "INSERT INTO DBInfo (Key, Value) " +
-                        "VALUES (@Key, @Value);";
-                    cmd.Parameters.AddWithValue("@Key", dbinfo.key);
-                    cmd.Parameters.AddWithValue("@Value", dbinfo.value);
-
-                    cmd.ExecuteNonQuery();
-
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1126,31 +1107,24 @@ namespace Darwin.Database
         //
         // Inserts DBOutline into Outlines table
         //
-        private long InsertOutline(ref DBOutline outline)
+        private long InsertOutline(SQLiteConnection conn, ref DBOutline outline)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO Outlines (ID, TipPosition, BeginLE, EndLE, NotchPosition, EndTE, fkIndividualID) " +
+                    "VALUES (NULL, @TipPosition, @BeginLE, @EndLE, @NotchPosition, @EndTE, @fkIndividualID);";
+                cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
+                cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
+                cmd.Parameters.AddWithValue("@EndLE", outline.endle);
+                cmd.Parameters.AddWithValue("@NotchPosition", outline.notchposition);
+                cmd.Parameters.AddWithValue("@EndTE", outline.endte);
+                cmd.Parameters.AddWithValue("@fkIndividualID", outline.fkindividualid);
 
-                    cmd.CommandText = "INSERT INTO Outlines (ID, TipPosition, BeginLE, EndLE, NotchPosition, EndTE, fkIndividualID) " +
-                        "VALUES (NULL, @TipPosition, @BeginLE, @EndLE, @NotchPosition, @EndTE, @fkIndividualID);";
-                    cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
-                    cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
-                    cmd.Parameters.AddWithValue("@EndLE", outline.endle);
-                    cmd.Parameters.AddWithValue("@NotchPosition", outline.notchposition);
-                    cmd.Parameters.AddWithValue("@EndTE", outline.endte);
-                    cmd.Parameters.AddWithValue("@fkIndividualID", outline.fkindividualid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                outline.id = conn.LastInsertRowId;
 
-                    outline.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return outline.id;
-                }
+                return outline.id;
             }
         }
 
@@ -1158,31 +1132,24 @@ namespace Darwin.Database
         //
         // Inserts DBImage into Images table
         //
-        private long InsertImage(ref DBImage image)
+        private long InsertImage(SQLiteConnection conn, ref DBImage image)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO Images(ID, ImageFilename, DateOfSighting, RollAndFrame, LocationCode, ShortDescription, fkIndividualID) " +
+                    "VALUES (NULL, @ImageFilename, @DateOfSighting, @RollAndFrame, @LocationCode, @ShortDescription, @fkIndividualID);";
+                cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
+                cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
+                cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
+                cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
+                cmd.Parameters.AddWithValue("@ShortDescription", image.shortdescription);
+                cmd.Parameters.AddWithValue("@fkIndividualID", image.fkindividualid);
 
-                    cmd.CommandText = "INSERT INTO Images(ID, ImageFilename, DateOfSighting, RollAndFrame, LocationCode, ShortDescription, fkIndividualID) " +
-                        "VALUES (NULL, @ImageFilename, @DateOfSighting, @RollAndFrame, @LocationCode, @ShortDescription, @fkIndividualID);";
-                    cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
-                    cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
-                    cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
-                    cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
-                    cmd.Parameters.AddWithValue("@ShortDescription", image.shortdescription);
-                    cmd.Parameters.AddWithValue("@fkIndividualID", image.fkindividualid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                image.id = conn.LastInsertRowId;
 
-                    image.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return image.id;
-                }
+                return image.id;
             }
         }
 
@@ -1190,32 +1157,25 @@ namespace Darwin.Database
         //
         // Inserts DBImageModification into ImageModifications table
         //
-        private long InsertImageModification(ref DBImageModification imagemod)
+        private long InsertImageModification(SQLiteConnection conn, ref DBImageModification imagemod)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO ImageModifications(ID, Operation, Value1, Value2, Value3, Value4, OrderID, fkImageID) " +
+                    "VALUES (NULL, @Operation, @Value1, @Value2, @Value3, @Value4, @OrderID, @fkImageID);";
+                cmd.Parameters.AddWithValue("@Operation", imagemod.operation);
+                cmd.Parameters.AddWithValue("@Value1", imagemod.value1);
+                cmd.Parameters.AddWithValue("@Value2", imagemod.value2);
+                cmd.Parameters.AddWithValue("@Value3", imagemod.value3);
+                cmd.Parameters.AddWithValue("@Value4", imagemod.value4);
+                cmd.Parameters.AddWithValue("@OrderID", imagemod.orderid);
+                cmd.Parameters.AddWithValue("@fkImageID", imagemod.fkimageid);
 
-                    cmd.CommandText = "INSERT INTO ImageModifications(ID, Operation, Value1, Value2, Value3, Value4, OrderID, fkImageID) " +
-                        "VALUES (NULL, @Operation, @Value1, @Value2, @Value3, @Value4, @OrderID, @fkImageID);";
-                    cmd.Parameters.AddWithValue("@Operation", imagemod.operation);
-                    cmd.Parameters.AddWithValue("@Value1", imagemod.value1);
-                    cmd.Parameters.AddWithValue("@Value2", imagemod.value2);
-                    cmd.Parameters.AddWithValue("@Value3", imagemod.value3);
-                    cmd.Parameters.AddWithValue("@Value4", imagemod.value4);
-                    cmd.Parameters.AddWithValue("@OrderID", imagemod.orderid);
-                    cmd.Parameters.AddWithValue("@fkImageID", imagemod.fkimageid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                imagemod.id = conn.LastInsertRowId;
 
-                    imagemod.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return imagemod.id;
-                }
+                return imagemod.id;
             }
         }
 
@@ -1223,28 +1183,21 @@ namespace Darwin.Database
         //
         // Inserts DBThumbnail into Thumbnails table
         //
-        private long InsertThumbnail(ref DBThumbnail thumbnail)
+        private long InsertThumbnail(SQLiteConnection conn, ref DBThumbnail thumbnail)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "INSERT INTO Thumbnails (ID, Rows, Pixmap, fkImageID) " +
+                    "VALUES (NULL, @Rows, @Pixmap, @fkImageID);";
+                cmd.Parameters.AddWithValue("@Rows", thumbnail.rows);
+                cmd.Parameters.AddWithValue("@Pixmap", thumbnail.pixmap);
+                cmd.Parameters.AddWithValue("@fkImageID", thumbnail.fkimageid);
 
-                    cmd.CommandText = "INSERT INTO Thumbnails (ID, Rows, Pixmap, fkImageID) " +
-                        "VALUES (NULL, @Rows, @Pixmap, @fkImageID);";
-                    cmd.Parameters.AddWithValue("@Rows", thumbnail.rows);
-                    cmd.Parameters.AddWithValue("@Pixmap", thumbnail.pixmap);
-                    cmd.Parameters.AddWithValue("@fkImageID", thumbnail.fkimageid);
+                cmd.ExecuteNonQuery();
 
-                    cmd.ExecuteNonQuery();
+                thumbnail.id = conn.LastInsertRowId;
 
-                    thumbnail.id = conn.LastInsertRowId;
-
-                    conn.Close();
-
-                    return thumbnail.id;
-                }
+                return thumbnail.id;
             }
         }
 
@@ -1252,12 +1205,12 @@ namespace Darwin.Database
         //
         // Inserts list of DBPoint's into Points table
         //
-        private void InsertPoints(List<DBPoint> points)
+        private void InsertPoints(SQLiteConnection conn, List<DBPoint> points)
         {
             foreach (var p in points)
             {
                 var pointCopy = p;
-                InsertPoint(ref pointCopy);
+                InsertPoint(conn, ref pointCopy);
             }
         }
 
@@ -1265,12 +1218,12 @@ namespace Darwin.Database
         //
         // Inserts list of DBImageModification's into ImageModifications table
         //
-        private void InsertImageModifications(List<DBImageModification> imagemods)
+        private void InsertImageModifications(SQLiteConnection conn, List<DBImageModification> imagemods)
         {
             foreach (var i in imagemods)
             {
                 var modCopy = i;
-                InsertImageModification(ref modCopy);
+                InsertImageModification(conn, ref modCopy);
             }
         }
 
@@ -1278,33 +1231,26 @@ namespace Darwin.Database
         //
         // Updates outline in Outlines table  
         //
-        private void UpdateOutline(DBOutline outline)
+        private void UpdateOutline(SQLiteConnection conn, DBOutline outline)
         { 
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "UPDATE Outlines SET " +
+                    "TipPosition = @TipPosition, " +
+                    "BeginLE = @BeginLE, " +
+                    "EndLE = @EndLE, " +
+                    "NotchPosition = @NotchPosition, " +
+                    "fkIndividualID = @fkIndividualID " +
+                    "WHERE ID = @ID";
 
-                    cmd.CommandText = "UPDATE Outlines SET " +
-                        "TipPosition = @TipPosition, " +
-                        "BeginLE = @BeginLE, " +
-                        "EndLE = @EndLE, " +
-                        "NotchPosition = @NotchPosition, " +
-                        "fkIndividualID = @fkIndividualID " +
-                        "WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
+                cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
+                cmd.Parameters.AddWithValue("@EndLE", outline.endle);
+                cmd.Parameters.AddWithValue("@NotchPosition", outline.notchposition);
+                cmd.Parameters.AddWithValue("@fkIndividualID", outline.fkindividualid);
+                cmd.Parameters.AddWithValue("@ID", outline.id);
 
-                    cmd.Parameters.AddWithValue("@TipPosition", outline.tipposition);
-                    cmd.Parameters.AddWithValue("@BeginLE", outline.beginle);
-                    cmd.Parameters.AddWithValue("@EndLE", outline.endle);
-                    cmd.Parameters.AddWithValue("@NotchPosition", outline.notchposition);
-                    cmd.Parameters.AddWithValue("@fkIndividualID", outline.fkindividualid);
-                    cmd.Parameters.AddWithValue("@ID", outline.id);
-
-                    cmd.ExecuteNonQuery();
-
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1313,27 +1259,20 @@ namespace Darwin.Database
         // Updates row in DamageCategories table using given DBDamageCategory struct.
         // Uses ID field for identifying row.
         //
-        private void UpdateDamageCategory(DBDamageCategory damagecategory)
+        private void UpdateDamageCategory(SQLiteConnection conn, DBDamageCategory damagecategory)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "UPDATE DamageCategories SET " +
+                    "Name = @Name, " +
+                    "OrderID = @OrderID " +
+                    "WHERE ID = @ID";
 
-                    cmd.CommandText = "UPDATE DamageCategories SET " +
-                        "Name = @Name, " +
-                        "OrderID = @OrderID " +
-                        "WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@Name", damagecategory.name);
+                cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
+                cmd.Parameters.AddWithValue("@ID", damagecategory.id);
 
-                    cmd.Parameters.AddWithValue("@Name", damagecategory.name);
-                    cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
-                    cmd.Parameters.AddWithValue("@ID", damagecategory.id);
-
-                    cmd.ExecuteNonQuery();
-
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1342,28 +1281,22 @@ namespace Darwin.Database
         // Updates row in Individuals table using given DBIndividual struct.  Uses ID
         // field for identifying row.
         //
-        private void UpdateDBIndividual(DBIndividual individual)
+        private void UpdateDBIndividual(SQLiteConnection conn, DBIndividual individual)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "UPDATE Individuals SET " +
+                    "IDCode = @IDCode, " +
+                    "Name = @Name, " +
+                    "fkDamageCategoryID = @fkDamageCategoryID " +
+                    "WHERE ID = @ID";
 
-                    cmd.CommandText = "UPDATE Individuals SET " +
-                        "IDCode = @IDCode, " +
-                        "Name = @Name, " +
-                        "fkDamageCategoryID = @fkDamageCategoryID " +
-                        "WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@IDCode", individual.idcode);
+                cmd.Parameters.AddWithValue("@Name", individual.name);
+                cmd.Parameters.AddWithValue("@fkDamageCategoryID", individual.fkdamagecategoryid);
+                cmd.Parameters.AddWithValue("@ID", individual.id);
 
-                    cmd.Parameters.AddWithValue("@IDCode", individual.idcode);
-                    cmd.Parameters.AddWithValue("@Name", individual.name);
-                    cmd.Parameters.AddWithValue("@fkDamageCategoryID", individual.fkdamagecategoryid);
-                    cmd.Parameters.AddWithValue("@ID", individual.id);
-
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
         // *****************************************************************************
@@ -1371,34 +1304,28 @@ namespace Darwin.Database
         // Updates row in Images table using given DBImage struct.  Uses ID
         // field for identifying row.
         //
-        private void UpdateImage(DBImage image)
+        private void UpdateImage(SQLiteConnection conn, DBImage image)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
+                cmd.CommandText = "UPDATE Images SET " +
+                    "ImageFilename = @ImageFilename, " +
+                    "DateOfSighting = @DateOfSighting, " +
+                    "RollAndFrame = @RollAndFrame, " +
+                    "LocationCode = @LocationCode, " +
+                    "ShortDescription = @ShortDescription, " +
+                    "fkIndividualID = @fkIndividualID " +
+                    "WHERE ID = @ID";
 
-                    cmd.CommandText = "UPDATE Images SET " +
-                        "ImageFilename = @ImageFilename, " +
-                        "DateOfSighting = @DateOfSighting, " +
-                        "RollAndFrame = @RollAndFrame, " +
-                        "LocationCode = @LocationCode, " +
-                        "ShortDescription = @ShortDescription, " +
-                        "fkIndividualID = @fkIndividualID " +
-                        "WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
+                cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
+                cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
+                cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
+                cmd.Parameters.AddWithValue("@ShortDescription", image.shortdescription);
+                cmd.Parameters.AddWithValue("@fkIndividualID", image.fkindividualid);
+                cmd.Parameters.AddWithValue("@ID", image.id);
 
-                    cmd.Parameters.AddWithValue("@ImageFilename", image.imagefilename);
-                    cmd.Parameters.AddWithValue("@DateOfSighting", image.dateofsighting);
-                    cmd.Parameters.AddWithValue("@RollAndFrame", image.rollandframe);
-                    cmd.Parameters.AddWithValue("@LocationCode", image.locationcode);
-                    cmd.Parameters.AddWithValue("@ShortDescription", image.shortdescription);
-                    cmd.Parameters.AddWithValue("@fkIndividualID", image.fkindividualid);
-                    cmd.Parameters.AddWithValue("@ID", image.id);
-
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1407,35 +1334,30 @@ namespace Darwin.Database
         // Updates row in ImageModifications table using given DBImageModification
         // struct.  Uses ID field for identifying row.
         //
-        private void UpdateImageModification(DBImageModification imagemod)
+        private void UpdateImageModification(SQLiteConnection conn, DBImageModification imagemod)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
-                    cmd.CommandText = "UPDATE ImageModifications SET " +
-                        "Operation = @Operation, " +
-                        "Value1 = @Value1, " +
-                        "Value2 = @Value2, " +
-                        "Value3 = @Value3, " +
-                        "Value4 = @Value4, " +
-                        "OrderID = @OrderID, " +
-                        "fkImageID = @fkImageID " +
-                        "WHERE ID = @ID";
+                cmd.CommandText = "UPDATE ImageModifications SET " +
+                    "Operation = @Operation, " +
+                    "Value1 = @Value1, " +
+                    "Value2 = @Value2, " +
+                    "Value3 = @Value3, " +
+                    "Value4 = @Value4, " +
+                    "OrderID = @OrderID, " +
+                    "fkImageID = @fkImageID " +
+                    "WHERE ID = @ID";
 
-                    cmd.Parameters.AddWithValue("@Operation", imagemod.operation);
-                    cmd.Parameters.AddWithValue("@Value1", imagemod.value1);
-                    cmd.Parameters.AddWithValue("@Value2", imagemod.value2);
-                    cmd.Parameters.AddWithValue("@Value3", imagemod.value3);
-                    cmd.Parameters.AddWithValue("@Value4", imagemod.value4);
-                    cmd.Parameters.AddWithValue("@OrderID", imagemod.orderid);
-                    cmd.Parameters.AddWithValue("@fkImageID", imagemod.fkimageid);
-                    cmd.Parameters.AddWithValue("@ID", imagemod.id);
+                cmd.Parameters.AddWithValue("@Operation", imagemod.operation);
+                cmd.Parameters.AddWithValue("@Value1", imagemod.value1);
+                cmd.Parameters.AddWithValue("@Value2", imagemod.value2);
+                cmd.Parameters.AddWithValue("@Value3", imagemod.value3);
+                cmd.Parameters.AddWithValue("@Value4", imagemod.value4);
+                cmd.Parameters.AddWithValue("@OrderID", imagemod.orderid);
+                cmd.Parameters.AddWithValue("@fkImageID", imagemod.fkimageid);
+                cmd.Parameters.AddWithValue("@ID", imagemod.id);
 
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1444,27 +1366,22 @@ namespace Darwin.Database
         // Updates row in Thumbnails table using given DBThumbnail
         // struct.  Uses ID field for identifying row.
         //
-        private void UpdateThumbnail(DBThumbnail thumbnail)
+        private void UpdateThumbnail(SQLiteConnection conn, DBThumbnail thumbnail)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
-                    cmd.CommandText = "UPDATE Thumbnails SET " +
-                        "Rows = @Rows, " +
-                        "Pixmap = @Pixmap, " +
-                        "fkImageID = @fkImageID " +
-                        "WHERE ID = @ID";
+                cmd.CommandText = "UPDATE Thumbnails SET " +
+                    "Rows = @Rows, " +
+                    "Pixmap = @Pixmap, " +
+                    "fkImageID = @fkImageID " +
+                    "WHERE ID = @ID";
 
-                    cmd.Parameters.AddWithValue("@Rows", thumbnail.rows);
-                    cmd.Parameters.AddWithValue("@Pixmap", thumbnail.pixmap);
-                    cmd.Parameters.AddWithValue("@fkImageID", thumbnail.fkimageid);
-                    cmd.Parameters.AddWithValue("@ID", thumbnail.id);
+                cmd.Parameters.AddWithValue("@Rows", thumbnail.rows);
+                cmd.Parameters.AddWithValue("@Pixmap", thumbnail.pixmap);
+                cmd.Parameters.AddWithValue("@fkImageID", thumbnail.fkimageid);
+                cmd.Parameters.AddWithValue("@ID", thumbnail.id);
 
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1473,23 +1390,18 @@ namespace Darwin.Database
         // Updates row in DBInfo table using given DBInfo
         // struct.  Uses ID field for identifying row.
         //
-        private void UpdateDBInfo(DBInfo dbinfo)
+        private void UpdateDBInfo(SQLiteConnection conn, DBInfo dbinfo)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
-                    cmd.CommandText = "UPDATE DBInfo SET " +
-                        "Value = @Value " +
-                        "WHERE Key = @Key";
+                cmd.CommandText = "UPDATE DBInfo SET " +
+                    "Value = @Value " +
+                    "WHERE Key = @Key";
 
-                    cmd.Parameters.AddWithValue("@Value", dbinfo.value);
-                    cmd.Parameters.AddWithValue("@Key", dbinfo.key);
+                cmd.Parameters.AddWithValue("@Value", dbinfo.value);
+                cmd.Parameters.AddWithValue("@Key", dbinfo.key);
 
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1497,20 +1409,14 @@ namespace Darwin.Database
         //
         // Deletes set of points from Points table using fkOutlineID  
         //
-        private void DeletePoints(long fkOutlineID)
+        private void DeletePoints(SQLiteConnection conn, long fkOutlineID)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
-                    cmd.CommandText = "DELETE FROM Points WHERE fkOutlineID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", fkOutlineID);
+                cmd.CommandText = "DELETE FROM Points WHERE fkOutlineID = @ID";
+                cmd.Parameters.AddWithValue("@ID", fkOutlineID);
 
-                    cmd.ExecuteNonQuery();
-
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1518,19 +1424,14 @@ namespace Darwin.Database
         //
         // Delete outline from Outlines table using fkIndividualID  
         //
-        private void DeleteOutlineByFkIndividualID(long fkIndividualID)
+        private void DeleteOutlineByFkIndividualID(SQLiteConnection conn, long fkIndividualID)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    conn.Open();
-                    cmd.CommandText = "DELETE FROM Outlines WHERE fkIndividualID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", fkIndividualID);
+                cmd.CommandText = "DELETE FROM Outlines WHERE fkIndividualID = @ID";
+                cmd.Parameters.AddWithValue("@ID", fkIndividualID);
 
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1544,7 +1445,6 @@ namespace Darwin.Database
             {
                 using (var cmd = new SQLiteCommand(conn))
                 {
-                    conn.Open();
                     cmd.CommandText = "DELETE FROM Outlines WHERE ID = @ID";
                     cmd.Parameters.AddWithValue("@ID", id);
 
@@ -1558,19 +1458,14 @@ namespace Darwin.Database
         //
         // Delete individual from Individuals table using id  
         //
-        private void DeleteIndividual(long id)
+        private void DeleteIndividual(SQLiteConnection conn, long id)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    cmd.CommandText = "DELETE FROM Individuals WHERE ID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                cmd.CommandText = "DELETE FROM Individuals WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1587,7 +1482,6 @@ namespace Darwin.Database
                     cmd.CommandText = "DELETE FROM DamageCategories WHERE ID = @ID";
                     cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
                 }
@@ -1598,19 +1492,14 @@ namespace Darwin.Database
         //
         // Delete image from Images table using id  
         //
-        private void DeleteImage(long id)
+        private void DeleteImage(SQLiteConnection conn, long id)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    cmd.CommandText = "DELETE FROM Images WHERE ID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                cmd.CommandText = "DELETE FROM Images WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1618,19 +1507,14 @@ namespace Darwin.Database
         //
         // Delete imagemod from ImageModifications table using id  
         //
-        private void DeleteImageModification(int id)
+        private void DeleteImageModification(SQLiteConnection conn, int id)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    cmd.CommandText = "DELETE FROM ImageModifications WHERE ID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                cmd.CommandText = "DELETE FROM ImageModifications WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1638,19 +1522,14 @@ namespace Darwin.Database
         //
         // Delete thumbnail from Thumbnails table using id  
         //
-        private void DeleteThumbnail(int id)
+        private void DeleteThumbnail(SQLiteConnection conn, int id)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    cmd.CommandText = "DELETE FROM Thumbnails WHERE ID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                cmd.CommandText = "DELETE FROM Thumbnails WHERE ID = @ID";
+                cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -1658,50 +1537,45 @@ namespace Darwin.Database
         //
         // Delete thumbnail from Thumbnails table using fkImageID  
         //
-        private void DeleteThumbnailByFkImageID(long id)
+        private void DeleteThumbnailByFkImageID(SQLiteConnection conn, long id)
         {
-            using (var conn = new SQLiteConnection(_connectionString))
+            using (var cmd = new SQLiteCommand(conn))
             {
-                using (var cmd = new SQLiteCommand(conn))
-                {
-                    cmd.CommandText = "DELETE FROM Thumbnails WHERE fkImageID = @ID";
-                    cmd.Parameters.AddWithValue("@ID", id);
+                cmd.CommandText = "DELETE FROM Thumbnails WHERE fkImageID = @ID";
+                cmd.Parameters.AddWithValue("@ID", id);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
-        public void AddFinToLists(DatabaseFin fin)
-        {
-            AddFinToLists(fin.DataPos, fin.Name, fin.IDCode, fin.DateOfSighting,
-                fin.RollAndFrame, fin.LocationCode, fin.DamageCategory,
-                fin.ShortDescription);
-        }
+        //public void AddFinToLists(DatabaseFin fin)
+        //{
+        //    AddFinToLists(fin.DataPos, fin.Name, fin.IDCode, fin.DateOfSighting,
+        //        fin.RollAndFrame, fin.LocationCode, fin.DamageCategory,
+        //        fin.ShortDescription);
+        //}
 
         //*******************************************************************
         //
         // Adds a fin to the sort lists. Does not resort the lists.
         //
-        public void AddFinToLists(long datapos, string name, string id, string date, string roll,
-                                           string location, string damage, string description)
-        {
-            mNameList.Add((name ?? "NONE") + " " + datapos);
-            mIDList.Add((id ?? "NONE") + " " + datapos);
-            mDateList.Add((date ?? "NONE") + " " + datapos);
-            mRollList.Add((roll ?? "NONE") + " " + datapos);
-            mLocationList.Add((location ?? "NONE") + " " + datapos);
-            mDamageList.Add((damage ?? "NONE") + " " + datapos);
-            mDescriptionList.Add((description ?? "NONE") + " " + datapos);
+        //public void AddFinToLists(long datapos, string name, string id, string date, string roll,
+        //                                   string location, string damage, string description)
+        //{
+        //    mNameList.Add((name ?? "NONE") + " " + datapos);
+        //    mIDList.Add((id ?? "NONE") + " " + datapos);
+        //    mDateList.Add((date ?? "NONE") + " " + datapos);
+        //    mRollList.Add((roll ?? "NONE") + " " + datapos);
+        //    mLocationList.Add((location ?? "NONE") + " " + datapos);
+        //    mDamageList.Add((damage ?? "NONE") + " " + datapos);
+        //    mDescriptionList.Add((description ?? "NONE") + " " + datapos);
 
-            //***2.2 -- make room for HOLES, unused primary Keys
-            // mAbsoluteOffset.push_back(datapos); // the way RJ did it
+        //    //***2.2 -- make room for HOLES, unused primary Keys
+        //    // mAbsoluteOffset.push_back(datapos); // the way RJ did it
 
-            // TODO
-            //mAbsoluteOffset[datapos] = datapos;
-        }
+        //    // TODO
+        //    //mAbsoluteOffset[datapos] = datapos;
+        //}
 
         //private void DeleteEntry(ref List<string> lst, long id)
         //{
@@ -1781,34 +1655,34 @@ namespace Darwin.Database
 
             fins = GetAllFins();
 
-            if (fins != null)
-            {
-                foreach (var fin in fins)
-                {
-                    AddFinToLists(fin);
-                }
-            }
+            //if (fins != null)
+            //{
+            //    foreach (var fin in fins)
+            //    {
+            //        AddFinToLists(fin);
+            //    }
+            //}
 
-            SortLists();
+            //SortLists();
         }
 
-        public void SortLists()
-        {
-            if (mNameList != null)
-                mNameList.Sort();
-            if (mIDList != null)
-                mIDList.Sort();
-            if (mDateList != null)
-                mDateList.Sort();
-            if (mRollList != null)
-                mRollList.Sort();
-            if (mLocationList != null)
-                mLocationList.Sort();
-            if (mDamageList != null)
-                mDamageList.Sort();
-            if (mDescriptionList != null)
-                mDescriptionList.Sort();
-        }
+        //public void SortLists()
+        //{
+        //    if (mNameList != null)
+        //        mNameList.Sort();
+        //    if (mIDList != null)
+        //        mIDList.Sort();
+        //    if (mDateList != null)
+        //        mDateList.Sort();
+        //    if (mRollList != null)
+        //        mRollList.Sort();
+        //    if (mLocationList != null)
+        //        mLocationList.Sort();
+        //    if (mDamageList != null)
+        //        mDamageList.Sort();
+        //    if (mDescriptionList != null)
+        //        mDescriptionList.Sort();
+        //}
 
         // *****************************************************************************
         //
@@ -1955,7 +1829,7 @@ namespace Darwin.Database
 
                     CREATE INDEX IF NOT EXISTS pts_outln ON Points (fkOutlineID);
 
-                    CREATE INDEX IF NOT EXISTS IF NOT EXISTS pts_order ON Points (OrderID);
+                    CREATE INDEX IF NOT EXISTS pts_order ON Points (OrderID);
 
                     CREATE INDEX IF NOT EXISTS pts_outln_order ON Points (fkOutlineID, OrderID);
 
@@ -1984,7 +1858,7 @@ namespace Darwin.Database
                         orderid = i
                     };
 
-                    InsertDamageCategory(ref cat);
+                    InsertDamageCategory(conn, ref cat);
                 }
 
                 // TODO: enter code to populate DBInfo

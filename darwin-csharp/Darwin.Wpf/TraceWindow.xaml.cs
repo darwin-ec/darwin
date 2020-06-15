@@ -4,6 +4,7 @@ using Darwin.Extensions;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
 using Darwin.Wpf.Adorners;
+using Darwin.Wpf.Commands;
 using Darwin.Wpf.Extensions;
 using Darwin.Wpf.Model;
 using Darwin.Wpf.ViewModel;
@@ -151,23 +152,7 @@ namespace Darwin.Wpf
 			{
 				Trace.WriteLine(openFile.FileName);
 
-				var img = System.Drawing.Image.FromFile(openFile.FileName);
-
-				var bitmap = new Bitmap(img);
-				// TODO: Hack for HiDPI -- this should be more intelligent.
-				bitmap.SetResolution(96, 96);
-
-				_vm.Bitmap = bitmap;
-
-				//_vm.Bitmap = new Bitmap(img);
-				////_image = _originalBitmap.ToSKImage();
-
-				
-				//_vm.Bitmap.SetResolution(96, 96);
-
-
-				//this.skiaElement.InvalidateVisual();
-				//ImagingProvider.LoadImage(_vm.Bitmap, TraceImage);
+				_vm.OpenImage(openFile.FileName);
 			}
 		}
 
@@ -1588,9 +1573,8 @@ namespace Darwin.Wpf
 					TraceFinalize();
                 }
 
-				// TODO: Get up to date fin images?
-				_vm.DatabaseFin.FinOutline = _vm.Outline;
-				_vm.DatabaseFin.FinImage = new Bitmap(_vm.Bitmap);
+				_vm.UpdateDatabaseFin();
+
 				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
 				var matchingWindow = new MatchingWindow(matchingWindowVM);
 				this.Close();
@@ -1612,7 +1596,16 @@ namespace Darwin.Wpf
 					TraceFinalize();
 				}
 
-				// TODO
+				SaveFileDialog dlg = new SaveFileDialog();
+				dlg.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+				dlg.FileName = "Untitled";
+				dlg.DefaultExt = ".finz";
+				dlg.Filter = CustomCommands.TracedFinFilter;
+
+				if (dlg.ShowDialog() == true)
+				{
+					_vm.SaveFinz(dlg.FileName);
+				}
 			}
 		}
 

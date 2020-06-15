@@ -37,7 +37,7 @@ namespace Darwin.Wpf.Commands
                 new KeyGesture(Key.T, ModifierKeys.Control)
             }
         );
-        public static string OpenTracedFinFilter = "Finz files|*.finz";
+        public static string TracedFinFilter = "Finz files|*.finz";
 
         public static readonly RoutedUICommand OpenDatabase = new RoutedUICommand(
             "Open Database...",

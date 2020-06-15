@@ -344,49 +344,12 @@ namespace Darwin.Wpf.ViewModel
 			AttachEvents();
 		}
 
-		private void LoadFin(DatabaseFin fin)
-        {
-			WindowTitle = fin.IDCode;
-
-			// TODO: Hack for HiDPI
-			fin.ModifiedFinImage.SetResolution(96, 96);
-
-			DatabaseFin = fin;
-
-			Bitmap = fin.FinImage ?? fin.ModifiedFinImage;
-			Contour = new Contour(fin.FinOutline, fin.Scale);
-			Outline = fin.FinOutline;
-
-			if (Categories == null)
-				Categories = new ObservableCollection<DBDamageCategory>();
-
-			if (!Categories.Any(c => c.name == fin?.DamageCategory))
-			{
-				Categories.Add(new DBDamageCategory
-				{
-					name = fin?.DamageCategory
-				});
-			}
-
-			// ImageLocked = true;
-			TraceLocked = true;
-			TraceFinalized = true;
-
-			NormScale = (float)fin.Scale;
-
-			TraceTool = TraceToolType.Hand;
-			ZoomRatio = 1.0f;
-			ZoomValues = new List<double>();
-		}
-
-		public TraceWindowViewModel(Bitmap bitmap, DarwinDatabase db, List<DBDamageCategory> categories)
+		public TraceWindowViewModel(string imageFilename, DarwinDatabase db, List<DBDamageCategory> categories)
 		{
 			DatabaseFin = new DatabaseFin();
 
 			if (categories != null && categories.Count > 0)
 				DatabaseFin.DamageCategory = categories[0].name;
-
-			Bitmap = bitmap;
 
 			Categories = new ObservableCollection<DBDamageCategory>(categories);
 
@@ -401,6 +364,8 @@ namespace Darwin.Wpf.ViewModel
 			TraceTool = TraceToolType.Hand;
 			ZoomRatio = 1.0f;
 			ZoomValues = new List<double>();
+
+			OpenImage(imageFilename);
 
 			AttachEvents();
 		}
@@ -439,6 +404,66 @@ namespace Darwin.Wpf.ViewModel
 			ZoomValues = new List<double>();
 
 			AttachEvents();
+		}
+
+		public void OpenImage(string filename)
+        {
+			var img = System.Drawing.Image.FromFile(filename);
+
+			var bitmap = new Bitmap(img);
+			// TODO: Hack for HiDPI -- this should be more intelligent.
+			bitmap.SetResolution(96, 96);
+
+			Bitmap = bitmap;
+			DatabaseFin.ImageFilename = DatabaseFin.OriginalImageFilename = filename;
+		}
+
+		public void SaveFinz(string filename)
+        {
+			UpdateDatabaseFin();
+			CatalogSupport.SaveFinz(DatabaseFin, filename);
+        }
+
+		public void UpdateDatabaseFin()
+        {
+			DatabaseFin.Scale = NormScale;
+			DatabaseFin.FinOutline = Outline;
+			DatabaseFin.FinImage = new Bitmap(Bitmap);
+		}
+
+		private void LoadFin(DatabaseFin fin)
+		{
+			WindowTitle = fin.IDCode;
+
+			// TODO: Hack for HiDPI
+			fin.ModifiedFinImage.SetResolution(96, 96);
+
+			DatabaseFin = fin;
+
+			Bitmap = fin.FinImage ?? fin.ModifiedFinImage;
+			Contour = new Contour(fin.FinOutline, fin.Scale);
+			Outline = fin.FinOutline;
+
+			if (Categories == null)
+				Categories = new ObservableCollection<DBDamageCategory>();
+
+			if (!Categories.Any(c => c.name == fin?.DamageCategory))
+			{
+				Categories.Add(new DBDamageCategory
+				{
+					name = fin?.DamageCategory
+				});
+			}
+
+			// ImageLocked = true;
+			TraceLocked = true;
+			TraceFinalized = true;
+
+			NormScale = (float)fin.Scale;
+
+			TraceTool = TraceToolType.Hand;
+			ZoomRatio = 1.0f;
+			ZoomValues = new List<double>();
 		}
 
 		private void AttachEvents()

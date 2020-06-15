@@ -91,6 +91,9 @@ namespace Darwin.Database
             {
                 _finFilename = value;
                 OnPropertyChanged("FinFilename");
+
+                if (string.IsNullOrEmpty(OriginalImageFilename))
+                    OriginalImageFilename = value;
             }
         }
 
@@ -315,15 +318,11 @@ namespace Darwin.Database
 			string locationCode,
 			string damageCategory,
 			string shortDescription,
-			long datapos,
-
-            char[,] pixmap,
-
-            int rows
+			long datapos
 		)
         {
             ImageFilename = filename; //  001DB
-			FinOutline =new Outline(outline); //  006DF,008OL
+			FinOutline = new Outline(outline); //  006DF,008OL
             IDCode = idcode;
             Name = name;
             DateOfSighting = dateOfSighting;
@@ -331,8 +330,6 @@ namespace Darwin.Database
             LocationCode = locationCode;
             DamageCategory = damageCategory;
             ShortDescription = shortDescription;
-            ThumbnailPixmap = pixmap;
-            ThumbnailRows = rows;
             DataPos = datapos;
             mLeft = true; //  1.4
             mFlipped = false; //  1.4
