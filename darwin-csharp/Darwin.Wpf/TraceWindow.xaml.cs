@@ -68,13 +68,8 @@ namespace Darwin.Wpf
 		{
 			InitializeComponent();
 
-			//_backgroundColor = SKColors.Transparent;
-			//_imageOffset = new SKPoint(0, 0);
-			//_zoomedImageSize = SKSize.Empty;
 			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;
-			//_moveFirstRun = true;
-			//_moveDrawLine = false;
 
 			_vm = new TraceWindowViewModel
 			{
@@ -86,41 +81,44 @@ namespace Darwin.Wpf
 				ZoomValues = new List<double>()
 			};
 
+			_vm.ZoomValues.Add(16);
+			_vm.ZoomValues.Add(8);
 			_vm.ZoomValues.Add(4);
-			_vm.ZoomValues.Add(3);
 			_vm.ZoomValues.Add(2);
 			_vm.ZoomValues.Add(1);
 			_vm.ZoomValues.Add(0.75);
 			_vm.ZoomValues.Add(0.50);
+			_vm.ZoomValues.Add(0.25);
 
 			this.DataContext = _vm;
 		}
 
 		public TraceWindow(TraceWindowViewModel vm)
+			: this()
 		{
 			InitializeComponent();
 
 			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;
-			//_moveFirstRun = true;
-			//_moveDrawLine = false;
 
 			_vm = vm;
 
-			_vm.ZoomValues.Add(4);
-			_vm.ZoomValues.Add(3);
-			_vm.ZoomValues.Add(2);
-			_vm.ZoomValues.Add(1);
-			_vm.ZoomValues.Add(0.75);
-			_vm.ZoomValues.Add(0.50);
-
-            if (_vm.TraceLocked)
+			if (_vm.TraceLocked)
             {
                 _vm.TraceTool = TraceToolType.MoveFeature;
                 _vm.TraceStep = TraceStepType.IdentifyFeatures;
             }
 
-            this.DataContext = _vm;
+			_vm.ZoomValues.Add(16);
+			_vm.ZoomValues.Add(8);
+			_vm.ZoomValues.Add(4);
+			_vm.ZoomValues.Add(2);
+			_vm.ZoomValues.Add(1);
+			_vm.ZoomValues.Add(0.75);
+			_vm.ZoomValues.Add(0.50);
+			_vm.ZoomValues.Add(0.25);
+
+			this.DataContext = _vm;
 		}
 
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)
@@ -1339,15 +1337,15 @@ namespace Darwin.Wpf
 		{
 			string text = ZoomComboBox.Text;
 			double num;
-			if (double.TryParse(text, out num) && _vm.ZoomValues.Contains(num / 100))
+			if (double.TryParse(text, out num) && _vm.ZoomValues.Contains(num))
 			{
-				//slider.Value = num / 100;
 				Dispatcher.BeginInvoke(new Action(() =>
 				{
 					var textBox = ZoomComboBox.Template.FindName("PART_EditableTextBox", ZoomComboBox) as TextBox;
 					if (textBox != null)
-						textBox.CaretIndex = textBox.Text.Length - 1;
+						textBox.Text = num.ToString("P0");
 				}));
+				_vm.ZoomRatio = (float)num;
 			}
 		}
 
@@ -1654,5 +1652,10 @@ namespace Darwin.Wpf
 				MessageBox.Show("Sorry, something went wrong adding to the database.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
+
+        private void ZoomComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

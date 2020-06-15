@@ -183,7 +183,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
+                <Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="0.25" Maximum="16" Value="{Binding Path=ZoomRatio, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
                 <ScrollViewer x:Name="TraceScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
                     <Viewbox x:Name="imgViewBox" Stretch="None">
                         <Viewbox.LayoutTransform>
@@ -266,11 +266,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="80" />
-
                             <ColumnDefinition Width="Auto"/>
-
                             <ColumnDefinition Width="Auto"/>
-
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                     </Grid>
@@ -280,7 +277,7 @@
                 <TextBlock Name="CursorPositionMessage" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
-                <ComboBox x:Name="ZoomComboBox" Text="{Binding Path=ZoomRatio, StringFormat=P0, Mode=OneWay}" ItemsSource="{Binding ZoomValues}" IsEditable="True" TextBoxBase.TextChanged="ZoomComboBox_TextChanged" >
+                <ComboBox x:Name="ZoomComboBox" Text="{Binding Path=ZoomRatio, StringFormat=P0, Mode=OneWay}" ItemsSource="{Binding ZoomValues}" IsEditable="True" TextBoxBase.TextChanged="ZoomComboBox_TextChanged">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding StringFormat=P0}" />
