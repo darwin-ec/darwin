@@ -849,9 +849,23 @@ namespace Darwin.Wpf
 			int width = (int)Math.Round(_cropSelector.SelectRect.Width);
 			int height = (int)Math.Round(_cropSelector.SelectRect.Height);
 
-			AddImageUndo(ImageModType.IMG_crop,
-				x, y,
-				x + width, y + height);
+
+			if (_vm.Contour == null || _vm.Contour.Length < 1)
+			{
+				AddImageUndo(ImageModType.IMG_crop,
+					x, y,
+					x + width, y + height);
+			}
+			else
+            {
+				AddContourAndImageUndo(
+					_vm.Contour,
+					ImageModType.IMG_crop,
+					x, y,
+					x + width, y + height);
+
+				_vm.Contour.Crop(x, y, x + width, y + height);
+			}
 
 			System.Drawing.Rectangle cropRect = new System.Drawing.Rectangle(
 				x,
@@ -1363,12 +1377,20 @@ namespace Darwin.Wpf
         {
 			if (_vm.Bitmap != null)
 			{
-				
 				_vm.Bitmap.RotateFlip(RotateFlipType.RotateNoneFlipX);
 				_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
 				_vm.UpdateImage();
 
-				AddImageUndo(ImageModType.IMG_flip);
+				if (_vm.Contour != null && _vm.Contour.Length > 0)
+				{
+					AddContourAndImageUndo(_vm.Contour, ImageModType.IMG_flip);
+
+					_vm.Contour.FlipHorizontally(_vm.Bitmap.Width);
+				}
+				else
+                {
+					AddImageUndo(ImageModType.IMG_flip);
+                }
 			}
 		}
 
@@ -1388,13 +1410,16 @@ namespace Darwin.Wpf
         {
 			if (_vm?.Bitmap != null)
 			{
-				byte lowerValue = Convert.ToByte(ContrastSlider.LowerValue);
-				byte upperValue = Convert.ToByte(ContrastSlider.UpperValue);
+				// With a two thumb slider, but changing the contrast function
+				//byte lowerValue = Convert.ToByte(ContrastSlider.LowerValue);
+				//byte upperValue = Convert.ToByte(ContrastSlider.UpperValue);
+
+				var value = Convert.ToInt32(ContrastSlider.Value);
 
 				// TODO: Not quite right -- we need more copies or better logic if other changes have been made.
-				_vm.Bitmap = _vm.BaseBitmap.EnhanceContrast(lowerValue, upperValue);
+				_vm.Bitmap = _vm.BaseBitmap.EnhanceContrast(value);
 
-				AddImageUndo(ImageModType.IMG_contrast, lowerValue, upperValue);
+				AddImageUndo(ImageModType.IMG_contrast2, Convert.ToInt32(value));
 			}
 		}
 
@@ -1406,6 +1431,8 @@ namespace Darwin.Wpf
 		{
 			if (_vm.Contour == null || !_vm.TraceLocked) //***006FC
 				return;
+
+			_vm.BackupContour = new Contour(_vm.Contour);
 
 			// after even spacing and normalization fin height will be approx 600 units
 
@@ -1428,6 +1455,17 @@ namespace Darwin.Wpf
 			switch (_vm.TraceStep)
             {
 				case TraceStepType.TraceOutline:
+					if (_vm.TraceFinalized)
+					{
+						if (_vm.BackupContour != null)
+							_vm.Contour = _vm.BackupContour;
+
+						_vm.Outline = null;
+
+						_vm.TraceLocked = false;
+						_vm.TraceFinalized = false;
+						_vm.TraceTool = TraceToolType.MovePoint;
+					}
 					break;
 
 				case TraceStepType.IdentifyFeatures:
@@ -1471,6 +1509,18 @@ namespace Darwin.Wpf
 
 						ApplyImageModificationsToOriginal(_vm.UndoItems);
 						break;
+
+					case ModificationType.Both:
+						// TODO: Need to update the sliders based on op.
+						_vm.UndoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Both,
+							ImageMod = mod.ImageMod,
+							Contour = new Contour(_vm.Contour)
+						});
+						_vm.Contour = (mod.Contour == null) ? null : new Contour(mod.Contour);
+						ApplyImageModificationsToOriginal(_vm.UndoItems);
+						break;
 				}
 			}
 		}
@@ -1503,9 +1553,37 @@ namespace Darwin.Wpf
 
 						ApplyImageModificationsToOriginal(_vm.UndoItems);
 						break;
+
+					case ModificationType.Both:
+						// TODO: Need to update the sliders based on op.
+						_vm.RedoItems.Push(new Modification
+						{
+							ModificationType = ModificationType.Both,
+							ImageMod = mod.ImageMod,
+							Contour = (_vm.Contour == null) ? null : new Contour(_vm.Contour)
+						});
+						_vm.Contour = new Contour(mod.Contour);
+						ApplyImageModificationsToOriginal(_vm.UndoItems);
+						break;
                 }
             }
         }
+
+
+		private void AddContourAndImageUndo(Contour contour, ImageModType modType, int val1 = 0, int val2 = 0, int val3 = 0, int val4 = 0)
+        {
+			// Note:  Does not handle brightness/contrast correctly, but they're not using this method
+			// as of the time this comment was written.
+			var modifiation = new Modification
+			{
+				ModificationType = ModificationType.Both,
+				Contour = new Contour(contour),
+				ImageMod = new ImageMod(modType, val1, val2, val3, val4)
+			};
+
+			_vm.UndoItems.Push(modifiation);
+			_vm.RedoItems.Clear();
+		}
 
 		private void AddContourUndo(Contour contour)
         {
@@ -1532,9 +1610,9 @@ namespace Darwin.Wpf
 			// Look at the top of the stack and see if we have contrast operations there, if the current op is a contrast change.
 			// We're doing this because we'll get a ton of events come through at a time as the slider is moved, and we
 			// really only want to store a contrast change as one op.
-			if (modType == ImageModType.IMG_contrast && _vm.UndoItems.Count > 0)
+			if (modType == ImageModType.IMG_contrast2 && _vm.UndoItems.Count > 0)
 			{
-				while (_vm.UndoItems.Count > 0 && _vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_contrast)
+				while (_vm.UndoItems.Count > 0 && _vm.UndoItems.Peek().ModificationType == ModificationType.Image && _vm.UndoItems.Peek().ImageMod.Op == ImageModType.IMG_contrast2)
 					_vm.UndoItems.Pop();
 			}
 
@@ -1662,10 +1740,5 @@ namespace Darwin.Wpf
 				MessageBox.Show("Sorry, something went wrong adding to the database.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
-
-        private void ZoomComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }

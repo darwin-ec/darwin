@@ -13,6 +13,7 @@ using System.Windows.Media;
 using Darwin.Database;
 using Darwin.Wpf.Model;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -117,6 +118,33 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_contour = value;
 				RaisePropertyChanged("Contour");
+
+				if (_contour != null && _contour.Length > 0)
+					IdentifyFeaturesEnabled = true;
+				else
+					IdentifyFeaturesEnabled = false;
+			}
+		}
+
+		private bool _identifyFeaturesEnabled;
+		public bool IdentifyFeaturesEnabled
+        {
+			get => _identifyFeaturesEnabled;
+			set
+            {
+				_identifyFeaturesEnabled = value;
+				RaisePropertyChanged("IdentifyFeaturesEnabled");
+            }
+        }
+
+		private Contour _backupContour;
+		public Contour BackupContour
+		{
+			get => _backupContour;
+			set
+			{
+				_backupContour = value;
+				RaisePropertyChanged("BackupContour");
 			}
 		}
 
@@ -186,6 +214,34 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private Visibility _traceToolsVisibility;
+		public Visibility TraceToolsVisibility
+        {
+			get => _traceToolsVisibility;
+			set
+            {
+				_traceToolsVisibility = value;
+				RaisePropertyChanged("TraceToolsVisibility");
+
+				if (_traceToolsVisibility == Visibility.Visible)
+					FeatureToolsVisibility = Visibility.Hidden;
+				else
+					FeatureToolsVisibility = Visibility.Visible;
+            }
+        }
+
+		private Visibility _featureToolsVisibility;
+		public Visibility FeatureToolsVisibility
+		{
+			get => _featureToolsVisibility;
+			set
+			{
+				_featureToolsVisibility = value;
+				RaisePropertyChanged("FeatureToolsVisibility");
+			}
+		}
+
+
 		// TODO: Do we need both finalized & locked?
 		private bool _traceFinalized;
 		public bool TraceFinalized
@@ -195,6 +251,11 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_traceFinalized = value;
 				RaisePropertyChanged("TraceFinalized");
+
+				if (TraceFinalized)
+					TraceToolsVisibility = Visibility.Hidden;
+				else
+					TraceToolsVisibility = Visibility.Visible;
 			}
 		}
 
@@ -321,6 +382,7 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel()
         {
+			TraceToolsVisibility = Visibility.Visible;
 			DatabaseFin = new DatabaseFin();
 			TraceStep = TraceStepType.TraceOutline;
 			Categories = new ObservableCollection<DBDamageCategory>();
@@ -329,6 +391,7 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel(DatabaseFin fin)
         {
+			TraceToolsVisibility = Visibility.Visible;
 			LoadFin(fin);
 
 			AttachEvents();
@@ -336,6 +399,7 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, List<DBDamageCategory> categories)
         {
+			TraceToolsVisibility = Visibility.Visible;
 			Database = db;
 			Categories = new ObservableCollection<DBDamageCategory>(categories);
 
@@ -346,6 +410,7 @@ namespace Darwin.Wpf.ViewModel
 
 		public TraceWindowViewModel(string imageFilename, DarwinDatabase db, List<DBDamageCategory> categories)
 		{
+			TraceToolsVisibility = Visibility.Visible;
 			DatabaseFin = new DatabaseFin();
 
 			if (categories != null && categories.Count > 0)
@@ -379,6 +444,8 @@ namespace Darwin.Wpf.ViewModel
 			DarwinDatabase db,
 			List<DBDamageCategory> categories)
         {
+			TraceToolsVisibility = Visibility.Visible;
+
 			DatabaseFin = new DatabaseFin();
 
 			if (categories != null && categories.Count > 0)

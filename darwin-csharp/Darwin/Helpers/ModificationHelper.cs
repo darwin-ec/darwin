@@ -46,7 +46,7 @@ namespace Darwin.Helpers
 			Bitmap result = new Bitmap(bitmap);
 			foreach (var mod in mods)
 			{
-				// TODO: This is really awkward
+				// TODO: This is a little awkward
 				ImageModType modType;
 				int val1, val2, val3, val4;
 				mod.Get(out modType, out val1, out val2, out val3, out val4);
@@ -62,7 +62,11 @@ namespace Darwin.Helpers
 						break;
 
 					case ImageModType.IMG_contrast:
-						result.EnhanceContrast((byte)val1, (byte)val2);
+						result.EnhanceContrastMinMax((byte)val1, (byte)val2);
+						break;
+
+					case ImageModType.IMG_contrast2:
+						result.EnhanceContrast(val1);
 						break;
 
 					case ImageModType.IMG_crop:

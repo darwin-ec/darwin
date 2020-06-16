@@ -14,15 +14,14 @@ namespace Darwin.Extensions
         {
             float brightnessScaled = (float)brightness / 255.0f;
             
-            float[][] brightnessTransform = {
+            ColorMatrix colorMatrix = new ColorMatrix(new float[][] {
                      new float[] { 1, 0, 0, 0, 0 },
                      new float[] { 0, 1, 0, 0, 0 },
                      new float[] { 0, 0, 1, 0, 0 },
                      new float[] { 0, 0, 0, 1, 0 },
                      new float[] { brightnessScaled, brightnessScaled, brightnessScaled, 0, 1 }
-            };
+            });
 
-            ColorMatrix colorMatrix = new ColorMatrix(brightnessTransform);
             ImageAttributes imageAttributes = new ImageAttributes();
             imageAttributes.SetColorMatrix(colorMatrix);
 
@@ -39,7 +38,7 @@ namespace Darwin.Extensions
             return updatedBrightnessBitmap;
         }
 
-        public static Bitmap EnhanceContrast(this Bitmap bitmap, byte minLevel, byte maxLevel)
+        public static Bitmap EnhanceContrastMinMax(this Bitmap bitmap, byte minLevel, byte maxLevel)
         {
             if (maxLevel == 255 && minLevel == 0)
                 return new Bitmap(bitmap);
@@ -66,6 +65,41 @@ namespace Darwin.Extensions
             }
 
             return enhancedContrastBitmap;
+        }
+
+        /// <summary>
+        /// Enhance the contrast of a Bitmap
+        /// </summary>
+        /// <param name="bitmap">The Bitmap on which to enhance contrast</param>
+        /// <param name="level">0 for no change, between -255 and 255 to not blow the image out</param>
+        /// <returns>Bitmap with enhanced contrast</returns>
+        public static Bitmap EnhanceContrast(this Bitmap bitmap, int level)
+        {
+            float contrast = (1.0f + level / 255f) / 1.0f;
+            float tValue = (1f - contrast) / 2f;
+
+            ColorMatrix colorMatrix = new ColorMatrix(new float[][] {
+                     new float[] { contrast, 0, 0, 0, 0 },
+                     new float[] { 0, contrast, 0, 0, 0 },
+                     new float[] { 0, 0, contrast, 0, 0 },
+                     new float[] { 0, 0, 0, 1, 0 },
+                     new float[] { tValue, tValue, tValue, 0, 1 }
+            });
+
+            ImageAttributes imageAttributes = new ImageAttributes();
+            imageAttributes.SetColorMatrix(colorMatrix);
+
+            var destRect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            Bitmap updatedContrastBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+            using (Graphics graphics = Graphics.FromImage(updatedContrastBitmap))
+            {
+                graphics.DrawImage(bitmap, destRect,
+                    0, 0, bitmap.Width, bitmap.Height,
+                    GraphicsUnit.Pixel,
+                    imageAttributes);
+            }
+
+            return updatedContrastBitmap;
         }
 
         public static Bitmap ToGrayscale(this Bitmap bitmap)

@@ -10,35 +10,6 @@ namespace Darwin.Extensions
 {
     public static class DirectBitmapExtensions
     {
-        public static DirectBitmap EnhanceContrast(this DirectBitmap bitmap, byte minLevel, byte maxLevel)
-        {
-            if (maxLevel == 255 && minLevel == 0)
-                return new DirectBitmap(bitmap);
-
-            int range = maxLevel - minLevel;
-            int tempIntensity;
-            DirectBitmap enhancedContrastBitmap = new DirectBitmap(bitmap.Width, bitmap.Height);
-
-            for (int c = 0; c < bitmap.Width; c++)
-            {
-                for (int r = 0; r < bitmap.Height; r++)
-                {
-                    var sourcePixel = bitmap.GetPixel(c, r);
-                    tempIntensity = (int)Math.Round(((sourcePixel.GetIntensity() - minLevel) * 255) / (float)range);
-
-                    if (tempIntensity < 1 || sourcePixel.GetIntensity() < minLevel)
-                        tempIntensity = 0;
-
-                    if (tempIntensity > 254)
-                        tempIntensity = 255;
-
-                    enhancedContrastBitmap.SetPixel(c, r, sourcePixel.SetIntensity((byte)tempIntensity));
-                }
-            }
-
-            return enhancedContrastBitmap;
-        }
-
         public static void ToGrayscale(this DirectBitmap bitmap)
         {
             for (int x = 0; x < bitmap.Width; x++)

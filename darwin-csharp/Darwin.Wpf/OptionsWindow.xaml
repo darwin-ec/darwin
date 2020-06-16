@@ -80,13 +80,13 @@
                     <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">Canny Edge Detector</Label>
 
                     <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1">Guassian Standard Deviation:</Label>
-                    <talex:NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Path=Options.GaussianStdDev,Mode=TwoWay}" Minimum="0" Maximum="100" DecimalPlaces="0" />
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Path=Options.GaussianStdDev,Mode=TwoWay}" Minimum="0" Maximum="2" Increment="0.01" DecimalPlaces="2" />
 
                     <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2">Low Threshold:</Label>
-                    <talex:NumericUpDown Grid.Column="1" Grid.Row="2" Value="{Binding Path=Options.CannyLowThreshold,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1"  />
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="2" Value="{Binding Path=Options.CannyLowThreshold,Mode=TwoWay}" Minimum="0" Maximum="1" Increment="0.01" DecimalPlaces="2"  />
 
                     <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="3">High Threshold:</Label>
-                    <talex:NumericUpDown Grid.Column="1" Grid.Row="3" Value="{Binding Path=Options.CannyHighThreshold,Mode=TwoWay}" Minimum="0" Maximum="20" Increment="0.1" DecimalPlaces="1" />
+                    <talex:NumericUpDown Grid.Column="1" Grid.Row="3" Value="{Binding Path=Options.CannyHighThreshold,Mode=TwoWay}" Minimum="0" Maximum="1" Increment="0.01" DecimalPlaces="2" />
                 </Grid>
             </TabItem>
         </TabControl>

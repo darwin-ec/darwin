@@ -35,6 +35,10 @@ namespace Darwin.Wpf.Adorners
 			double top = Math.Max(rcProposed.Top, rcExterior.Top);
 			double width = Math.Min(rcProposed.Right, rcExterior.Right) - left;
 			double height = Math.Min(rcProposed.Bottom, rcExterior.Bottom) - top;
+
+			if (width < 0 || height < 0)
+				return pr.RectInterior;
+
 			rcProposed = new Rect(left, top, width, height);
 			return rcProposed;
 		}

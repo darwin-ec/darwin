@@ -26,6 +26,7 @@
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid x:Name="TopGrid">
         <Grid.RowDefinitions>
@@ -56,13 +57,13 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <!--<Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>-->
-            <Button x:Name="UndoButton" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}">
+            <Button x:Name="UndoButton" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</TextBlock>
                     <TextBlock HorizontalAlignment="Center">Undo</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="RedoButton" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}">
+            <Button x:Name="RedoButton" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf01e;</TextBlock>
                     <TextBlock HorizontalAlignment="Center">Redo</TextBlock>
@@ -77,7 +78,7 @@
                         <TextBlock HorizontalAlignment="Center">Trace Outline</TextBlock>
                     </StackPanel>
                 </RadioButton>
-                <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
+                <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceStep" Checked="TraceStep_Checked" IsEnabled="{Binding IdentifyFeaturesEnabled}" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                         <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
                         <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" />
@@ -91,19 +92,20 @@
             <TextBlock x:Name="TextBlock1" FontFamily="{StaticResource FontAwesome}" Text="&#xf004;" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="100"/>
         </StackPanel>-->
         <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button x:Name="FlipHorizontalButton" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click">
+            <Button x:Name="FlipHorizontalButton" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/horizontal_flip.png" />
                     <TextBlock HorizontalAlignment="Center">Flip</TextBlock>
                 </StackPanel>
             </Button>
-            <StackPanel Orientation="Horizontal" Margin="8">
+            <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
                 <Image Source="/Darwin.Wpf;component/Resources/Images/brightness_button.png" />
                 <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" ValueChanged="BrightnessSlider_ValueChanged" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="8">
+            <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
                 <Image Source="/Darwin.Wpf;component/Resources/Images/contrast_button.png" />
-                <controls:TwoThumbSlider x:Name="ContrastSlider" Width="200" Minimum="0" Maximum="255" LowerValue="0" UpperValue="255" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="ContrastSlider_ValueChanged" />
+                <!--<controls:TwoThumbSlider x:Name="ContrastSlider" Width="200" Minimum="0" Maximum="255" LowerValue="0" UpperValue="255" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="ContrastSlider_ValueChanged" />-->
+                <Slider x:Name="ContrastSlider" Width="200" Minimum="-255" Maximum="255" Value="0" ValueChanged="ContrastSlider_ValueChanged" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" />
             </StackPanel>
             <RadioButton x:Name="HandButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
@@ -118,51 +120,51 @@
                     <TextBlock HorizontalAlignment="Center">Zoom</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="CropButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}">
+            <RadioButton x:Name="CropButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}"  Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />
                     <TextBlock HorizontalAlignment="Center">Crop</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="AutoTraceButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AutoTrace}}">
+            <RadioButton x:Name="AutoTraceButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AutoTrace}}"  Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/autotrace.png" />
                     <TextBlock HorizontalAlignment="Center">AutoTrace</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="PencilButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}">
+            <RadioButton x:Name="PencilButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/pencil.png" />
                     <TextBlock HorizontalAlignment="Center">Pencil</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="AddPointButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AddPoint}}">
+            <RadioButton x:Name="AddPointButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AddPoint}}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/addpoint.png" />
                     <TextBlock HorizontalAlignment="Center">Add Point</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="AdjustButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MovePoint}}">
+            <RadioButton x:Name="AdjustButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MovePoint}}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <!--<TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf25a;</TextBlock>-->
                     <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
                     <TextBlock HorizontalAlignment="Center">Adjust</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="EraserButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Eraser}}">
+            <RadioButton x:Name="EraserButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Eraser}}"  Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf12d;</TextBlock>-->
                     <Image Source="/Darwin.Wpf;component/Resources/Images/eraser.png" />
                     <TextBlock HorizontalAlignment="Center">Erase</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton x:Name="ChopButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.ChopOutline}}">
+            <RadioButton x:Name="ChopButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.ChopOutline}}"  Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/chopoutline_button.png" />
                     <TextBlock HorizontalAlignment="Center">Chop</TextBlock>
                 </StackPanel>
             </RadioButton>
-            <RadioButton Visibility="Hidden" x:Name="MoveFeatureButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MoveFeature}}">
+            <RadioButton Visibility="{Binding FeatureToolsVisibility}" x:Name="MoveFeatureButton" Style="{StaticResource {x:Type ToggleButton}}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MoveFeature}}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
                     <TextBlock HorizontalAlignment="Center">Move Feature</TextBlock>

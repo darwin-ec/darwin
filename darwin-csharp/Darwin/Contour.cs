@@ -136,6 +136,9 @@ namespace Darwin
 
 		public Contour(Contour c)
 		{
+			if (c == null)
+				throw new ArgumentNullException(nameof(c));
+
 			_scale = c.Scale;
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
@@ -477,6 +480,40 @@ namespace Darwin
 
             return position;
         }
+
+		public void FlipHorizontally(int imageWidth)
+        {
+			if (Points == null)
+				return;
+
+			foreach (var p in Points)
+            {
+				p.X = Math.Abs(p.X - imageWidth);
+            }
+        }
+
+		public void Crop(int xMin, int yMin, int xMax, int yMax)
+        {
+			if (Points == null)
+				return;
+
+			foreach (var p in Points)
+			{
+				if (p.X > xMax || p.Y > yMax || p.X < xMin || p.Y < yMin)
+                {
+					p.Type = PointType.Flagged;
+                }
+				else
+                {
+					p.X = p.X - xMin;
+					p.Y = p.Y - yMin;
+                }
+			}
+
+			var pointsToRemove = Points.ToList().Where(p => p.Type == PointType.Flagged);
+			foreach (var pointToRemove in pointsToRemove)
+				Points.Remove(pointToRemove);
+		}
 
 		//*******************************************************************
 		//

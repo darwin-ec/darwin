@@ -32,7 +32,8 @@ namespace Darwin.Database
         IMG_brighten = 3,
         IMG_crop = 4,
         IMG_undo = 5,
-        IMG_redo = 6
+        IMG_redo = 6,
+        IMG_contrast2 = 7
     }
 
     public class ImageMod
@@ -47,6 +48,7 @@ namespace Darwin.Database
         // the values are used depending on the ImageModtype
         // op == IMAG_flip, no values used
         // op == IMG_contrast, min is val1, and max is val2
+        // op == IMG_contrast2, level is val1
         // op == IMG_brighten, amount is val1
         // op == IMG_crop, xMin is val1, yMin is val2, xMax is val3, yMax is val4
         // op == IMG_undo, no values used
@@ -65,7 +67,7 @@ namespace Darwin.Database
                 min = val1;
                 max = val2;
             }
-            else if (ImageModType.IMG_brighten == op)
+            else if (ImageModType.IMG_brighten == op || ImageModType.IMG_contrast2 == op)
             {
                 // op == IMG_brighten, amount is val1
                 amount = val1;
@@ -106,7 +108,7 @@ namespace Darwin.Database
                 max = val2;
                 amount = xMin = yMin = xMax = yMax = 0;
             }
-            else if (ImageModType.IMG_brighten == op)
+            else if (ImageModType.IMG_brighten == op || ImageModType.IMG_contrast2 == op)
             {
                 // op == IMG_brighten, amount is val1
                 amount = val1;
@@ -150,7 +152,7 @@ namespace Darwin.Database
                 val2 = max;
                 val3 = val4 = 0;
             }
-            else if (ImageModType.IMG_brighten == op)
+            else if (ImageModType.IMG_brighten == op || ImageModType.IMG_contrast2 == op)
             {
                 // op == IMG_brighten, amount is val1
                 val1 = amount;

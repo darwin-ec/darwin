@@ -30,6 +30,14 @@ namespace Darwin
             }
         }
 
+        public Bitmap RawBitmap
+        {
+            get
+            {
+                return _bitmap;
+            }
+        }
+
         public int Stride { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
