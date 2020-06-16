@@ -242,6 +242,38 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private Visibility _matchVisibility;
+		public Visibility MatchVisibility
+		{
+			get => _matchVisibility;
+			set
+			{
+				_matchVisibility = value;
+				RaisePropertyChanged("MatchVisibility");
+			}
+		}
+
+		private Visibility _topToolbarVisibility;
+		public Visibility TopToolbarVisibility
+		{
+			get => _topToolbarVisibility;
+			set
+			{
+				_topToolbarVisibility = value;
+				RaisePropertyChanged("TopToolbarVisibility");
+			}
+		}
+
+		private Visibility _saveVisibility;
+		public Visibility SaveVisibility
+		{
+			get => _saveVisibility;
+			set
+			{
+				_saveVisibility = value;
+				RaisePropertyChanged("SaveVisibility");
+			}
+		}
 
 		// TODO: Do we need both finalized & locked?
 		private bool _traceFinalized;
@@ -381,43 +413,59 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
-		public TraceWindowViewModel()
+		private TraceWindowViewModel()
         {
+			TopToolbarVisibility = Visibility.Visible;
 			TraceToolsVisibility = Visibility.Visible;
-			DatabaseFin = new DatabaseFin();
+			SaveVisibility = Visibility.Visible;
+			MatchVisibility = Visibility.Visible;
+
+			//DatabaseFin = new DatabaseFin();
 			TraceStep = TraceStepType.TraceOutline;
 			Categories = new ObservableCollection<DBDamageCategory>();
 			AttachEvents();
 		}
 
 		public TraceWindowViewModel(DatabaseFin fin)
+			: this()
         {
-			TraceToolsVisibility = Visibility.Visible;
 			LoadFin(fin);
-
-			AttachEvents();
 		}
 
-		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, List<DBDamageCategory> categories)
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db)
+			: this()
         {
-			TraceToolsVisibility = Visibility.Visible;
 			Database = db;
-			Categories = new ObservableCollection<DBDamageCategory>(categories);
+			Categories = new ObservableCollection<DBDamageCategory>(db.Categories);
 
 			LoadFin(fin);
-			
-			AttachEvents();
 		}
 
-		public TraceWindowViewModel(string imageFilename, DarwinDatabase db, List<DBDamageCategory> categories)
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, bool fromResults = true)
+			: this(fin, db)
+        {
+			WindowTitle = windowTitle;
+
+			if (fromResults)
+			{
+				MatchVisibility = Visibility.Collapsed;
+				SaveVisibility = Visibility.Collapsed;
+
+				TraceLocked = true;
+				TraceFinalized = true;
+				FeatureToolsVisibility = Visibility.Hidden;
+			}
+        }
+
+		public TraceWindowViewModel(string imageFilename, DarwinDatabase db)
+			: this()
 		{
-			TraceToolsVisibility = Visibility.Visible;
 			DatabaseFin = new DatabaseFin();
 
-			if (categories != null && categories.Count > 0)
-				DatabaseFin.DamageCategory = categories[0].name;
+			if (db.Categories != null && db.Categories.Count > 0)
+				DatabaseFin.DamageCategory = db.Categories[0].name;
 
-			Categories = new ObservableCollection<DBDamageCategory>(categories);
+			Categories = new ObservableCollection<DBDamageCategory>(db.Categories);
 
 			Database = db;
 
@@ -432,46 +480,6 @@ namespace Darwin.Wpf.ViewModel
 			ZoomValues = new List<double>();
 
 			OpenImage(imageFilename);
-
-			AttachEvents();
-		}
-
-		public TraceWindowViewModel(
-			Bitmap bitmap,
-			Contour contour,
-			Outline outline,
-			//bool imageLocked,
-			bool traceLocked,
-			DarwinDatabase db,
-			List<DBDamageCategory> categories)
-        {
-			TraceToolsVisibility = Visibility.Visible;
-
-			DatabaseFin = new DatabaseFin();
-
-			if (categories != null && categories.Count > 0)
-				DatabaseFin.DamageCategory = categories[0].name;
-
-			Bitmap = bitmap;
-			Contour = contour;
-			Outline = outline;
-
-			Categories = new ObservableCollection<DBDamageCategory>(categories);
-
-			Database = db;
-
-			//ImageLocked = imageLocked;
-			// TODO: Clean these flags up, maybe?
-			TraceLocked = traceLocked;
-			TraceFinalized = traceLocked;
-			
-			NormScale = 1.0f;
-
-			TraceTool = TraceToolType.Hand;
-			ZoomRatio = 1.0f;
-			ZoomValues = new List<double>();
-
-			AttachEvents();
 		}
 
 		public void OpenImage(string filename)

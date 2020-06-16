@@ -1,6 +1,8 @@
-﻿using Darwin.Wpf.ViewModel;
+﻿using Darwin.Database;
+using Darwin.Wpf.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -69,22 +71,47 @@ namespace Darwin.Wpf
 
         private void MatchesSelectedFinButton_Click(object sender, RoutedEventArgs e)
         {
+            _vm.DatabaseFin.IDCode = _vm.SelectedResult.IDCode;
+            if (!string.IsNullOrEmpty(_vm.SelectedResult.Name))
+                _vm.DatabaseFin.Name = _vm.SelectedResult.Name;
 
+            var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
+                "Matches [" + _vm.SelectedResult.IDCode + "] - Add to Database as Additional Fin Image");
+
+            TraceWindow traceWindow = new TraceWindow(vm);
+
+            traceWindow.Show();
         }
 
         private void NoMatchNewFinButton_Click(object sender, RoutedEventArgs e)
         {
-
+            var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
+                "No Match - Add to Database as NEW Fin/Image");
+                        TraceWindow traceWindow = new TraceWindow(vm);
+                        traceWindow.Show();
         }
 
         private void ReturnToMatchingDialogButton_Click(object sender, RoutedEventArgs e)
         {
-
+            var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database,
+                new ObservableCollection<DBDamageCategory>(_vm.Database?.Categories));
+            var matchingWindow = new MatchingWindow(matchingWindowVM);
+            this.Close();
+            matchingWindow.Show();
         }
 
         private void SaveMatchResultsButton_Click(object sender, RoutedEventArgs e)
         {
+            string finzFilename;
+            string resultsFilename;
 
+            _vm.SaveMatchResults(out finzFilename, out resultsFilename);
+
+            MessageBox.Show(
+                "Match Results Saved:" + Environment.NewLine + Environment.NewLine +
+                "Trace File: " + finzFilename + Environment.NewLine + Environment.NewLine +
+                "Results File: " + resultsFilename,
+                "Results Saved", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void DoneButton_Click(object sender, RoutedEventArgs e)

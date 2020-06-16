@@ -73,7 +73,7 @@ namespace Darwin.Wpf
             if (openDialog.ShowDialog() == true)
             {
                 // TODO: Move this logic into the constructor?
-                var vm = new TraceWindowViewModel(openDialog.FileName, _vm.DarwinDatabase, _vm.DarwinDatabase?.Categories);
+                var vm = new TraceWindowViewModel(openDialog.FileName, _vm.DarwinDatabase);
 
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();
@@ -101,8 +101,7 @@ namespace Darwin.Wpf
                 else
                 {
                     var vm = new TraceWindowViewModel(fin,
-                        _vm.DarwinDatabase,
-                        _vm.DarwinDatabase?.Categories);
+                        _vm.DarwinDatabase);
 
                     TraceWindow traceWindow = new TraceWindow(vm);
                     traceWindow.Show();

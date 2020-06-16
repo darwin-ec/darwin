@@ -165,7 +165,7 @@ namespace Darwin.Database
 			}
 		}
 
-		public static void SaveFinz(DatabaseFin fin, string filename)
+		public static string SaveFinz(DatabaseFin fin, string filename, bool forceFilename = true)
         {
 			if (fin == null)
 				throw new ArgumentNullException(nameof(fin));
@@ -183,13 +183,20 @@ namespace Darwin.Database
 			{
 				Directory.CreateDirectory(fullDirectoryName);
 
-				File.Copy(fin.OriginalImageFilename, Path.Combine(fullDirectoryName, Path.GetFileName(fin.OriginalImageFilename)));
+				string originalDestination = Path.Combine(fullDirectoryName, Path.GetFileName(fin.OriginalImageFilename));
+				
+				if (File.Exists(fin.OriginalImageFilename))
+					File.Copy(fin.OriginalImageFilename, originalDestination);
+				else if (fin.OriginalFinImage != null)
+					fin.OriginalFinImage.Save(originalDestination);
+
+				fin.OriginalImageFilename = originalDestination;
 
 				// replace ".finz" with "_wDarwinMods.png" for modified image filename
 
 				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppend);
 
-				fin.OriginalFinImage.Save(fin.ImageFilename);
+				fin.FinImage.Save(fin.ImageFilename);
 
 				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
 
@@ -216,7 +223,13 @@ namespace Darwin.Database
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 
-				ZipFile.CreateFromDirectory(fullDirectoryName, filename);
+				string realFilename = filename;
+				if (!forceFilename)
+					realFilename = FileHelper.FindUniqueFilename(realFilename);
+
+				ZipFile.CreateFromDirectory(fullDirectoryName, realFilename);
+
+				return realFilename;
 			}
 			finally
 			{
@@ -260,23 +273,7 @@ namespace Darwin.Database
 
 			// If we already have an item in the database with the same filename, try a few others
 			if (File.Exists(originalImageSaveAs))
-            {
-				const int MaxFilenameTries = 20;
-
-				for (int i = 0; i < MaxFilenameTries; i++)
-                {
-					var newFilenameTry = originalImageSaveAs.Insert(originalImageSaveAs.LastIndexOf("."), " (" + i.ToString() + ")");
-
-					if (!File.Exists(newFilenameTry))
-                    {
-						originalImageSaveAs = newFilenameTry;
-						break;
-                    }
-
-					if (i + 1 == MaxFilenameTries)
-						throw new Exception("Filename " + originalImageSaveAs + " already exists!");
-                }
-            }
+				originalImageSaveAs = FileHelper.FindUniqueFilename(originalImageSaveAs);
 
 			if (File.Exists(databaseFin.OriginalImageFilename))
             {

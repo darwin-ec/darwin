@@ -193,7 +193,7 @@
                             unknown.
                         </TextBlock>
                     </Button.ToolTip>
-                    Return to Matching Dialog
+                    Return to Matching Options
                 </Button>
                 <Button x:Name="SaveMatchResultsButton" Click="SaveMatchResultsButton_Click">
                     <Button.ToolTip>

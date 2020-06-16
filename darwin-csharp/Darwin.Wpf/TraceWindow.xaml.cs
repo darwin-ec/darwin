@@ -65,37 +65,36 @@ namespace Darwin.Wpf
 
 		private TraceWindowViewModel _vm;
 
-		public TraceWindow()
-		{
-			InitializeComponent();
+		//private TraceWindow()
+		//{
+		//	InitializeComponent();
 
-			_moveFeature = FeaturePointType.NoFeature;
-			_movePosition = -1;
+		//	_moveFeature = FeaturePointType.NoFeature;
+		//	_movePosition = -1;
 
-			_vm = new TraceWindowViewModel
-			{
-				Bitmap = null,
-				Contour = null,
-				TraceTool = TraceToolType.Hand,
-				TraceLocked = false,
-				ZoomRatio = 1.0f,
-				ZoomValues = new List<double>()
-			};
+		//	_vm = new TraceWindowViewModel
+		//	{
+		//		Bitmap = null,
+		//		Contour = null,
+		//		TraceTool = TraceToolType.Hand,
+		//		TraceLocked = false,
+		//		ZoomRatio = 1.0f,
+		//		ZoomValues = new List<double>()
+		//	};
 
-			_vm.ZoomValues.Add(16);
-			_vm.ZoomValues.Add(8);
-			_vm.ZoomValues.Add(4);
-			_vm.ZoomValues.Add(2);
-			_vm.ZoomValues.Add(1);
-			_vm.ZoomValues.Add(0.75);
-			_vm.ZoomValues.Add(0.50);
-			_vm.ZoomValues.Add(0.25);
+		//	_vm.ZoomValues.Add(16);
+		//	_vm.ZoomValues.Add(8);
+		//	_vm.ZoomValues.Add(4);
+		//	_vm.ZoomValues.Add(2);
+		//	_vm.ZoomValues.Add(1);
+		//	_vm.ZoomValues.Add(0.75);
+		//	_vm.ZoomValues.Add(0.50);
+		//	_vm.ZoomValues.Add(0.25);
 
-			this.DataContext = _vm;
-		}
+		//	this.DataContext = _vm;
+		//}
 
 		public TraceWindow(TraceWindowViewModel vm)
-			: this()
 		{
 			InitializeComponent();
 
@@ -123,9 +122,8 @@ namespace Darwin.Wpf
 			// so that we can compare to the bitmap to compute the initial zoom ratio, if needed.
 			Loaded += delegate
 			{
-				if (_vm.Bitmap != null && ((_vm.Bitmap.Width + ImagePadding) > TraceScrollViewer.ActualWidth || (_vm.Bitmap.Height + ImagePadding) > TraceScrollViewer.ActualHeight))
+				if (_vm.Bitmap != null) // && ((_vm.Bitmap.Width + ImagePadding) > TraceScrollViewer.ActualWidth || (_vm.Bitmap.Height + ImagePadding) > TraceScrollViewer.ActualHeight))
 				{
-
 					var heightRatio = TraceScrollViewer.ActualHeight / (_vm.Bitmap.Height + ImagePadding);
 					var widthRatio = TraceScrollViewer.ActualWidth / (_vm.Bitmap.Width + ImagePadding);
 					if (widthRatio < heightRatio)

@@ -55,7 +55,7 @@
             </MenuItem>
         </Menu>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Visibility="{Binding TopToolbarVisibility}">
             <!--<Button Content="Open Image" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>-->
             <Button x:Name="UndoButton" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}" Visibility="{Binding TraceToolsVisibility}">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
@@ -246,8 +246,8 @@
                     </Button.ToolTip>
                     Export Data
                 </Button>
-                <Button x:Name="MatchButton" Click="MatchButton_Click" ToolTip="Attempt to match this fin against those in the database">Match</Button>
-                <Button x:Name="SaveButton" Click="SaveButton_Click">
+                <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}" ToolTip="Attempt to match this fin against those in the database">Match</Button>
+                <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
                     <Button.ToolTip>
                         <TextBlock>
                             Save this traced fin to a separate file<LineBreak/>
