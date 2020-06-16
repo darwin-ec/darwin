@@ -310,10 +310,11 @@ namespace Darwin.Wpf.ViewModel
 
         public void SaveMatchResults(out string finzSaveFilename, out string resultsSaveFilename)
         {
-            finzSaveFilename = Path.Combine(Options.CurrentUserOptions.CurrentTracedFinsPath, Path.GetFileNameWithoutExtension(DatabaseFin.ImageFilename) + ".finz");
+            string baseFilename = (string.IsNullOrEmpty(DatabaseFin.FinFilename)) ? DatabaseFin.ImageFilename : DatabaseFin.FinFilename;
+            finzSaveFilename = Path.Combine(Options.CurrentUserOptions.CurrentTracedFinsPath, Path.GetFileNameWithoutExtension(baseFilename) + ".finz");
             finzSaveFilename = CatalogSupport.SaveFinz(DatabaseFin, finzSaveFilename, false);
 
-            string resultsFilename = Path.GetFileNameWithoutExtension(Database.Filename) + "-DB-match-for-" + Path.GetFileNameWithoutExtension(DatabaseFin.ImageFilename) + ".res";
+            string resultsFilename = Path.GetFileNameWithoutExtension(Database.Filename) + "-DB-match-for-" + Path.GetFileNameWithoutExtension(baseFilename) + ".res";
             resultsSaveFilename = Path.Combine(Options.CurrentUserOptions.CurrentMatchQueueResultsPath, resultsFilename);
             MatchResults.Save(resultsSaveFilename);
         }

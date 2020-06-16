@@ -225,7 +225,7 @@ namespace Darwin.Wpf.ViewModel
 				RaisePropertyChanged("TraceToolsVisibility");
 
 				if (_traceToolsVisibility == Visibility.Visible)
-					FeatureToolsVisibility = Visibility.Hidden;
+					FeatureToolsVisibility = Visibility.Collapsed;
 				else
 					FeatureToolsVisibility = Visibility.Visible;
             }
@@ -286,7 +286,7 @@ namespace Darwin.Wpf.ViewModel
 				RaisePropertyChanged("TraceFinalized");
 
 				if (TraceFinalized)
-					TraceToolsVisibility = Visibility.Hidden;
+					TraceToolsVisibility = Visibility.Collapsed;
 				else
 					TraceToolsVisibility = Visibility.Visible;
 			}
@@ -302,17 +302,6 @@ namespace Darwin.Wpf.ViewModel
 				RaisePropertyChanged("TraceSnapped");
 			}
 		}
-
-		//private bool _imageLocked;
-		//public bool ImageLocked
-		//{
-		//	get => _imageLocked;
-		//	set
-		//	{
-		//		_imageLocked = value;
-		//		RaisePropertyChanged("ImageLocked");
-		//	}
-		//}
 
 		private float _zoomRatio;
 		public float ZoomRatio
@@ -413,6 +402,8 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
+		private MatchingResultsWindow _matchingResultsWindow;
+
 		private TraceWindowViewModel()
         {
 			TopToolbarVisibility = Visibility.Visible;
@@ -441,19 +432,22 @@ namespace Darwin.Wpf.ViewModel
 			LoadFin(fin);
 		}
 
-		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, bool fromResults = true)
+		// Little hacky, keeping a reference to the MatchResultsWindow, so we can close it when adding to the DB
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, MatchingResultsWindow matchingResultsWindow)
 			: this(fin, db)
         {
 			WindowTitle = windowTitle;
 
-			if (fromResults)
+			if (matchingResultsWindow != null)
 			{
+				_matchingResultsWindow = matchingResultsWindow;
 				MatchVisibility = Visibility.Collapsed;
 				SaveVisibility = Visibility.Collapsed;
 
+				TopToolbarVisibility = Visibility.Collapsed;
 				TraceLocked = true;
 				TraceFinalized = true;
-				FeatureToolsVisibility = Visibility.Hidden;
+				FeatureToolsVisibility = Visibility.Collapsed;
 			}
         }
 
@@ -506,6 +500,12 @@ namespace Darwin.Wpf.ViewModel
         {
 			UpdateDatabaseFin();
 			CatalogSupport.SaveToDatabase(Database, DatabaseFin);
+
+			// Check whether we have a reference to the MatchingResultsWindow.  If so,
+			// we got this fin passed back as a match/no match.  When we add to the database,
+			// let's close the matching results window.
+			if (_matchingResultsWindow != null)
+				_matchingResultsWindow.Close();
 		}
 
 		public void SaveSightingData()

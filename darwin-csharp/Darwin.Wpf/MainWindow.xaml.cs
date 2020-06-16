@@ -150,13 +150,20 @@ namespace Darwin.Wpf
             }
         }
 
-        public void RefreshDatabase()
+        public void RefreshDatabaseAfterAdd()
         {
             _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
                 _vm.DarwinDatabase
                 .GetAllFins()
                 .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
                 .ToList());
+
+            // Select the last fin
+            if (_vm.Fins != null)
+            {
+                _vm.SelectedFin = _vm.Fins[_vm.Fins.Count - 1];
+                DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
+            }
         }
 
         private void MatchingQueueCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

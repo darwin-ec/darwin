@@ -194,7 +194,7 @@ namespace Darwin.Database
 
 				// replace ".finz" with "_wDarwinMods.png" for modified image filename
 
-				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppend);
+				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppendPng);
 
 				fin.FinImage.Save(fin.ImageFilename);
 
@@ -286,7 +286,7 @@ namespace Darwin.Database
 
 			// Now save the modified image (or the original if for some reason we don't have the modified one)
 			string modifiedImageSaveAs = Path.Combine(Options.CurrentUserOptions.CurrentCatalogPath,
-				Path.GetFileNameWithoutExtension(originalImageSaveAs) + AppSettings.DarwinModsFilenameAppend);
+				Path.GetFileNameWithoutExtension(originalImageSaveAs) + AppSettings.DarwinModsFilenameAppendPng);
 
 			if (databaseFin.FinImage != null)
             {

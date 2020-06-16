@@ -1728,7 +1728,7 @@ namespace Darwin.Wpf
 					var mainWindow = Application.Current.MainWindow as MainWindow;
 
                     if (mainWindow != null)
-                        mainWindow.RefreshDatabase();
+                        mainWindow.RefreshDatabaseAfterAdd();
 
 					Close();
 				}

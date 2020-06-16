@@ -76,7 +76,7 @@ namespace Darwin.Wpf
                 _vm.DatabaseFin.Name = _vm.SelectedResult.Name;
 
             var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
-                "Matches [" + _vm.SelectedResult.IDCode + "] - Add to Database as Additional Fin Image");
+                "Matches [" + _vm.SelectedResult.IDCode + "] - Add to Database as Additional Fin Image", this);
 
             TraceWindow traceWindow = new TraceWindow(vm);
 
@@ -86,7 +86,7 @@ namespace Darwin.Wpf
         private void NoMatchNewFinButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
-                "No Match - Add to Database as NEW Fin/Image");
+                "No Match - Add to Database as NEW Fin/Image", this);
                         TraceWindow traceWindow = new TraceWindow(vm);
                         traceWindow.Show();
         }
