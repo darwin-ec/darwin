@@ -46,6 +46,7 @@
 // [Short Description] (char[255]) **Delimited by '\n'
 //
 
+using Darwin.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -223,7 +224,7 @@ namespace Darwin.Database
                 if (string.IsNullOrEmpty(ThumbnailFilename))
                     return null;
 
-                return Path.Combine(Options.CurrentUserOptions.CurrentDataPath, ThumbnailFilename);
+                return Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, ThumbnailFilename);
             }
         }
 
@@ -413,6 +414,23 @@ namespace Darwin.Database
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void SaveSightingData(string filename)
+        {
+            using (StreamWriter writer = File.AppendText(filename))
+            {
+                writer.WriteLine(
+                    IDCode?.StripCRLFTab() + "\t" +
+                    Name?.StripCRLFTab() + "\t" +
+                    DateOfSighting?.StripCRLFTab() + "\t" +
+                    RollAndFrame?.StripCRLFTab() + "\t" +
+                    LocationCode?.StripCRLFTab() + "\t" +
+                    DamageCategory?.StripCRLFTab() + "\t" +
+                    ShortDescription?.StripCRLFTab() + "\t" +
+                    OriginalImageFilename + "\t" +
+                    ImageFilename);
+            }
         }
     }
 }

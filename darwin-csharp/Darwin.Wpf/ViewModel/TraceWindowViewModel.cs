@@ -14,6 +14,7 @@ using Darwin.Database;
 using Darwin.Wpf.Model;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.IO;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -498,6 +499,16 @@ namespace Darwin.Wpf.ViewModel
 			UpdateDatabaseFin();
 			CatalogSupport.SaveToDatabase(Database, DatabaseFin);
 		}
+
+		public void SaveSightingData()
+        {
+			if (DatabaseFin != null)
+            {
+				// TODO: Filename logic should probably be elsewhere
+				var filename = Path.Combine(Options.CurrentUserOptions.CurrentSightingsPath, "SightingDataLogForArea_" + Options.CurrentUserOptions.CurrentSurveyArea + ".txt");
+				DatabaseFin.SaveSightingData(filename);
+			}
+        }
 
 		public void UpdateDatabaseFin()
         {

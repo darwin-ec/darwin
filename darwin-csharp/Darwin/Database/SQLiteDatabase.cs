@@ -182,7 +182,7 @@ namespace Darwin.Database
             image.imagefilename = Path.GetFileName(image.imagefilename);
 
             // Add current path info
-            image.imagefilename = Path.Combine(new string[] { Options.CurrentUserOptions.CurrentSurveyArea, "catalog", image.imagefilename });
+            image.imagefilename = Path.Combine(new string[] { "catalog", image.imagefilename });
 
             // assumes list is returned as FIFO (queue)... should be due to use of ORDER BY OrderID
             foreach (var p in points)

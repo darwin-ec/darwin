@@ -40,7 +40,7 @@ namespace Darwin
                 if (string.IsNullOrEmpty(CurrentDataPath))
                     return string.Empty;
 
-                return Path.Combine(CurrentDataPath, MatchQResultsFolderName);
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea, MatchQResultsFolderName);
             }
         }
 
@@ -52,7 +52,7 @@ namespace Darwin
                 if (string.IsNullOrEmpty(CurrentDataPath))
                     return string.Empty;
 
-                return Path.Combine(CurrentDataPath, CatalogFolderName);
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea, CatalogFolderName);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Darwin
                 if (string.IsNullOrEmpty(CurrentDataPath))
                     return string.Empty;
 
-                return Path.Combine(CurrentDataPath, MatchQueuesFolderName);
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea, MatchQueuesFolderName);
             }
         }
 
@@ -76,23 +76,47 @@ namespace Darwin
                 if (string.IsNullOrEmpty(CurrentDataPath))
                     return string.Empty;
 
-                return Path.Combine(CurrentDataPath, TracedFinsFolderName);
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea, TracedFinsFolderName);
             }
         }
 
         [JsonIgnore]
-        public string CurrentSurveyAreasPath
+        public string CurrentSurveyAreaPath
         {
             get
             {
-                // We're going to walk back up one level from the data path
-                var dirInfo = new DirectoryInfo(Path.GetDirectoryName(CurrentDataPath));
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
 
-                // Fall back if there's a problem getting the parent
-                if (dirInfo == null || dirInfo.Parent == null)
-                    return Path.GetDirectoryName(CurrentDataPath);
-                else
-                    return dirInfo.Parent.FullName;
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea);
+            }
+        }
+
+        //[JsonIgnore]
+        //public string CurrentSurveyAreasPath
+        //{
+        //    get
+        //    {
+        //        // We're going to walk back up one level from the data path
+        //        var dirInfo = new DirectoryInfo(Path.GetDirectoryName(CurrentDataPath));
+
+        //        // Fall back if there's a problem getting the parent
+        //        if (dirInfo == null || dirInfo.Parent == null)
+        //            return Path.GetDirectoryName(CurrentDataPath);
+        //        else
+        //            return dirInfo.Parent.FullName;
+        //    }
+        //}
+
+        [JsonIgnore]
+        public string CurrentSightingsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDataPath))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDataPath, CurrentSurveyArea, SightingsFolderName);
             }
         }
 
@@ -219,14 +243,27 @@ namespace Darwin
         {
             DatabaseFileName = filename;
 
-            // We're going to walk back up one level
+            // We're going to walk back up two levels
             var dirInfo = new DirectoryInfo(Path.GetDirectoryName(filename));
+            CurrentSurveyArea = string.Empty;
 
             // Fall back if there's a problem getting the parent
             if (dirInfo == null || dirInfo.Parent == null)
+            {
                 CurrentDataPath = Path.GetDirectoryName(filename);
+            }
             else
-                CurrentDataPath = dirInfo.Parent.FullName;
+            {
+                if (dirInfo.Parent.Parent == null)
+                {
+                    CurrentDataPath = dirInfo.Parent.FullName;
+                }
+                else
+                {
+                    CurrentDataPath = dirInfo.Parent.Parent.FullName;
+                    CurrentSurveyArea = Path.GetFileName(dirInfo.Parent.FullName);
+                }
+            }
         }
 
         /// <summary>
@@ -254,6 +291,16 @@ namespace Darwin
                     {
                         options.CurrentDataPath = myDocumentsPath;
                     }
+                }
+            }
+            else if (string.IsNullOrEmpty(options.CurrentSurveyArea))
+            {
+                DirectoryInfo datapathInfo = new DirectoryInfo(options.CurrentDataPath);
+
+                if (datapathInfo != null && datapathInfo.Parent != null)
+                {
+                    options.CurrentSurveyArea = Path.GetFileName(options.CurrentDataPath);
+                    options.CurrentDataPath = datapathInfo.Parent.FullName;
                 }
             }
         }

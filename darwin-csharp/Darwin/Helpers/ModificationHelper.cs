@@ -58,15 +58,15 @@ namespace Darwin.Helpers
 						break;
 
 					case ImageModType.IMG_brighten:
-						result.AlterBrightness(val1);
+						result = result.AlterBrightness(val1);
 						break;
 
 					case ImageModType.IMG_contrast:
-						result.EnhanceContrastMinMax((byte)val1, (byte)val2);
+						result = result.EnhanceContrastMinMax((byte)val1, (byte)val2);
 						break;
 
 					case ImageModType.IMG_contrast2:
-						result.EnhanceContrast(val1);
+						result = result.EnhanceContrast(val1);
 						break;
 
 					case ImageModType.IMG_crop:

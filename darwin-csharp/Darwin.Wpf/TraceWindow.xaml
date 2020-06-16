@@ -237,7 +237,7 @@
                 <Label>Short Description:</Label>
                 <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}" Margin="0,5,10,5"  />
 
-                <Button x:Name="ExportDataButton">
+                <Button x:Name="ExportDataButton" Click="ExportDataButton_Click">
                     <Button.ToolTip>
                         <TextBlock>
                             Export the sighting data and append it to the<LineBreak/>

@@ -1695,6 +1695,7 @@ namespace Darwin.Wpf
 				if (dlg.ShowDialog() == true)
 				{
 					_vm.SaveFinz(dlg.FileName);
+					StatusBarMessage.Text = "Finz file saved.";
 				}
 			}
 		}
@@ -1740,5 +1741,14 @@ namespace Darwin.Wpf
 				MessageBox.Show("Sorry, something went wrong adding to the database.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
+
+        private void ExportDataButton_Click(object sender, RoutedEventArgs e)
+        {
+			if (_vm.DatabaseFin != null)
+            {
+				_vm.SaveSightingData();
+				StatusBarMessage.Text = "Sighting data exported.";
+            }
+        }
     }
 }

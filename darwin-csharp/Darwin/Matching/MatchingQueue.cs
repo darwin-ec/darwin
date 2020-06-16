@@ -184,7 +184,7 @@ namespace Darwin.Matching
                         }
                         else if (splitLine[0] == "<area>")
                         {
-                            var areaPath = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreasPath, splitLine[1]);
+                            var areaPath = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, splitLine[1]);
 
                             if (File.Exists(areaPath))
                                 loadFilename = areaPath;

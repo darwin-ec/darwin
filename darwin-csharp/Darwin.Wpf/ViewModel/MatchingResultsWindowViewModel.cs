@@ -262,7 +262,7 @@ namespace Darwin.Wpf.ViewModel
 
                     //SelectedContour = new Contour(SelectedResult.dbContour, SelectedResult..Scale);
 
-                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, SelectedResult.ImageFilename);
+                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, SelectedResult.ImageFilename);
 
                     if (File.Exists(fullImageFilename))
                     {
@@ -273,12 +273,12 @@ namespace Darwin.Wpf.ViewModel
                                 ImageFilename = SelectedResult.ImageFilename
                             };
 
-                            CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentDataPath, tempFin);
+                            CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, tempFin);
 
                             var realOriginalImageFilename = string.Empty;
                             if (tempFin != null && !string.IsNullOrEmpty(tempFin.ImageFilename))
                             {
-                                realOriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, tempFin.ImageFilename);
+                                realOriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, tempFin.ImageFilename);
                             }
 
                             System.Drawing.Image img;
