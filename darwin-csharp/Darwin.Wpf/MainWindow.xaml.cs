@@ -158,7 +158,7 @@ namespace Darwin.Wpf
                 .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
                 .ToList());
 
-            // Select the last fin
+            // Select the last fin, and scroll to it so the user can see it
             if (_vm.Fins != null)
             {
                 _vm.SelectedFin = _vm.Fins[_vm.Fins.Count - 1];
@@ -173,12 +173,11 @@ namespace Darwin.Wpf
 
         private void MatchingQueueCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var matchingQueueVM = new MatchingQueueViewModel
-            {
-
-            };
+            var matchingQueueVM = new MatchingQueueViewModel();
 
             var matchingQueueWindow = new MatchingQueueWindow(matchingQueueVM);
+            matchingQueueWindow.Owner = this;
+            matchingQueueWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             matchingQueueWindow.Show();
         }
 
@@ -264,11 +263,6 @@ namespace Darwin.Wpf
         private void MatchingQueueToolbarButton_Click(object sender, RoutedEventArgs e)
         {
             MatchingQueueCommand_Executed(null, null);
-        }
-
-        private void Viewbox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
         }
 
         private void OutlineButton_Click(object sender, RoutedEventArgs e)
