@@ -200,6 +200,28 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private double _contourWidth;
+        public double ContourWidth
+        {
+            get => _contourWidth;
+            set
+            {
+                _contourWidth = value;
+                RaisePropertyChanged("ContourWidth");
+            }
+        }
+
+        private double _contourHeight;
+        public double ContourHeight
+        {
+            get => _contourHeight;
+            set
+            {
+                _contourHeight = value;
+                RaisePropertyChanged("ContourHeight");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingWindowViewModel(DatabaseFin databaseFin,
@@ -212,7 +234,13 @@ namespace Darwin.Wpf.ViewModel
             RangeOfPoints = RangeOfPointsType.AllPoints;
             Database = database;
 
+            // TODO: These should really come from the window
+            ContourWidth = 250;
+            ContourHeight = 250;
+
             Match = new Match(DatabaseFin, Database, UpdateOutlines);
+
+            UpdateOutlines(DatabaseFin.FinOutline.ChainPoints, null);
 
             ProgressBarVisibility = Visibility.Hidden;
 
@@ -221,12 +249,12 @@ namespace Darwin.Wpf.ViewModel
 
         private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
         {
-            if (unknownContour == null || dbContour == null)
+            if (unknownContour == null && dbContour == null)
                 return;
 
             Contour unk, db;
             double xOffset, yOffset;
-            FloatContour.FitContoursToSize(unknownContour, dbContour, out unk, out db, out xOffset, out yOffset);
+            FloatContour.FitContoursToSize(ContourWidth, ContourHeight, unknownContour, dbContour, out unk, out db, out xOffset, out yOffset);
 
             ContourXOffset = xOffset;
             ContourYOffset = yOffset;

@@ -246,7 +246,7 @@
                     </Button.ToolTip>
                     Export Data
                 </Button>
-                <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}" ToolTip="Attempt to match this fin against those in the database">Match</Button>
+                <Button x:Name="MatchButton" IsDefault="True" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}" ToolTip="Attempt to match this fin against those in the database">Match</Button>
                 <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
                     <Button.ToolTip>
                         <TextBlock>

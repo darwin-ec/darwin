@@ -471,27 +471,44 @@ namespace Darwin
             return dstContour;
         }
 
-        public static void FitContoursToSize(FloatContour unknownContour, FloatContour dbContour,
+        public static void FitContoursToSize(double drawingWidth, double drawingHeight, FloatContour unknownContour, FloatContour dbContour,
             out Contour displayUnknownContour, out Contour displayDBContour,
             out double xOffset, out double yOffset)
         {
-            float
-                xMax = (dbContour.MaxX() > (float)unknownContour.MaxX()) ? dbContour.MaxX() : (float)unknownContour.MaxX(),
-                yMax = (dbContour.MaxY() > (float)unknownContour.MaxY()) ? dbContour.MaxY() : (float)unknownContour.MaxY(),
-                xMin = (dbContour.MinX() < (float)unknownContour.MinX()) ? dbContour.MinX() : (float)unknownContour.MinX(),
-                yMin = (dbContour.MinY() < (float)unknownContour.MinY()) ? dbContour.MinY() : (float)unknownContour.MinY();
+            if (unknownContour == null && dbContour == null)
+                throw new ArgumentNullException("Both contours null!");
 
-            // TODO: Get these from the window
-            int drawingWidth = 200;
-            int drawingHeight = 200;
+            float xMax, yMax, xMin, yMin;
+
+            if (unknownContour == null)
+            {
+                xMax = dbContour.MaxX();
+                yMax = dbContour.MaxY();
+                xMin = dbContour.MinX();
+                yMin = dbContour.MinY();
+            }
+            else if (dbContour == null)
+            {
+                xMax = unknownContour.MaxX();
+                yMax = unknownContour.MaxY();
+                xMin = unknownContour.MinX();
+                yMin = unknownContour.MinY();
+            }
+            else
+            {
+                xMax = (dbContour.MaxX() > (float)unknownContour.MaxX()) ? dbContour.MaxX() : (float)unknownContour.MaxX();
+                yMax = (dbContour.MaxY() > (float)unknownContour.MaxY()) ? dbContour.MaxY() : (float)unknownContour.MaxY();
+                xMin = (dbContour.MinX() < (float)unknownContour.MinX()) ? dbContour.MinX() : (float)unknownContour.MinX();
+                yMin = (dbContour.MinY() < (float)unknownContour.MinY()) ? dbContour.MinY() : (float)unknownContour.MinY();
+            }
 
             float
                 xRange = xMax - xMin + 8, //***1.5 - added POINT_SIZE
                 yRange = yMax - yMin + 8; //***1.5 - added POINT_SIZE
 
             float
-                heightRatio = drawingWidth / yRange,
-                widthRatio = drawingHeight / xRange;
+                heightRatio = (float)(drawingWidth / yRange),
+                widthRatio = (float)(drawingHeight / xRange);
 
             float ratio;
             if (heightRatio < widthRatio)
@@ -509,8 +526,15 @@ namespace Darwin
 
             float ratioInverse = 1 / ratio;
 
-            displayUnknownContour = new Contour(unknownContour, ratioInverse);
-            displayDBContour = new Contour(dbContour, ratioInverse);
+            if (unknownContour == null)
+                displayUnknownContour = null;
+            else
+                displayUnknownContour = new Contour(unknownContour, ratioInverse);
+
+            if (dbContour == null)
+                displayDBContour = null;
+            else
+                displayDBContour = new Contour(dbContour, ratioInverse);
         }
 
         //***006FC next function moved from header

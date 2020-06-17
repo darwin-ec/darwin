@@ -144,7 +144,7 @@
                 <Label>Registered Outlines</Label>
                 <Viewbox Width="200" Height="200">
                     <Grid>
-                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="200" Height="200"
+                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
                                          Background="Transparent"
                                          PointSize="1"
                                          XOffset="{Binding ContourXOffset}"
@@ -153,7 +153,7 @@
                                          ItemsSource="{Binding UnknownContour.Points}"     
                                          Brushes="{StaticResource brushes}" />
 
-                        <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
+                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
                                          Background="Transparent"
                                          PointSize="1"
                                          XOffset="{Binding ContourXOffset}"

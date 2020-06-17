@@ -8,7 +8,7 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="Matching" Height="450" Width="800">
+        Title="Matching" Height="410" Width="800">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Crimson" />
@@ -27,6 +27,7 @@
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -42,7 +43,7 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Margin="10">
                         <Label>Search ONLY Selected Categories</Label>
                         <ItemsControl Width="440" ItemsSource="{Binding SelectableCategories}">
                             <ItemsControl.ItemsPanel>
@@ -56,16 +57,16 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <StackPanel Orientation="Horizontal">
-                            <Button x:Name="SelectAllCategoriesButton" Click="SelectAllCategoriesButton_Click">
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button x:Name="SelectAllCategoriesButton" Click="SelectAllCategoriesButton_Click" Margin="0,0,10,0">
                                 Select All
                             </Button>
-                            <Button x:Name="ClearAllCategoriesButton" Click="ClearAllCategoriesButton_Click">
+                            <Button x:Name="ClearAllCategoriesButton" Click="ClearAllCategoriesButton_Click" Margin="0,0,10,0">
                                 Clear All
                             </Button>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Label>Select a Search Method</Label>
                             <RadioButton GroupName="RegistrationMethod" IsChecked="{Binding Path=RegistrationMethod, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RegistrationMethodType.TrimFixedPercent}}">
@@ -75,13 +76,15 @@
                                 Align Iteratively
                             </RadioButton>
                         </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock>
+                        <StackPanel Orientation="Vertical" Margin="30,0,0,0">
+                            <Label>
+                                <TextBlock>
                                 Range of Points used to compute<LineBreak/>
                                 the error for ranking results:<LineBreak/>
                                 -- These ONLY affect the<LineBreak/>
                                 -- Align Iteratively methods!
-                            </TextBlock>
+                                </TextBlock>
+                            </Label>
                             <RadioButton GroupName="RangeOfPoints" IsChecked="{Binding Path=RangeOfPoints, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static matching:RangeOfPointsType.AllPoints}}">
                                 All Points
                             </RadioButton>
@@ -97,7 +100,7 @@
 
                 <Viewbox>
                     <Grid>
-                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="200" Height="200"
+                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
                                          Background="Transparent"
                                          PointSize="1"
                                          XOffset="{Binding ContourXOffset}"
@@ -106,7 +109,7 @@
                                          ItemsSource="{Binding UnknownContour.Points}"     
                                          Brushes="{StaticResource brushes}" />
 
-                        <fe:PointVisuals IsHitTestVisible="False" Width="200" Height="200"
+                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
                                          Background="Transparent"
                                          PointSize="1"
                                          XOffset="{Binding ContourXOffset}"
@@ -122,9 +125,9 @@
         </Grid>
         <ProgressBar Grid.Row="1" Height="20" Minimum="0" Maximum="100" Value="{Binding Path=MatchProgressPercent}" Visibility="{Binding ProgressBarVisibility}" Margin="10,10,10,10"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="StartButton" Click="StartButton_Click">Start</Button>
-            <Button x:Name="PauseButton" IsEnabled="{Binding Path=MatchRunning}" Click="PauseButton_Click">Pause</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+            <Button x:Name="StartButton" IsDefault="True" Click="StartButton_Click" IsEnabled="{Binding Path=MatchRunning, Converter={StaticResource InverseBooleanConverter}}" Margin="10,0,10,0">Start</Button>
+            <Button x:Name="PauseButton" IsEnabled="{Binding Path=MatchRunning}" Click="PauseButton_Click" Margin="0,0,10,0">Pause</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="0,0,20,0">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>
