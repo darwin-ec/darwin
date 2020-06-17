@@ -54,5 +54,16 @@ namespace Darwin.Wpf
            UrlHelper.OpenUrl(navigateUri);
            e.Handled = true;
         }
+
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void AboutWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+                Close();
+        }
     }
 }

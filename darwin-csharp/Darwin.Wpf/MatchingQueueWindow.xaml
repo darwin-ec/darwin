@@ -68,11 +68,11 @@
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="RunMatchButton_Click" Margin="10,0,0,0">Run Match</Button>
+            <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" IsDefault="True" Click="RunMatchButton_Click" Margin="10,0,0,0">Run Match</Button>
             <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click" Margin="10,0,0,0">View Results</Button>
             <Button x:Name="SaveQueueButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="SaveQueueButton_Click" Margin="10,0,0,0">Save Queue</Button>
             <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click" Margin="10,0,0,0">Load Queue</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="10,0,0,0">Cancel</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="10,0,0,0" IsCancel="True">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

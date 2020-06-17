@@ -91,8 +91,8 @@
             </TabItem>
         </TabControl>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="OKButton" Click="OKButton_Click" Margin="0,0,10,0">OK</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
+            <Button x:Name="OKButton" IsDefault="True" Click="OKButton_Click" Margin="0,0,10,0">OK</Button>
+            <Button x:Name="CancelButton" IsCancel="True" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </controls:CustomWindow>
