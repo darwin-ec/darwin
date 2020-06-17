@@ -172,10 +172,11 @@ namespace Darwin.Wpf
         {
             if (!_vm.CancelMatching)
             {
+                var summary = _vm.GetMatchSummary();
+
                 MessageBox.Show("Your matching queue has finished.\nYour results are in the " +
-                    Options.MatchQResultsFolderName + " folder.", "Queue Complete", MessageBoxButton.OK);
-                // TODO ?
-                // Should this do something other than show a message and close?
+                    Options.MatchQResultsFolderName + " folder.\n\nSummary:\n" + summary,
+                    "Queue Complete", MessageBoxButton.OK);
             }
 
             this.Close();

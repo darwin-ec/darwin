@@ -227,6 +227,10 @@ namespace Darwin.Matching
             if (!Directory.Exists(directoryName))
                 throw new Exception("Couldn't find directory " + directoryName);
 
+            string summary = GetSummary();
+            string summaryFilename = Path.Combine(directoryName, "results-summary");
+            File.WriteAllText(summaryFilename, summary);
+
             var currentFiles = Directory.GetFiles(directoryName);
 
             if (currentFiles != null && currentFiles.Length > 0)
@@ -253,110 +257,104 @@ namespace Darwin.Matching
             }
         }
 
-  //      public string GetSummary()
-  //      {
-  //          StringBuilder sb = new StringBuilder();
+        public string GetSummary()
+        {
+            if (Fins == null || Matches == null)
+                return string.Empty;
 
-  //          sb.AppendLine();
-  //          sb.AppendLine("Matching completed.");
-  //          sb.Append("\tAverage time per match: " + ((NumValidTimes == 0) ? "[None]" : (TotalTime / NumValidTimes).ToString()) + " over ");
+            StringBuilder sb = new StringBuilder();
 
-  //          if (NumValidTimes == 0)
-  //              sb.AppendLine("no valid times.");
-  //          else if (NumValidTimes == 1)
-  //              sb.AppendLine("1 valid time.");
-  //          else
-  //              sb.AppendLine(NumValidTimes + " valid times.");
+            sb.AppendLine();
+            sb.AppendLine("Matching completed.");
+            sb.Append("\tAverage time per match: " + ((NumValidTimes == 0) ? "[None]" : (TotalTime / NumValidTimes).ToString()) + " over ");
 
-  //          if (NumInvalidTimes > 0)
-  //          {
-		//        sb.Append("Warning: ");
+            if (NumValidTimes == 0)
+                sb.AppendLine("no valid times.");
+            else if (NumValidTimes == 1)
+                sb.AppendLine("1 valid time.");
+            else
+                sb.AppendLine(NumValidTimes + " valid times.");
 
-  //              if (NumInvalidTimes == 1)
-  //                  sb.AppendLine("1 set of results didn't have a valid time entered.");
-  //              else
-		//	        sb.AppendLine(NumInvalidTimes + " sets of results didn't have valid times entered.");
-  //          }
+            if (NumInvalidTimes > 0)
+            {
+                sb.Append("Warning: ");
 
-  //          //***1.2 - list files and theie individual rankings
-  //          for (int idx = 0; idx < mNumID; idx++)
-  //          {
-  //              char numStr[16];
-  //              ifstream inFile;
+                if (NumInvalidTimes == 1)
+                    sb.AppendLine("1 set of results didn't have a valid time entered.");
+                else
+                    sb.AppendLine(NumInvalidTimes + " sets of results didn't have valid times entered.");
+            }
 
-  //              //string path = getenv("DARWINHOME");
-  //              //***1.85 - everything is now relative to the current survey area
-  //              string path = gOptions->mCurrentSurveyArea;
-  //              path += PATH_SLASH;
-  //              path += "matchQResults";
-  //              path += PATH_SLASH;
-  //              string resultFilename = "results-unknown-";
-  //              sprintf(numStr, "%d", idx);
-  //              resultFilename += numStr;
+            sb.AppendLine();
 
-  //              inFile.open((path + resultFilename).c_str());
-  //              if (!inFile.fail())
-  //              {
-		//	out << resultFilename << ":";
-  //                  string line;
-  //                  getline(inFile, line); // fin ID
-  //                  getline(inFile, line); // fin File
-		//	out << line.substr(line.find_last_of(PATH_SLASH) + 1) << ":";
-  //                  getline(inFile, line); // database File
-  //                  getline(inFile, line); // ranking
-		//	out << line << endl;
-  //                  inFile.close();
-  //              }
-  //              inFile.clear();
-  //          }
+            var finsWithID = Fins.Where(f => !string.IsNullOrEmpty(f.IDCode)).ToList();
+            int rankingSum = 0;
+            int numFinsWithID = 0;
+            int numTop10 = 0;
+            int bestRank = int.MaxValue;
+            int worstRank = int.MinValue;
+            foreach (var finWithID in finsWithID)
+            {
+                int index = Fins.IndexOf(finWithID);
 
-  //          if (mNumID > 0)
-  //          {
-		//out << endl;
+                var firstSameIDMatch = Matches[index]?.MatchResults?.Results?
+                    .Where(r => !string.IsNullOrEmpty(r.IDCode) && r.IDCode.ToLower().Trim() == finWithID.IDCode.ToLower().Trim())
+                    .FirstOrDefault();
 
-  //              if (mNumID == 1)
-		//	out << "Out of 1 fin with an ID" << endl;
+                if (firstSameIDMatch != null)
+                {
+                    numFinsWithID += 1;
+                    // Our index is 0 based, but we want rank to start at 1, so we add 1
+                    int rank = Matches[index].MatchResults.Results.IndexOf(firstSameIDMatch) + 1;
+                    sb.Append(Path.GetFileName(finWithID.FinFilename));
+                    sb.Append(": The ID is ranked ");
+                    sb.AppendLine(rank.ToString());
+                    rankingSum += rank;
 
-  //      else
-		//	out << "Out of " << mNumID << " fins with IDs" << endl;
+                    if (rank <= 10)
+                        numTop10 += 1;
 
-  //              cout << "\tAverage rank: " << (float)mSum / mNumID << endl;
+                    if (rank < bestRank)
+                        bestRank = rank;
+                    if (rank > worstRank)
+                        worstRank = rank;
+                }
+            }
 
-  //              if (mNumTopTen == 0)
-		//	out << "\tNo fins ranked in the top ten.";
+            if (numFinsWithID > 0)
+            {
+                sb.AppendLine();
 
+                if (numFinsWithID == 1)
+                    sb.AppendLine("Out of 1 fin with an ID");
+                else
+                    sb.AppendLine("Out of " + numFinsWithID + " fins with IDs");
 
-  //      else if (mNumTopTen == 1)
-		//	out << "\t1 fin (" << (float)1 / mNumID * 100.0
-  //               << "%) ranked in the top ten.";
+                sb.AppendLine("\tAverage rank: " + (float)rankingSum / numFinsWithID);
 
+                if (numTop10 == 0)
+                    sb.AppendLine("\tNo fins ranked in the top ten.");
+                else if (numTop10 == 1)
+			        sb.AppendLine("\t1 fin (" + (float)1 / numFinsWithID * 100.0 + "%) ranked in the top ten.");
+                 else
+			        sb.AppendLine("\t" + numTop10 + " fins (" + (float)numTop10 / numFinsWithID * 100.0 + "%) ranked in the top ten.");
 
-  //      else
-		//	out << "\t" << mNumTopTen << " fins ("
-  //               << (float)mNumTopTen / mNumID * 100.0
-  //               << "%) ranked in the top ten.";
-					
-		//	out << endl << endl;
+                sb.AppendLine();
 
-  //              if (!mFirstRun)
-  //              {
-		//		out << "\tBest rank: " << mBestRank << endl
-  //                   << "\tWorst rank: " << mWorstRank << endl
-  //                   << endl;
-  //              }
-  //          }
+				sb.AppendLine("\tBest rank: " + bestRank);
+                sb.AppendLine("\tWorst rank: " + worstRank);
+                sb.AppendLine();
+            }
 
-  //          if (NumNoID == 0)
-		//out << "All fins had an ID provided." << endl;
+            if (Fins.Count - numFinsWithID == 0)
+		        sb.AppendLine("All fins had an ID provided.");
+            else if (Fins.Count - numFinsWithID == 1)
+		        sb.AppendLine("1 fin with no ID provided." );
+            else
+		        sb.AppendLine((Fins.Count - numFinsWithID) + " fins with no ID provided.");
 
-  //  else if (NumNoID == 1)
-		//out << "1 fin with no ID provided." << endl;
-
-  //  else
-		//out << NumNoID << " fins with no ID provided." << endl;
-
-  //          return sb.ToString();
-  //      }
+            return sb.ToString();
+        }
 
         private void RaisePropertyChanged(string propertyName)
         {

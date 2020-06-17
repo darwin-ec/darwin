@@ -148,6 +148,11 @@ namespace Darwin.Wpf.ViewModel
             MatchingQueue.SaveMatchResults(Options.CurrentUserOptions.CurrentMatchQueueResultsPath);
         }
 
+        public string GetMatchSummary()
+        {
+            return MatchingQueue.GetSummary();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void RaisePropertyChanged(string propertyName)
