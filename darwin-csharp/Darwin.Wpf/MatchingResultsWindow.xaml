@@ -33,180 +33,215 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="250" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
-            <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
-            <Label>Selected Fin</Label>
-            <Image x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" Height="320" Width="400" />
-            <StackPanel Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
+
+        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView x:Name="GridView">
+                            <GridViewColumn DisplayMemberBinding="{Binding Rank}" Width="40">
+                                <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
+                                <GridViewColumnHeader
+                                    Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    MinWidth="50"/>
+                            </GridViewColumn>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image.Source>
+                                                <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                            </Image.Source>
+                                        </Image>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                                <GridViewColumnHeader
+                                    Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    MinWidth="55"/>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                                <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                        MinWidth="50"/>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
+                                <GridViewColumnHeader
+                                    Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    MinWidth="50"/>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
+                                <GridViewColumnHeader
+                                    Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    MinWidth="60" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                                <GridViewColumnHeader
+                                    Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    MinWidth="50"/>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </controls:SortableListView>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,0,10">
+                    <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)" Click="InfoButton_Click">
+                        Info
+                    </ToggleButton>
+                    <ToggleButton x:Name="HideIDsButton" Margin="10,0,0,0" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
+                        Hide IDs
+                    </ToggleButton>
+                    <Button x:Name="PreviousButton" Margin="10,0,0,0" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
+                        Previous
+                    </Button>
+                    <Button x:Name="NextButton" Margin="10,0,0,0" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
+                        Next
+                    </Button>
+                    <ToggleButton x:Name="AutoScrollButton" Margin="10,0,0,0" IsChecked="{Binding Path=AutoScroll}" Click="AutoScrollButton_Click">
+                        <ToggleButton.ToolTip>
+                            <TextBlock>
+                                    Start or stop an automatically scrolling<LineBreak/>
+                                    slide show of selected fins
+                            </TextBlock>
+                        </ToggleButton.ToolTip>
+                        Auto Scroll
+                    </ToggleButton>
+                </StackPanel>
+            </Grid>
+            
+            <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+            
+            <Grid Grid.Row="0" Grid.Column="2" Margin="10,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0">Registered Outlines</Label>
+                <Viewbox Grid.Row="1">
+                    <Grid>
+                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
+                                             Background="Transparent"
+                                             PointSize="1"
+                                             XOffset="{Binding ContourXOffset}"
+                                             YOffset="{Binding ContourYOffset}"
+                                             ContourScale="{Binding UnknownContour.Scale}"
+                                             ItemsSource="{Binding UnknownContour.Points}"     
+                                             Brushes="{StaticResource brushes}" />
+
+                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
+                                             Background="Transparent"
+                                             PointSize="1"
+                                             XOffset="{Binding ContourXOffset}"
+                                             YOffset="{Binding ContourYOffset}"
+                                             ContourScale="{Binding DBContour.Scale}"
+                                             ItemsSource="{Binding DBContour.Points}"     
+                                             Brushes="{StaticResource dbBrushes}" />
+                    </Grid>
+                </Viewbox>
+            </Grid>
+        </Grid>
+        
+        <GridSplitter Height="5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0">Selected Fin</Label>
+            <Image Grid.Row="1" x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
                 <ToggleButton x:Name="SelectedShowOriginalImage" IsChecked="{Binding SelectedShowOriginalImage}">
                     Show Original Image
                 </ToggleButton>
             </StackPanel>
-        </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
-            <Label>Unknown Fin</Label>
-            <Image x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" Height="320" Width="400" />
-            <StackPanel Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0">Unknown Fin</Label>
+            <Image Grid.Row="1" x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
                 <ToggleButton x:Name="UnknownShowOriginalImage" IsChecked="{Binding UnknownShowOriginalImage}">
                     Show Original Image
                 </ToggleButton>
-                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
+                <Button Margin="10,0,0,0" x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
                     Match Selected Fin Orientation
                 </Button>
             </StackPanel>
-        </StackPanel>
-        <controls:SortableListView Grid.Column="0" Grid.Row="1" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView x:Name="GridView">
-                    <GridViewColumn DisplayMemberBinding="{Binding Rank}" Width="40">
-                        <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" />
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
-                        <GridViewColumnHeader
-                            Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            MinWidth="50"/>
-                    </GridViewColumn>
-                    <GridViewColumn>
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Image.Source>
-                                        <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
-                                    </Image.Source>
-                                </Image>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                        <GridViewColumnHeader
-                            Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            MinWidth="55"/>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                        <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                                MinWidth="50"/>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
-                        <GridViewColumnHeader
-                            Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            MinWidth="50"/>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
-                        <GridViewColumnHeader
-                            Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            MinWidth="60" />
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
-                        <GridViewColumnHeader
-                            Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            MinWidth="50"/>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </controls:SortableListView>
+        </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-            <StackPanel Orientation="Vertical" Margin="10,0,0,10">
-                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)" Click="InfoButton_Click">
-                    Info
-                </ToggleButton>
-                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
-                    Hide IDs
-                </ToggleButton>
-                <Button x:Name="PreviousButton" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
-                    Previous
-                </Button>
-                <Button x:Name="NextButton" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
-                    Next
-                </Button>
-                <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}" Click="AutoScrollButton_Click">
-                    <ToggleButton.ToolTip>
-                        <TextBlock>
-                            Start or stop an automatically scrolling<LineBreak/>
-                            slide show of selected fins
-                        </TextBlock>
-                    </ToggleButton.ToolTip>
-                    Auto Scroll
-                </ToggleButton>
-            </StackPanel>
-            <StackPanel Orientation="Vertical">
-                <Label>Registered Outlines</Label>
-                <Viewbox Width="200" Height="200">
-                    <Grid>
-                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
-                                         Background="Transparent"
-                                         PointSize="1"
-                                         XOffset="{Binding ContourXOffset}"
-                                         YOffset="{Binding ContourYOffset}"
-                                         ContourScale="{Binding UnknownContour.Scale}"
-                                         ItemsSource="{Binding UnknownContour.Points}"     
-                                         Brushes="{StaticResource brushes}" />
-
-                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
-                                         Background="Transparent"
-                                         PointSize="1"
-                                         XOffset="{Binding ContourXOffset}"
-                                         YOffset="{Binding ContourYOffset}"
-                                         ContourScale="{Binding DBContour.Scale}"
-                                         ItemsSource="{Binding DBContour.Points}"     
-                                         Brushes="{StaticResource dbBrushes}" />
-                    </Grid>
-                </Viewbox>
-            </StackPanel>
-            <StackPanel Orientation="Vertical" Margin="10,0,0,10">
-                <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">
-                    <Button.ToolTip>
-                        <TextBlock>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,0,10">
+            <Button x:Name="MatchesSelectedFinButton" Margin="10,0,0,0" Click="MatchesSelectedFinButton_Click">
+                <Button.ToolTip>
+                    <TextBlock>
                             The selected fin matches the unknown fin.  Add the<LineBreak/>
                             unknown fin image to the database as an alternate<LineBreak/>
                             image of hte selected fin.  Save sighting data, if desired.
-                        </TextBlock>  
-                    </Button.ToolTip>
-                    Matches Selected Fin
-                </Button>
-                <Button x:Name="NoMatchNewFinButton" Click="NoMatchNewFinButton_Click">
-                    <Button.ToolTip>
-                        <TextBlock>
+                    </TextBlock>
+                </Button.ToolTip>
+                Matches Selected Fin
+            </Button>
+            <Button x:Name="NoMatchNewFinButton" Margin="10,0,0,0" Click="NoMatchNewFinButton_Click">
+                <Button.ToolTip>
+                    <TextBlock>
                             No fins match the unknown fin.  Add this unknown dolphin<LineBreak/>
                             to the database as a new entry.  Save the sighting data, if<LineBreak/>
                             desired.
-                        </TextBlock>
-                    </Button.ToolTip>
-                    No Match - New Fin
-                </Button>
-                <Button x:Name="ReturnToMatchingDialogButton" Click="ReturnToMatchingDialogButton_Click">
-                    <Button.ToolTip>
-                        <TextBlock>
+                    </TextBlock>
+                </Button.ToolTip>
+                No Match - New Fin
+            </Button>
+            <Button x:Name="ReturnToMatchingDialogButton" Margin="10,0,0,0" Click="ReturnToMatchingDialogButton_Click">
+                <Button.ToolTip>
+                    <TextBlock>
                             Return to the Matching window, so another<LineBreak/>
                             match technique can be initiated with the same<LineBreak/>
                             unknown.
-                        </TextBlock>
-                    </Button.ToolTip>
-                    Return to Matching Options
-                </Button>
-                <Button x:Name="SaveMatchResultsButton" Click="SaveMatchResultsButton_Click">
-                    <Button.ToolTip>
-                        <TextBlock>
+                    </TextBlock>
+                </Button.ToolTip>
+                Return to Matching Options
+            </Button>
+            <Button x:Name="SaveMatchResultsButton" Margin="10,0,0,0" Click="SaveMatchResultsButton_Click">
+                <Button.ToolTip>
+                    <TextBlock>
                             Save the match results for future review or match confirmation
-                        </TextBlock>
-                    </Button.ToolTip>
-                    Save Match Results
-                </Button>
-                <Button x:Name="DoneButton" Click="DoneButton_Click">
-                    Close and Discard
-                </Button>
-            </StackPanel>
+                    </TextBlock>
+                </Button.ToolTip>
+                Save Match Results
+            </Button>
+            <Button x:Name="DoneButton" Margin="10,0,10,0" Click="DoneButton_Click">
+                Close and Discard
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
