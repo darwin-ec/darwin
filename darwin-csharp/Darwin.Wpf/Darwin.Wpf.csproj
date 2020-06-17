@@ -6,6 +6,13 @@
     <UseWPF>true</UseWPF>
 	<UseWindowsForms>true</UseWindowsForms>
 	<ApplicationIcon>darwin.ico</ApplicationIcon>
+	<Product>Darwin</Product>
+	<Description>Darwin Photo Identification</Description>
+	<Copyright>Copyright 1993 - 2020</Copyright>
+	<PackageProjectUrl>http://darwin.eckerd.edu</PackageProjectUrl>
+	<Version>3.0.0</Version>
+	<FileVersion>3.0.0.1</FileVersion>
+	<Company>Eckerd College</Company>
   </PropertyGroup>
 
   <ItemGroup>

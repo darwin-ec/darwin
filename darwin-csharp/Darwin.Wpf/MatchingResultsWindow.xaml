@@ -68,9 +68,14 @@
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Rank}">
-                        <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                <GridView x:Name="GridView">
+                    <GridViewColumn DisplayMemberBinding="{Binding Rank}" Width="40">
+                        <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" />
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
+                        <GridViewColumnHeader
+                            Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                            MinWidth="50"/>
                     </GridViewColumn>
                     <GridViewColumn>
                         <GridViewColumn.CellTemplate>
@@ -86,31 +91,26 @@
                     <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
                         <GridViewColumnHeader
                             Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            Width="{Binding Path=ShowIDColumn, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=55}"/>
+                            MinWidth="55"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Name}">
                         <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                                Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
+                                MinWidth="50"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
                         <GridViewColumnHeader
                             Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
+                            MinWidth="50"/>
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
                         <GridViewColumnHeader
                             Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=60}" />
+                            MinWidth="60" />
                     </GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
                         <GridViewColumnHeader
                             Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
-                        <GridViewColumnHeader
-                            Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
-                            Width="{Binding Path=ShowInfoColumns, Converter={StaticResource GridViewColumnWidthConverter}, ConverterParameter=50}"/>
+                            MinWidth="50"/>
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
@@ -118,10 +118,10 @@
 
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <StackPanel Orientation="Vertical" Margin="10,0,0,10">
-                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)">
+                <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)" Click="InfoButton_Click">
                     Info
                 </ToggleButton>
-                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes">
+                <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
                     Hide IDs
                 </ToggleButton>
                 <Button x:Name="PreviousButton" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
@@ -130,7 +130,7 @@
                 <Button x:Name="NextButton" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
                     Next
                 </Button>
-                <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}">
+                <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}" Click="AutoScrollButton_Click">
                     <ToggleButton.ToolTip>
                         <TextBlock>
                             Start or stop an automatically scrolling<LineBreak/>

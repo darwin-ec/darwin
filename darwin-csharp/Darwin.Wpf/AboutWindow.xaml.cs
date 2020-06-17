@@ -26,8 +26,11 @@ namespace Darwin.Wpf
         {
             get
             {
-                var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                // Assembly Version
+                //var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
+                // Assembly File Version
+                var version = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
                 return version.ToString();
             }
         }
