@@ -156,7 +156,7 @@ namespace Darwin.Database
         // Returns complete DatabaseFin<ColorImage>. mDataPos field will be used to map to id in 
         // db for individuals
         //
-        public DatabaseFin GetFin(long id)
+        public override DatabaseFin GetFin(long id)
         {
             DBIndividual individual;
             DBImage image;
@@ -165,7 +165,6 @@ namespace Darwin.Database
             DBDamageCategory damagecategory;
             Outline finOutline;
             FloatContour fc = new FloatContour();
-            DatabaseFin fin;
 
             individual = SelectIndividualByID(id);
             damagecategory = SelectDamageCategoryByID(individual.fkdamagecategoryid);
@@ -198,7 +197,8 @@ namespace Darwin.Database
             finOutline.SetFeaturePoint(FeaturePointType.PointOfInflection, outline.endte);
             finOutline.SetLEAngle(0.0, true);
 
-            fin = new DatabaseFin(image.imagefilename,
+            DatabaseFin fin = new DatabaseFin(id,
+                image.imagefilename,
                 finOutline,
                 individual.idcode,
                 individual.name,

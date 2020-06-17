@@ -38,16 +38,6 @@ namespace Darwin.Wpf
                 sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
         }
 
-        private void SelectedShowOriginalImage_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void UnknownShowOriginalImage_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void UnknownMatchSelectedFinOrientation_Click(object sender, RoutedEventArgs e)
         {
 

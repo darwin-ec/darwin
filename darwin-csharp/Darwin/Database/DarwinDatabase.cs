@@ -55,6 +55,7 @@ namespace Darwin.Database
 
         //private abstract void UpdateDBIndividual(DBIndividual individual);
 
+        public abstract DatabaseFin GetFin(long id);
         public abstract List<DatabaseFin> GetAllFins();
 
         //public abstract DatabaseFin GetItemAbsolute(int pos);

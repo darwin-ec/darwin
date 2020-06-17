@@ -253,6 +253,7 @@ namespace Darwin.Matching
                     Result r = new Result(
                         result.C1, //***005CM
                         result.C2, //***005CM
+                        thisDBFin.DatabaseID,
                         thisDBFin.ImageFilename,  //***001DB
                         thisDBFin.ThumbnailFilenameUri,
                         CurrentFinIndex,

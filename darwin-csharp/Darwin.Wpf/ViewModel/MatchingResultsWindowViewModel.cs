@@ -141,6 +141,34 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private bool _unknownShowOriginalImage;
+        public bool UnknownShowOriginalImage
+        {
+            get => _unknownShowOriginalImage;
+            set
+            {
+                _unknownShowOriginalImage = value;
+                RaisePropertyChanged("UnknownShowOriginalImage");
+
+                if (_unknownShowOriginalImage && DatabaseFin.OriginalFinImage != null)
+                    UnknownImageSource = DatabaseFin.OriginalFinImage.ToImageSource();
+                else
+                    UnknownImageSource = DatabaseFin.FinImage.ToImageSource();
+            }
+        }
+
+        private bool _selectedShowOriginalImage;
+        public bool SelectedShowOriginalImage
+        {
+            get => _selectedShowOriginalImage;
+            set
+            {
+                _selectedShowOriginalImage = value;
+                RaisePropertyChanged("SelectedShowOriginalImage");
+                LoadSelectedResult();
+            }
+        }
+
         public int CurrentSelectedIndex
         {
             get
@@ -221,8 +249,8 @@ namespace Darwin.Wpf.ViewModel
 
             DatabaseFin = unknownFin;
 
-            if (DatabaseFin != null && DatabaseFin.OriginalFinImage != null)
-                UnknownImageSource = DatabaseFin.OriginalFinImage.ToImageSource();
+            if (DatabaseFin != null && DatabaseFin.FinImage != null)
+                UnknownImageSource = DatabaseFin.FinImage.ToImageSource();
 
             MatchResults = matchResults;
             Database = database;
@@ -268,10 +296,22 @@ namespace Darwin.Wpf.ViewModel
                     {
                         try
                         {
-                            DatabaseFin tempFin = new DatabaseFin()
+                            var selectedIndex = MatchResults.Results.IndexOf(SelectedResult);
+
+                            // We're relying on the indices being the same, which might be a little risky
+                            DatabaseFin tempFin;
+
+                            if (SelectedResult.DatabaseID > 0)
                             {
-                                ImageFilename = SelectedResult.ImageFilename
-                            };
+                                tempFin = Database.GetFin(SelectedResult.DatabaseID);
+                            }
+                            else
+                            {
+                                tempFin = new DatabaseFin()
+                                {
+                                    ImageFilename = SelectedResult.ImageFilename
+                                };
+                            }
 
                             CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, tempFin);
 
@@ -288,12 +328,16 @@ namespace Darwin.Wpf.ViewModel
                                 img = System.Drawing.Image.FromFile(fullImageFilename);
 
                             var bitmap = new Bitmap(img);
+
                             // TODO: Hack for HiDPI -- this should be more intelligent.
                             bitmap.SetResolution(96, 96);
 
-                            // TODO: Refactor this so we're not doing it every time, which is a little crazy
-                            if (tempFin.ImageMods != null && tempFin.ImageMods.Count > 0)
-                                bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, tempFin.ImageMods);
+                            if (!SelectedShowOriginalImage)
+                            {
+                                // TODO: Refactor this so we're not doing it every time, which seems like it could be a little crazy
+                                if (tempFin.ImageMods != null && tempFin.ImageMods.Count > 0)
+                                    bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, tempFin.ImageMods);
+                            }
 
                             // We're directly changing the source, not the bitmap property on DatabaseFin
                             SelectedImageSource = bitmap.ToImageSource();

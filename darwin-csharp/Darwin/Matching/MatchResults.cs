@@ -117,124 +117,6 @@ namespace Darwin.Matching
             SetRankings();
         }
 
-        public void Sort(MatchResultSortType sortBy, ref int active)
-        {
-            throw new NotImplementedException();
-            //TODO
-            //try
-            //{
-            //	//***1.0 - keep track of where active result ends up and 
-            //	// reset value of active so redisplay of lists and icons
-            //	// has correct active result after sort
-            //	int newActive = -1;
-
-            //	mLastSortBy = sortBy;
-
-            //	list<Result> sortedResults;
-
-            //	//***1.0 - need list of indices since mResults list is erased as we go
-            //	list<int> actIndex;
-            //	for (int i = 0; i < mResults.size(); i++)
-            //		actIndex.push_back(i);
-
-            //	while (mResults.size() > 0)
-            //	{
-            //		list<Result>::iterator it = mResults.begin();
-            //		list<Result>::iterator saveIt = it;
-
-            //		list<int>::iterator actIt = actIndex.begin(); //***1.0
-            //		list<int>::iterator actItLow = actIt;         //***1.0
-
-            //		string lowest;
-            //		float lowestNum;
-            //		switch (sortBy)
-            //		{
-            //			case MR_ERROR:
-            //				lowestNum = atof(it->getError().c_str());
-            //				break;
-            //			case MR_NAME:
-            //				lowest = it->getName();
-            //				break;
-            //			case MR_IDCODE:
-            //				lowest = it->getIdCode();
-            //				break;
-            //			case MR_DAMAGE:
-            //				lowest = it->getDamage();
-            //				break;
-            //			case MR_DATE:
-            //				lowest = it->getDate();
-            //				break;
-            //			case MR_LOCATION:
-            //				lowest = it->getLocation();
-            //				break;
-            //		}
-
-            //		++it;
-
-            //		++actIt; //***1.0
-
-            //		while (it != mResults.end())
-            //		{
-            //			string compare;
-            //			float compareNum;
-            //			switch (sortBy)
-            //			{
-            //				case MR_ERROR:
-            //					compareNum = atof(it->getError().c_str());
-            //					break;
-            //				case MR_NAME:
-            //					compare = it->getName();
-            //					break;
-            //				case MR_IDCODE:
-            //					compare = it->getIdCode();
-            //					break;
-            //				case MR_DAMAGE:
-            //					compare = it->getDamage();
-            //					break;
-            //				case MR_DATE:
-            //					compare = it->getDate();
-            //					break;
-            //				case MR_LOCATION:
-            //					compare = it->getLocation();
-            //					break;
-            //			}
-
-            //			if (sortBy == MR_ERROR && compareNum < lowestNum)
-            //			{
-            //				lowestNum = compareNum;
-            //				saveIt = it;
-            //				actItLow = actIt; //***1.0
-            //			}
-            //			else if (compare < lowest)
-            //			{
-            //				lowest = compare;
-            //				saveIt = it;
-            //				actItLow = actIt; //***1.0
-            //			}
-
-            //			++it;
-
-            //			++actIt; //***1.0
-            //		}
-
-            //		sortedResults.push_back(*saveIt);
-            //		mResults.erase(saveIt);
-
-            //		//***1.0 - save new position of old active Result
-            //		if (((*actItLow) == active) && (newActive == -1))
-            //			newActive = sortedResults.size() - 1;
-            //		actIndex.erase(actItLow);
-            //	}
-
-            //	mResults = sortedResults;
-
-            //	active = newActive; //***1.0
-            //}
-            //catch (...) {
-            //	throw;
-            //}
-        }
-
         //  1.5 - indicates whether sorted order is by error measure, so rank numbering is appropriate
         public bool LastSortedByError() //  1.5
         {
@@ -524,6 +406,7 @@ namespace Darwin.Matching
                 Result r = new Result(
                         mappedUnknownContour,                      //***1.3 - Mem Leak - constructor make copy now
                         thisDBFin.FinOutline.ChainPoints, //***1.3 - Mem Leak - constructor make copy now
+                        thisDBFin.DatabaseID,
                         thisDBFin.ImageFilename,
                         thisDBFin.ThumbnailFilenameUri,
                         dbFinPosition - 1, // position of fin in database

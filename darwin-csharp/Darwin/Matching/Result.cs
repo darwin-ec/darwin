@@ -16,6 +16,7 @@ namespace Darwin.Matching
         public string ImageFilename { get; set; }    //  001DB - image file for database fin
         public int Position { get; set; }            // position (index) of database fin in database file
 
+        public long DatabaseID { get; set; }
         public double Error { get; set; }
         public string IDCode { get; set; }
         public string Name { get; set; }
@@ -36,6 +37,7 @@ namespace Darwin.Matching
         public Result(
             FloatContour unknown, //  005CM
             FloatContour db, //  005CM
+            long databaseID,
             string filename,   //  001DB
             string thumbnailFilenameUri, //  1.0
             int position,
@@ -49,7 +51,7 @@ namespace Darwin.Matching
         {
             unknownContour = new FloatContour(unknown); //  1.3 - Mem Leak - make copies now
             dbContour = new FloatContour(db);           //  1.3 - Mem Leak - make copies now
-
+            DatabaseID = databaseID;
             ImageFilename = filename; //  001DB
             Position = position;
             Error = error;
@@ -71,6 +73,7 @@ namespace Darwin.Matching
 
         public Result(Result r)
         {
+            DatabaseID = r.DatabaseID;
             ImageFilename = r.ImageFilename;   //  001DB
             Position = r.Position;
             Error = r.Error;
@@ -106,38 +109,6 @@ namespace Darwin.Matching
             //	}
             //}
         }
-
-        //		Result& operator=(const Result &r)
-        //		{
-        //			if (this == &r)
-        //				return *this;
-
-        //		mPosition = r.mPosition;
-        //		mError = r.mError;
-        //		mIdCode = r.mIdCode;
-        //		mName = r.mName;
-        //		mDamage = r.mDamage;
-        //		mLocation = r.mLocation;
-        //		mRank = r.mRank; //  1.5
-        //		unknownContour = r.unknownContour; //  005CM
-        //		dbContour = r.dbContour; //  005CM
-
-        //			if (NULL == r.mThumbnailPixmap) {
-        //				mThumbnailPixmap = NULL;
-        //				mThumbnailRows = 0;
-        //			} else {
-        //				mThumbnailRows = r.mThumbnailRows;
-        //				mThumbnailPixmap = new char*[mThumbnailRows];
-
-        //				for (int i = 0; i<mThumbnailRows; i++) {
-        //					mThumbnailPixmap[i] = new char[strlen(r.mThumbnailPixmap[i]) + 1];
-        //					strcpy(mThumbnailPixmap[i], r.mThumbnailPixmap[i]);
-        //}
-        //			}		
-
-        //			return * this;
-        //		}
-
 
         //  1.1 - sets six indices for points used in final contour mapping
         public void SetMappingControlPoints(
