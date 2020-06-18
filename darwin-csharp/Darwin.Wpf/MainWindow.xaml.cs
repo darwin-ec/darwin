@@ -254,13 +254,12 @@ namespace Darwin.Wpf
 
         private void CatalogSchemesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var catalogSchemesVM = new CatalogSchemesViewModel();
+            var catalogSchemesVM = new CatalogSchemesViewModel(Options.CurrentUserOptions.CatalogSchemes);
 
             var catalogSchemesWindow = new CatalogSchemesWindow(catalogSchemesVM);
             catalogSchemesWindow.Owner = this;
             catalogSchemesWindow.ShowDialog();
         }
-
 
         private void AboutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {

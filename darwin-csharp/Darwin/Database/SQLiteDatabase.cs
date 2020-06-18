@@ -1769,11 +1769,11 @@ namespace Darwin.Database
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS
 
-                for (int i = 0; i < catalogScheme.CategoryNames.Count; i++)
+                for (int i = 0; i < catalogScheme.Categories.Count; i++)
                 {
                     DBDamageCategory cat = new DBDamageCategory
                     {
-                        name = catalogScheme.CategoryNames[i],
+                        name = catalogScheme.Categories[i].Name,
                         orderid = i
                     };
 

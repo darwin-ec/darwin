@@ -207,12 +207,12 @@ namespace Darwin.Database
 				if (cat == null)
 					cat = new CatalogScheme();
 
-				if (cat.CategoryNames == null)
-					cat.CategoryNames = new ObservableCollection<string>();
+				if (cat.Categories == null)
+					cat.Categories = new ObservableCollection<Category>();
 
-				if (!cat.CategoryNames.ToList().Exists(c => c != null && c.ToUpper() == fin.DamageCategory.ToUpper()))
+				if (!cat.Categories.ToList().Exists(c => c != null && c.Name?.ToUpper() == fin.DamageCategory.ToUpper()))
 				{
-					cat.CategoryNames.Add(fin.DamageCategory);
+					cat.Categories.Add(new Category(fin.DamageCategory));
 				}
 
 				SQLiteDatabase db = new SQLiteDatabase(dbFilename, cat, true);

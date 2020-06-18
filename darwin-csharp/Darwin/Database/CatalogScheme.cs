@@ -17,6 +17,40 @@ using System.Text;
 
 namespace Darwin.Database
 {
+    public class Category : INotifyPropertyChanged
+    {
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                RaisePropertyChanged("Name");
+            }
+        }
+
+        public Category()
+        {
+
+        }
+
+        public Category(string name)
+        {
+            Name = name;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            var handler = PropertyChanged;
+            if (handler == null) return;
+
+            handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public class CatalogScheme : INotifyPropertyChanged
     {
         private string _schemeName;
@@ -30,14 +64,14 @@ namespace Darwin.Database
             }
         }
 
-        private ObservableCollection<string> _categoryNames;
-		public ObservableCollection<string> CategoryNames
+        private ObservableCollection<Category> _categories;
+		public ObservableCollection<Category> Categories
         {
-            get => _categoryNames;
+            get => _categories;
             set
             {
-                _categoryNames = value;
-                RaisePropertyChanged("CategoryNames");
+                _categories = value;
+                RaisePropertyChanged("Categories");
             }
         }
 
@@ -52,10 +86,21 @@ namespace Darwin.Database
             }
         }
 
-		public CatalogScheme()
+        private bool _isBuiltIn;
+        public bool IsBuiltIn
+        {
+            get => _isBuiltIn;
+            set
+            {
+                _isBuiltIn = value;
+                RaisePropertyChanged("IsBuiltIn");
+            }
+        }
+
+        public CatalogScheme()
 		{
 			SchemeName = string.Empty;
-			CategoryNames = new ObservableCollection<string>();
+			Categories = new ObservableCollection<Category>();
             IsDefault = false;
 		}
 

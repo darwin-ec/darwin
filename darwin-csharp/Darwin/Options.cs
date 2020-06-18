@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Linq;
 using System.Text;
 
 namespace Darwin
@@ -339,38 +340,60 @@ namespace Darwin
             }
         }
 
+        private static void AddEckerdCategoriesToScheme(CatalogScheme catalogScheme)
+        {
+            catalogScheme.Categories.Add(new Category("NONE"));  // shown as "Unspecified" in database and pull-down lists
+            catalogScheme.Categories.Add(new Category("Upper"));
+            catalogScheme.Categories.Add(new Category("Middle"));
+            catalogScheme.Categories.Add(new Category("Lower"));
+            catalogScheme.Categories.Add(new Category("Upper-Middle"));
+            catalogScheme.Categories.Add(new Category("Upper-Lower"));
+            catalogScheme.Categories.Add(new Category("Middle-Lower"));
+            catalogScheme.Categories.Add(new Category("Leading Edge"));
+            catalogScheme.Categories.Add(new Category("Entire"));
+            catalogScheme.Categories.Add(new Category("Tip-Nick"));
+            catalogScheme.Categories.Add(new Category("Missing Tip"));
+            catalogScheme.Categories.Add(new Category("Extended Tip"));
+            catalogScheme.Categories.Add(new Category("Peduncle"));
+            catalogScheme.Categories.Add(new Category("Pergatory"));
+        }
+
         private static void CheckCatalogSchemes(ref Options options)
         {
+            const string EckerdCollegeSchemeName = "Eckerd College";
+
             if (options == null)
                 return;
 
             if (options.CatalogSchemes == null)
                 options.CatalogSchemes = new List<CatalogScheme>();
 
+            var eckerdScheme = options.CatalogSchemes.Where(cs => cs.SchemeName == EckerdCollegeSchemeName).FirstOrDefault();
+
+            if (eckerdScheme != null)
+            {
+                if (!options.CatalogSchemes.Any(cs => cs.IsDefault))
+                        eckerdScheme.IsBuiltIn = eckerdScheme.IsDefault = true;
+
+                if (eckerdScheme.Categories == null)
+                    eckerdScheme.Categories = new ObservableCollection<Category>();
+
+                if (eckerdScheme.Categories.Count < 1)
+                    AddEckerdCategoriesToScheme(eckerdScheme);
+            }
+
             if (options.CatalogSchemes.Count < 1)
             {
                 var defaultScheme = new CatalogScheme
                 {
-                    SchemeName = "Eckerd College",
-                    CategoryNames = new ObservableCollection<string>()
+                    SchemeName = EckerdCollegeSchemeName,
+                    Categories = new ObservableCollection<Category>()
                 };
 
-                defaultScheme.CategoryNames.Add("NONE");  // shown as "Unspecified" in database and pull-down lists
-                defaultScheme.CategoryNames.Add("Upper");
-                defaultScheme.CategoryNames.Add("Middle");
-                defaultScheme.CategoryNames.Add("Lower");
-                defaultScheme.CategoryNames.Add("Upper-Middle");
-                defaultScheme.CategoryNames.Add("Upper-Lower");
-                defaultScheme.CategoryNames.Add("Middle-Lower");
-                defaultScheme.CategoryNames.Add("Leading Edge");
-                defaultScheme.CategoryNames.Add("Entire");
-                defaultScheme.CategoryNames.Add("Tip-Nick");
-                defaultScheme.CategoryNames.Add("Missing Tip");
-                defaultScheme.CategoryNames.Add("Extended Tip");
-                defaultScheme.CategoryNames.Add("Peduncle");
-                defaultScheme.CategoryNames.Add("Pergatory");
+                AddEckerdCategoriesToScheme(defaultScheme);
 
                 defaultScheme.IsDefault = true;
+                defaultScheme.IsBuiltIn = true;
 
                 options.CatalogSchemes.Add(defaultScheme);
             }
