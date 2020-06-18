@@ -73,6 +73,7 @@ namespace Darwin.Wpf
 
             var newDatabaseWindow = new NewDatabaseWindow(newDatabaseVM);
             newDatabaseWindow.Owner = this;
+            newDatabaseWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             newDatabaseWindow.ShowDialog();
         }
 
@@ -132,8 +133,9 @@ namespace Darwin.Wpf
         private void OpenDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var openDatabaseDialog = new OpenFileDialog();
+            openDatabaseDialog.Title = "Open Database";
             openDatabaseDialog.Filter = CustomCommands.OpenDatabaseFilter;
-            openDatabaseDialog.InitialDirectory = Options.CurrentUserOptions.CurrentDataPath;
+            openDatabaseDialog.InitialDirectory = Options.CurrentUserOptions.CurrentCatalogPath;
 
             if (openDatabaseDialog.ShowDialog() == true)
             {

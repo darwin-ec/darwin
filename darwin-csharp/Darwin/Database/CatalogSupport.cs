@@ -167,6 +167,44 @@ namespace Darwin.Database
 			}
 		}
 
+		public static List<string> GetExistingDatabaseNames()
+        {
+			if (!Directory.Exists(Options.CurrentUserOptions.CurrentCatalogPath))
+				return null;
+
+			DirectoryInfo dirInfo = new DirectoryInfo(Options.CurrentUserOptions.CurrentCatalogPath);
+
+			var directories = dirInfo.GetFiles();
+
+			List<string> results = new List<string>();
+
+			foreach (var dir in directories)
+			{
+				results.Add(dir.Name);
+			}
+
+			return results;
+		}
+
+		public static List<string> GetExistingSurveyAreas()
+        {
+			if (!Directory.Exists(Options.CurrentUserOptions.CurrentDataPath))
+				return null;
+
+			DirectoryInfo dirInfo = new DirectoryInfo(Options.CurrentUserOptions.CurrentDataPath);
+
+			var directories = dirInfo.GetDirectories();
+
+			List<string> results = new List<string>();
+
+			foreach (var dir in directories)
+            {
+				results.Add(dir.Name);
+            }
+
+			return results;
+        }
+
 		public static string SaveFinz(DatabaseFin fin, string filename, bool forceFilename = true)
         {
 			if (fin == null)

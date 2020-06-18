@@ -139,7 +139,7 @@ namespace Darwin.Wpf.Commands
             typeof(CustomCommands),
             new InputGestureCollection()
             {
-                new KeyGesture(Key.NumPad1, ModifierKeys.Control)
+                new KeyGesture(Key.D1, ModifierKeys.Control)
             }
         );
 

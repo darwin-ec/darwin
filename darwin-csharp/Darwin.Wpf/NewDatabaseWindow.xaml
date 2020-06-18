@@ -3,10 +3,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
+        xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d"
-        Title="NewDatabaseWindow" Height="450" Width="800">
+        Title="New Database" Height="350" Width="500">
+    <Window.Resources>
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <Grid Width="400">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Survey Area:</Label>
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,7,0,0">
+                    <RadioButton GroupName="SurveyAreaType" IsChecked="{Binding Path=NewDatabaseSurveyAreaType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:NewDatabaseSurveyAreaType.Existing}}">
+                        Existing Survey Area
+                    </RadioButton>
+                    <RadioButton GroupName="SurveyAreaType" IsChecked="{Binding Path=NewDatabaseSurveyAreaType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:NewDatabaseSurveyAreaType.New}}">
+                        New Survey Area
+                    </RadioButton>
+                    <StackPanel Orientation="Vertical" Visibility="{Binding ExistingSurveyAreaVisibility}">
+                        <Label>Select an Existing Survey Area:</Label>
+                        <ComboBox x:Name="SurveyAreasListBox" ItemsSource="{Binding Path=ExistingSurveyAreas}" SelectedItem="{Binding Path=SelectedSurveyArea,Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel Visibility="{Binding NewSurveyAreaVisibility}">
+                        <Label>New Survey Area:</Label>
+                        <TextBox x:Name="NewSurveyAreaTextbox" Text="{Binding Path=NewSurveyArea, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
+                <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Catalog Scheme:</Label>
+                <ComboBox Margin="0,4,0,0" Grid.Row="2" Grid.Column="1" x:Name="CatalogSchemeComboBox" DisplayMemberPath="SchemeName" ItemsSource="{Binding Path=CatalogSchemes}" SelectedItem="{Binding Path=SelectedCatalogScheme,Mode=TwoWay}"/>
+
+                <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Database Name:</Label>
+                <TextBox Margin="0,4,0,0" Grid.Row="4" Grid.Column="1" x:Name="DatabaseNameTextbox" Text="{Binding Path=DatabaseName,Mode=TwoWay}"/>
+            </Grid>
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Margin="10" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="OKButton" IsDefault="True" Click="OKButton_Click">OK</Button>
+            <Button x:Name="CancelButton" IsCancel="True" Click="CancelButton_Click" Margin="10,0,0,0">Cancel</Button>
+        </StackPanel>
     </Grid>
 </Window>

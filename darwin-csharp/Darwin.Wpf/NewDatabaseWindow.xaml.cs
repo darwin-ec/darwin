@@ -27,5 +27,15 @@ namespace Darwin.Wpf
             _vm = vm;
             DataContext = _vm;
         }
+
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
