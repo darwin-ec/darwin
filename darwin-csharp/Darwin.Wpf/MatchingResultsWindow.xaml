@@ -109,9 +109,9 @@
                     </ListView.View>
                 </controls:SortableListView>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,0,10">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,5,0,10">
                     <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)" Click="InfoButton_Click">
-                        Info
+                        Hide Info
                     </ToggleButton>
                     <ToggleButton x:Name="HideIDsButton" Margin="10,0,0,0" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
                         Hide IDs

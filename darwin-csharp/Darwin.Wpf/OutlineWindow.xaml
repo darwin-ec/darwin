@@ -80,7 +80,7 @@ Chain Code - Number of Points : <Run Text="{Binding Path=DatabaseFin.FinOutline.
             </TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
-            <Button x:Name="CloseButton" Click="CloseButton_Click">
+            <Button x:Name="CloseButton" IsCancel="True" Click="CloseButton_Click">
                 Close
             </Button>
         </StackPanel>

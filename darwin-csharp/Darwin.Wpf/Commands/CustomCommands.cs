@@ -133,6 +133,16 @@ namespace Darwin.Wpf.Commands
             }
         );
 
+        public static readonly RoutedUICommand CatalogSchemes = new RoutedUICommand(
+            "Catalog Schemes...",
+            "Catalog Schemes",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                new KeyGesture(Key.NumPad1, ModifierKeys.Control)
+            }
+        );
+
         public static readonly RoutedUICommand About = new RoutedUICommand(
             "About Darwin",
             "About Darwin",

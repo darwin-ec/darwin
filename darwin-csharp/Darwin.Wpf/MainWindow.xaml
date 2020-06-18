@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Title="Darwin" Height="550" Width="850">
     <Window.CommandBindings>
-        <CommandBinding Command="commands:CustomCommands.NewDatabase" />
+        <CommandBinding Command="commands:CustomCommands.NewDatabase" CanExecute="NewDatabaseCommand_CanExecute" Executed="NewDatabaseCommand_Executed" />
         
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenTracedFin" CanExecute="OpenTracedFinCommand_CanExecute" Executed="OpenTracedFinCommand_Executed" />
@@ -23,7 +23,7 @@
         <CommandBinding Command="commands:CustomCommands.Restore" />
 
         <CommandBinding Command="commands:CustomCommands.ImportCatalog" />
-        <CommandBinding Command="commands:CustomCommands.ImportFin" />
+        <CommandBinding Command="commands:CustomCommands.ImportFin" CanExecute="ImportFinCommand_CanExecute" Executed="ImportFinCommand_Executed" />
         
         <CommandBinding Command="commands:CustomCommands.ExportCatalog" />
         <CommandBinding Command="commands:CustomCommands.ExportFin" />
@@ -32,6 +32,7 @@
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Options" CanExecute="OptionsCommand_CanExecute" Executed="OptionsCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.CatalogSchemes" CanExecute="CatalogSchemesCommand_CanExecute" Executed="CatalogSchemesCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Documentation" CanExecute="DocumentationCommand_CanExecute" Executed="DocumentationCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
@@ -81,7 +82,7 @@
             </MenuItem>
             <MenuItem Header="Settings">
                 <MenuItem Command="commands:CustomCommands.Options" />
-                <MenuItem Header="Catalog Schemes"/>
+                <MenuItem Command="commands:CustomCommands.CatalogSchemes "/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Command="commands:CustomCommands.Documentation" />

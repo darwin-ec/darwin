@@ -61,6 +61,20 @@ namespace Darwin.Wpf
                 sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
         }
 
+        private void NewDatabaseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void NewDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var newDatabaseVM = new NewDatabaseViewModel();
+
+            var newDatabaseWindow = new NewDatabaseWindow(newDatabaseVM);
+            newDatabaseWindow.Owner = this;
+            newDatabaseWindow.ShowDialog();
+        }
+
         private void OpenImageCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -181,6 +195,34 @@ namespace Darwin.Wpf
             matchingQueueWindow.Show();
         }
 
+        private void ImportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void ImportFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var openDialog = new OpenFileDialog();
+            openDialog.Title = "Select .finz to Import";
+            openDialog.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+            openDialog.Filter = CustomCommands.TracedFinFilter;
+
+            if (openDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var fin = CatalogSupport.OpenFinz(openDialog.FileName);
+                    CatalogSupport.SaveToDatabase(_vm.DarwinDatabase, fin);
+                    RefreshDatabaseAfterAdd();
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                    MessageBox.Show("Sorry, there was a problem importing the finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -204,6 +246,21 @@ namespace Darwin.Wpf
             optionsWindow.Owner = this;
             optionsWindow.ShowDialog();
         }
+
+        private void CatalogSchemesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CatalogSchemesCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var catalogSchemesVM = new CatalogSchemesViewModel();
+
+            var catalogSchemesWindow = new CatalogSchemesWindow(catalogSchemesVM);
+            catalogSchemesWindow.Owner = this;
+            catalogSchemesWindow.ShowDialog();
+        }
+
 
         private void AboutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {

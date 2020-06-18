@@ -3,6 +3,7 @@ using Darwin.Testing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.IO.IsolatedStorage;
@@ -120,8 +121,8 @@ namespace Darwin
             }
         }
 
-        [DefaultValue(0)]
-        public int DefaultCatalogScheme { get; set; } = 0;
+        //[DefaultValue(0)]
+        //public int DefaultCatalogScheme { get; set; } = 0;
         public List<CatalogScheme> CatalogSchemes { get; set; }
 
         [DefaultValue(50)]
@@ -212,7 +213,7 @@ namespace Darwin
             SnakeEnergyLinearity = options.SnakeEnergyLinearity;
             SnakeMaximumIterations = options.SnakeMaximumIterations;
 
-            DefaultCatalogScheme = options.DefaultCatalogScheme;
+            //DefaultCatalogScheme = options.DefaultCatalogScheme;
 
             if (options.CatalogSchemes != null)
                 CatalogSchemes = new List<CatalogScheme>(options.CatalogSchemes);
@@ -351,7 +352,7 @@ namespace Darwin
                 var defaultScheme = new CatalogScheme
                 {
                     SchemeName = "Eckerd College",
-                    CategoryNames = new List<string>()
+                    CategoryNames = new ObservableCollection<string>()
                 };
 
                 defaultScheme.CategoryNames.Add("NONE");  // shown as "Unspecified" in database and pull-down lists
@@ -368,6 +369,8 @@ namespace Darwin
                 defaultScheme.CategoryNames.Add("Extended Tip");
                 defaultScheme.CategoryNames.Add("Peduncle");
                 defaultScheme.CategoryNames.Add("Pergatory");
+
+                defaultScheme.IsDefault = true;
 
                 options.CatalogSchemes.Add(defaultScheme);
             }

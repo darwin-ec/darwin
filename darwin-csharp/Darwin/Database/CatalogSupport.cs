@@ -2,11 +2,13 @@
 using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 
 namespace Darwin.Database
@@ -27,7 +29,7 @@ namespace Darwin.Database
 				//cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
 			}
 
-            DarwinDatabase db = new SQLiteDatabase(databaseFilename, o.CatalogSchemes[o.DefaultCatalogScheme], create);
+            DarwinDatabase db = new SQLiteDatabase(databaseFilename, o.CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault(), create);
 
             return db;
 		}
@@ -200,15 +202,15 @@ namespace Darwin.Database
 
 				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
 
-				CatalogScheme cat = Options.CurrentUserOptions.CatalogSchemes[Options.CurrentUserOptions.DefaultCatalogScheme];
+				CatalogScheme cat = Options.CurrentUserOptions.CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault();
 
 				if (cat == null)
 					cat = new CatalogScheme();
 
 				if (cat.CategoryNames == null)
-					cat.CategoryNames = new List<string>();
+					cat.CategoryNames = new ObservableCollection<string>();
 
-				if (!cat.CategoryNames.Exists(c => c != null && c.ToUpper() == fin.DamageCategory.ToUpper()))
+				if (!cat.CategoryNames.ToList().Exists(c => c != null && c.ToUpper() == fin.DamageCategory.ToUpper()))
 				{
 					cat.CategoryNames.Add(fin.DamageCategory);
 				}
