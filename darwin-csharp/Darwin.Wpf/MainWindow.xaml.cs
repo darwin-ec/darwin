@@ -21,6 +21,7 @@ using Darwin.Collections;
 using System.ComponentModel;
 using Darwin.Utilities;
 using System.Diagnostics;
+using System.IO;
 
 namespace Darwin.Wpf
 {
@@ -219,6 +220,33 @@ namespace Darwin.Wpf
                 {
                     Trace.WriteLine(ex);
                     MessageBox.Show("Sorry, there was a problem importing the finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void ExportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void ExportFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (_vm.SelectedFin == null)
+            {
+                MessageBox.Show("You must select an item in the database first.", "No Fin Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+                dlg.Title = "Export finz file for " + _vm.SelectedFin?.IDCode;
+                dlg.FileName = _vm.SelectedFin?.IDCode;
+                dlg.DefaultExt = ".finz";
+                dlg.Filter = CustomCommands.TracedFinFilter;
+
+                if (dlg.ShowDialog() == true)
+                {
+                    _vm.SaveSelectedItemAsFinz(dlg.FileName);
                 }
             }
         }

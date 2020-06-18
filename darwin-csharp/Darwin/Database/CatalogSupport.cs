@@ -211,9 +211,7 @@ namespace Darwin.Database
 					cat.Categories = new ObservableCollection<Category>();
 
 				if (!cat.Categories.ToList().Exists(c => c != null && c.Name?.ToUpper() == fin.DamageCategory.ToUpper()))
-				{
 					cat.Categories.Add(new Category(fin.DamageCategory));
-				}
 
 				SQLiteDatabase db = new SQLiteDatabase(dbFilename, cat, true);
 				db.Add(fin);
@@ -228,6 +226,8 @@ namespace Darwin.Database
 				string realFilename = filename;
 				if (!forceFilename)
 					realFilename = FileHelper.FindUniqueFilename(realFilename);
+				else if (File.Exists(realFilename))
+					File.Delete(realFilename);
 
 				ZipFile.CreateFromDirectory(fullDirectoryName, realFilename);
 

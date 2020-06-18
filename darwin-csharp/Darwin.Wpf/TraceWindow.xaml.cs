@@ -1674,7 +1674,7 @@ namespace Darwin.Wpf
         {
 			if (_vm.Contour == null && _vm.Outline == null)
 			{
-				MessageBox.Show("You must trace your image before it can be saved.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
+				MessageBox.Show("You must trace your image before it can be saved.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Warning);
 			}
 			else
 			{
@@ -1704,11 +1704,11 @@ namespace Darwin.Wpf
 			{
 				if (_vm.Contour == null && _vm.Outline == null)
 				{
-					MessageBox.Show(NoTraceErrorMessageDatabase, "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(NoTraceErrorMessageDatabase, "Not Traced", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 				else if (_vm.DatabaseFin == null || string.IsNullOrEmpty(_vm.DatabaseFin.IDCode))
 				{
-					MessageBox.Show(NoIDErrorMessage, "No ID", MessageBoxButton.OK, MessageBoxImage.Error);
+					MessageBox.Show(NoIDErrorMessage, "No ID", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 				else if (string.IsNullOrEmpty(_vm.DatabaseFin.DamageCategory) || _vm.Categories.Count < 1 || _vm.DatabaseFin.DamageCategory.ToUpper() == _vm.Categories[0]?.name?.ToUpper())
 				{

@@ -100,6 +100,62 @@ namespace Darwin.Wpf.ViewModel
             _fins = new ObservableNotifiableCollection<DatabaseFin>();
         }
 
+        public void SaveSelectedItemAsFinz(string filename)
+        {
+            if (SelectedFin == null)
+                return;
+
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename));
+
+            var finCopy = PrepSelectedFinForSave();
+            CatalogSupport.SaveFinz(finCopy, filename, true);
+        }
+
+        private DatabaseFin PrepSelectedFinForSave()
+        {
+            DatabaseFin finCopy = null;
+            if (SelectedFin != null)
+            {
+                finCopy = new DatabaseFin(SelectedFin);
+                // TODO: Cache images?
+                if (!string.IsNullOrEmpty(finCopy.ImageFilename))
+                {
+                    CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy);
+
+                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.ImageFilename);
+
+                    if (File.Exists(fullImageFilename))
+                    {
+                        var img = System.Drawing.Image.FromFile(fullImageFilename);
+
+                        var bitmap = new Bitmap(img);
+                        // TODO: Hack for HiDPI -- this should be more intelligent.
+                        bitmap.SetResolution(96, 96);
+
+                        finCopy.OriginalFinImage = new Bitmap(bitmap);
+
+                        // TODO: Refactor this so we're not doing it every time, which is a little crazy
+                        if (finCopy.ImageMods != null && finCopy.ImageMods.Count > 0)
+                        {
+                            bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, finCopy.ImageMods);
+                            // TODO: HiDPI hack
+                            bitmap.SetResolution(96, 96);
+                        }
+
+                        finCopy.FinImage = bitmap;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(finCopy.OriginalImageFilename) && !File.Exists(finCopy.OriginalImageFilename))
+                {
+                    finCopy.OriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.OriginalImageFilename);
+                }
+            }
+
+            return finCopy;
+        }
+
         private void LoadSelectedFin()
         {
             if (SelectedFin != null)
