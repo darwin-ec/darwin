@@ -116,7 +116,8 @@ namespace Darwin.Wpf.ViewModel
         public MatchingQueueViewModel()
         {
             MatchingQueue = new MatchingQueue(
-                CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, Options.CurrentUserOptions, false),
+                CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName,
+                Options.CurrentUserOptions.DefaultCatalogScheme, false),
                 RegistrationMethodType.TrimOptimalTip,
                 RangeOfPointsType.AllPoints);
         }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -142,6 +143,40 @@ namespace Darwin.Wpf.ViewModel
                 ExistingSurveyAreas = new ObservableCollection<string>(existingSurveyAreas);
                 SelectedSurveyArea = ExistingSurveyAreas.FirstOrDefault();
             }
+        }
+
+        public string CreateNewDatabase()
+        {
+            string surveyArea;
+
+            if (NewDatabaseSurveyAreaType == NewDatabaseSurveyAreaType.Existing)
+                surveyArea = SelectedSurveyArea;
+            else
+                surveyArea = NewSurveyArea;
+
+            if (string.IsNullOrEmpty(surveyArea))
+            {
+                if (NewDatabaseSurveyAreaType == NewDatabaseSurveyAreaType.Existing)
+                    throw new Exception("Please select an existing survey area.");
+                else
+                    throw new Exception("Please enter a survey area name.");
+            }
+
+            if (SelectedCatalogScheme == null)
+                throw new Exception("Please select a catalog scheme.");
+
+            if (string.IsNullOrEmpty(DatabaseName))
+                throw new Exception("Please enter a database name.");
+
+
+            string dbName = DatabaseName;
+
+            if (!dbName.ToLower().EndsWith(".db"))
+                dbName += ".db";
+
+            var db = CatalogSupport.OpenDatabase(dbName, SelectedCatalogScheme, true, surveyArea);
+
+            return db.Filename;
         }
 
         private void RaisePropertyChanged(string propertyName)

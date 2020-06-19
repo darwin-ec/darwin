@@ -138,14 +138,21 @@ namespace Darwin.Wpf
             openDatabaseDialog.InitialDirectory = Options.CurrentUserOptions.CurrentCatalogPath;
 
             if (openDatabaseDialog.ShowDialog() == true)
-            {
                 OpenDatabase(openDatabaseDialog.FileName, true);
-            }
         }
 
-        private void OpenDatabase(string filename, bool saveOptions = false)
+        public void OpenDatabase(string filename, bool saveOptions = false)
         {
-            var db = CatalogSupport.OpenDatabase(filename, Options.CurrentUserOptions, false);
+            var db = CatalogSupport.OpenDatabase(filename, Options.CurrentUserOptions.DefaultCatalogScheme, false);
+
+            if (saveOptions)
+            {
+                // TODO: Some more logic around this
+                Options.CurrentUserOptions.SetLastDatabaseFilename(filename);
+
+                Options.CurrentUserOptions.Save();
+            }
+
             _vm.DarwinDatabase = db;
             // TODO: The thumbnail part is temporary
             // Need to store the thumbnail images more nicely
@@ -157,14 +164,8 @@ namespace Darwin.Wpf
 
             if (_vm.Fins?.Count > 0)
                 _vm.SelectedFin = _vm.Fins[0];
-
-            if (saveOptions)
-            {
-                // TODO: Some more logic around this
-                Options.CurrentUserOptions.SetLastDatabaseFilename(filename);
-
-                Options.CurrentUserOptions.Save();
-            }
+            else
+                _vm.SelectedFin = null;
         }
 
         public void RefreshDatabaseAfterAdd()

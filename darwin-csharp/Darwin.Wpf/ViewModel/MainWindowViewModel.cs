@@ -158,7 +158,13 @@ namespace Darwin.Wpf.ViewModel
 
         private void LoadSelectedFin()
         {
-            if (SelectedFin != null)
+            if (SelectedFin == null)
+            {
+                SelectedImageSource = null;
+                SelectedOriginalImageSource = null;
+                SelectedContour = null;
+            }
+            else
             {
                 // TODO: Cache images?
                 if (!string.IsNullOrEmpty(SelectedFin.ImageFilename))

@@ -9,7 +9,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="Darwin" Height="550" Width="850">
+        Title="Darwin" Height="750" Width="1050">
     <Window.CommandBindings>
         <CommandBinding Command="commands:CustomCommands.NewDatabase" CanExecute="NewDatabaseCommand_CanExecute" Executed="NewDatabaseCommand_Executed" />
         
@@ -165,9 +165,9 @@
 
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
+                    <RowDefinition />
                     <RowDefinition Height="5" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="235" />
                 </Grid.RowDefinitions>
 
                 <TabControl Grid.Row="0">

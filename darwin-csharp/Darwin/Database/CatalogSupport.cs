@@ -17,19 +17,22 @@ namespace Darwin.Database
     {
 		public const string FinzDatabaseFilename = "database.db";
 
-        public static DarwinDatabase OpenDatabase(string databaseFilename, Options o, bool create, string area = "default")
+        public static DarwinDatabase OpenDatabase(string databaseFilename,
+			CatalogScheme catalogScheme, bool create, string area = "default")
         {
-			CatalogScheme cat = new CatalogScheme();
-            if (create)
+			string filename = databaseFilename;
+			if (create)
 			{
-				RebuildFolders(o.CurrentDataPath, area);
-				//// should ONLY end up here with IFF we are NOT converting an old database
-				//int id = o.CurrentDefaultCatalogScheme;
-				//cat.SchemeName = o.DefinedCatalogSchemeName[id];
-				//cat.CategoryNames = o.DefinedCatalogCategoryName[id]; // this is a vector
+				filename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, area, Options.CatalogFolderName, filename);
+
+				if (File.Exists(filename))
+					throw new Exception("The database " + filename + Environment.NewLine +
+						"already exists.  Please pick another name.");
+
+				RebuildFolders(Options.CurrentUserOptions.CurrentDataPath, area);
 			}
 
-            DarwinDatabase db = new SQLiteDatabase(databaseFilename, o.CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault(), create);
+            DarwinDatabase db = new SQLiteDatabase(filename, catalogScheme, create);
 
             return db;
 		}
@@ -87,7 +90,7 @@ namespace Darwin.Database
 				if (!File.Exists(dbFilename))
 					return null;
 
-                var db = OpenDatabase(dbFilename, Options.CurrentUserOptions, false);
+                var db = OpenDatabase(dbFilename, Options.CurrentUserOptions.DefaultCatalogScheme, false);
 
                 // First and only fin
                 var fin = db.AllFins[0];
@@ -345,17 +348,17 @@ namespace Darwin.Database
 			database.Add(databaseFin);
         }
 
-		public static void RebuildFolders(string home, string area)
+		public static void RebuildFolders(string currentDataPath, string area)
 		{
-			if (string.IsNullOrEmpty(home))
-				throw new ArgumentNullException(nameof(home));
+			if (string.IsNullOrEmpty(currentDataPath))
+				throw new ArgumentNullException(nameof(currentDataPath));
 
 			if (string.IsNullOrEmpty(area))
 				throw new ArgumentNullException(nameof(area));
 
 			Trace.WriteLine("Creating folders...");
 
-			var surveyAreasPath = Path.Combine(new string[] { home, Options.SurveyAreasFolderName, area });
+			var surveyAreasPath = Path.Combine(new string[] { currentDataPath, area });
 
 			// Note that CreateDirectory won't do anything if the path already exists, so no need
 			// to check first.

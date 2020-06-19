@@ -126,6 +126,17 @@ namespace Darwin
         //public int DefaultCatalogScheme { get; set; } = 0;
         public List<CatalogScheme> CatalogSchemes { get; set; }
 
+        public CatalogScheme DefaultCatalogScheme
+        {
+            get
+            {
+                if (CatalogSchemes == null)
+                    return null;
+
+                return CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault();
+            }
+        }
+
         [DefaultValue(50)]
         public int SnakeMaximumIterations { get; set; } = 50;
         [DefaultValue(9.0f)]
@@ -239,6 +250,25 @@ namespace Darwin
             // time they're accessed.
             if (reloadOptions)
                 _currentUserOptions = null;
+        }
+
+        public static string ExtractDataPathFromDBFilename(string filename)
+        {
+            if (filename == null)
+                throw new ArgumentNullException(nameof(filename));
+
+            // We're going to walk back up two levels
+            var dirInfo = new DirectoryInfo(Path.GetDirectoryName(filename));
+
+            // Fall back if there's a problem getting the parent
+            if (dirInfo == null || dirInfo.Parent == null)
+                return Path.GetDirectoryName(filename);
+
+            // Fallback one level up
+            if (dirInfo.Parent.Parent == null)
+                return dirInfo.Parent.FullName;
+
+            return dirInfo.Parent.Parent.FullName;
         }
 
         public void SetLastDatabaseFilename(string filename)
@@ -368,7 +398,9 @@ namespace Darwin
             if (options.CatalogSchemes == null)
                 options.CatalogSchemes = new List<CatalogScheme>();
 
-            var eckerdScheme = options.CatalogSchemes.Where(cs => cs.SchemeName == EckerdCollegeSchemeName).FirstOrDefault();
+            var eckerdScheme = options.CatalogSchemes
+                .Where(cs => cs.SchemeName == EckerdCollegeSchemeName)
+                .FirstOrDefault();
 
             if (eckerdScheme != null)
             {

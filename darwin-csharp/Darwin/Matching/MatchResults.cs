@@ -249,7 +249,7 @@ namespace Darwin.Matching
             result.TracedFinFile = lines[1].Substring(lines[1].IndexOf(":") + 1).Trim();
             result.DatabaseFile = lines[2].Substring(lines[2].IndexOf(":") + 1).Trim();
 
-            db = CatalogSupport.OpenDatabase(result.DatabaseFile, Options.CurrentUserOptions, false);
+            db = CatalogSupport.OpenDatabase(result.DatabaseFile, Options.CurrentUserOptions.DefaultCatalogScheme, false);
 
             //***2.2 - if we can, determine if database path has just changed drive letter
             // or some part of path that is a prefix to the SurveyArea.  If the database

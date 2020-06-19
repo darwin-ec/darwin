@@ -30,12 +30,34 @@ namespace Darwin.Wpf
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                var fullDatabaseName = _vm.CreateNewDatabase();
 
+                MessageBox.Show("Your database has been created." + Environment.NewLine +
+                    "It will be loaded now.", "Database Created", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+
+                if (mainWindow != null)
+                    mainWindow.OpenDatabase(fullDatabaseName, true);
+
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error Creating Database", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewSurveyAreaTextbox.Focus();
         }
     }
 }
