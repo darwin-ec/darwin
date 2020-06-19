@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
@@ -173,20 +174,32 @@ namespace Darwin
                 IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
                 // TODO: Should be some error handling in here if the file isn't the right format/etc.
-                if (isoStore.FileExists(OptionsFilename))
-                {
-                    using (IsolatedStorageFileStream isoStream = new IsolatedStorageFileStream(OptionsFilename, FileMode.Open, isoStore))
-                    {
-                        var serializer = new JsonSerializer();
 
-                        using (StreamReader reader = new StreamReader(isoStream))
+                try
+                {
+                    if (isoStore.FileExists(OptionsFilename))
+                    {
+                        using (IsolatedStorageFileStream isoStream = new IsolatedStorageFileStream(OptionsFilename, FileMode.Open, isoStore))
                         {
-                            using (var jsonTextReader = new JsonTextReader(reader))
+                            var serializer = new JsonSerializer();
+
+                            using (StreamReader reader = new StreamReader(isoStream))
                             {
-                                _currentUserOptions = serializer.Deserialize<Options>(jsonTextReader);
+                                using (var jsonTextReader = new JsonTextReader(reader))
+                                {
+                                    _currentUserOptions = serializer.Deserialize<Options>(jsonTextReader);
+                                }
                             }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+
+                    // Something went wrong, let's delete the file
+                    if (isoStore.FileExists(OptionsFilename))
+                        isoStore.DeleteFile(OptionsFilename);
                 }
 
                 if (_currentUserOptions == null)
