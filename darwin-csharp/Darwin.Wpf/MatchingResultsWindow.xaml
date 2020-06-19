@@ -55,11 +55,6 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
                     <ListView.View>
                         <GridView x:Name="GridView">
                             <GridViewColumn DisplayMemberBinding="{Binding Rank}" Width="40">

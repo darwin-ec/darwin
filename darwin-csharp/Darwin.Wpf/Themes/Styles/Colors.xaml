@@ -4,6 +4,10 @@
     <Color x:Key="ControlBackgroundColor">#E1E1E1</Color>
     <Color x:Key="BorderColor">#ADADAD</Color>
     <Color x:Key="BackgroundColor">#F6F6F6</Color>
+    <Color x:Key="SelectedRowColor">#E5F3FF</Color>
+    <Color x:Key="SelectedRowBorderColor">#99D1FF</Color>
+    <Color x:Key="HoverRowColor">#E5F3FF</Color>
+
     <SolidColorBrush x:Key="LightBackground" Color="{StaticResource BackgroundColor}"/>
 
     <!-- Stock color #FFDDDDDD -->
@@ -20,24 +24,8 @@
 
     <SolidColorBrush x:Key="ToggleButton.Pressed.Border" Color="#FF245A83"/>
 
-    <Color x:Key="ForegroundColor">#444444</Color>
-    <Color x:Key="Disabled.BackgroundColor">#FFF4F4F4</Color>
-    <Color x:Key="Disabled.BackgroundColorLight">#FFFFFF</Color>
-    <Color x:Key="Disabled.BorderColor">#FFBCBCBC</Color>
-    <Color x:Key="Disabled.ForegroundColor">#ABABAB</Color>
-    <Color x:Key="Disabled.GlyphColor">#C6C6C6</Color>
-    
-    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}"/>
-    <!--ListBox-->
-    <SolidColorBrush x:Key="ListBox.Static.Background" Color="{StaticResource BackgroundColor}"/>
-    <SolidColorBrush x:Key="ListBox.Static.Border" Color="{StaticResource BorderColor}"/>
-    <SolidColorBrush x:Key="ListBox.Disabled.Background" Color="{StaticResource Disabled.BackgroundColor}"/>
-    <SolidColorBrush x:Key="ListBox.Disabled.Border" Color="{StaticResource Disabled.BorderColor}"/>
-    <!--ListBoxItemStyle-->
-    <SolidColorBrush x:Key="Item.MouseOver.Background" Color="{DynamicResource MouseOver.BackgroundColor}"/>
-    <SolidColorBrush x:Key="Item.MouseOver.Border" Color="{DynamicResource MouseOver.BackgroundColor}"/>
-    <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="{DynamicResource Pressed.BackgroundColor}"/>
-    <SolidColorBrush x:Key="Item.SelectedInactive.Border" Color="{DynamicResource Pressed.BackgroundColor}"/>
-    <SolidColorBrush x:Key="Item.SelectedActive.Background" Color="{DynamicResource Pressed.BackgroundColor}"/>
-    <SolidColorBrush x:Key="Item.SelectedActive.Border" Color="{DynamicResource Pressed.BackgroundColor}"/>
+    <!-- ListView -->
+    <SolidColorBrush x:Key="ListViewItem.SelectedRow" Color="{StaticResource SelectedRowColor}"/>
+    <SolidColorBrush x:Key="ListViewItem.SelectedRow.Border" Color="{StaticResource SelectedRowBorderColor}"/>
+    <SolidColorBrush x:Key="ListViewItem.HoverRow" Color="{StaticResource HoverRowColor}"/>
 </ResourceDictionary>

@@ -8,7 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Styles/DarwinStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
+
             <FontFamily x:Key="FontAwesome">/Resources/Fonts/Font Awesome 5 Free-Regular-400.otf#Font Awesome 5 Free Regular</FontFamily>
             <FontFamily x:Key="FontAwesomeSolid">/Resources/Fonts/Font Awesome 5 Free-Solid-900.otf#Font Awesome 5 Free Solid</FontFamily>
             <FontFamily x:Key="FontAwesomeBrands">/Resources/Fonts/Font Awesome 5 Brands-Regular-400.otf#Font Awesome 5 Free Brands Regular</FontFamily>
@@ -27,6 +27,5 @@
                 </DockPanel>
             </DataTemplate>
         </ResourceDictionary>
-
     </Application.Resources>
 </Application>
