@@ -6,7 +6,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:local="clr-namespace:Darwin.Wpf"
-        mc:Ignorable="d" ResizeMode="NoResize"
+        mc:Ignorable="d" ResizeMode="NoResize" Background="{StaticResource LightBackground}"
         Title="New Database" Height="350" Width="500">
     <Window.Resources>
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
@@ -56,7 +56,7 @@
         </ScrollViewer>
         <StackPanel Grid.Row="1" Margin="10" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="OKButton" IsDefault="True" Click="OKButton_Click">OK</Button>
-            <Button x:Name="CancelButton" IsCancel="True" Click="CancelButton_Click" Margin="10,0,0,0">Cancel</Button>
+            <Button x:Name="CancelButton" IsCancel="True" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

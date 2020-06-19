@@ -7,8 +7,8 @@
         xmlns:matching="clr-namespace:Darwin.Matching;assembly=Darwin"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
-        mc:Ignorable="d"
-        Title="Matching" Height="410" Width="800">
+        mc:Ignorable="d" Background="{StaticResource LightBackground}" ResizeMode="NoResize"
+        Title="Matching" Height="428" Width="800">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Crimson" />
@@ -124,10 +124,10 @@
             </StackPanel>
         </Grid>
         <ProgressBar Grid.Row="1" Height="20" Minimum="0" Maximum="100" Value="{Binding Path=MatchProgressPercent}" Visibility="{Binding ProgressBarVisibility}" Margin="10,10,10,10"/>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="StartButton" IsDefault="True" Click="StartButton_Click" IsEnabled="{Binding Path=MatchRunning, Converter={StaticResource InverseBooleanConverter}}" Margin="10,0,10,0">Start</Button>
-            <Button x:Name="PauseButton" IsEnabled="{Binding Path=MatchRunning}" Click="PauseButton_Click" Margin="0,0,10,0">Pause</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click" Margin="0,0,20,0">Cancel</Button>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="15">
+            <Button x:Name="StartButton" IsDefault="True" Click="StartButton_Click" IsEnabled="{Binding Path=MatchRunning, Converter={StaticResource InverseBooleanConverter}}">Start</Button>
+            <Button x:Name="PauseButton" IsEnabled="{Binding Path=MatchRunning}" Click="PauseButton_Click">Pause</Button>
+            <Button x:Name="CancelButton" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

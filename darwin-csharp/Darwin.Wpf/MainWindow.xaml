@@ -97,13 +97,13 @@
                     <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Margin="5,0,0,0">
+            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
                     <TextBlock HorizontalAlignment="Center">Open Traced Fin</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Margin="5,0,0,0">
+            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
                     <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
@@ -167,7 +167,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="5" />
-                    <RowDefinition Height="235" />
+                    <RowDefinition Height="245" />
                 </Grid.RowDefinitions>
 
                 <TabControl Grid.Row="0">
@@ -212,7 +212,7 @@
 
                         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2">
                             <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}">Save Changes</Button>
-                            <Button x:Name="DeleteFin" Margin="10,0,0,0" Click="DeleteFin_Click">Delete</Button>
+                            <Button x:Name="DeleteFin" Click="DeleteFin_Click">Delete</Button>
                         </StackPanel>
                         <Label Grid.Row="1" Grid.Column="0">ID Code:</Label>
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />

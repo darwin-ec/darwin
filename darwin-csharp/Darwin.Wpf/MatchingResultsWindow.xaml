@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
-        mc:Ignorable="d"
+        mc:Ignorable="d" Background="{StaticResource LightBackground}"
         Title="Matching Results" Height="750" Width="900">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
@@ -113,16 +113,16 @@
                     <ToggleButton x:Name="InfoButton" IsChecked="{Binding Path=ShowInfoColumns, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Show/hide information fields (date, location, category, error)" Click="InfoButton_Click">
                         Hide Info
                     </ToggleButton>
-                    <ToggleButton x:Name="HideIDsButton" Margin="10,0,0,0" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
+                    <ToggleButton x:Name="HideIDsButton" IsChecked="{Binding Path=ShowIDColumn, Converter={StaticResource InverseBooleanConverter}}" ToolTip="Click here to show/hide ID codes" Click="HideIDsButton_Click">
                         Hide IDs
                     </ToggleButton>
-                    <Button x:Name="PreviousButton" Margin="10,0,0,0" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
+                    <Button x:Name="PreviousButton" Click="PreviousButton_Click" IsEnabled="{Binding PreviousEnabled}" ToolTip="Cycle to the previous match result">
                         Previous
                     </Button>
-                    <Button x:Name="NextButton" Margin="10,0,0,0" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
+                    <Button x:Name="NextButton" Click="NextButton_Click" IsEnabled="{Binding NextEnabled}" ToolTip="Cycle to the next match result">
                         Next
                     </Button>
-                    <ToggleButton x:Name="AutoScrollButton" Margin="10,0,0,0" IsChecked="{Binding Path=AutoScroll}" Click="AutoScrollButton_Click">
+                    <ToggleButton x:Name="AutoScrollButton" IsChecked="{Binding Path=AutoScroll}" Click="AutoScrollButton_Click">
                         <ToggleButton.ToolTip>
                             <TextBlock>
                                     Start or stop an automatically scrolling<LineBreak/>
@@ -194,14 +194,14 @@
                 <ToggleButton x:Name="UnknownShowOriginalImage" IsChecked="{Binding UnknownShowOriginalImage}">
                     Show Original Image
                 </ToggleButton>
-                <Button Margin="10,0,0,0" x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
+                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
                     Match Selected Fin Orientation
                 </Button>
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,0,10">
-            <Button x:Name="MatchesSelectedFinButton" Margin="10,0,0,0" Click="MatchesSelectedFinButton_Click">
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="15">
+            <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
                             The selected fin matches the unknown fin.  Add the<LineBreak/>
@@ -211,7 +211,7 @@
                 </Button.ToolTip>
                 Matches Selected Fin
             </Button>
-            <Button x:Name="NoMatchNewFinButton" Margin="10,0,0,0" Click="NoMatchNewFinButton_Click">
+            <Button x:Name="NoMatchNewFinButton" Click="NoMatchNewFinButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
                             No fins match the unknown fin.  Add this unknown dolphin<LineBreak/>
@@ -221,7 +221,7 @@
                 </Button.ToolTip>
                 No Match - New Fin
             </Button>
-            <Button x:Name="ReturnToMatchingDialogButton" Margin="10,0,0,0" Click="ReturnToMatchingDialogButton_Click">
+            <Button x:Name="ReturnToMatchingDialogButton" Click="ReturnToMatchingDialogButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
                             Return to the Matching window, so another<LineBreak/>
@@ -231,7 +231,7 @@
                 </Button.ToolTip>
                 Return to Matching Options
             </Button>
-            <Button x:Name="SaveMatchResultsButton" Margin="10,0,0,0" Click="SaveMatchResultsButton_Click">
+            <Button x:Name="SaveMatchResultsButton" Click="SaveMatchResultsButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
                             Save the match results for future review or match confirmation
@@ -239,7 +239,7 @@
                 </Button.ToolTip>
                 Save Match Results
             </Button>
-            <Button x:Name="DoneButton" Margin="10,0,10,0" Click="DoneButton_Click">
+            <Button x:Name="DoneButton" Click="DoneButton_Click">
                 Close and Discard
             </Button>
         </StackPanel>

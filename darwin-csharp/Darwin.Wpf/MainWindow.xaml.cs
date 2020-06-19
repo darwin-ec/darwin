@@ -105,6 +105,8 @@ namespace Darwin.Wpf
         {
             var openDialog = new OpenFileDialog();
             openDialog.Filter = CustomCommands.TracedFinFilter;
+            openDialog.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+
             if (openDialog.ShowDialog() == true)
             {
                 var fin = CatalogSupport.OpenFinz(openDialog.FileName);
