@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_726010B15B3544D09504EE8BA848C25F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8530F755F9C74E6DAC7F2840DBA1A5E0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -33,7 +39,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\Darwin.Wpf.Setup.msi"
+        "OutputFilename" = "8:Debug\\Darwin Setup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -65,7 +71,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\Darwin.Wpf.Setup.msi"
+        "OutputFilename" = "8:Release\\Darwin Setup.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -82,6 +88,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -114,6 +128,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_726010B15B3544D09504EE8BA848C25F"
+            {
+            "SourcePath" = "8:..\\Darwin.Wpf\\darwinfile.ico"
+            "TargetName" = "8:darwinfile.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_574E4EFC9FA04C0793C3E9E618C5846C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8530F755F9C74E6DAC7F2840DBA1A5E0"
             {
             "SourcePath" = "8:..\\Darwin.Wpf\\darwin.ico"
@@ -137,6 +171,29 @@
         }
         "FileType"
         {
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_9B43CDC73FFC4753A3CACFAB87FF1523"
+            {
+            "Name" = "8:Finz"
+            "Description" = "8:Darwin Finz Image Trace"
+            "Extensions" = "8:.finz"
+            "MIME" = "8:"
+            "Icon" = "8:_726010B15B3544D09504EE8BA848C25F"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_C74B68B49C5C488F814BFEA5A47D65CE"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_54AF03BDA3FA47479E3341AD6BE0D833"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
         }
         "Folder"
         {
