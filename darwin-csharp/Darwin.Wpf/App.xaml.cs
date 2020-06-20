@@ -93,5 +93,16 @@ namespace Darwin.Wpf
                 StartupUri = new Uri("/Darwin.Wpf;component/MainWindow.xaml", UriKind.Relative);
             }
         }
+
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Trace.WriteLine(e);
+            MessageBox.Show("Sorry, something went wrong." + Environment.NewLine +
+                "Please try again or contact support.",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            e.Handled = true;
+        }
     }
 }
