@@ -486,10 +486,20 @@ namespace Darwin
 			if (Points == null)
 				return;
 
-			foreach (var p in Points)
+			if (Scale == 1.0)
+			{
+				foreach (var p in Points)
+				{
+					p.X = Math.Abs(p.X - imageWidth);
+				}
+			}
+			else
             {
-				p.X = Math.Abs(p.X - imageWidth);
-            }
+				foreach (var p in Points)
+				{
+					p.X = (int)(Math.Abs(p.X / Scale - imageWidth) * Scale);
+				}
+			}
         }
 
 		public void Crop(int xMin, int yMin, int xMax, int yMax)
@@ -499,14 +509,17 @@ namespace Darwin
 
 			foreach (var p in Points)
 			{
-				if (p.X > xMax || p.Y > yMax || p.X < xMin || p.Y < yMin)
+				double xScaled = p.X / Scale;
+				double yScaled = p.Y / Scale;
+
+				if (xScaled > xMax || yScaled > yMax || xScaled < xMin || yScaled < yMin)
                 {
 					p.Type = PointType.Flagged;
                 }
 				else
                 {
-					p.X = p.X - xMin;
-					p.Y = p.Y - yMin;
+					p.X = (int)((xScaled - xMin) * Scale);
+					p.Y = (int)((yScaled - yMin) * Scale);
                 }
 			}
 

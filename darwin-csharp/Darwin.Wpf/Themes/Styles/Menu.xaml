@@ -8,7 +8,7 @@
 
     <!-- Stock was FFF0F0F0 -->
     <SolidColorBrush x:Key="Menu.Static.Background" Color="{StaticResource BackgroundColor}"/>
-    <Style x:Key="MenuStyle1" TargetType="{x:Type Menu}">
+    <Style TargetType="{x:Type Menu}">
         <Setter Property="Background" Value="{StaticResource Menu.Static.Background}"/>
         <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
         <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>

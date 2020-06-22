@@ -3,6 +3,7 @@
 
     <Color x:Key="ControlBackgroundColor">#E1E1E1</Color>
     <Color x:Key="BorderColor">#ADADAD</Color>
+    <Color x:Key="LightBorderColor">#F6F6F6F6</Color>
     <Color x:Key="BackgroundColor">#F6F6F6</Color>
     <Color x:Key="SelectedRowColor">#E5F3FF</Color>
     <Color x:Key="SelectedRowBorderColor">#99D1FF</Color>
@@ -14,6 +15,7 @@
     <SolidColorBrush x:Key="Button.Static.Background" Color="{StaticResource ControlBackgroundColor}"/>
     <!-- Stock color #FF707070 -->
     <SolidColorBrush x:Key="Button.Static.Border" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="Button.Static.LightBorder" Color="{StaticResource LightBorderColor}"/>
     <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
     <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
     <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>

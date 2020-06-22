@@ -90,20 +90,20 @@
             </MenuItem>
         </Menu>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Background="{StaticResource LightBackground}">
+            <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click" Style="{StaticResource ToolbarButton}">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/open_image.png" Height="23"  />
                     <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click">
+            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Style="{StaticResource ToolbarButton}">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
-                    <TextBlock HorizontalAlignment="Center">Open Traced Fin</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">Open Trace</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click">
+            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Style="{StaticResource ToolbarButton}">
                 <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
                     <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
