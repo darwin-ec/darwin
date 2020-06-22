@@ -161,6 +161,9 @@ namespace Darwin
             if (BitsPerPixel != 8 && BitsPerPixel != 24 && BitsPerPixel != 32)
                 throw new NotImplementedException("Unsupported color depth");
 
+            Width = _bitmap.Width;
+            Height = _bitmap.Height;
+
             // Lock bitmap and return bitmap data
             _bitmapData = _bitmap.LockBits(new Rectangle(0, 0, Width, Height),
                 ImageLockMode.ReadWrite,
@@ -187,6 +190,7 @@ namespace Darwin
 
             _bitmap.UnlockBits(_bitmapData);
 
+            _pixelData = null;
             IsLocked = false;
         }
     }

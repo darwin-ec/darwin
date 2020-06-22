@@ -29,7 +29,7 @@ namespace Darwin.Helpers
             int newWidth = Convert.ToInt32(Math.Round(bmp.Width * scale));
             int newHeight = Convert.ToInt32(Math.Round(bmp.Height * scale));
 
-            return ResizeBitmap(bmp, newHeight, newWidth, InterpolationMode.NearestNeighbor);
+            return ResizeBitmap(bmp, newWidth, newHeight, InterpolationMode.NearestNeighbor);
         }
 
         public static Bitmap ResizeBitmap(Bitmap bmp, int newWidth, int newHeight, InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic)

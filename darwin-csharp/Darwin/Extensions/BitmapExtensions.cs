@@ -10,6 +10,14 @@ namespace Darwin.Extensions
 {
     public static class BitmapExtensions
     {
+        public static Bitmap ConvertTo24bppRgb(Bitmap bmp)
+        {
+            var result = new Bitmap(bmp.Width, bmp.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            using (var gr = Graphics.FromImage(result))
+                gr.DrawImage(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            return result;
+        }
+
         public static Bitmap AlterBrightness(this Bitmap bitmap, int brightness)
         {
             float brightnessScaled = (float)brightness / 255.0f;
