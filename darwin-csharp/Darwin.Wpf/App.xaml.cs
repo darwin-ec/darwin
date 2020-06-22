@@ -96,7 +96,7 @@ namespace Darwin.Wpf
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Trace.WriteLine(e);
+            Trace.WriteLine(e.Exception);
             MessageBox.Show("Sorry, something went wrong." + Environment.NewLine +
                 "Please try again or contact support.",
                 "Error",

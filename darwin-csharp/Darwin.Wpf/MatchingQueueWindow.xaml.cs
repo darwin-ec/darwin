@@ -83,7 +83,7 @@ namespace Darwin.Wpf
                 // TODO: Better error messages?
                 if (fin == null)
                 {
-                    MessageBox.Show("Problem opening finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(this, "Problem opening finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace Darwin.Wpf
             {
                 var summary = _vm.GetMatchSummary();
 
-                MessageBox.Show("Your matching queue has finished.\nYour results are in the " +
+                MessageBox.Show(this, "Your matching queue has finished.\nYour results are in the " +
                     Options.MatchQResultsFolderName + " folder.\n\nSummary:\n" + summary,
                     "Queue Complete", MessageBoxButton.OK);
             }
@@ -226,7 +226,7 @@ namespace Darwin.Wpf
                         throw new Exception("Missing object");
 
                     if (resultsDB.Filename.ToLower() != _vm.MatchingQueue.Database.Filename.ToLower())
-                        MessageBox.Show(
+                        MessageBox.Show(this,
                             "Warning: This queue was run against a different database " + Environment.NewLine +
                             "the currently loaded database.  The database used for the queue " + Environment.NewLine +
                             "is being loaded to view the results.  This will not change the " + Environment.NewLine +
@@ -243,7 +243,7 @@ namespace Darwin.Wpf
                 catch (Exception ex)
                 {
                     Trace.Write(ex);
-                    MessageBox.Show("There was a problem loading your results.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(this, "There was a problem loading your results.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

@@ -267,7 +267,7 @@ namespace Darwin
             */
 
             i = 0;
-            bool foundPoint = true;
+            bool foundPoint;
             bool prepend = false;
             done = false;
             while (!done)

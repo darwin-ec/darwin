@@ -14,7 +14,7 @@ namespace Darwin.Wpf.ViewModel
 {
     public class MatchingQueueViewModel : INotifyPropertyChanged
     {
-        private static Object selectedFinSync = new Object();
+        private static object selectedFinSync = new object();
 
         private DatabaseFin _selectedFin;
         public DatabaseFin SelectedFin
