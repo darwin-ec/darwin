@@ -88,6 +88,7 @@ namespace Darwin
 
         public Color GetPixel(int x, int y)
         {
+            // TODO: Different byte order for big endian?
             if (!IsLocked && _pixelData == null && _bitmap != null)
                 LockBits();
 
@@ -125,6 +126,7 @@ namespace Darwin
 
         public void SetPixel(int x, int y, Color color)
         {
+            // TODO: Different byte order for big endian?
             if (!IsLocked)
                 LockBits();
 
