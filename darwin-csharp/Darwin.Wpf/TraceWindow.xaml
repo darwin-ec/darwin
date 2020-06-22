@@ -63,14 +63,14 @@
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                             <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
                             <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" />
-                            <TextBlock HorizontalAlignment="Center">Trace Outline</TextBlock>
+                            <Label HorizontalAlignment="Center" Padding="0">Trace Outline</Label>
                         </StackPanel>
                     </RadioButton>
                     <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsEnabled="{Binding IdentifyFeaturesEnabled}" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                             <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
                             <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" />
-                            <TextBlock HorizontalAlignment="Center">Identify Features</TextBlock>
+                            <Label HorizontalAlignment="Center" Padding="0">Identify Features</Label>
                         </StackPanel>
                     </RadioButton>
                 </StackPanel>
