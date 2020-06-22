@@ -117,6 +117,8 @@ namespace Darwin.Wpf
 			_vm.ZoomValues.Add(0.75);
 			_vm.ZoomValues.Add(0.50);
 			_vm.ZoomValues.Add(0.25);
+			_vm.ZoomValues.Add(0.125);
+			_vm.ZoomValues.Add(0.0625);
 
 			// We need to wait until the window is loaded before the scroll viewer will have ActualWidth and ActualHeight
 			// so that we can compare to the bitmap to compute the initial zoom ratio, if needed.
@@ -979,24 +981,24 @@ namespace Darwin.Wpf
 		{
 			lastMousePositionOnTarget = point;
 
-			double newValue = ZoomSlider.Value * 2;
+			double newValue = _vm.ZoomSlider + 1;
 
 			if (newValue > ZoomSlider.Maximum)
 				newValue = ZoomSlider.Maximum;
 
-			ZoomSlider.Value = newValue;
+			_vm.ZoomSlider = (float)newValue;
 		}
 
 		private void ZoomOut(System.Windows.Point point)
 		{
 			lastMousePositionOnTarget = point;
 
-			double newValue = ZoomSlider.Value / 2;
+			double newValue = _vm.ZoomSlider - 1;
 
 			if (newValue < ZoomSlider.Minimum)
 				newValue = ZoomSlider.Minimum;
 
-			ZoomSlider.Value = newValue;
+			_vm.ZoomSlider = (float)newValue;
 		}
 
 		private void TraceScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -1120,8 +1122,8 @@ namespace Darwin.Wpf
 		{
 			if (TraceImage != null && TraceImage.Source != null && ScaleTransform != null)
 			{
-				ScaleTransform.ScaleX = e.NewValue;
-				ScaleTransform.ScaleY = e.NewValue;
+				ScaleTransform.ScaleX = _vm.ZoomRatio;
+				ScaleTransform.ScaleY = _vm.ZoomRatio;
 
 				var centerOfViewport = new System.Windows.Point(TraceScrollViewer.ViewportWidth / 2, TraceScrollViewer.ViewportHeight / 2);
 				lastCenterPositionOnTarget = TraceScrollViewer.TranslatePoint(centerOfViewport, ImageViewBox);

@@ -78,7 +78,7 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="2">
                 <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center" VerticalAlignment="Center">&#xf03e;</TextBlock>
-                <Slider Grid.Column="2" Width="180" Orientation="Horizontal" VerticalAlignment="Center" Minimum="0.25" Maximum="16" Value="{Binding Path=ZoomRatio, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
+                <Slider Grid.Column="2" Width="180" Orientation="Horizontal" VerticalAlignment="Center" Minimum="-4" Maximum="4" Value="{Binding Path=ZoomSlider, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
                 <TextBlock FontFamily="{StaticResource FontAwesome}" FontSize="22" VerticalAlignment="Center">&#xf03e;</TextBlock>
             </StackPanel>
         </Grid>
@@ -192,7 +192,7 @@
                 <ScrollViewer x:Name="TraceScrollViewer" Background="White" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
                     <Viewbox x:Name="ImageViewBox" Stretch="None">
                         <Viewbox.LayoutTransform>
-                            <TransformGroup x:Name="imgTransformGroup">
+                            <TransformGroup x:Name="ImageTransformGroup">
                                 <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
                                 <!--<TranslateTransform x:Name="imgTranslateTransform"></TranslateTransform>-->
                             </TransformGroup>

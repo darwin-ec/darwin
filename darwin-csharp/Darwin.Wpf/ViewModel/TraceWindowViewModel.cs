@@ -303,6 +303,9 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+
+		private bool _preventPropagation;
+
 		private float _zoomRatio;
 		public float ZoomRatio
 		{
@@ -310,9 +313,52 @@ namespace Darwin.Wpf.ViewModel
 			set
 			{
 				_zoomRatio = value;
+
 				RaisePropertyChanged("ZoomRatio");
+
+				if (_preventPropagation)
+				{
+					_preventPropagation = false;
+				}
+				else
+				{
+					var zoomSlider = (float)Math.Round(Math.Log(_zoomRatio) / Math.Log(2), 4);
+
+					if (zoomSlider != _zoomSlider)
+					{
+						_preventPropagation = true;
+						ZoomSlider = zoomSlider;
+					}
+				}
 			}
 		}
+
+		private float _zoomSlider;
+		public float ZoomSlider
+        {
+			get => _zoomSlider;
+			set
+            {
+				_zoomSlider = value;
+
+				RaisePropertyChanged("ZoomSlider");
+
+				if (_preventPropagation)
+                {
+					_preventPropagation = false;
+                }
+                else
+				{ 
+					var newRatio = (float)Math.Round(Math.Pow(2, _zoomSlider), 4);
+
+					if (ZoomRatio != newRatio)
+					{
+						_preventPropagation = true;
+						ZoomRatio = newRatio;
+					}
+				}
+			}
+        }
 
 		private List<double> _zoomValues;
 		public List<double> ZoomValues
