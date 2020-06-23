@@ -51,6 +51,8 @@ namespace Darwin.Wpf
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            DatabaseGrid.SetFilter(this.FilterListView);
+
             this.DataContext = _vm;
         }
 
@@ -59,7 +61,10 @@ namespace Darwin.Wpf
             var sortableListViewSender = sender as Controls.SortableListView;
 
             if (sortableListViewSender != null)
+            {
                 sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
+                CheckNextPreviousEnabled();
+            }
         }
 
         private void NewDatabaseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -385,6 +390,71 @@ namespace Darwin.Wpf
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();
             }
+        }
+
+        private void CheckNextPreviousEnabled()
+        {
+            if (DatabaseGrid.SelectedIndex <= 0)
+                _vm.PreviousEnabled = false;
+            else if (DatabaseGrid.Items != null && DatabaseGrid.Items.Count > 0)
+                _vm.PreviousEnabled = true;
+
+            if (DatabaseGrid.Items != null && DatabaseGrid.Items.Count > 0 && DatabaseGrid.SelectedIndex < DatabaseGrid.Items.Count - 1)
+                _vm.NextEnabled = true;
+            else
+                _vm.NextEnabled = false;
+        }
+
+        private void ListPreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DatabaseGrid.Items == null || DatabaseGrid.Items.Count < 1)
+                return;
+
+            if (DatabaseGrid.SelectedIndex > 0)
+            {
+                DatabaseGrid.SelectedIndex--;
+                DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
+            }
+            CheckNextPreviousEnabled();
+        }
+
+        private void ListNextButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DatabaseGrid.Items == null || DatabaseGrid.Items.Count < 1)
+                return;
+
+            if (DatabaseGrid.SelectedIndex < DatabaseGrid.Items.Count - 1)
+            {
+                DatabaseGrid.SelectedIndex++;
+                DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
+            }
+            CheckNextPreviousEnabled();
+        }
+
+        private bool FilterListView(object item)
+        {
+            if (string.IsNullOrEmpty(FilterTextBox.Text))
+                return true;
+
+            DatabaseFin filterItem = item as DatabaseFin;
+
+            if (filterItem == null)
+                return true;
+
+            if (string.IsNullOrEmpty(filterItem.IDCode))
+                return false;
+
+            return filterItem.IDCode.IndexOf(FilterTextBox.Text, StringComparison.OrdinalIgnoreCase) > 0;
+        }
+
+        private void DatabaseGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CheckNextPreviousEnabled();
+        }
+
+        private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            DatabaseGrid.RefreshFilter();
         }
     }
 }

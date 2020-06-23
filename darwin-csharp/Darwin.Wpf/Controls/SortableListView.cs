@@ -65,6 +65,17 @@ namespace Darwin.Wpf.Controls
             }
         }
 
+        public void SetFilter(Predicate<object> filter)
+        {
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items);
+            dataView.Filter = filter;
+        }
+
+        public void RefreshFilter()
+        {
+            CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items).Refresh();
+        }
+
         private void Sort(string sortBy, ListSortDirection direction)
         {
             ICollectionView dataView = CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items);

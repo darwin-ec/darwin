@@ -28,40 +28,4 @@ namespace Darwin.Matching
         LeadThenTrail = 400,
         TrailingEdgeOnly = 1
     }
-
-    public class SelectableDBDamageCategory : INotifyPropertyChanged
-    {
-        private string _name;
-        public string Name
-        {
-            get => _name;
-
-            set
-            {
-                _name = value;
-                RaisePropertyChanged("Name");
-            }
-        }
-
-        private bool _isSelected;
-        public bool IsSelected
-        {
-            get => _isSelected;
-            
-            set
-            {
-                _isSelected = value;
-                RaisePropertyChanged("IsSelected");
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void RaisePropertyChanged(string propertyName)
-        {
-            var handler = PropertyChanged;
-            if (handler == null) return;
-
-            handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
 }

@@ -7,7 +7,6 @@ namespace Darwin.Matching
 	public class MseInfo
 	{
 		// members
-
 		public double Error { get; set; }
 
 		public FloatContour C1 { get; set; }

@@ -123,8 +123,14 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <controls:SortableListView Grid.Column="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
-                <!--<ListView.ItemContainerStyle>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionChanged="DatabaseGrid_SelectionChanged" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                    <!--<ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
@@ -134,37 +140,62 @@
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     </Style>
                 </ListView.ItemContainerStyle>-->
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn>
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Image.Source>
-                                            <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
-                                        </Image.Source>
-                                    </Image>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                            <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                            <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
-                            <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
-                            <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                        </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
-                            <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </controls:SortableListView>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Image.Source>
+                                                <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                            </Image.Source>
+                                        </Image>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                                <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                                <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                                <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
+                                <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
+                                <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </controls:SortableListView>
+                <Grid Grid.Row="1" Background="{StaticResource LightBackground}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="ListPreviousButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding PreviousEnabled}" Click="ListPreviousButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="0,0,5,0" VerticalAlignment="Center">&#xf053;</Label>
+                            <Label Padding="1" VerticalAlignment="Center">Previous</Label>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="1" x:Name="ListNextButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding NextEnabled}" Click="ListNextButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Padding="1" VerticalAlignment="Center">Next</Label>
+                            <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="5,0,0,0" VerticalAlignment="Center">&#xf054;</Label>
+                        </StackPanel>
+                    </Button>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="5">
+                        <Label VerticalAlignment="Center">Filter:</Label>
+                        <TextBox x:Name="FilterTextBox" Width="100" VerticalAlignment="Center" TextChanged="FilterTextBox_TextChanged"></TextBox>
+                    </StackPanel>
+                </Grid>
+            </Grid>
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
 

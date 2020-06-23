@@ -94,6 +94,28 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        private bool _nextEnabled;
+        public bool NextEnabled
+        {
+            get => _nextEnabled;
+            set
+            {
+                _nextEnabled = value;
+                RaisePropertyChanged("NextEnabled");
+            }
+        }
+
+        private bool _previousEnabled;
+        public bool PreviousEnabled
+        {
+            get => _previousEnabled;
+            set
+            {
+                _previousEnabled = value;
+                RaisePropertyChanged("PreviousEnabled");
+            }
+        }
+
         public MainWindowViewModel()
         {
             _darwinDatabase = null;

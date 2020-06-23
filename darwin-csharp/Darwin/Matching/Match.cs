@@ -1056,8 +1056,8 @@ namespace Darwin.Matching
             FloatContour
                 mappedContour = null,
                 shortenedDBMappedContour = null,
-shortenedUnkMappedContour = null,
-shiftedUnkTipMappedContour = null; //***1.1
+                shortenedUnkMappedContour = null,
+                shiftedUnkTipMappedContour = null; //***1.1
 
             MseInfo results = new MseInfo();
 
@@ -1106,7 +1106,6 @@ shiftedUnkTipMappedContour = null; //***1.1
                 startLeadDBPt,
                 endTrailUnkPt,
                 endTrailDBPt;
-            //movedTipUnkPt; //***1.1
 
             double
                 error,                     // best so far
@@ -1114,13 +1113,13 @@ shiftedUnkTipMappedContour = null; //***1.1
                 shortenedUnkLeadError,     // for test at 1% shorter Unknown Leading Edge
                 shortenedDBTrailError,     // for test at 1% shorter DB Trailing Edge
                 shortenedUnkTrailError,    // for test at 1% shorter Unknown Trailing Edge
-                movedTipUnkError = 0;          // for test at 1% Tip shift on Unknown
+                movedTipUnkError = 0;      // for test at 1% Tip shift on Unknown
 
             int jumpingOn = 0;   // 1=DBLead,2=UnkLead,3=DBTrail,4=UnkTrail,5=UnkTip
 
             Trace.WriteLine("matching unk " + UnknownFin.IDCode + " to DB " + dbFin.IDCode);
 
-            // set initial starting points on each leading edge
+            // Set initial starting points on each leading edge
             startLeadUnk = mUnknownBeginLE;
             startLeadDB = dbBeginLE;
 
@@ -2395,12 +2394,11 @@ shiftedUnkTipMappedContour = null; //***1.1
                 int begin1,
                 int mid1, //***1.85 not used here but makes prototype same as area based approach
                 int end1,
-                FloatContour c2, // envenly spaced database fin //***0005CM
+                FloatContour c2, // Evenly spaced database fin //***0005CM
                 int begin2,
                 int mid2, //***1.85 not used here but makes prototype same as area based approach
                 int end2)
         {
-
             double error = 50000.0;
             double[] dbArcLength = new double[2];
             double[] unkArcLength = new double[2]; //***1.982a - lead and trail done separately
@@ -2665,11 +2663,11 @@ shiftedUnkTipMappedContour = null; //***1.1
                     /////////////////////////// changes ////////////////////
                     //***1.75 
                     // these two lines are the old code
-                    //sum += ((dbX - unkX) * (dbX - unkX) + (dbY - unkY) * (dbY - unkY));   
-                    //ptsFound++;
+                    // sum += ((dbX - unkX) * (dbX - unkX) + (dbY - unkY) * (dbY - unkY));   
+                    // ptsFound++;
                     if (foundDB && foundUnk) // new constraint test
                     {
-                        sum += ((dbX - unkX) * (dbX - unkX) + (dbY - unkY) * (dbY - unkY));
+                        sum += (dbX - unkX) * (dbX - unkX) + (dbY - unkY) * (dbY - unkY);
 
                         ptsFound++;
 
@@ -2685,20 +2683,11 @@ shiftedUnkTipMappedContour = null; //***1.1
                         // what they were BEFORE the failure
                         i = iPrev;
                         j = jPrev;
-                        //g_print("_");
+
                         done = false; // force search to continue
                     }
 
                     ////////////////////////// end changes /////////////////
-
-                    //***055ER
-                    //if (mMatchingDialog != NULL)
-                    //TODO
-                    //if ((mMatchingDialog != NULL) && (k % 8 == 0))
-                    //{
-                    //	// show the display of the outline registration in the dialog
-                    //	mMatchingDialog->showErrorPt2Pt(c1, c2, dbX, dbY, unkX, unkY);
-                    //}
                 }
 
             } //***1.982a - end of for (part) loop

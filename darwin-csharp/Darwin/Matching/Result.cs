@@ -26,7 +26,6 @@ namespace Darwin.Matching
         public int Rank { get; set; } //  1.5
 
         //  1.1 - new members to track three point correspondences for final mapping in match
-
         public int UnkShiftedLEBegin { get; set; }
         public int UnkShiftedTip { get; set; }
         public int UnkShiftedTEEnd { get; set; }
@@ -91,23 +90,6 @@ namespace Darwin.Matching
             DBShiftedTip = r.DBShiftedTip;
             DBShiftedTEEnd = r.DBShiftedTEEnd;
             ThumbnailFilenameUri = r.ThumbnailFilenameUri;
-            // TODO
-            //if (NULL == r.mThumbnailPixmap)
-            //{
-            //	mThumbnailPixmap = NULL;
-            //	mThumbnailRows = 0;
-            //}
-            //else
-            //{
-            //	mThumbnailRows = r.mThumbnailRows;
-            //	mThumbnailPixmap = new char*[mThumbnailRows];
-
-            //	for (int i = 0; i < mThumbnailRows; i++)
-            //	{
-            //		mThumbnailPixmap[i] = new char[strlen(r.mThumbnailPixmap[i]) + 1];
-            //		strcpy(mThumbnailPixmap[i], r.mThumbnailPixmap[i]);
-            //	}
-            //}
         }
 
         //  1.1 - sets six indices for points used in final contour mapping
