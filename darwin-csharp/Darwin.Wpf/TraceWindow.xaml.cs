@@ -214,6 +214,7 @@ namespace Darwin.Wpf
 			if (_vm.Contour == null)
 				_vm.Contour = new Contour();
 
+			AddContourUndo(_vm.Contour);
 			_vm.Contour.AddPoint(p);
 
 			if (_vm.Contour.NumPoints > 1)
@@ -394,14 +395,20 @@ namespace Darwin.Wpf
 			// full size and currently viewed scale edgeMagImage
 			DirectBitmap EdgeMagImage;
 			DirectBitmap smallEdgeMagImage;
-			DirectBitmap temp = new DirectBitmap(_vm.Bitmap);
+
+			DirectBitmap temp;
 
 			if (useCyan)
+			{
+				temp = new DirectBitmap(_vm.Bitmap);
 				temp.ToCyanIntensity(); //***1.96 - copy to cyan
+			}
 			else
-				temp.ToGrayscale(); //***1.96 - copy to grayscale
+			{
+				temp = DirectBitmapHelper.ConvertToDirectBitmapGrayscale(_vm.Bitmap);
+			}
 
-			DirectBitmap temp2 = DirectBitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
+            DirectBitmap temp2 = DirectBitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
 
 			DirectBitmap EdgeImage = EdgeDetection.CannyEdgeDetection(
 					//temp,

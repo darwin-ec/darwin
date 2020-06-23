@@ -74,7 +74,7 @@ namespace Darwin.ImageProcessing
 			short maximum_mag = 0;
 
 			// This GrayImage will hold the edge detection image
-			DirectBitmap edge = new DirectBitmap(cols, rows);
+			DirectBitmap edge = new DirectBitmap(cols, rows, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
 
 			/****************************************************************************
 			* Initialize the edge map to possible edges everywhere the non-maximal
@@ -217,7 +217,7 @@ namespace Darwin.ImageProcessing
 			int resultrowptr = ncols + 1;
 			int resultptr;
 
-			DirectBitmap dstImage = new DirectBitmap(ncols, nrows);
+			DirectBitmap dstImage = new DirectBitmap(ncols, nrows, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
 
 			/****************************************************************************
 			* Suppress non-maximum points.

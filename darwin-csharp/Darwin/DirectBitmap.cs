@@ -1,4 +1,5 @@
 ﻿using Darwin.Extensions;
+using Darwin.Helpers;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -73,12 +74,39 @@ namespace Darwin
             IsLocked = false;
         }
 
+        public DirectBitmap(int width, int height, PixelFormat format)
+        {
+            Width = width;
+            Height = height;
+
+            _bitmap = new Bitmap(width, height, format);
+            if (format == PixelFormat.Format8bppIndexed)
+            {
+                // There is no regular 8bpp grayscale in .NET, only 16 bit or 8 bit indexed.
+                // So we're creating an 8bpp indexed and making the palette 0 -> 255 grayscale
+                _bitmap.Palette = ColorExtensions.GetGrayscaleColorPalette(_bitmap);
+            }
+
+            IsLocked = false;
+        }
+
         public DirectBitmap(Bitmap source)
         {
-            _bitmap = new Bitmap(source);
-            Width = _bitmap.Width;
-            Height = _bitmap.Height;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            Width = source.Width;
+            Height = source.Height;
             IsLocked = false;
+
+            if (source.PixelFormat != PixelFormat.Format8bppIndexed)
+            {
+                _bitmap = new Bitmap(source);
+            }
+            else
+            {
+                _bitmap = BitmapHelper.Copy8bppIndexed(source);
+            }
         }
 
         public DirectBitmap(DirectBitmap source)
@@ -163,6 +191,18 @@ namespace Darwin
             }
 
             throw new NotImplementedException();
+        }
+
+        public void SetPixelByte(int x, int y, byte val)
+        {
+            if (!IsLocked)
+                LockBits();
+
+            if (BitsPerPixel != 8)
+                throw new NotImplementedException();
+
+            int i = (y * Stride) + x;
+            _pixelData[i] = val;
         }
 
         public void SetPixel(int x, int y, Color color)

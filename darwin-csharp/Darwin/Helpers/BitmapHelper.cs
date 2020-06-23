@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,7 +44,7 @@ namespace Darwin.Helpers
             if (newHeight < 1)
                 throw new ArgumentOutOfRangeException(nameof(newHeight));
 
-            var resizedImage = new Bitmap(newWidth, newHeight);
+            Bitmap resizedImage = new Bitmap(newWidth, newHeight, PixelFormat.Format24bppRgb);
 
             using (var graphic = Graphics.FromImage(resizedImage))
             {
@@ -85,6 +86,44 @@ namespace Darwin.Helpers
                 yoffset,
                 Convert.ToInt32((float)right / factor),
                 Convert.ToInt32((float)bottom / factor));
+        }
+
+        public static Bitmap Copy8bppIndexed(Bitmap source)
+        {
+            int width = source.Width;
+            int height = source.Height;
+
+            BitmapData sourceData = source.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, source.PixelFormat);
+
+            var sourceStride = Math.Abs(sourceData.Stride);
+
+            int bytes = Math.Abs(sourceStride) * height;
+            byte[] sourceBytes = new byte[bytes];
+
+            Marshal.Copy(sourceData.Scan0, sourceBytes, 0, sourceBytes.Length);
+
+            Bitmap result = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+
+            result.Palette = source.Palette;
+
+            BitmapData resultData = result.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, result.PixelFormat);
+            var resultStride = Math.Abs(resultData.Stride);
+            int resultNumBytes = Math.Abs(resultStride) * height;
+
+            if (resultNumBytes != bytes)
+                throw new Exception("There was a problem copying images, byte counts on arrays should have matched.");
+
+            byte[] resultBytes = new byte[resultNumBytes];
+            Marshal.Copy(resultData.Scan0, resultBytes, 0, resultBytes.Length);
+
+            Array.Copy(sourceBytes, resultBytes, resultNumBytes);
+
+            Marshal.Copy(resultBytes, 0, resultData.Scan0, resultNumBytes);
+
+            source.UnlockBits(sourceData);
+            result.UnlockBits(resultData);
+
+            return result;
         }
     }
 }

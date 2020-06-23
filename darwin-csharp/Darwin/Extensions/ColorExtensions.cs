@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,10 +11,24 @@ namespace Darwin.Extensions
     // TODO: Move the magic numbers somewhere out of here
     public static class ColorExtensions
     {
+        public const byte WhiteByte = 255;
         public static Color ToGrayscaleColor(this Color color)
         { 
             var level = Convert.ToByte(Math.Round(color.R * 0.299 + color.G * 0.587 + color.B * 0.114));
             return Color.FromArgb(level, level, level);
+        }
+
+        public static ColorPalette GetGrayscaleColorPalette(Bitmap bmp)
+        {
+            // There is no regular 8bpp grayscale in .NET, only 16 bit or 8 bit indexed.
+            // So we're creating an 8bpp indexed and making the palette 0 -> 255 grayscale
+            ColorPalette pal = bmp.Palette;
+            for (int i = 0; i <= 255; i++)
+            {
+                // create greyscale color table
+                pal.Entries[i] = Color.FromArgb(i, i, i);
+            }
+            return pal;
         }
 
         public static Color ToCyanIntensity(this Color color)

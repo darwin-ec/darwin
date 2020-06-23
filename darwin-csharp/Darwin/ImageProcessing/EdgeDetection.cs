@@ -260,7 +260,7 @@ namespace Darwin.ImageProcessing
         //
         private static DirectBitmap ConvertMagnitude(short[] magnitude, int rows, int cols)
         {
-            DirectBitmap dstImage = new DirectBitmap(cols, rows);
+            DirectBitmap dstImage = new DirectBitmap(cols, rows, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
 
             int pos, r, c;
             int max = magnitude[0];

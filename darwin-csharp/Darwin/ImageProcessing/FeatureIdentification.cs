@@ -69,11 +69,20 @@ namespace Darwin.ImageProcessing
             int area;
             int map_val = 0;
 
-            DirectBitmap map = new DirectBitmap(srcImg.Width, srcImg.Height);
-            using (var graphics = Graphics.FromImage(map.Bitmap))
+            DirectBitmap map = new DirectBitmap(srcImg.Width, srcImg.Height, System.Drawing.Imaging.PixelFormat.Format8bppIndexed);
+
+            for (int x = 0; x < map.Width; x++)
             {
-                graphics.FillRectangle(Brushes.White, 0, 0, map.Width, map.Height);
+                for (int y = 0; y < map.Height; y++)
+                {
+                    map.SetPixelByte(x, y, ColorExtensions.WhiteByte);
+                }
             }
+
+            //using (var graphics = Graphics.FromImage(map.Bitmap))
+            //{
+            //    graphics.FillRectangle(Brushes.White, 0, 0, map.Width, map.Height);
+            //}
 
             nbr_stack.Push(new Darwin.PointF(seedcol, seedrow));
             area = 0;

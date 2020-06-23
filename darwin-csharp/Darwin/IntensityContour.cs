@@ -29,8 +29,7 @@ namespace Darwin
         public IntensityContour(Bitmap bitmap, Contour contour,
             int left, int top, int right, int bottom)
         {
-            DirectBitmap grayImage = new DirectBitmap(bitmap);
-            DirectBitmapHelper.ConvertToGrayscale(ref grayImage);
+            DirectBitmap grayImage = DirectBitmapHelper.ConvertToDirectBitmapGrayscale(bitmap);
             GetPointsFromBitmap(ref grayImage, contour, left, top, right, bottom);
         }
 
@@ -77,10 +76,10 @@ namespace Darwin
                 factor *= 2;
             }
 
-            DirectBitmap workingBmp = null;
+            DirectBitmap workingBmp;
 
             if (factor > 1)
-                workingBmp = new DirectBitmap(BitmapHelper.ResizePercentageNearestNeighbor(bmp.Bitmap, 100.0f / factor));
+                workingBmp = DirectBitmapHelper.ResizePercentageNearestNeighbor(bmp, 100.0f / factor);
             else
                 workingBmp = new DirectBitmap(bmp.Bitmap);
 
@@ -118,7 +117,6 @@ namespace Darwin
             // use the range to threshold
             DirectBitmapHelper.ThresholdRange(ref workingBmp, lowestRange);
 
-
             DirectBitmap saveBinaryBmp = new DirectBitmap(workingBmp.Bitmap);
 
             /* ----------------------------------------------------
@@ -127,14 +125,12 @@ namespace Darwin
              */
 
             int iterations = 4; // Default number of iterations
-            int ecount = 0, dcount = 1;
+            int ecount = 0;
             int itcount = 0;
             int i;
 
             for (i = 0; i < iterations; i++)
-            {
                 ecount = MorphologicalOperators.Erode(ref workingBmp, i % 2);
-            }
 
             // Shrink all other regions with less than 5 neighbor black pixles
             while (ecount != 0)
@@ -144,9 +140,7 @@ namespace Darwin
             }
 
             for (i = 0; i < iterations; i++)
-            {
-                dcount = MorphologicalOperators.Dilate(ref workingBmp, i % 2);;
-            }
+                MorphologicalOperators.Dilate(ref workingBmp, i % 2);;
 
             // AND opended image with orginal
             MorphologicalOperators.And(ref workingBmp, saveBinaryBmp);
@@ -162,11 +156,8 @@ namespace Darwin
 
             DirectBitmap outline = new DirectBitmap(binaryBmp.Bitmap);
 
-            ecount = 0;
             for (i = 0; i < 1; i++)
-            {
-                ecount = MorphologicalOperators.Erode(ref outline, 0);
-            }
+                MorphologicalOperators.Erode(ref outline, 0);
 
             MorphologicalOperators.Xor(ref binaryBmp, outline);
 
@@ -186,7 +177,7 @@ namespace Darwin
 
             var finalLargestFeature = FeatureIdentification.FindLargestFeature(binaryBmp);
 
-            if (largestFeature == null)
+            if (finalLargestFeature == null)
             {
                 // TODO
                 Trace.WriteLine("largestFeature NULL, aborting. No fin outline determined");
@@ -194,7 +185,7 @@ namespace Darwin
             }
 
             // now binImg can be reset to the mask of the NEW largestFeature
-            DirectBitmap finalWorkingBmp = largestFeature.Mask;
+            DirectBitmap finalWorkingBmp = finalLargestFeature.Mask;
 
             int row = 0, col = 0;
             int rows = finalWorkingBmp.Height, cols = finalWorkingBmp.Width;
@@ -267,7 +258,7 @@ namespace Darwin
             */
 
             i = 0;
-            bool foundPoint;
+            bool foundPoint = true;
             bool prepend = false;
             done = false;
             while (!done)
