@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -204,9 +205,25 @@ namespace Darwin.Wpf
 			//mNormScale = 1.0f; //***051TW
 		}
 
+		internal IntensityContour CreateIntensityContour(Bitmap bitmap, Contour contour, int left, int top, int right, int bottom)
+		{
+			return new IntensityContour(
+						bitmap,
+						contour,
+						left, top, right, bottom);
+		}
+
+		internal IntensityContour CreateIntensityContourCyan(Bitmap bitmap, Contour contour, int left, int top, int right, int bottom)
+		{
+			return new IntensityContourCyan(
+						bitmap,
+						contour,
+						left, top, right, bottom);
+		}
+
 		//*******************************************************************
 		// Point clicked for AutoTrace -- 103AT SAH
-		private void TraceAddAutoTracePoint(Darwin.Point p, bool shiftKeyDown) // AT103 SAH
+		private async void TraceAddAutoTracePoint(Darwin.Point p, bool shiftKeyDown) // AT103 SAH
 		{
 			if (p.IsEmpty)
 				return;
@@ -232,7 +249,7 @@ namespace Darwin.Wpf
 				}
 
 				// Run trace
-				Trace.WriteLine("PLEASE WAIT:\n   Automatically detecting rough fin outline ....");
+				Trace.WriteLine("PLEASE WAIT:\n  Automatically detecting rough fin outline ....");
 
 				//***1.96 - figure out how to pass the image the user sees ONLY
 				int left, top, right, bottom;
@@ -242,11 +259,23 @@ namespace Darwin.Wpf
 				Contour trace = null;
 
 				if (!shiftKeyDown)
-					//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
-					trace = new IntensityContour(
-						_vm.Bitmap,
-						_vm.Contour,
-						left, top, right, bottom); //***1.96 added window bounds 
+				{
+					try
+					{
+						this.IsHitTestVisible = false;
+						Mouse.OverrideCursor = Cursors.Wait;
+
+						//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
+						trace = await Task.Run(() => CreateIntensityContour(_vm.Bitmap,
+							_vm.Contour,
+							left, top, right, bottom));
+					}
+                    finally
+                    {
+						Mouse.OverrideCursor = null;
+						this.IsHitTestVisible = true;
+                    }
+				}
 
 				/* test trimAndReorder
 				// reverse and trim off 20 points
@@ -268,26 +297,39 @@ namespace Darwin.Wpf
 					//101AT -- changed min to 100 pt contour - JHS
 					Trace.WriteLine("\n   Using edge detection and active contours to refine outline placement ....");
 					_vm.Contour = trace;//101AT
-					TraceSnapToFin(false, left, top, right, bottom);//101AT
-																	//this.skiaElement.InvalidateVisual(); //101AT
+										//TraceSnapToFin(false, left, top, right, bottom);//101AT
+										//this.skiaElement.InvalidateVisual(); //101AT
+
+					TraceSnapToFinAsync(false, left, top, right, bottom);
 				}
 				else
 				{//101AT
 					Trace.WriteLine("\n   Trying Cyan Intensity AutoTrace ...");
 
 					//102AT Add hooks for cyan intensity trace
-					trace = new IntensityContourCyan(
-						_vm.Bitmap,
-						_vm.Contour,
-						left, top, right, bottom); //***1.96 added window bounds 
+					try
+					{
+						this.IsHitTestVisible = false;
+						Mouse.OverrideCursor = Cursors.Wait;
+
+						//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
+						trace = await Task.Run(() => CreateIntensityContourCyan(_vm.Bitmap,
+							_vm.Contour,
+							left, top, right, bottom));
+					}
+					finally
+					{
+						Mouse.OverrideCursor = null;
+						this.IsHitTestVisible = true;
+					}
 
 					if (trace.NumPoints > 100)
 					{//102AT
 						Trace.WriteLine("Using edge detection and active contours to refine outline placement\n   (with cyan intensity image) ....\n");
 
 						_vm.Contour = trace;//102AT
-						TraceSnapToFin(true, left, top, right, bottom);//102AT
-																	   //this.skiaElement.InvalidateVisual(); //102AT
+
+						TraceSnapToFinAsync(true, left, top, right, bottom);
 					}
 					else
 					{
@@ -370,6 +412,23 @@ namespace Darwin.Wpf
 				_vm.Contour = new Contour();
 
 			_vm.Contour.AddPoint(point.X, point.Y);
+		}
+
+		private async void TraceSnapToFinAsync(bool useCyan, int left, int top, int right, int bottom)
+        {
+			try
+			{
+				this.IsHitTestVisible = false;
+				Mouse.OverrideCursor = Cursors.Wait;
+
+				//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
+				await Task.Run(() => TraceSnapToFin(useCyan, left, top, right, bottom));
+			}
+			finally
+			{
+				Mouse.OverrideCursor = null;
+				this.IsHitTestVisible = true;
+			}
 		}
 
 		//***1.96 - modified with virtual cropping bounds
@@ -1288,7 +1347,7 @@ namespace Darwin.Wpf
 			}
 		}
 
-		private void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		private async void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			Trace.WriteLine("left mouse button up");
 
@@ -1322,7 +1381,8 @@ namespace Darwin.Wpf
 						{
 							int left, top, right, bottom; //***1.96
 							GetViewedImageBoundsNonZoomed(out left, out top, out right, out bottom); //***1.96
-							TraceSnapToFin(false, left, top, right, bottom); //***006FC,***1.96
+
+							TraceSnapToFinAsync(false, left, top, right, bottom);
 						}
 					}
 					e.Handled = true;
