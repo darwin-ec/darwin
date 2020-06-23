@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Darwin.Extensions;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -41,14 +42,22 @@ namespace Darwin
         public int Stride { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public int BitsPerPixel { get; private set; }
-        public int BytesPerPixel
+
+        private int _bitsPerPixel;
+        public int BitsPerPixel
         {
             get
             {
-                return BitsPerPixel / 8;
+                return _bitsPerPixel;
+            }
+            private set
+            {
+                _bitsPerPixel = value;
+                BytesPerPixel = _bitsPerPixel / 8;
             }
         }
+
+        public int BytesPerPixel { get; private set; }
 
         public bool IsLocked { get; private set; }
 
@@ -89,7 +98,7 @@ namespace Darwin
         public Color GetPixel(int x, int y)
         {
             // TODO: Different byte order for big endian?
-            if (!IsLocked && _pixelData == null && _bitmap != null)
+            if (!IsLocked)
                 LockBits();
 
             // Get start index of the specified pixel
@@ -100,25 +109,57 @@ namespace Darwin
 
             if (BitsPerPixel == 32)
             {
-                byte b = _pixelData[i];
-                byte g = _pixelData[i + 1];
-                byte r = _pixelData[i + 2];
-                byte a = _pixelData[i + 3];
-                return Color.FromArgb(a, r, g, b);
+                return Color.FromArgb(
+                    _pixelData[i + 3],
+                    _pixelData[i + 2],
+                    _pixelData[i + 1],
+                    _pixelData[i]);
             }
             
             if (BitsPerPixel == 24)
             {
-                byte b = _pixelData[i];
-                byte g = _pixelData[i + 1];
-                byte r = _pixelData[i + 2];
-                return Color.FromArgb(r, g, b);
+                return Color.FromArgb(
+                    _pixelData[i + 2],
+                    _pixelData[i + 1],
+                    _pixelData[i]);
             }
             
             if (BitsPerPixel == 8)
             {
-                byte c = _pixelData[i];
-                return Color.FromArgb(c, c, c);
+                return Color.FromArgb(
+                    _pixelData[i],
+                    _pixelData[i],
+                    _pixelData[i]);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public byte GetIntensity(int x, int y)
+        {
+            if (!IsLocked)
+                LockBits();
+
+            // Get start index of the specified pixel
+            int i = (y * Stride) + x * BytesPerPixel;
+
+            if (i > _pixelData.Length - BytesPerPixel)
+                throw new IndexOutOfRangeException();
+
+            if (BitsPerPixel == 32)
+            {
+                // Note: Ignoring Alpha (which is index i)
+                return ColorExtensions.GetIntensity(_pixelData[i + 3], _pixelData[i + 2], _pixelData[i + 1]);
+            }
+
+            if (BitsPerPixel == 24)
+            {
+                return ColorExtensions.GetIntensity(_pixelData[i + 2], _pixelData[i + 1], _pixelData[i]);
+            }
+
+            if (BitsPerPixel == 8)
+            {
+                return _pixelData[i];
             }
 
             throw new NotImplementedException();

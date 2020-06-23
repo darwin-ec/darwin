@@ -393,13 +393,17 @@ namespace Darwin.ImageProcessing
             /****************************************************************************
             * Blur in the x - direction.
             ****************************************************************************/
-            for (r = 0; r < (int)nRows; r++) {
-                for (c = 0; c < (int)nCols; c++) {
+            for (r = 0; r < (int)nRows; r++)
+            {
+                for (c = 0; c < (int)nCols; c++)
+                {
                     dot = 0.0f;
                     sum = 0.0f;
-                    for (cc = (-center); cc <= center; cc++) {
-                        if (((c + cc) >= 0) && ((c + cc) < (int)nCols)) {
-                            dot += (float)image.GetPixel(c + cc, r).GetIntensity() * kernel[center + cc];
+                    for (cc = (-center); cc <= center; cc++)
+                    {
+                        if (((c + cc) >= 0) && ((c + cc) < (int)nCols))
+                        {
+                            dot += (float)image.GetIntensity(c + cc, r) * kernel[center + cc];
                             sum += kernel[center + cc];
                         }
                     }
@@ -410,14 +414,17 @@ namespace Darwin.ImageProcessing
             /****************************************************************************
             * Blur in the y - direction.
             ****************************************************************************/
-            for (c = 0; c < (int)nCols; c++) {
-                for (r = 0; r < (int)nRows; r++) {
+            for (c = 0; c < (int)nCols; c++)
+            {
+                for (r = 0; r < (int)nRows; r++)
+                {
                     sum = 0.0f;
                     dot = 0.0f;
-                    for (rr = (-center); rr <= center; rr++) {
-                        if (((r + rr) >= 0) && ((r + rr) < (int)nRows)) {
-                            dot +=
-                            tempim[(r + rr) * nCols + c] * kernel[center + rr];
+                    for (rr = (-center); rr <= center; rr++)
+                    {
+                        if (((r + rr) >= 0) && ((r + rr) < (int)nRows))
+                        {
+                            dot += tempim[(r + rr) * nCols + c] * kernel[center + rr];
                             sum += kernel[center + rr];
                         }
                     }
@@ -427,7 +434,6 @@ namespace Darwin.ImageProcessing
             }
             return smoothedim;
         }
-
 
         /*******************************************************************************
         * PROCEDURE: make_gaussian_kernel

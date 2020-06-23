@@ -87,7 +87,7 @@ namespace Darwin.ImageProcessing
 			{
 				for (c = 0; c < cols; c++)
 				{
-					if (nms.GetPixel(c, r).GetIntensity() == PossibleEdge)
+					if (nms.GetIntensity(c, r) == PossibleEdge)
 						edge.SetPixel(c, r, PossibleEdgePixel);
 					else
 						edge.SetPixel(c, r, NoEdgePixel);
@@ -117,7 +117,7 @@ namespace Darwin.ImageProcessing
 			{
 				for (c = 0; c < cols; c++, pos++)
 				{
-					if (edge.GetPixel(c, r).GetIntensity() == PossibleEdge)
+					if (edge.GetIntensity(c, r) == PossibleEdge)
 						hist[mag[pos]]++;
 				}
 			}
@@ -162,7 +162,7 @@ namespace Darwin.ImageProcessing
 			{
 				for (c = 0; c < cols; c++, pos++)
 				{
-					if ((edge.GetPixel(c, r).GetIntensity() == PossibleEdge)
+					if ((edge.GetIntensity(c, r) == PossibleEdge)
 					&& (mag[pos] >= highthreshold))
 					{
 						edge.SetPixel(c, r, EdgePixel);
@@ -179,7 +179,7 @@ namespace Darwin.ImageProcessing
 			{
 				for (c = 0; c < cols; c++)
 				{
-					if (edge.GetPixel(c, r).GetIntensity() != Edge)
+					if (edge.GetIntensity(c, r) != Edge)
 					{
 						edge.SetPixel(c, r, NoEdgePixel);
 					}

@@ -50,6 +50,14 @@ namespace Darwin.Extensions
             return Convert.ToByte(Math.Round(color.R * 0.299 + color.G * 0.587 + color.B * 0.114));
         }
 
+        public static byte GetIntensity(byte r, byte g, byte b)
+        {
+            if (r == g && g == b)
+                return r;
+
+            return Convert.ToByte(Math.Round(r * 0.299 + r * 0.587 + b * 0.114));
+        }
+
         public static Color SetIntensity(this Color color, byte intensity)
         {
             byte outputR, outputG, outputB;

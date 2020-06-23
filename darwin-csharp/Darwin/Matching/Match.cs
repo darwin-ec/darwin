@@ -23,11 +23,11 @@ namespace Darwin.Matching
     {
         private const int IGNORE_MID_POSIT = 0;
         protected delegate double ErrorBetweenOutlinesDelegate(
-                                    FloatContour c1, // mapped unknown fin 
+                                    FloatContour c1, // Mapped unknown fin 
                                     int begin1,
                                     int mid1,
                                     int end1,
-                                    FloatContour c2, // envenly spaced database fin
+                                    FloatContour c2, // Evenly spaced database fin
                                     int begin2,
                                     int mid2,
                                     int end2);
@@ -270,8 +270,6 @@ namespace Darwin.Matching
                         result.B2, result.T2, result.E2); // beginning, tip & end of database fin
 
                     MatchResults.AddResult(r);
-
-                    //delete thisDBFin; ///***1.6 - old location, did not delete fins not tried
                 }
             }
 

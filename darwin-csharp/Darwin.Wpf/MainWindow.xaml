@@ -172,7 +172,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition Height="5" />
-                    <RowDefinition Height="245" />
+                    <RowDefinition Height="255" />
                 </Grid.RowDefinitions>
 
                 <TabControl Grid.Row="0">
@@ -239,7 +239,11 @@
                               SelectedValue="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5" />
 
                         <Label Grid.Row="7" Grid.Column="0">Short Description:</Label>
-                        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                        <TextBox Grid.Row="7" Grid.Column="1"
+                                TextWrapping="Wrap"
+                                AcceptsReturn="True" MinLines="2"
+                                VerticalScrollBarVisibility="Visible"
+                                Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
                     </Grid>
                 </ScrollViewer>
             </Grid>
