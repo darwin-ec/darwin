@@ -110,6 +110,11 @@ namespace Darwin.Wpf
                 _vm.TraceStep = TraceStepType.IdentifyFeatures;
             }
 
+			if (_vm.ViewerMode)
+            {
+				_vm.TraceTool = TraceToolType.Hand;
+            }
+
 			_vm.ZoomValues.Add(16);
 			_vm.ZoomValues.Add(8);
 			_vm.ZoomValues.Add(4);
@@ -346,7 +351,6 @@ namespace Darwin.Wpf
 
 						return;
 					}//102AT
-
 				}
 
 				// Successful trace

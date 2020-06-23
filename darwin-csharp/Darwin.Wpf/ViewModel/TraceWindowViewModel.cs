@@ -275,6 +275,8 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		public bool ViewerMode { get; set; }
+
 		private Visibility _addToDatabaseVisibility;
 		public Visibility AddToDatabaseVisibility
         {
@@ -516,9 +518,11 @@ namespace Darwin.Wpf.ViewModel
 
 			if (mainWindow != null)
 			{
+				TraceTool = TraceToolType.Hand;
 				MatchVisibility = Visibility.Collapsed;
 				SaveVisibility = Visibility.Collapsed;
 				AddToDatabaseVisibility = Visibility.Collapsed;
+				ViewerMode = true;
 
 				TopToolbarVisibility = Visibility.Collapsed;
 				TraceLocked = true;
