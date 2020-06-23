@@ -275,6 +275,17 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private Visibility _addToDatabaseVisibility;
+		public Visibility AddToDatabaseVisibility
+        {
+			get => _addToDatabaseVisibility;
+			set
+			{
+				_addToDatabaseVisibility = value;
+				RaisePropertyChanged("AddToDatabaseVisibility");
+			}
+		}
+
 		// TODO: Do we need both finalized & locked?
 		private bool _traceFinalized;
 		public bool TraceFinalized
@@ -456,6 +467,7 @@ namespace Darwin.Wpf.ViewModel
 			TraceToolsVisibility = Visibility.Visible;
 			SaveVisibility = Visibility.Visible;
 			MatchVisibility = Visibility.Visible;
+			AddToDatabaseVisibility = Visibility.Visible;
 
 			//DatabaseFin = new DatabaseFin();
 			TraceStep = TraceStepType.TraceOutline;
@@ -496,6 +508,24 @@ namespace Darwin.Wpf.ViewModel
 				FeatureToolsVisibility = Visibility.Collapsed;
 			}
         }
+
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, MainWindow mainWindow)
+			: this(fin, db)
+		{
+			WindowTitle = windowTitle;
+
+			if (mainWindow != null)
+			{
+				MatchVisibility = Visibility.Collapsed;
+				SaveVisibility = Visibility.Collapsed;
+				AddToDatabaseVisibility = Visibility.Collapsed;
+
+				TopToolbarVisibility = Visibility.Collapsed;
+				TraceLocked = true;
+				TraceFinalized = true;
+				FeatureToolsVisibility = Visibility.Collapsed;
+			}
+		}
 
 		public TraceWindowViewModel(string imageFilename, DarwinDatabase db)
 			: this()
@@ -593,7 +623,12 @@ namespace Darwin.Wpf.ViewModel
 			DatabaseFin = fin;
 
 			Bitmap = fin.FinImage ?? fin.OriginalFinImage;
-			Contour = new Contour(fin.FinOutline, fin.Scale);
+
+			if (fin.FinOutline == null || fin.FinOutline.ChainPoints == null)
+				Contour = null;
+			else
+				Contour = new Contour(fin.FinOutline, fin.Scale);
+
 			Outline = fin.FinOutline;
 
 			if (Categories == null)

@@ -361,5 +361,30 @@ namespace Darwin.Wpf
             var outlineWindow = new OutlineWindow(outlineWindowVM);
             outlineWindow.Show();
         }
+
+        private void ViewImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectedFin != null)
+            {
+                var fin = _vm.FullyLoadFin();
+                var vm = new TraceWindowViewModel(fin, _vm.DarwinDatabase, "Viewing " + fin.IDCode, this);
+                TraceWindow traceWindow = new TraceWindow(vm);
+                traceWindow.Show();
+            }
+        }
+
+        private void ViewOriginalImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Little hacky
+            if (_vm.SelectedFin != null)
+            {
+                var fin = _vm.FullyLoadFin();
+                fin.FinOutline.ChainPoints = null;
+                fin.FinImage = fin.OriginalFinImage;
+                var vm = new TraceWindowViewModel(fin, _vm.DarwinDatabase, "Viewing " + fin.IDCode + " Original Image", this);
+                TraceWindow traceWindow = new TraceWindow(vm);
+                traceWindow.Show();
+            }
+        }
     }
 }

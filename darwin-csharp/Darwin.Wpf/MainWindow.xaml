@@ -177,7 +177,9 @@
 
                 <TabControl Grid.Row="0">
                     <TabItem Header="Image">
-                        <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
+                        <Button x:Name="ViewImageButton" Click="ViewImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                            <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
+                        </Button>
                     </TabItem>
                     <TabItem Header="Outline">
                         <Button x:Name="OutlineButton" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Click="OutlineButton_Click" Background="Transparent" BorderThickness="0">
@@ -192,7 +194,9 @@
                         </Button>
                     </TabItem>
                     <TabItem Header="Original Image">
-                        <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />
+                        <Button x:Name="ViewOriginalImageButton" Click="ViewOriginalImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                            <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />
+                        </Button>
                     </TabItem>
                 </TabControl>
                 

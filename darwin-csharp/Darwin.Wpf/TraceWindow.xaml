@@ -274,7 +274,7 @@
                         </Button.ToolTip>
                         Save
                     </Button>
-                    <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click"  ToolTip="Add this fin to the database without attempting to match it">Add to Database</Button>
+                    <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click" Visibility="{Binding AddToDatabaseVisibility}"  ToolTip="Add this fin to the database without attempting to match it">Add to Database</Button>
                 </StackPanel>
             </Grid>
 

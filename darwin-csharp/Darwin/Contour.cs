@@ -173,7 +173,7 @@ namespace Darwin
 			_scale = normalizationScale;
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
-			if (outline?.ChainPoints.Length > 0)
+			if (outline.ChainPoints != null && outline?.ChainPoints.Length > 0)
 			{
 				foreach (var p in outline.ChainPoints.Points)
 					_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));

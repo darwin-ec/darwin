@@ -108,11 +108,11 @@ namespace Darwin.Wpf.ViewModel
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentNullException(nameof(filename));
 
-            var finCopy = PrepSelectedFinForSave();
+            var finCopy = FullyLoadFin();
             CatalogSupport.SaveFinz(finCopy, filename, true);
         }
 
-        private DatabaseFin PrepSelectedFinForSave()
+        public DatabaseFin FullyLoadFin()
         {
             DatabaseFin finCopy = null;
             if (SelectedFin != null)
