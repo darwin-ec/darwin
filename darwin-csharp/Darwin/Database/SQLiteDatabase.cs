@@ -19,7 +19,7 @@ namespace Darwin.Database
     // eliminate some duplication.
     public class SQLiteDatabase : DarwinDatabase
     {
-        public const int LatestDBVersion = 2;
+        public const int LatestDBVersion = 3;
 
         private List<DBDamageCategory> _categories;
 
@@ -125,7 +125,12 @@ namespace Darwin.Database
 
             // Maybe this should be a little more generic, but just hardcoding version upgrades right now
             if (version < LatestDBVersion)
-                UpgradeToVersion2(conn);
+            {
+                if (version < 2)
+                    UpgradeToVersion2(conn);
+
+                UpgradeToVersion3(conn);
+            }
         }
 
         private void UpgradeToVersion2(SQLiteConnection conn)
@@ -148,6 +153,31 @@ namespace Darwin.Database
                 }
 
                 SetVersion(conn, 2);
+            }
+            catch { }
+        }
+
+
+        private void UpgradeToVersion3(SQLiteConnection conn)
+        {
+            try
+            {
+                const string CreateFeaturePointsTable = @"CREATE TABLE IF NOT EXISTS OutlineFeaturePoints(
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        Position INTEGER,
+                        UserSetPosition INTEGER,
+                        fkOutlineID INTEGER
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_OutlineFeaturePoints_fkOutlineID ON OutlineFeaturePoints (fkOutlineID);";
+
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = CreateFeaturePointsTable;
+                    cmd.ExecuteNonQuery();
+                }
+
+                SetVersion(conn, 3);
             }
             catch { }
         }
@@ -190,14 +220,24 @@ namespace Darwin.Database
                 fc.AddPoint(p.xcoordinate, p.ycoordinate);
             }
 
+            var featurePoints = SelectFeaturePointsByFkOutlineID(outline.id);
+
             // TODO: The type shouldn't be hardcoded
-            finOutline = new Outline(fc, FeatureSetType.DorsalFin);
-            finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeBegin, outline.beginle);
-            finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeEnd, outline.endle);
-            finOutline.SetFeaturePoint(FeaturePointType.Notch, outline.notchposition);
-            finOutline.SetFeaturePoint(FeaturePointType.Tip, outline.tipposition);
-            finOutline.SetFeaturePoint(FeaturePointType.PointOfInflection, outline.endte);
-            
+            if (featurePoints != null && featurePoints.Count > 0)
+            {
+                var featureSet = FeatureSet.Load(FeatureSetType.DorsalFin, featurePoints);
+                finOutline = new Outline(fc, FeatureSetType.DorsalFin, featureSet);
+            }
+            else
+            {
+                finOutline = new Outline(fc, FeatureSetType.DorsalFin);
+                finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeBegin, outline.beginle);
+                finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeEnd, outline.endle);
+                finOutline.SetFeaturePoint(FeaturePointType.Notch, outline.notchposition);
+                finOutline.SetFeaturePoint(FeaturePointType.Tip, outline.tipposition);
+                finOutline.SetFeaturePoint(FeaturePointType.PointOfInflection, outline.endte);
+            }
+
             // TODO?
             // finOutline.SetLEAngle(0.0, true);
 
@@ -315,6 +355,8 @@ namespace Darwin.Database
                     }
                     InsertPoints(conn, points);
 
+                    InsertFeaturePoints(conn, outline.id, finOutline.FeatureSet.FeaturePointList);
+
                     DBImage image = new DBImage();
                     image.dateofsighting = fin.DateOfSighting;
                     image.imagefilename = fin.ImageFilename;
@@ -400,6 +442,9 @@ namespace Darwin.Database
                     DeletePoints(conn, outline.id);
 
                     InsertPoints(conn, points);
+
+                    DeleteOutlineFeaturePointsByOutlineID(conn, outline.id);
+                    InsertFeaturePoints(conn, outline.id, fin.FinOutline.FeatureSet.FeaturePointList);
 
                     // query db as we don't know the image id
                     image = SelectImageByFkIndividualID(individual.id);
@@ -959,6 +1004,41 @@ namespace Darwin.Database
             }
         }
 
+        private List<FeaturePoint> SelectFeaturePointsByFkOutlineID(long fkoutlineid)
+        {
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    conn.Open();
+
+                    cmd.CommandText = "SELECT * FROM OutlineFeaturePoints WHERE fkOutlineID = @fkOutlineID;";
+                    cmd.Parameters.AddWithValue("@fkOutlineID", fkoutlineid);
+
+                    List<FeaturePoint> points = new List<FeaturePoint>();
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            var featurePoint = new FeaturePoint
+                            {
+                                ID = rdr.SafeGetInt("ID"),
+                                Type = (FeaturePointType)rdr.SafeGetInt("Type"),
+                                Position = rdr.SafeGetInt("Position"),
+                                UserSetPosition = rdr.SafeGetInt("UserSetPosition") != 0
+                            };
+
+                            points.Add(featurePoint);
+                        }
+                    }
+
+                    conn.Close();
+
+                    return points;
+                }
+            }
+        }
+
         // *****************************************************************************
         //
         // Populates given list<DBPoint> with all rows from Points table where
@@ -986,7 +1066,7 @@ namespace Darwin.Database
                                 xcoordinate = (float)rdr.SafeGetDouble("XCoordinate"),
                                 ycoordinate = (float)rdr.SafeGetDouble("YCoordinate"),
                                 fkoutlineid = rdr.SafeGetInt("fkOutlineID"),
-                                orderid = rdr.SafeGetInt("fkOutlineID")
+                                orderid = rdr.SafeGetInt("OrderID")
                             };
 
                             points.Add(point);
@@ -1131,6 +1211,29 @@ namespace Darwin.Database
                 damagecategory.id = conn.LastInsertRowId;
 
                 return damagecategory.id;
+            }
+        }
+
+        private long InsertFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref FeaturePoint point)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                /*                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        Position INTEGER,
+                        UserSetPosition INTEGER,*/
+                cmd.CommandText = "INSERT INTO OutlineFeaturePoints (ID, Type, Position, UserSetPosition, fkOutlineID) " +
+                    "VALUES (NULL, @Type, @Position, @UserSetPosition, @fkOutlineID);";
+                cmd.Parameters.AddWithValue("@Type", point.Type);
+                cmd.Parameters.AddWithValue("@Position", point.Position);
+                cmd.Parameters.AddWithValue("@UserSetPosition", (point.UserSetPosition) ? 1 : 0);
+                cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
+
+                cmd.ExecuteNonQuery();
+
+                point.ID = conn.LastInsertRowId;
+
+                return point.ID;
             }
         }
 
@@ -1303,6 +1406,16 @@ namespace Darwin.Database
                 return thumbnail.id;
             }
         }
+
+        private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<FeaturePoint> points)
+        {
+            foreach (var p in points)
+            {
+                var pointCopy = p;
+                InsertFeaturePoint(conn, fkOutlineID, ref pointCopy);
+            }
+        }
+
 
         // *****************************************************************************
         //
@@ -1507,6 +1620,17 @@ namespace Darwin.Database
 
                 cmd.Parameters.AddWithValue("@Value", dbinfo.value);
                 cmd.Parameters.AddWithValue("@Key", dbinfo.key);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteOutlineFeaturePointsByOutlineID(SQLiteConnection conn, long fkOutlineID)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "DELETE FROM OutlineFeaturePoints WHERE fkOutlineID = @ID";
+                cmd.Parameters.AddWithValue("@ID", fkOutlineID);
 
                 cmd.ExecuteNonQuery();
             }
@@ -1728,6 +1852,14 @@ namespace Darwin.Database
                         fkIndividualID INTEGER
                     );
 
+                    CREATE TABLE IF NOT EXISTS OutlineFeaturePoints (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        Position INTEGER,
+                        UserSetPosition INTEGER,
+                        fkOutlineID INTEGER
+                    );
+
                     CREATE TABLE IF NOT EXISTS Points (
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         XCoordinate REAL,
@@ -1745,6 +1877,8 @@ namespace Darwin.Database
                     CREATE INDEX IF NOT EXISTS img_indiv ON Images (fkIndividualID);
 
                     CREATE INDEX IF NOT EXISTS outln_indiv ON Outlines (fkIndividualID);
+
+                    CREATE INDEX IF NOT EXISTS IX_OutlineFeaturePoints_fkOutlineID ON OutlineFeaturePoints (fkOutlineID);
 
                     CREATE INDEX IF NOT EXISTS pts_outln ON Points (fkOutlineID);
 

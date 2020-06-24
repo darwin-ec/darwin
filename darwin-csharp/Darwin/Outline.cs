@@ -119,6 +119,19 @@ namespace Darwin
             _remappedChainPoints = null;
         }
 
+        public Outline(FloatContour fc, FeatureSetType featuresType, FeatureSet features)
+        {
+            // called prior to reading indices of each feature pt and the
+            // user mod bits
+
+            // Note, doesn't pass chain & chainpoints in, since we don't want to find them again
+            FeatureSet = features;
+
+            _chainPoints = fc;
+            _chain = new Chain(_chainPoints);
+            _remappedChainPoints = null;
+        }
+
         //////////////////////////////////////////////////////////////
         // Outline(Outline* outline)
         //

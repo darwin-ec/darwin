@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Darwin.Features
 {
-    public class FeaturePoint : INotifyPropertyChanged
+    public class FeaturePoint : BaseEntity, INotifyPropertyChanged
     {
         public static readonly FeaturePoint Empty = new FeaturePoint { IsEmpty = true };
 

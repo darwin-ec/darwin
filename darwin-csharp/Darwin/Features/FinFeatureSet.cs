@@ -40,6 +40,18 @@ namespace Darwin.Features
             };
         }
 
+        public FinFeatureSet(List<FeaturePoint> featurePoints)
+        {
+            if (featurePoints == null)
+                throw new ArgumentNullException(nameof(featurePoints));
+
+            foreach (var fp in featurePoints)
+            {
+                fp.Name = FeaturePointNameMapping[fp.Type];
+                FeaturePoints[fp.Type] = fp;
+            }
+        }
+
         public FinFeatureSet(Chain chain, FloatContour chainPoints)
         {
             FeatureSetType = FeatureSetType.DorsalFin;

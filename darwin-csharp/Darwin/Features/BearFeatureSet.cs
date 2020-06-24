@@ -11,6 +11,11 @@ namespace Darwin.Features
             FeatureSetType = FeatureSetType.Bear;
         }
 
+        public BearFeatureSet(List<FeaturePoint> featurePoints)
+        {
+
+        }
+
         public BearFeatureSet(Chain chain, FloatContour chainPoints)
         {
             FeatureSetType = FeatureSetType.Bear;

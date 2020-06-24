@@ -9,6 +9,7 @@
 //
 /////////////////////////////////////////////////////////////////////
 
+using Darwin.Features;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -72,6 +73,17 @@ namespace Darwin.Database
             {
                 _categories = value;
                 RaisePropertyChanged("Categories");
+            }
+        }
+
+        private FeatureSetType _featureSetType;
+        public FeatureSetType FeatureSetType
+        {
+            get => _featureSetType;
+            set
+            {
+                _featureSetType = value;
+                RaisePropertyChanged("FeatureSetType");
             }
         }
 

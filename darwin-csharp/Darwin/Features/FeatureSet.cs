@@ -42,6 +42,17 @@ namespace Darwin.Features
         //    }
         //}
 
+        public List<FeaturePoint> FeaturePointList
+        {
+            get
+            {
+                if (FeaturePoints == null)
+                    return new List<FeaturePoint>();
+
+                return FeaturePoints.Values.ToList();
+            }
+        }
+
         public List<int> FeaturePointPositions
         {
             get
@@ -88,6 +99,24 @@ namespace Darwin.Features
                         return new BearFeatureSet();
 
                     return new BearFeatureSet(chain, chainPoints);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static FeatureSet Load(FeatureSetType featuresType, List<FeaturePoint> featurePoints)
+        {
+            if (featurePoints == null)
+                throw new ArgumentNullException(nameof(featurePoints));
+
+            switch (featuresType)
+            {
+                case FeatureSetType.DorsalFin:
+                    return new FinFeatureSet(featurePoints);
+
+                case FeatureSetType.Bear:
+                    return new BearFeatureSet(featurePoints);
 
                 default:
                     throw new NotImplementedException();
