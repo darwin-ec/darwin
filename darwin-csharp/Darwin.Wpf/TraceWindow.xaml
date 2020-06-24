@@ -238,8 +238,8 @@
 
                         <Label Padding="0 5">Damage Category:</Label>
                         <ComboBox ItemsSource="{Binding Categories, Mode=OneWay}"
-                              DisplayMemberPath="name"
-                              SelectedValuePath="name"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="Name"
                               SelectedValue="{Binding Path=DatabaseFin.DamageCategory}" Margin="0,0,10,5">
                         </ComboBox>
 

@@ -18,40 +18,6 @@ using System.Text;
 
 namespace Darwin.Database
 {
-    public class Category : INotifyPropertyChanged
-    {
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                RaisePropertyChanged("Name");
-            }
-        }
-
-        public Category()
-        {
-
-        }
-
-        public Category(string name)
-        {
-            Name = name;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            var handler = PropertyChanged;
-            if (handler == null) return;
-
-            handler(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
-
     public class CatalogScheme : INotifyPropertyChanged
     {
         private string _schemeName;
@@ -111,10 +77,19 @@ namespace Darwin.Database
 
         public CatalogScheme()
 		{
+            FeatureSetType = FeatureSetType.DorsalFin;
 			SchemeName = string.Empty;
 			Categories = new ObservableCollection<Category>();
             IsDefault = false;
 		}
+
+        public CatalogScheme(string name, FeatureSetType featureSetType, List<Category> categories)
+        {
+            SchemeName = name;
+            Categories = new ObservableCollection<Category>(categories);
+            FeatureSetType = featureSetType;
+            IsDefault = true;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -439,8 +439,8 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
-		private ObservableCollection<DBDamageCategory> _categories;
-		public ObservableCollection<DBDamageCategory> Categories
+		private ObservableCollection<Category> _categories;
+		public ObservableCollection<Category> Categories
 		{
 			get => _categories;
 			set
@@ -473,7 +473,7 @@ namespace Darwin.Wpf.ViewModel
 
 			//DatabaseFin = new DatabaseFin();
 			TraceStep = TraceStepType.TraceOutline;
-			Categories = new ObservableCollection<DBDamageCategory>();
+			Categories = new ObservableCollection<Category>();
 			AttachEvents();
 		}
 
@@ -487,7 +487,7 @@ namespace Darwin.Wpf.ViewModel
 			: this()
         {
 			Database = db;
-			Categories = new ObservableCollection<DBDamageCategory>(db.Categories);
+			Categories = db.Categories;
 
 			LoadFin(fin);
 		}
@@ -537,9 +537,9 @@ namespace Darwin.Wpf.ViewModel
 			DatabaseFin = new DatabaseFin();
 
 			if (db.Categories != null && db.Categories.Count > 0)
-				DatabaseFin.DamageCategory = db.Categories[0].name;
+				DatabaseFin.DamageCategory = db.Categories[0].Name;
 
-			Categories = new ObservableCollection<DBDamageCategory>(db.Categories);
+			Categories = db.Categories;
 
 			Database = db;
 
@@ -636,13 +636,13 @@ namespace Darwin.Wpf.ViewModel
 			Outline = fin.FinOutline;
 
 			if (Categories == null)
-				Categories = new ObservableCollection<DBDamageCategory>();
+				Categories = new ObservableCollection<Category>();
 
-			if (!Categories.Any(c => c.name == fin?.DamageCategory))
+			if (!Categories.Any(c => c.Name == fin?.DamageCategory))
 			{
-				Categories.Add(new DBDamageCategory
+				Categories.Add(new Category
 				{
-					name = fin?.DamageCategory
+					Name = fin?.DamageCategory
 				});
 			}
 

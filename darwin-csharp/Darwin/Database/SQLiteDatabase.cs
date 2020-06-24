@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -19,32 +20,31 @@ namespace Darwin.Database
     // eliminate some duplication.
     public class SQLiteDatabase : DarwinDatabase
     {
-        public const int LatestDBVersion = 3;
+        private const string SettingsCatalogSchemeName = "CatalogSchemeName";
+        private const string SettingsFeatureSetType = "FeatureSetType";
 
-        private List<DBDamageCategory> _categories;
+        public const int LatestDBVersion = 4;
 
-        public override List<DBDamageCategory> Categories
+        private CatalogScheme _catalogScheme;
+        public override CatalogScheme CatalogScheme
         {
             get
             {
-                if (_categories == null)
-                    _categories = SelectAllDamageCategories();
+                if (_catalogScheme == null)
+                    _catalogScheme = SelectCatalogScheme();
 
-                return _categories;
+                return _catalogScheme;
             }
         }
 
-        public override List<SelectableDBDamageCategory> SelectableCategories
+        public override ObservableCollection<Category> Categories
         {
             get
             {
-                return Categories
-                    .Select(x => new SelectableDBDamageCategory
-                    {
-                        IsSelected = true,
-                        Name = x.name
-                    })
-                    .ToList();
+                if (CatalogScheme == null)
+                    return new ObservableCollection<Category>();
+
+                return CatalogScheme.Categories;
             }
         }
 
@@ -129,7 +129,10 @@ namespace Darwin.Database
                 if (version < 2)
                     UpgradeToVersion2(conn);
 
-                UpgradeToVersion3(conn);
+                if (version < 3)
+                    UpgradeToVersion3(conn);
+
+                UpgradeToVersion4(conn);
             }
         }
 
@@ -157,7 +160,6 @@ namespace Darwin.Database
             catch { }
         }
 
-
         private void UpgradeToVersion3(SQLiteConnection conn)
         {
             try
@@ -182,6 +184,27 @@ namespace Darwin.Database
             catch { }
         }
 
+        private void UpgradeToVersion4(SQLiteConnection conn)
+        {
+            try
+            {
+                const string CreateSettingsTable = @"CREATE TABLE IF NOT EXISTS Settings (
+                        Key TEXT,
+                        Value TEXT
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_Settings_Key ON Settings (Key);";
+
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = CreateSettingsTable;
+                    cmd.ExecuteNonQuery();
+                }
+
+                SetVersion(conn, 4);
+            }
+            catch { }
+        }
+
         // *****************************************************************************
         //
         // Returns complete DatabaseFin<ColorImage>. mDataPos field will be used to map to id in 
@@ -193,7 +216,7 @@ namespace Darwin.Database
             DBImage image;
             DBOutline outline;
             //DBThumbnail thumbnail;
-            DBDamageCategory damagecategory;
+            Category damagecategory;
             Outline finOutline;
             FloatContour fc = new FloatContour();
 
@@ -249,7 +272,7 @@ namespace Darwin.Database
                 image.dateofsighting,
                 image.rollandframe,
                 image.locationcode,
-                damagecategory.name,
+                damagecategory.Name,
                 image.shortdescription,
                 individual.id);
 
@@ -302,7 +325,7 @@ namespace Darwin.Database
         {
             InvalidateAllFins();
 
-            DBDamageCategory dmgCat;
+            Category dmgCat;
             Outline finOutline;
             FloatContour fc;
             int numPoints;
@@ -320,12 +343,12 @@ namespace Darwin.Database
                 {
                     dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
 
-                    if (dmgCat.id == -1)
+                    if (dmgCat.ID == -1)
                         dmgCat = SelectDamageCategoryByName("NONE");
 
                     individual.idcode = fin.IDCode;
                     individual.name = fin.Name;
-                    individual.fkdamagecategoryid = dmgCat.id;
+                    individual.fkdamagecategoryid = dmgCat.ID;
                     InsertIndividual(conn, ref individual);
 
                     finOutline = fin.FinOutline;
@@ -395,7 +418,7 @@ namespace Darwin.Database
             DBImage image;
             DBOutline outline;
             DBThumbnail thumbnail;
-            DBDamageCategory dmgCat;
+            Category dmgCat;
             FloatContour fc;
             int i, numPoints;
 
@@ -411,7 +434,7 @@ namespace Darwin.Database
                     individual.id = fin.DataPos; // mapping Individuals id to mDataPos
                     individual.idcode = fin.IDCode;
                     individual.name = fin.Name;
-                    individual.fkdamagecategoryid = dmgCat.id;
+                    individual.fkdamagecategoryid = dmgCat.ID;
                     UpdateDBIndividual(conn, individual);
 
                     // we do this as we don't know what the outline id is
@@ -483,7 +506,7 @@ namespace Darwin.Database
             individual.id = data.DataPos; // mapping Individuals id to mDataPos
             individual.idcode = data.IDCode;
             individual.name = data.Name;
-            individual.fkdamagecategoryid = dmgCat.id;
+            individual.fkdamagecategoryid = dmgCat.ID;
 
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -597,7 +620,7 @@ namespace Darwin.Database
             }
         }
 
-        private DBDamageCategory SelectDamageCategoryByName(string name)
+        private Category SelectDamageCategoryByName(string name)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -608,17 +631,17 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM DamageCategories WHERE Name = @Name;";
                     cmd.Parameters.AddWithValue("@Name", name);
 
-                    DBDamageCategory category = null;
+                    Category category = null;
 
                     using (var rdr = cmd.ExecuteReader())
                     {
                         if (rdr.Read())
                         {
-                            category = new DBDamageCategory
+                            category = new Category
                             {
-                                id = rdr.SafeGetInt("ID"),
-                                name = rdr.SafeGetString("Name"),
-                                orderid = rdr.SafeGetInt("OrderID")
+                                ID = rdr.SafeGetInt("ID"),
+                                Name = rdr.SafeGetString("Name"),
+                                Order = rdr.SafeGetInt("OrderID")
                             };
                         }
                     }
@@ -629,7 +652,7 @@ namespace Darwin.Database
             }
         }
 
-        private DBDamageCategory SelectDamageCategoryByID(long id)
+        private Category SelectDamageCategoryByID(long id)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -640,17 +663,17 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM DamageCategories WHERE ID = @ID;";
                     cmd.Parameters.AddWithValue("@ID", id);
 
-                    DBDamageCategory category = null;
+                    Category category = null;
 
                     using (var rdr = cmd.ExecuteReader())
                     {
                         if (rdr.Read())
                         {
-                            category = new DBDamageCategory
+                            category = new Category
                             {
-                                id = rdr.SafeGetInt("ID"),
-                                name = rdr.SafeGetString("Name"),
-                                orderid = rdr.SafeGetInt("OrderID")
+                                ID = rdr.SafeGetInt("ID"),
+                                Name = rdr.SafeGetString("Name"),
+                                Order = rdr.SafeGetInt("OrderID")
                             };
                         }
                     }
@@ -662,7 +685,23 @@ namespace Darwin.Database
             }
         }
 
-        private List<DBDamageCategory> SelectAllDamageCategories()
+        private CatalogScheme SelectCatalogScheme()
+        {
+            var settings = SelectAllSettings();
+
+            string schemeName = "Eckerd College";
+            FeatureSetType featureSetType = FeatureSetType.DorsalFin;
+
+            if (settings != null && settings.ContainsKey(SettingsCatalogSchemeName))
+                schemeName = settings[SettingsCatalogSchemeName];
+
+            if (settings != null && settings.ContainsKey(SettingsFeatureSetType))
+                featureSetType = (FeatureSetType)Convert.ToInt32(settings[SettingsFeatureSetType]);
+
+            return new CatalogScheme(schemeName, featureSetType, SelectAllDamageCategories());
+        }
+
+        private List<Category> SelectAllDamageCategories()
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -672,17 +711,17 @@ namespace Darwin.Database
 
                     cmd.CommandText = "SELECT * FROM DamageCategories ORDER BY OrderID;";
 
-                    var categories = new List<DBDamageCategory>();
+                    var categories = new List<Category>();
 
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            var cat = new DBDamageCategory
+                            var cat = new Category
                             {
-                                id = rdr.SafeGetInt("ID"),
-                                name = rdr.SafeGetString("Name"),
-                                orderid = rdr.SafeGetInt("OrderID")
+                                ID = rdr.SafeGetInt("ID"),
+                                Name = rdr.SafeGetString("Name"),
+                                Order = rdr.SafeGetInt("OrderID")
                             };
 
                             categories.Add(cat);
@@ -700,7 +739,7 @@ namespace Darwin.Database
         //
         // This returns all the DBInfo rows as a list of DBInfo structs.
         //
-        public List<DBInfo> SelectAllDBInfo()
+        public Dictionary<string,string> SelectAllSettings()
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -708,26 +747,20 @@ namespace Darwin.Database
                 {
                     conn.Open();
 
-                    cmd.CommandText = "SELECT * FROM DBInfo;";
+                    cmd.CommandText = "SELECT * FROM Settings;";
 
-                    var infos = new List<DBInfo>();
+                    var settings = new Dictionary<string, string>();
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            var inf = new DBInfo
-                            {
-                                key = rdr.SafeGetString("Key"),
-                                value = rdr.SafeGetString("Value")
-                            };
-
-                            infos.Add(inf);
+                            settings[rdr.SafeGetString("Key")] = rdr.SafeGetString("Value");
                         }
                     }
 
                     conn.Close();
 
-                    return infos;
+                    return settings;
                 }
             }
         }
@@ -1197,20 +1230,20 @@ namespace Darwin.Database
         // Inserts DamageCategory into DamageCategories table.  Ignores id as
         // this is autoincremented in the database.
         //
-        private long InsertDamageCategory(SQLiteConnection conn, ref DBDamageCategory damagecategory)
+        private long InsertDamageCategory(SQLiteConnection conn, ref Category damagecategory)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
                 cmd.CommandText = "INSERT INTO DamageCategories (ID, Name, OrderID)  " +
                     "VALUES (NULL, @Name, @OrderID);";
-                cmd.Parameters.AddWithValue("@Name", damagecategory.name);
-                cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
+                cmd.Parameters.AddWithValue("@Name", damagecategory.Name);
+                cmd.Parameters.AddWithValue("@OrderID", damagecategory.Order);
 
                 cmd.ExecuteNonQuery();
 
-                damagecategory.id = conn.LastInsertRowId;
+                damagecategory.ID = conn.LastInsertRowId;
 
-                return damagecategory.id;
+                return damagecategory.ID;
             }
         }
 
@@ -1218,10 +1251,6 @@ namespace Darwin.Database
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                /*                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Type INTEGER,
-                        Position INTEGER,
-                        UserSetPosition INTEGER,*/
                 cmd.CommandText = "INSERT INTO OutlineFeaturePoints (ID, Type, Position, UserSetPosition, fkOutlineID) " +
                     "VALUES (NULL, @Type, @Position, @UserSetPosition, @fkOutlineID);";
                 cmd.Parameters.AddWithValue("@Type", point.Type);
@@ -1260,18 +1289,14 @@ namespace Darwin.Database
             }
         }
 
-        // *****************************************************************************
-        //
-        // Inserts DBInfo into DBInfo table
-        //
-        private void InsertDBInfo(SQLiteConnection conn, DBInfo dbinfo)
+        private void InsertSetting(SQLiteConnection conn, string key, string value)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                cmd.CommandText = "INSERT INTO DBInfo (Key, Value) " +
+                cmd.CommandText = "INSERT INTO Settings (Key, Value) " +
                     "VALUES (@Key, @Value);";
-                cmd.Parameters.AddWithValue("@Key", dbinfo.key);
-                cmd.Parameters.AddWithValue("@Value", dbinfo.value);
+                cmd.Parameters.AddWithValue("@Key", key);
+                cmd.Parameters.AddWithValue("@Value", value);
 
                 cmd.ExecuteNonQuery();
             }
@@ -1477,7 +1502,7 @@ namespace Darwin.Database
         // Updates row in DamageCategories table using given DBDamageCategory struct.
         // Uses ID field for identifying row.
         //
-        private void UpdateDamageCategory(SQLiteConnection conn, DBDamageCategory damagecategory)
+        private void UpdateDamageCategory(SQLiteConnection conn, Category damagecategory)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
@@ -1486,9 +1511,9 @@ namespace Darwin.Database
                     "OrderID = @OrderID " +
                     "WHERE ID = @ID";
 
-                cmd.Parameters.AddWithValue("@Name", damagecategory.name);
-                cmd.Parameters.AddWithValue("@OrderID", damagecategory.orderid);
-                cmd.Parameters.AddWithValue("@ID", damagecategory.id);
+                cmd.Parameters.AddWithValue("@Name", damagecategory.Name);
+                cmd.Parameters.AddWithValue("@OrderID", damagecategory.Order);
+                cmd.Parameters.AddWithValue("@ID", damagecategory.ID);
 
                 cmd.ExecuteNonQuery();
             }
@@ -1605,21 +1630,16 @@ namespace Darwin.Database
             }
         }
 
-        // *****************************************************************************
-        //
-        // Updates row in DBInfo table using given DBInfo
-        // struct.  Uses ID field for identifying row.
-        //
-        private void UpdateDBInfo(SQLiteConnection conn, DBInfo dbinfo)
+        private void UpdateSetting(SQLiteConnection conn, string key, string value)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                cmd.CommandText = "UPDATE DBInfo SET " +
+                cmd.CommandText = "UPDATE Settings SET " +
                     "Value = @Value " +
                     "WHERE Key = @Key";
 
-                cmd.Parameters.AddWithValue("@Value", dbinfo.value);
-                cmd.Parameters.AddWithValue("@Key", dbinfo.key);
+                cmd.Parameters.AddWithValue("@Value", value);
+                cmd.Parameters.AddWithValue("@Key", key);
 
                 cmd.ExecuteNonQuery();
             }
@@ -1800,10 +1820,16 @@ namespace Darwin.Database
             using (var conn = new SQLiteConnection(_connectionString))
             {
                 // SQL CREATE TABLE statements... might be better off defined in the header as a constant..
-                string tableCreate = @"CREATE TABLE IF NOT EXISTS DamageCategories (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT, 
-                    OrderID INTEGER, 
-                    Name TEXT);
+                string tableCreate = @"
+                    CREATE TABLE IF NOT EXISTS Settings (
+                        Key TEXT,
+                        Value TEXT
+                    );
+
+                    CREATE TABLE IF NOT EXISTS DamageCategories (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+                        OrderID INTEGER, 
+                        Name TEXT);
 
                     CREATE TABLE IF NOT EXISTS Individuals (
                         ID INTEGER PRIMARY KEY,
@@ -1868,6 +1894,8 @@ namespace Darwin.Database
                         OrderID INTEGER
                     );
 
+                    CREATE INDEX IF NOT EXISTS IX_Settings_Key ON Settings (Key);
+
                     CREATE INDEX IF NOT EXISTS dmgcat_orderid ON DamageCategories (OrderID);
 
                     CREATE INDEX IF NOT EXISTS dmgcat_name ON DamageCategories (Name);
@@ -1907,18 +1935,19 @@ namespace Darwin.Database
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS
 
+                InsertSetting(conn, SettingsCatalogSchemeName, catalogScheme.SchemeName);
+                InsertSetting(conn, SettingsFeatureSetType, catalogScheme.FeatureSetType.ToString());
+
                 for (int i = 0; i < catalogScheme.Categories.Count; i++)
                 {
-                    DBDamageCategory cat = new DBDamageCategory
+                    Category cat = new Category
                     {
-                        name = catalogScheme.Categories[i].Name,
-                        orderid = i
+                        Name = catalogScheme.Categories[i].Name,
+                        Order = i
                     };
 
                     InsertDamageCategory(conn, ref cat);
                 }
-
-                // TODO: enter code to populate DBInfo
 
                 conn.Close();
             }
@@ -2364,3 +2393,5 @@ $~$%!%#%$%%%&%''$T$B#d$.#x!}#b%(%)%*$B%+%,%-%.%/%0
 ";
     }
 }
+ 
+ 

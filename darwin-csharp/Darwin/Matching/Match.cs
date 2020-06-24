@@ -132,7 +132,7 @@ namespace Darwin.Matching
         //    database is later modified.
         //
         public float MatchSingleFin(RegistrationMethodType registrationMethod, int regSegmentsUsed,
-                                    List<SelectableDBDamageCategory> categoryToMatch, bool useFullFinError,
+                                    List<Category> categoryToMatch, bool useFullFinError,
                                     bool useAbsoluteOffsets)
         {
             DatabaseFin thisDBFin;

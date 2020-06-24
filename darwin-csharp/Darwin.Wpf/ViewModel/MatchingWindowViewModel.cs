@@ -12,8 +12,8 @@ namespace Darwin.Wpf.ViewModel
 {
     public class MatchingWindowViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<DBDamageCategory> _categories;
-        public ObservableCollection<DBDamageCategory> Categories
+        private ObservableCollection<Category> _categories;
+        public ObservableCollection<Category> Categories
         {
             get => _categories;
             set
@@ -23,8 +23,8 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        private ObservableCollection<SelectableDBDamageCategory> _selectableCategories;
-        public ObservableCollection<SelectableDBDamageCategory> SelectableCategories
+        private ObservableCollection<Category> _selectableCategories;
+        public ObservableCollection<Category> SelectableCategories
         {
             get => _selectableCategories;
             set
@@ -225,11 +225,10 @@ namespace Darwin.Wpf.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingWindowViewModel(DatabaseFin databaseFin,
-            DarwinDatabase database,
-            ObservableCollection<DBDamageCategory> categories)
+            DarwinDatabase database)
         {
             DatabaseFin = databaseFin;
-            Categories = categories;
+            Categories = database.Categories;
             RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
             RangeOfPoints = RangeOfPointsType.AllPoints;
             Database = database;
@@ -264,17 +263,17 @@ namespace Darwin.Wpf.ViewModel
 
         private void InitializeSelectableCategories()
         {
-            SelectableCategories = new ObservableCollection<SelectableDBDamageCategory>();
+            SelectableCategories = new ObservableCollection<Category>();
 
             if (Categories != null)
             {
                 //bool firstRun = true;
                 foreach (var cat in Categories)
                 {
-                    SelectableCategories.Add(new SelectableDBDamageCategory
+                    SelectableCategories.Add(new Category
                     {
                         IsSelected = true,
-                        Name = cat.name
+                        Name = cat.Name
                     });
 
                     //if (firstRun)

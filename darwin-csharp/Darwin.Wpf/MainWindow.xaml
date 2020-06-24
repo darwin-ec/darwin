@@ -10,7 +10,17 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
         Title="Darwin" Height="750" Width="1050">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34" />
+    </WindowChrome.WindowChrome>
+    
     <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+
         <CommandBinding Command="commands:CustomCommands.NewDatabase" CanExecute="NewDatabaseCommand_CanExecute" Executed="NewDatabaseCommand_Executed" />
         
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
@@ -48,89 +58,117 @@
         </x:Array>
         <converters:NullConverter x:Key="NullConverter" />
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0">
-            <MenuItem Header="File">
-                <MenuItem Command="commands:CustomCommands.NewDatabase" />
-                <Separator/>
-                <MenuItem Command="commands:CustomCommands.OpenImage" />
-                <MenuItem Command="commands:CustomCommands.OpenTracedFin" />
-                <MenuItem Command="commands:CustomCommands.OpenDatabase" />
-                <Separator/>
-                <MenuItem Command="commands:CustomCommands.MatchingQueue" />
-                <Separator/>
-                <MenuItem Command="commands:CustomCommands.Backup" />
-                <MenuItem Command="commands:CustomCommands.Restore" />
-                <Separator/>
-                <MenuItem Header="Import">
-                    <MenuItem Command="commands:CustomCommands.ImportCatalog" />
-                    <MenuItem Command="commands:CustomCommands.ImportFin" />
-                </MenuItem>
-                <MenuItem Header="Export">
-                    <MenuItem Command="commands:CustomCommands.ExportCatalog" />
-                    <MenuItem Command="commands:CustomCommands.ExportFin" />
-                    <MenuItem Command="commands:CustomCommands.ExportImages" />
-                </MenuItem>
-                <Separator/>
-                <MenuItem Command="commands:CustomCommands.Exit" />
-            </MenuItem>
-            <MenuItem Header="Settings">
-                <MenuItem Command="commands:CustomCommands.Options" />
-                <MenuItem Command="commands:CustomCommands.CatalogSchemes "/>
-            </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Command="commands:CustomCommands.Documentation" />
-                <MenuItem Command="commands:CustomCommands.About" />
-            </MenuItem>
-        </Menu>
+            <Grid Grid.Row="0" Height="30" Background="{StaticResource LightBackground}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" x:Name="WindowIcon" Source="/Resources/Icons/darwin.ico" Width="24" Margin="6,4,4,4"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True"
+                       MouseDown="WindowIcon_MouseDown" />
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Background="{StaticResource LightBackground}">
-            <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click" Style="{StaticResource ToolbarButton}">
-                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <Image Source="/Darwin.Wpf;component/Resources/Images/open_image.png" Height="23"  />
-                    <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
-                </StackPanel>
-            </Button>
-            <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Style="{StaticResource ToolbarButton}">
-                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
-                    <TextBlock HorizontalAlignment="Center">Open Trace</TextBlock>
-                </StackPanel>
-            </Button>
-            <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Style="{StaticResource ToolbarButton}">
-                <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
-                    <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
-                    <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+                <Menu Grid.Column="1" WindowChrome.IsHitTestVisibleInChrome="True" VerticalAlignment="Center">
+                    <MenuItem Height="24" Header="File">
+                        <MenuItem Command="commands:CustomCommands.NewDatabase" />
+                        <Separator/>
+                        <MenuItem Command="commands:CustomCommands.OpenImage" />
+                        <MenuItem Command="commands:CustomCommands.OpenTracedFin" />
+                        <MenuItem Command="commands:CustomCommands.OpenDatabase" />
+                        <Separator/>
+                        <MenuItem Command="commands:CustomCommands.MatchingQueue" />
+                        <Separator/>
+                        <MenuItem Command="commands:CustomCommands.Backup" />
+                        <MenuItem Command="commands:CustomCommands.Restore" />
+                        <Separator/>
+                        <MenuItem Header="Import">
+                            <MenuItem Command="commands:CustomCommands.ImportCatalog" />
+                            <MenuItem Command="commands:CustomCommands.ImportFin" />
+                        </MenuItem>
+                        <MenuItem Header="Export">
+                            <MenuItem Command="commands:CustomCommands.ExportCatalog" />
+                            <MenuItem Command="commands:CustomCommands.ExportFin" />
+                            <MenuItem Command="commands:CustomCommands.ExportImages" />
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Command="commands:CustomCommands.Exit" />
+                    </MenuItem>
+                    <MenuItem Header="Settings">
+                        <MenuItem Command="commands:CustomCommands.Options" />
+                        <MenuItem Command="commands:CustomCommands.CatalogSchemes" />
+                    </MenuItem>
+                    <MenuItem Header="Help">
+                        <MenuItem Command="commands:CustomCommands.Documentation" />
+                        <MenuItem Command="commands:CustomCommands.About" />
+                    </MenuItem>
+                </Menu>
 
-        <!--<DataGrid x:Name="DatabaseGrid" IsReadOnly="True" AutoGenerateColumns="False" Grid.Row="2" ItemsSource="{Binding Fins}">
+                <Label Grid.Column="4" Background="#E0E3E6" Margin="0,3,20,0" VerticalAlignment="Center" Content="{Binding FeatureSetTypeDisplay}" />
+
+                <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Right" >
+                    <Button Style="{StaticResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"
+                            Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
+                    <Button x:Name="RestoreButton" Visibility="Collapsed" Style="{StaticResource RestoreButtonStyle}" 
+                            Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore"/>
+                    <Button x:Name="MaximizeButton" Visibility="Visible" Style="{StaticResource MaximizeButtonStyle}" 
+                            Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
+                    <Button Style="{StaticResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close"
+                            Command="{x:Static SystemCommands.CloseWindowCommand}"/>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Background="{StaticResource LightBackground}">
+                <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                    <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/open_image.png" Height="23"  />
+                        <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                    <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
+                        <TextBlock HorizontalAlignment="Center">Open Trace</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                    <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
+                        <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!--<DataGrid x:Name="DatabaseGrid" IsReadOnly="True" AutoGenerateColumns="False" Grid.Row="2" ItemsSource="{Binding Fins}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="IDCode" Binding="{Binding IDCode}" />
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
             </DataGrid.Columns>
         </DataGrid>-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionChanged="DatabaseGrid_SelectionChanged" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
-                    <!--<ListView.ItemContainerStyle>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionChanged="DatabaseGrid_SelectionChanged" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding Fins}" GridViewColumnHeader.Click="GridHeader_Click">
+                        <!--<ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
@@ -140,148 +178,149 @@
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     </Style>
                 </ListView.ItemContainerStyle>-->
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn>
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Image.Source>
-                                                <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
-                                            </Image.Source>
-                                        </Image>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
-                                <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding Name}">
-                                <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
-                                <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
-                                <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
-                                <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                </controls:SortableListView>
-                <Grid Grid.Row="1" Background="{StaticResource LightBackground}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" x:Name="ListPreviousButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding PreviousEnabled}" Click="ListPreviousButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="0,0,5,0" VerticalAlignment="Center">&#xf053;</Label>
-                            <Label Padding="1" VerticalAlignment="Center">Previous</Label>
-                        </StackPanel>
-                    </Button>
-                    <Button Grid.Column="1" x:Name="ListNextButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding NextEnabled}" Click="ListNextButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Padding="1" VerticalAlignment="Center">Next</Label>
-                            <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="5,0,0,0" VerticalAlignment="Center">&#xf054;</Label>
-                        </StackPanel>
-                    </Button>
-                    <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="5">
-                        <Label VerticalAlignment="Center">Filter:</Label>
-                        <TextBox x:Name="FilterTextBox" Width="100" VerticalAlignment="Center" TextChanged="FilterTextBox_TextChanged"></TextBox>
-                    </StackPanel>
-                </Grid>
-            </Grid>
-
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="5" />
-                    <RowDefinition Height="258" />
-                </Grid.RowDefinitions>
-
-                <TabControl Grid.Row="0">
-                    <TabItem Header="Image">
-                        <Button x:Name="ViewImageButton" Click="ViewImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
-                            <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Image Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Image.Source>
+                                                    <BitmapImage DecodePixelHeight="40" UriSource="{Binding Path=ThumbnailFilenameUri}" />
+                                                </Image.Source>
+                                            </Image>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding IDCode}">
+                                    <GridViewColumnHeader Content="ID Code" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="55" />
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding Name}">
+                                    <GridViewColumnHeader Content="Name" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding DamageCategory}">
+                                    <GridViewColumnHeader Content="Damage" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding DateOfSighting}">
+                                    <GridViewColumnHeader Content="Date" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="50" />
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding LocationCode}">
+                                    <GridViewColumnHeader Content="Location" Padding="5,0,0,0" HorizontalContentAlignment="Left" MinWidth="60" />
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </controls:SortableListView>
+                    <Grid Grid.Row="1" Background="{StaticResource LightBackground}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="ListPreviousButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding PreviousEnabled}" Click="ListPreviousButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="0,0,5,0" VerticalAlignment="Center">&#xf053;</Label>
+                                <Label Padding="1" VerticalAlignment="Center">Previous</Label>
+                            </StackPanel>
                         </Button>
-                    </TabItem>
-                    <TabItem Header="Outline">
-                        <Button x:Name="OutlineButton" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Click="OutlineButton_Click" Background="Transparent" BorderThickness="0">
-                            <Viewbox>
-                                <fe:PointVisuals IsHitTestVisible="False" Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
+                        <Button Grid.Column="1" x:Name="ListNextButton" Margin="5" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding NextEnabled}" Click="ListNextButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Padding="1" VerticalAlignment="Center">Next</Label>
+                                <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="5,0,0,0" VerticalAlignment="Center">&#xf054;</Label>
+                            </StackPanel>
+                        </Button>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="5">
+                            <Label VerticalAlignment="Center">Filter:</Label>
+                            <TextBox x:Name="FilterTextBox" Width="100" VerticalAlignment="Center" TextChanged="FilterTextBox_TextChanged"></TextBox>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+
+                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="258" />
+                    </Grid.RowDefinitions>
+
+                    <TabControl Grid.Row="0">
+                        <TabItem Header="Image">
+                            <Button x:Name="ViewImageButton" Click="ViewImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                                <Image x:Name="DbImage" Source="{Binding Path=SelectedImageSource}" />
+                            </Button>
+                        </TabItem>
+                        <TabItem Header="Outline">
+                            <Button x:Name="OutlineButton" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Click="OutlineButton_Click" Background="Transparent" BorderThickness="0">
+                                <Viewbox>
+                                    <fe:PointVisuals IsHitTestVisible="False" Width="{Binding SelectedImageSource.Width}" Height="{Binding SelectedImageSource.Height}"
                                          Background="Transparent"
                                          PointSize="3"
                                          ContourScale="{Binding SelectedContour.Scale}"
                                          ItemsSource="{Binding SelectedContour.Points}"
                                          Brushes="{StaticResource brushes}" />
-                            </Viewbox>
-                        </Button>
-                    </TabItem>
-                    <TabItem Header="Original Image">
-                        <Button x:Name="ViewOriginalImageButton" Click="ViewOriginalImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
-                            <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />
-                        </Button>
-                    </TabItem>
-                </TabControl>
-                
-                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+                                </Viewbox>
+                            </Button>
+                        </TabItem>
+                        <TabItem Header="Original Image">
+                            <Button x:Name="ViewOriginalImageButton" Click="ViewOriginalImageButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                                <Image x:Name="DbOriginalImage" Source="{Binding Path=SelectedOriginalImageSource}" />
+                            </Button>
+                        </TabItem>
+                    </TabControl>
 
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid Grid.Row="2" Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
 
-                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2">
-                            <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}">Save Changes</Button>
-                            <Button x:Name="DeleteFin" Click="DeleteFin_Click">Delete</Button>
-                        </StackPanel>
-                        <Label Grid.Row="1" Grid.Column="0">ID Code:</Label>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <Grid Grid.Row="2" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                        <Label Grid.Row="2" Grid.Column="0">Name:</Label>
-                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=SelectedFin.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5" />
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2">
+                                <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}">Save Changes</Button>
+                                <Button x:Name="DeleteFin" Click="DeleteFin_Click">Delete</Button>
+                            </StackPanel>
+                            <Label Grid.Row="1" Grid.Column="0">ID Code:</Label>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                        <Label Grid.Row="3" Grid.Column="0">Date of Sighting:</Label>
-                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=SelectedFin.DateOfSighting, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                            <Label Grid.Row="2" Grid.Column="0">Name:</Label>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=SelectedFin.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5" />
 
-                        <Label Grid.Row="4" Grid.Column="0">Roll/Frame or Lat/Long:</Label>
-                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=SelectedFin.RollAndFrame, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                            <Label Grid.Row="3" Grid.Column="0">Date of Sighting:</Label>
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Path=SelectedFin.DateOfSighting, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                        <Label Grid.Row="5" Grid.Column="0">Location Code:</Label>
-                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=SelectedFin.LocationCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                            <Label Grid.Row="4" Grid.Column="0">Roll/Frame or Lat/Long:</Label>
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=SelectedFin.RollAndFrame, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                        <Label Grid.Row="6" Grid.Column="0">Damage Category:</Label>
-                        <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Path=DarwinDatabase.Categories}" DisplayMemberPath="name" SelectedValuePath="name"
+                            <Label Grid.Row="5" Grid.Column="0">Location Code:</Label>
+                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Path=SelectedFin.LocationCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+
+                            <Label Grid.Row="6" Grid.Column="0">Damage Category:</Label>
+                            <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Path=DarwinDatabase.Categories}" DisplayMemberPath="Name" SelectedValuePath="Name"
                               SelectedValue="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5" />
 
-                        <Label Grid.Row="7" Grid.Column="0">Short Description:</Label>
-                        <TextBox Grid.Row="7" Grid.Column="1"
+                            <Label Grid.Row="7" Grid.Column="0">Short Description:</Label>
+                            <TextBox Grid.Row="7" Grid.Column="1"
                                 TextWrapping="Wrap"
                                 AcceptsReturn="True" MinLines="2"
                                 VerticalScrollBarVisibility="Visible"
                                 Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
-                    </Grid>
-                </ScrollViewer>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
             </Grid>
         </Grid>
-    </Grid>
+    </Border>
 </Window>

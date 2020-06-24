@@ -1738,7 +1738,7 @@ namespace Darwin.Wpf
 
 				_vm.UpdateDatabaseFin();
 
-				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database, _vm.Categories);
+				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database);
 				var matchingWindow = new MatchingWindow(matchingWindowVM);
 				this.Close();
 				matchingWindow.Show();
@@ -1785,7 +1785,7 @@ namespace Darwin.Wpf
 				{
 					MessageBox.Show(NoIDErrorMessage, "No ID", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
-				else if (string.IsNullOrEmpty(_vm.DatabaseFin.DamageCategory) || _vm.Categories.Count < 1 || _vm.DatabaseFin.DamageCategory.ToUpper() == _vm.Categories[0]?.name?.ToUpper())
+				else if (string.IsNullOrEmpty(_vm.DatabaseFin.DamageCategory) || _vm.Categories.Count < 1 || _vm.DatabaseFin.DamageCategory.ToUpper() == _vm.Categories[0]?.Name?.ToUpper())
 				{
 					MessageBox.Show(NoCategoryErrorMessage, "No Category", MessageBoxButton.OK, MessageBoxImage.Error);
 				}

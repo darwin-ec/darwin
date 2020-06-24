@@ -14,6 +14,7 @@
 using Darwin.Matching;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -170,10 +171,9 @@ namespace Darwin.Database
         public string Filename { get; set; }
 
         //***1.99 - the catalog scheme for this database (moved from Options)
-        //public CatalogScheme CurrentCatalogScheme { get; set; }
-        //public List<CatalogScheme> CatalogSchemes { get; set; }    // names of catalog categories
-        public abstract List<DBDamageCategory> Categories { get; }
-        public abstract List<SelectableDBDamageCategory> SelectableCategories { get; }
+
+        public abstract CatalogScheme CatalogScheme { get; }
+        public abstract ObservableCollection<Category> Categories { get; }
 
         public abstract List<DatabaseFin> AllFins { get; }
 

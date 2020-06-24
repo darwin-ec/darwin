@@ -123,16 +123,6 @@ namespace Darwin.Wpf.Commands
             }
         );
 
-        public static readonly RoutedUICommand Options = new RoutedUICommand(
-            "Options...",
-            "Options",
-            typeof(CustomCommands),
-            new InputGestureCollection()
-            {
-                new KeyGesture(Key.P, ModifierKeys.Control)
-            }
-        );
-
         public static readonly RoutedUICommand CatalogSchemes = new RoutedUICommand(
             "Catalog Schemes...",
             "Catalog Schemes",
@@ -140,6 +130,16 @@ namespace Darwin.Wpf.Commands
             new InputGestureCollection()
             {
                 new KeyGesture(Key.D1, ModifierKeys.Control)
+            }
+        );
+
+        public static readonly RoutedUICommand Options = new RoutedUICommand(
+            "Options...",
+            "Options",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                new KeyGesture(Key.P, ModifierKeys.Control)
             }
         );
 

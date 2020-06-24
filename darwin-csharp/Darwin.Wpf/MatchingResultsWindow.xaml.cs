@@ -108,8 +108,7 @@ namespace Darwin.Wpf
 
         private void ReturnToMatchingDialogButton_Click(object sender, RoutedEventArgs e)
         {
-            var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database,
-                new ObservableCollection<DBDamageCategory>(_vm.Database?.Categories));
+            var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database);
             var matchingWindow = new MatchingWindow(matchingWindowVM);
             this.Close();
             matchingWindow.Show();

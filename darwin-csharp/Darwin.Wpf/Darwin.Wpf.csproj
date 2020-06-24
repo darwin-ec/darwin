@@ -24,6 +24,8 @@
     <None Remove="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf" />
+    <None Remove="Resources\Icons\darwin.ico" />
+    <None Remove="Resources\Icons\darwinfile.ico" />
     <None Remove="Resources\Images\addpoint.png" />
     <None Remove="Resources\Images\autotrace.png" />
     <None Remove="Resources\Images\brightness_button.png" />
@@ -63,6 +65,8 @@
     <Resource Include="Resources\Fonts\Font Awesome 5 Free-Solid-900.otf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Icons\darwin.ico" />
+    <Resource Include="Resources\Icons\darwinfile.ico" />
     <Resource Include="Resources\Images\addpoint.png" />
     <Resource Include="Resources\Images\autotrace.png" />
     <Resource Include="Resources\Images\brightness_button.png" />

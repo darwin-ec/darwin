@@ -27,6 +27,28 @@ namespace Darwin.Wpf.ViewModel
             set
             {
                 _darwinDatabase = value;
+                RaisePropertyChanged("FeatureSetTypeDisplay");
+            }
+        }
+
+        public string FeatureSetTypeDisplay
+        {
+            get
+            {
+                if (DarwinDatabase == null || DarwinDatabase.CatalogScheme == null)
+                    return string.Empty;
+
+                switch (DarwinDatabase.CatalogScheme.FeatureSetType)
+                {
+                    case Features.FeatureSetType.Bear:
+                        return "Bear";
+
+                    case Features.FeatureSetType.DorsalFin:
+                        return "Dolphin Fins";
+
+                    default:
+                        return string.Empty;
+                }
             }
         }
 
