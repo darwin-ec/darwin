@@ -4,23 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
-        xmlns:local="clr-namespace:Darwin.Wpf"
+        xmlns:features="clr-namespace:Darwin.Features;assembly=Darwin"
+        xmlns:local="clr-namespace:Darwin.Wpf"  WindowStartupLocation="CenterOwner"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Catalog Schemes" Height="450" Width="800">
+        Title="Catalog Scheme Presets" Height="450" Width="800" MinHeight="300" MinWidth="600">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" Margin="10,10,0,10">
+            <Run FontWeight="Bold">Note:</Run> Catalog Scheme Presets are used as templates when you create a new database.  If you want
+            to edit the scheme for the current database, use <Run FontWeight="Bold">Current Catalog Scheme</Run>.
+        </TextBlock>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition MinWidth="310"/>
                 <ColumnDefinition Width="5"/>
-                <ColumnDefinition/>
+                <ColumnDefinition MinWidth="250"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
@@ -38,7 +45,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Margin="0,5,10,5" MinWidth="150" x:Name="CatalogSchemeName" Text="{Binding SchemeName,Mode=TwoWay}" IsReadOnly="{Binding IsBuiltIn}" IsEnabled="{Binding Path=IsBuiltIn, Converter={StaticResource InverseBooleanConverter}}"/>
+                                <TextBox Margin="0,5,10,5" MinWidth="150" x:Name="CatalogSchemeName" Text="{Binding SchemeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBuiltIn}" IsEnabled="{Binding Path=IsBuiltIn, Converter={StaticResource InverseBooleanConverter}}"/>
                                 <Label FontWeight="Bold" Visibility="{Binding Path=IsDefault,Converter={StaticResource BooleanToVisibilityConverter}}">Default</Label>
                             </StackPanel>
                         </DataTemplate>
@@ -55,34 +62,56 @@
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0">Category Names</Label>
-                <ListBox x:Name="ListBox" Grid.Row="1" SelectedItem="{Binding SelectedCategory}" ItemsSource="{Binding SelectedScheme.Categories}" SelectionMode="Single">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <EventSetter Event="PreviewGotKeyboardFocus" Handler="ListBoxItem_SelectCurrentItem"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBox Margin="0,5,10,5" MinWidth="150" x:Name="CategoryNameTextBox" Text="{Binding Path=Name,Mode=TwoWay}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                    <Button x:Name="AddCategoryNameButton" Click="AddCategoryNameButton_Click">Add</Button>
-                    <Button x:Name="RemoveCategoryNameButton" Click="RemoveCategoryNameButton_Click">Remove</Button>
-                    <Button x:Name="UpCategoryNameButton" Click="UpCategoryNameButton_Click">Up</Button>
-                    <Button x:Name="DownCategoryNameButton" Click="DownCategoryNameButton_Click">Down</Button>
-                </StackPanel>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0">Feature Set Type:</Label>
+                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,6,0,0">
+                        <RadioButton GroupName="FeatureSetTypeGroup" IsChecked="{Binding Path=SelectedScheme.FeatureSetType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static features:FeatureSetType.DorsalFin}}">
+                            Dolphin Dorsal Fin
+                        </RadioButton>
+                        <RadioButton GroupName="FeatureSetTypeGroup" IsChecked="{Binding Path=SelectedScheme.FeatureSetType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static features:FeatureSetType.Bear}}">
+                            Bear
+                        </RadioButton>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0">Category Names:</Label>
+                    <ListBox x:Name="ListBox" Grid.Row="1" SelectedItem="{Binding SelectedCategory}" ItemsSource="{Binding SelectedScheme.Categories}" SelectionMode="Single">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <EventSetter Event="PreviewGotKeyboardFocus" Handler="ListBoxItem_SelectCurrentItem"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Margin="0,5,10,5" MinWidth="150" x:Name="CategoryNameTextBox" Text="{Binding Path=Name,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                        <Button x:Name="AddCategoryNameButton" Click="AddCategoryNameButton_Click">Add</Button>
+                        <Button x:Name="RemoveCategoryNameButton" Click="RemoveCategoryNameButton_Click">Remove</Button>
+                        <Button x:Name="UpCategoryNameButton" Click="UpCategoryNameButton_Click">Up</Button>
+                        <Button x:Name="DownCategoryNameButton" Click="DownCategoryNameButton_Click">Down</Button>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button x:Name="SaveButton" Click="SaveButton_Click" IsDefault="True">Save</Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click" IsCancel="True">Cancel</Button>
         </StackPanel>

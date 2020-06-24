@@ -685,6 +685,54 @@ namespace Darwin.Database
             }
         }
 
+        public override void SetCatalogScheme(CatalogScheme catalogScheme)
+        {
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
+                {
+                    SaveCatalogScheme(conn, catalogScheme);
+
+                    transaction.Commit();
+
+                    _catalogScheme = new CatalogScheme(catalogScheme);
+                }
+                conn.Close();
+            }
+        }
+
+        private void SaveCatalogScheme(SQLiteConnection conn, CatalogScheme catalogScheme)
+        {
+            var currentSettings = SelectAllSettings();
+
+            if (currentSettings == null || !currentSettings.ContainsKey(SettingsCatalogSchemeName))
+                InsertSetting(conn, SettingsCatalogSchemeName, catalogScheme.SchemeName);
+            else
+                UpdateSetting(conn, SettingsCatalogSchemeName, catalogScheme.SchemeName);
+
+            if (currentSettings == null || !currentSettings.ContainsKey(SettingsFeatureSetType))
+                InsertSetting(conn, SettingsFeatureSetType, ((int)catalogScheme.FeatureSetType).ToString());
+            else
+                UpdateSetting(conn, SettingsFeatureSetType, ((int)catalogScheme.FeatureSetType).ToString());
+
+            for (int i = 0; i < catalogScheme.Categories.Count; i++)
+            {
+                catalogScheme.Categories[i].Order = i;
+
+                if (catalogScheme.Categories[i].ID > 0)
+                {
+                    UpdateDamageCategory(conn, catalogScheme.Categories[i]);
+                }
+                else
+                {
+                    Category tempCat = new Category(catalogScheme.Categories[i]);
+                    InsertDamageCategory(conn, ref tempCat);
+                    catalogScheme.Categories[i].ID = tempCat.ID;
+                }
+            }
+        }
+
         private CatalogScheme SelectCatalogScheme()
         {
             var settings = SelectAllSettings();
@@ -1935,19 +1983,7 @@ namespace Darwin.Database
                 // specification.  It was set in the Database(...) constructor from 
                 // a CatalogScheme passed into the SQLiteDatabase constructor - JHS
 
-                InsertSetting(conn, SettingsCatalogSchemeName, catalogScheme.SchemeName);
-                InsertSetting(conn, SettingsFeatureSetType, catalogScheme.FeatureSetType.ToString());
-
-                for (int i = 0; i < catalogScheme.Categories.Count; i++)
-                {
-                    Category cat = new Category
-                    {
-                        Name = catalogScheme.Categories[i].Name,
-                        Order = i
-                    };
-
-                    InsertDamageCategory(conn, ref cat);
-                }
+                SaveCatalogScheme(conn, catalogScheme);
 
                 conn.Close();
             }

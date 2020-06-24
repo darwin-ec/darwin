@@ -52,6 +52,9 @@ namespace Darwin.Wpf.ViewModel
         public CatalogSchemesViewModel(List<CatalogScheme> schemes)
         {
             CatalogSchemes = new ObservableNotifiableCollection<CatalogScheme>(schemes);
+
+            if (CatalogSchemes != null && CatalogSchemes.Count > 0)
+                SelectedScheme = CatalogSchemes[0];
         }
 
         public void AddCatalogScheme()

@@ -222,6 +222,22 @@ namespace Darwin.Wpf
                 _vm.SelectedFin = null;
         }
 
+        public void RefreshDatabase()
+        {
+            _vm.RefreshDatabase();
+
+            _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
+                _vm.DarwinDatabase
+                .GetAllFins()
+                .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
+                .ToList());
+
+            if (_vm.Fins?.Count > 0)
+                _vm.SelectedFin = _vm.Fins[0];
+            else
+                _vm.SelectedFin = null;
+        }
+
         public void RefreshDatabaseAfterAdd()
         {
             _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
@@ -330,6 +346,20 @@ namespace Darwin.Wpf
             var optionsWindow = new OptionsWindow(optionsVM);
             optionsWindow.Owner = this;
             optionsWindow.ShowDialog();
+        }
+
+        private void CurrentCatalogSchemeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void CurrentCatalogSchemeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var currentCatalogSchemesVM = new CurrentCatalogSchemeViewModel(_vm.DarwinDatabase);
+
+            var currentCatalogSchemeWindow = new CurrentCatalogSchemeWindow(currentCatalogSchemesVM);
+            currentCatalogSchemeWindow.Owner = this;
+            currentCatalogSchemeWindow.ShowDialog();
         }
 
         private void CatalogSchemesCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

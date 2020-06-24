@@ -42,6 +42,8 @@
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Options" CanExecute="OptionsCommand_CanExecute" Executed="OptionsCommand_Executed" />
+
+        <CommandBinding Command="commands:CustomCommands.CurrentCatalogScheme" CanExecute="CurrentCatalogSchemeCommand_CanExecute" Executed="CurrentCatalogSchemeCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.CatalogSchemes" CanExecute="CatalogSchemesCommand_CanExecute" Executed="CatalogSchemesCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Documentation" CanExecute="DocumentationCommand_CanExecute" Executed="DocumentationCommand_Executed" />
@@ -106,6 +108,7 @@
                     </MenuItem>
                     <MenuItem Header="Settings">
                         <MenuItem Command="commands:CustomCommands.Options" />
+                        <MenuItem Command="commands:CustomCommands.CurrentCatalogScheme" />
                         <MenuItem Command="commands:CustomCommands.CatalogSchemes" />
                     </MenuItem>
                     <MenuItem Header="Help">

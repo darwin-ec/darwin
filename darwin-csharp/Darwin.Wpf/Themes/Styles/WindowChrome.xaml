@@ -16,7 +16,7 @@
                 <ControlTemplate TargetType="Button">
                     <Grid x:Name="CaptionGrid" Background="Transparent" Width="44" Height="30">
                         <TextBlock x:Name="CaptionText" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
-                                   Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="#454546" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased"  TextOptions.TextFormattingMode="Display"/>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -36,7 +36,7 @@
                 <ControlTemplate TargetType="Button">
                     <Grid x:Name="CloseCaptionGrid" Background="Transparent" Width="44" Height="30">
                         <TextBlock x:Name="CloseText" Text="{TemplateBinding Content}" FontFamily="Segoe MDL2 Assets" FontSize="10" 
-                                   Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="#454546" HorizontalAlignment="Center" VerticalAlignment="Center"
                                    RenderOptions.ClearTypeHint="Auto" TextOptions.TextRenderingMode="Aliased" TextOptions.TextFormattingMode="Display"/>
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -52,17 +52,14 @@
 
     <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
         <Setter Property="Content" Value="&#xE949;"/>
-        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style x:Key="MaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
         <Setter Property="Content" Value="&#xE739;"/>
-        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style x:Key="RestoreButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
         <Setter Property="Content" Value="&#xE923;"/>
-        <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CloseCaptionButtonStyle}">
