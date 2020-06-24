@@ -28,7 +28,7 @@ namespace Darwin
             {
                 IsEmpty = false;
                 x = value;
-                OnPropertyChanged("X");
+                RaisePropertyChanged("X");
             }
         }
 
@@ -39,7 +39,7 @@ namespace Darwin
             {
                 IsEmpty = false;
                 y = value;
-                OnPropertyChanged("Y");
+                RaisePropertyChanged("Y");
             }
         }
 
@@ -50,7 +50,7 @@ namespace Darwin
             {
                 IsEmpty = false;
                 z = value;
-                OnPropertyChanged("Z");
+                RaisePropertyChanged("Z");
             }
         }
 
@@ -62,7 +62,7 @@ namespace Darwin
                 {
                     IsEmpty = false;
                     type = value;
-                    OnPropertyChanged("Type");
+                    RaisePropertyChanged("Type");
                 }
             }
             get { return type; }
@@ -188,10 +188,9 @@ namespace Darwin
             }
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void RaisePropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

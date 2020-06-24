@@ -29,7 +29,7 @@ namespace Darwin
 			set
             {
 				_scale = value;
-				OnPropertyChanged("Scale");
+				RaisePropertyChanged("Scale");
 			}
         }
 
@@ -46,7 +46,7 @@ namespace Darwin
             set
             {
                 _points = value;
-				OnPropertyChanged("Points");
+				RaisePropertyChanged("Points");
 			}
         }
 
@@ -60,7 +60,7 @@ namespace Darwin
 			set
 			{
 				Points[i] = value;
-				OnPropertyChanged("Points");
+				RaisePropertyChanged("Points");
 			}
 		}
 
@@ -1011,10 +1011,9 @@ namespace Darwin
 			}
 		}
 
-		protected virtual void OnPropertyChanged(string propertyName)
+		protected virtual void RaisePropertyChanged(string propertyName)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 	}
 }

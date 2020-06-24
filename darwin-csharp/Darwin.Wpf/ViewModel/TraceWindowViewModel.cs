@@ -677,10 +677,7 @@ namespace Darwin.Wpf.ViewModel
 
 		private void RaisePropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
-            if (handler == null) return;
-
-            handler(this, new PropertyChangedEventArgs(propertyName));
-        }
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
     }
 }

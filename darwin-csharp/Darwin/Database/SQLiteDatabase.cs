@@ -190,13 +190,16 @@ namespace Darwin.Database
                 fc.AddPoint(p.xcoordinate, p.ycoordinate);
             }
 
-            finOutline = new Outline(fc);
+            // TODO: The type shouldn't be hardcoded
+            finOutline = new Outline(fc, FeatureSetType.DorsalFin);
             finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeBegin, outline.beginle);
             finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeEnd, outline.endle);
             finOutline.SetFeaturePoint(FeaturePointType.Notch, outline.notchposition);
             finOutline.SetFeaturePoint(FeaturePointType.Tip, outline.tipposition);
             finOutline.SetFeaturePoint(FeaturePointType.PointOfInflection, outline.endte);
-            finOutline.SetLEAngle(0.0, true);
+            
+            // TODO?
+            // finOutline.SetLEAngle(0.0, true);
 
             DatabaseFin fin = new DatabaseFin(id,
                 image.imagefilename,

@@ -91,7 +91,7 @@ namespace Darwin.Database
             set
             {
                 _finFilename = value;
-                OnPropertyChanged("FinFilename");
+                RaisePropertyChanged("FinFilename");
 
                 if (string.IsNullOrEmpty(OriginalImageFilename))
                     OriginalImageFilename = value;
@@ -118,7 +118,7 @@ namespace Darwin.Database
             set
             {
                 _fieldsChanged = value;
-                OnPropertyChanged("FieldsChanged");
+                RaisePropertyChanged("FieldsChanged");
             }
         }
 
@@ -128,7 +128,7 @@ namespace Darwin.Database
             set
             {
                 _IDCode = value;
-                OnPropertyChanged("IDCode");
+                RaisePropertyChanged("IDCode");
                 FieldsChanged = true;
             }
         }
@@ -139,7 +139,7 @@ namespace Darwin.Database
             set
             {
                 _name = value;
-                OnPropertyChanged("Name");
+                RaisePropertyChanged("Name");
                 FieldsChanged = true;
             }
         }
@@ -149,7 +149,7 @@ namespace Darwin.Database
             set
             {
                 _dateOfSighting = value;
-                OnPropertyChanged("DateOfSighting");
+                RaisePropertyChanged("DateOfSighting");
                 FieldsChanged = true;
             }
         }
@@ -160,7 +160,7 @@ namespace Darwin.Database
             set
             {
                 _rollAndFrame = value;
-                OnPropertyChanged("RollAndFrame");
+                RaisePropertyChanged("RollAndFrame");
                 FieldsChanged = true;
             }
         }
@@ -171,7 +171,7 @@ namespace Darwin.Database
             set
             {
                 _locationCode = value;
-                OnPropertyChanged("LocationCode");
+                RaisePropertyChanged("LocationCode");
                 FieldsChanged = true;
             }
         }
@@ -182,7 +182,7 @@ namespace Darwin.Database
             set
             {
                 _damageCategory = value;
-                OnPropertyChanged("DamageCategory");
+                RaisePropertyChanged("DamageCategory");
                 FieldsChanged = true;
             }
         }
@@ -193,7 +193,7 @@ namespace Darwin.Database
             set
             {
                 _shortDescription = value;
-                OnPropertyChanged("ShortDescription");
+                RaisePropertyChanged("ShortDescription");
                 FieldsChanged = true;
             }
         }
@@ -204,7 +204,7 @@ namespace Darwin.Database
             set
             {
                 _imageFilename = value;
-                OnPropertyChanged("ImageFilename");
+                RaisePropertyChanged("ImageFilename");
             }
         }
 
@@ -214,8 +214,8 @@ namespace Darwin.Database
             set
             {
                 _thumbnailFileName = value;
-                OnPropertyChanged("ThumbnailFilename");
-                OnPropertyChanged("ThumbnailFilenameUri");
+                RaisePropertyChanged("ThumbnailFilename");
+                RaisePropertyChanged("ThumbnailFilenameUri");
             }
         }
 
@@ -236,7 +236,7 @@ namespace Darwin.Database
             set
             {
                 _finOutline = value;
-                OnPropertyChanged("FinOutline");
+                RaisePropertyChanged("FinOutline");
             }
         }
 
@@ -416,7 +416,7 @@ namespace Darwin.Database
             FieldsChanged = false;
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

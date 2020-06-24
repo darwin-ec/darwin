@@ -48,12 +48,12 @@ namespace Darwin.Collections
                 , item == null ? -1 : 0)
             );
 
-            OnPropertyChanged(nameof(Count));
+            RaisePropertyChanged(nameof(Count));
         }
 
         public virtual event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string proertyName)
+        protected virtual void RaisePropertyChanged(string proertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(proertyName));
         }

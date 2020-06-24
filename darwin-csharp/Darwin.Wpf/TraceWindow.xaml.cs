@@ -1514,7 +1514,8 @@ namespace Darwin.Wpf
 
 			_vm.Contour = evenContour;
 
-			_vm.Outline = new Outline(_vm.Contour, 3.0); // ***008OL
+			// TODO: Type shouldn't be hardcoded
+			_vm.Outline = new Outline(_vm.Contour, FeatureSetType.DorsalFin); // ***008OL
 
 			_vm.TraceFinalized = true; //***006PD moved from beginning of function
 
