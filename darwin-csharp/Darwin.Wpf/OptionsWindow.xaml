@@ -79,7 +79,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold">Canny Edge Detector</Label>
 
-                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1">Guassian Standard Deviation:</Label>
+                    <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1">Gaussian Standard Deviation:</Label>
                     <talex:NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding Path=Options.GaussianStdDev,Mode=TwoWay}" Minimum="0" Maximum="2" Increment="0.01" DecimalPlaces="2" />
 
                     <Label HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2">Low Threshold:</Label>
