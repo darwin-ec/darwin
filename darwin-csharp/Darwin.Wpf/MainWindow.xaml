@@ -58,7 +58,7 @@
         </x:Array>
         <converters:NullConverter x:Key="NullConverter" />
     </Window.Resources>
-    <Border x:Name="MainWindowBorder" BorderBrush="LightCoral" BorderThickness="0">
+    <Border x:Name="MainWindowBorder" BorderBrush="LightGray" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
