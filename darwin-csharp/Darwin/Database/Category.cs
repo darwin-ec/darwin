@@ -52,6 +52,14 @@ namespace Darwin.Database
             Name = name;
         }
 
+        public Category(Category category)
+        {
+            ID = category.ID;
+            Name = category.Name;
+            IsSelected = category.IsSelected;
+            Order = category.Order;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void RaisePropertyChanged(string propertyName)

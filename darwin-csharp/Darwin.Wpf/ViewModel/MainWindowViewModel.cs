@@ -144,6 +144,12 @@ namespace Darwin.Wpf.ViewModel
             _fins = new ObservableNotifiableCollection<DatabaseFin>();
         }
 
+        public void RefreshDatabase()
+        {
+            // This should probably do more
+            RaisePropertyChanged("FeatureSetTypeDisplay");
+        }
+
         public void SaveSelectedItemAsFinz(string filename)
         {
             if (SelectedFin == null)

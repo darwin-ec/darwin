@@ -15,25 +15,27 @@ using System.Windows.Shapes;
 namespace Darwin.Wpf
 {
     /// <summary>
-    /// Interaction logic for CatalogSchemesWindow.xaml
+    /// Interaction logic for CurrentCatalogSchemeWindow.xaml
     /// </summary>
-    public partial class CatalogSchemesWindow : Window
+    public partial class CurrentCatalogSchemeWindow : Window
     {
-        private CatalogSchemesViewModel _vm;
-
-        public CatalogSchemesWindow(CatalogSchemesViewModel vm)
+        private CurrentCatalogSchemeViewModel _vm;
+        public CurrentCatalogSchemeWindow(CurrentCatalogSchemeViewModel vm)
         {
             InitializeComponent();
 
             _vm = vm;
-
             DataContext = _vm;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            Options.CurrentUserOptions.CatalogSchemes = new List<Database.CatalogScheme>(_vm.CatalogSchemes);
-            Options.CurrentUserOptions.Save();
+            _vm.SaveCatalogScheme();
+            MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+
+            if (mainWindow != null)
+                mainWindow.RefreshDatabase();
+
             Close();
         }
 
@@ -42,24 +44,6 @@ namespace Darwin.Wpf
             Close();
         }
 
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.AddCatalogScheme();
-
-            //ListBoxItem selectedItem = SchemesListBox.ItemContainerGenerator.ContainerFromIndex(SchemesListBox.SelectedIndex - 1) as ListBoxItem;
-
-            //if (selectedItem != null)
-            //{
-            //    ContentPresenter contentPresenter = FindVisualChild<ContentPresenter>(selectedItem);
-            //    DataTemplate dataTemplate = contentPresenter.ContentTemplate;
-            //    TextBox textBox = dataTemplate.FindName("CatalogSchemeName", contentPresenter) as TextBox;
-
-            //    if (textBox != null)
-            //        textBox.Dispatcher.BeginInvoke(new Action(() => textBox.SelectAll()));
-            //}
-        }
-
-        // This is used by both ListBox controls
         private void ListBoxItem_SelectCurrentItem(object sender, KeyboardFocusChangedEventArgs e)
         {
             ListBoxItem item = sender as ListBoxItem;
@@ -81,33 +65,6 @@ namespace Darwin.Wpf
             }
         }
 
-        private void RemoveButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vm.SelectedScheme != null && _vm.SelectedScheme.IsBuiltIn)
-            {
-                MessageBox.Show("You can't remove the Eckerd College scheme.", "Can't Remove", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else
-            {
-                _vm.RemoveSelectedScheme();
-            }
-        }
-
-        private void SetDefaultButton_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.SetSelectedDefault();
-        }
-
-        private void UpButton_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.MoveSelectedUp();
-        }
-
-        private void DownButton_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.MoveSelectedDown();
-        }
-
         private void AddCategoryNameButton_Click(object sender, RoutedEventArgs e)
         {
             _vm.AddCategory();
@@ -115,7 +72,9 @@ namespace Darwin.Wpf
 
         private void RemoveCategoryNameButton_Click(object sender, RoutedEventArgs e)
         {
-            _vm.RemoveCategory();
+            MessageBox.Show(this, "Sorry, you can't currently remove a category from " + Environment.NewLine +
+                "the current database.", "Can't Remove", MessageBoxButton.OK, MessageBoxImage.Information);
+            //_vm.RemoveCategory();
         }
 
         private void UpCategoryNameButton_Click(object sender, RoutedEventArgs e)

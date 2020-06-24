@@ -91,6 +91,15 @@ namespace Darwin.Database
             IsDefault = true;
         }
 
+        public CatalogScheme(CatalogScheme scheme)
+        {
+            SchemeName = scheme.SchemeName;
+            Categories = new ObservableCollection<Category>(scheme.Categories);
+            FeatureSetType = scheme.FeatureSetType;
+            IsDefault = scheme.IsDefault;
+            IsBuiltIn = scheme.IsBuiltIn;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void RaisePropertyChanged(string propertyName)
