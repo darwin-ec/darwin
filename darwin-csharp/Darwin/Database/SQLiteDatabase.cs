@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Darwin.Database;
+using Darwin.Features;
 using Darwin.Matching;
 using Darwin.Utilities;
 

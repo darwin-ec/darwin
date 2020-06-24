@@ -8,6 +8,7 @@
 //
 //*******************************************************************
 
+using Darwin.Features;
 using Darwin.Utilities;
 using Darwin.Wavelet;
 using System;
@@ -49,10 +50,9 @@ namespace Darwin
             }
         }
 
-        //int mNumPoints; //***008OL remove & use chain length ?
-
         private FloatContour _remappedChainPoints;
         public FloatContour RemappedChainPoints { get => _remappedChainPoints; set => _remappedChainPoints = value; }
+        
         public double LeadingEdgeAngle { get => _LEAngle; set => _LEAngle = value; }
         public int TipPosition { get => _tipPos; set => _tipPos = value; }
         public int NotchPosition { get => _notchPos; set => _notchPos = value; }
@@ -77,7 +77,7 @@ namespace Darwin
             }
         }
 
-        private int    // indices into chain or fl contour 
+        private int    // indices into chain or float contour 
             _tipPos,
             _notchPos,
             _beginLE,

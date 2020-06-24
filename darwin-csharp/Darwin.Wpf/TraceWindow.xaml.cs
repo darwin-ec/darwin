@@ -1,6 +1,7 @@
 ﻿using Darwin.Collections;
 using Darwin.Database;
 using Darwin.Extensions;
+using Darwin.Features;
 using Darwin.Helpers;
 using Darwin.ImageProcessing;
 using Darwin.Wpf.Adorners;
