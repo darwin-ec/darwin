@@ -77,7 +77,8 @@ namespace Darwin.Wpf.ViewModel
                 {
                     foreach (var fp in DatabaseFin.FinOutline.FeatureSet.FeaturePointList)
                     {
-                        sb.AppendLine(fp.Name + ": " + fp.Position.ToString());
+                        if (!fp.Ignore)
+                            sb.AppendLine(fp.Name + ": " + fp.Position.ToString());
                     }
                 }
 
