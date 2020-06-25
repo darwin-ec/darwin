@@ -442,15 +442,14 @@ namespace Darwin
 				return new Contour(this);
 
 			int x, y;
-			int i;
 
 			Contour newContour = new Contour();
 
-			for (i = 0; i < NumPoints; i++)
+			for (int i = 0; i < NumPoints; i++)
 			{
 				// first point of new Contour is first point of old contour
-				x = (int)Math.Round((Points[i].X) * scaleFactor) + xoffset;
-				y = (int)Math.Round((Points[i].Y) * scaleFactor) + yoffset;
+				x = (int)Math.Round(Points[i].X * scaleFactor) + xoffset;
+				y = (int)Math.Round(Points[i].Y * scaleFactor) + yoffset;
 				newContour.AddPoint(x, y); //005CT
 			}
 			return newContour;
@@ -819,16 +818,16 @@ namespace Darwin
 			} // while (!done)
 
 			// debugging code -- JHS
-			for (int k = 1; k < newContour.NumPoints; k++)
-			{
-				double dx = newContour[k - 1].X - newContour[k].X;
-				double dy = newContour[k - 1].Y - newContour[k].Y;
-				double dist = Math.Sqrt(dx * dx + dy * dy);
-				//if ((dist < space-0.2) || (space+0.2 < dist))
-				//	std::cout << '|' << dist << '|';
-				//else
-				//	std::cout << '.';
-			}
+			//for (int k = 1; k < newContour.NumPoints; k++)
+			//{
+			//	double dx = newContour[k - 1].X - newContour[k].X;
+			//	double dy = newContour[k - 1].Y - newContour[k].Y;
+			//	double dist = Math.Sqrt(dx * dx + dy * dy);
+			//	//if ((dist < space-0.2) || (space+0.2 < dist))
+			//	//	std::cout << '|' << dist << '|';
+			//	//else
+			//	//	std::cout << '.';
+			//}
 
 			return newContour;
 		}

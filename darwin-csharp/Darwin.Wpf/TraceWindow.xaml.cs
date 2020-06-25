@@ -26,6 +26,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Xml.Schema;
 
 namespace Darwin.Wpf
@@ -50,8 +51,6 @@ namespace Darwin.Wpf
 		private const int EraserBrushSize = 9; // krd 10/28/05
 		private const int MaxZoom = 1600;
 		private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
-
-		private int _zoomRatioOld = 100;
 
 		private int _movePosition;
 		private bool _drawingWithPencil;
@@ -447,7 +446,7 @@ namespace Darwin.Wpf
 		//  Modified for multiscale active contour processing 01/23/06 krd
 		private void TraceSnapToFin(bool useCyan, int left, int top, int right, int bottom)
 		{
-			if (_vm.Contour == null || _vm.TraceLocked) //***006FC
+			if (_vm.Contour == null || _vm.TraceLocked || _vm.Contour.NumPoints < 3) //***006FC
 				return;
 
 			float[] energyWeights = new float[]{
@@ -505,19 +504,18 @@ namespace Darwin.Wpf
 								// 2) at three pixels (200 points limits hi res pics from having many points)
 
 			//scale mContour to current scale of analysis (image) first time thru
-			Contour smallContour = null; // current scale contour
-			if (_vm.Contour.NumPoints > 2)
-			{
-				spacing = _vm.Contour.GetTotalDistanceAlongContour() / 200.0;
-				if (spacing < SpaceBetweenPoints)
-					spacing = SpaceBetweenPoints;
 
-				Contour evenContour = _vm.Contour.EvenlySpaceContourPoints(spacing);
-				smallContour = evenContour.CreateScaledContour(_zoomRatioOld / 100.0f, 0, 0); // small sized countour
-			}
+			spacing = _vm.Contour.GetTotalDistanceAlongContour() / 200.0;
+			if (spacing < SpaceBetweenPoints)
+				spacing = SpaceBetweenPoints;
 
-			int ratio = _zoomRatioOld;
+			float ratio = _vm.ZoomRatio * 100f;
+
+			Contour evenContour = _vm.Contour.EvenlySpaceContourPoints(spacing);
+			Contour scaledContour = evenContour.CreateScaledContour(ratio / 100.0f, 0, 0); // small sized countour
+																								  
 			int chunkSize;  // used to divide up iterations among the scales
+
 			if (ratio <= 100)
 				chunkSize = (int)(Options.CurrentUserOptions.SnakeMaximumIterations / (100.0 / ratio * 2 - 1));
 			else
@@ -530,7 +528,7 @@ namespace Darwin.Wpf
 			{ // if ratio > 100 take at least one trip
 				int iterations = (int)(Math.Pow(2.0, tripNum - 1) * chunkSize);
 
-				// resize EdgeMagImage to current scale
+				// Resize EdgeMagImage to current scale
 				if (ratio != 100)
 					smallEdgeMagImage = new DirectBitmap(BitmapHelper.ResizePercentageNearestNeighbor(EdgeMagImage.Bitmap, ratio));
 				else
@@ -539,33 +537,34 @@ namespace Darwin.Wpf
 				for (int i = 0; i < iterations; i++)
 				{
 					// TODO: Hardcoded neighborhood of 3
-					Snake.MoveContour(ref smallContour, smallEdgeMagImage, 3, energyWeights);
+					Snake.MoveContour(ref scaledContour, smallEdgeMagImage, 3, energyWeights);
 					if (i % 5 == 0)
 					{
 						// scale repositioned contour to viewed scale for display (mContour)
-						_vm.Contour = smallContour.CreateScaledContour(100.0f / ratio, 0, 0);
-
-						// TODO
-						// this->refreshImage();
-
-						//TODO
-						//skiaElement.InvalidateVisual();
+						Dispatcher.BeginInvoke(new Action(() =>
+						{
+							_vm.Contour = scaledContour.CreateScaledContour(100.0f / ratio, 0, 0);
+						}), DispatcherPriority.Background);
 					}
-				} // end for (i=0; i< iterations)
-
-				// scale repositioned contour to next larger scale for more repositioning
-				ratio *= 2;  // double ratio for next level		
-				if (ratio <= 100)
-				{
-					smallContour = smallContour.CreateScaledContour(2.0f, 0, 0);
 				}
-				tripNum++;
 
-			} // end while  
+				// Scale repositioned contour to next larger scale for more repositioning
+				ratio *= 2;  // double ratio for next level
+				scaledContour = scaledContour.CreateScaledContour(2.0f, 0, 0);
+
+				tripNum++;
+			}
+
+			// Scale the contour back to "normal" and evenly space the points again
+			scaledContour = scaledContour.CreateScaledContour(100.0f / ratio, 0, 0);
 
 			// features such as glare spots may cause outline points to bunch and wrap
 			// during active contour process
-			_vm.Contour.RemoveKnots(spacing); //***005CM
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				_vm.Contour = new Contour(scaledContour);
+				_vm.Contour.RemoveKnots(spacing); //***005CM
+			}), DispatcherPriority.Background);
 		}
 
 		// Point added to middle of contour after trace has been finalized
@@ -786,8 +785,12 @@ namespace Darwin.Wpf
 				return;
 
 			//_moveInit = true;
+			var feature = _vm.Outline.FindClosestFeaturePoint(MapWindowsPointToPointF(point));
 
-			_moveFeature = (FeaturePointType)_vm.Outline.FindClosestFeaturePoint(MapWindowsPointToPointF(point));
+			if (feature.IsEmpty)
+				return;
+
+			_moveFeature = feature.Type;
 
 			if (FeaturePointType.NoFeature == _moveFeature)
 				return;
@@ -796,33 +799,9 @@ namespace Darwin.Wpf
 
 			_previousStatusBarMessage = StatusBarMessage.Text; // now we have a copy of the label string
 
-			switch (_moveFeature)
-			{
-				case FeaturePointType.Tip:
-					StatusBarMessage.Text = "Moving TIP -- Drag into position and release mouse button.";
-					break;
-				case FeaturePointType.Notch:
-					StatusBarMessage.Text = "Moving NOTCH -- Drag into position and release mouse button.";
-					break;
-				case FeaturePointType.PointOfInflection:
-					StatusBarMessage.Text = "Moving END OF OUTLINE -- Drag into position and release mouse button.";
-					break;
-				case FeaturePointType.LeadingEdgeBegin:
-					StatusBarMessage.Text = "Moving BEGINNING OF OUTLINE -- Drag into position and release mouse button.";
-					break;
-				case FeaturePointType.LeadingEdgeEnd:
-					//***1.8 - no longer show or move LE_END -- force it to TIP
-					_moveFeature = FeaturePointType.Tip;
-					//TODO
-					//gtk_label_set_text(GTK_LABEL(mStatusLabel),
-					//		_("Moving TIP -- Drag into position and release mouse button."));
-					break;
-				default:
-					StatusBarMessage.Text = "Cannot determine selected feature. Try Again!";
-					break;
-			}
+			StatusBarMessage.Text = "Moving " + feature.Name + " -- Drag into position and release mouse button.";
 
-			_movePosition = _vm.Outline.GetFeaturePoint(_moveFeature);
+			_movePosition = feature.Position;
 
 			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
@@ -859,31 +838,12 @@ namespace Darwin.Wpf
 			// Set the previous point to normal
 			_vm.Contour[_movePosition].Type = PointType.Normal;
 
-			switch (_moveFeature)
-			{
-				case FeaturePointType.LeadingEdgeBegin:
-					if ((0 < posit) && (posit < _vm.Outline.GetFeaturePoint(_moveFeature + 1)))
-						_movePosition = posit;
-					break;
-				//***1.8 - moving of LE_END no longer supported
-				//case LE_END :
-				//***1.8 - moving of TIP now constrained by LE_BEGIN and NOTCH
-				case FeaturePointType.Tip:
-					if ((_vm.Outline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin) < posit) &&
-						(posit < _vm.Outline.GetFeaturePoint(_moveFeature + 1)))
-						_movePosition = posit;
-					break;
-				case FeaturePointType.Notch:
-					if ((_vm.Outline.GetFeaturePoint(_moveFeature - 1) < posit) &&
-						(posit < _vm.Outline.GetFeaturePoint(_moveFeature + 1)))
-						_movePosition = posit;
-					break;
-				case FeaturePointType.PointOfInflection:
-					if ((_vm.Outline.GetFeaturePoint(_moveFeature - 1) < posit) &&
-						(posit < (_vm.Outline.Length - 1)))
-						_movePosition = posit;
-					break;
-			}
+			int previous;
+			int next;
+			_vm.Outline.GetNeighboringFeaturePositions(_moveFeature, out previous, out next);
+
+			if (posit > previous && posit < next)
+				_movePosition = posit;
 
 			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
@@ -1514,8 +1474,7 @@ namespace Darwin.Wpf
 
 			_vm.Contour = evenContour;
 
-			// TODO: Type shouldn't be hardcoded
-			_vm.Outline = new Outline(_vm.Contour, FeatureSetType.DorsalFin); // ***008OL
+			_vm.Outline = new Outline(_vm.Contour, _vm.Database.CatalogScheme.FeatureSetType); // ***008OL
 
 			_vm.TraceFinalized = true; //***006PD moved from beginning of function
 

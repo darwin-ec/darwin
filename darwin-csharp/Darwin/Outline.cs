@@ -14,6 +14,7 @@ using Darwin.Wavelet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Darwin
 {
@@ -198,35 +199,60 @@ namespace Darwin
         }
 
         // returns the type of feature point closest to the given point
-        public int FindClosestFeaturePoint(PointF p)
+        public FeaturePoint FindClosestFeaturePoint(PointF p)
         {
             return FindClosestFeaturePoint(p.X, p.Y);
         }
 
-        public int FindClosestFeaturePoint(System.Drawing.Point p)
+        public FeaturePoint FindClosestFeaturePoint(System.Drawing.Point p)
         {
             return FindClosestFeaturePoint(p.X, p.Y);
         }
 
-        public int FindClosestFeaturePoint(float X, float Y)
+        public void GetNeighboringFeaturePositions(FeaturePointType type, out int previous, out int next)
         {
-            int i, minFeature;
-            double distToFeature, minDist;
-
-            PointF feature = GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
-            minDist = MathHelper.GetDistance(X, Y, feature.X, feature.Y);
-            minFeature = (int)FeaturePointType.LeadingEdgeBegin;
-            for (i = (int)FeaturePointType.LeadingEdgeEnd; i <= (int)FeaturePointType.PointOfInflection; i++)
+            if (FeatureSet == null || FeatureSet.FeaturePoints == null || !FeatureSet.FeaturePoints.ContainsKey(type))
             {
-                PointF f = GetFeaturePointCoords((FeaturePointType)i);
+                previous = 0;
+                next = Length - 1;
+                return;
+            }
+            
+            int currentPosition = GetFeaturePoint(type);
 
-                distToFeature = MathHelper.GetDistance(X, Y, f.X, f.Y);
-                if (distToFeature < minDist)
+            previous = FeatureSet.FeaturePoints.Values
+                .Where(fp => !fp.Ignore && fp.Type != type && fp.Position < currentPosition)
+                .Select(fp => fp.Position)
+                .DefaultIfEmpty()
+                .Max();
+
+            next = FeatureSet.FeaturePoints.Values
+                .Where(fp => !fp.Ignore &&  fp.Type != type && fp.Position > currentPosition)
+                .Select(fp => fp.Position)
+                .DefaultIfEmpty()
+                .Min();
+
+            if (next == 0)
+                next = Length - 1;
+        }
+
+        public FeaturePoint FindClosestFeaturePoint(float X, float Y)
+        {
+            var minFeature = FeaturePoint.Empty;
+            double? minDist = null;
+
+            foreach (var f in FeatureSet.FeaturePoints.Values.Where(fp => !fp.Ignore))
+            {
+                var coords = GetFeaturePointCoords(f.Type);
+                var distToFeature = MathHelper.GetDistance(X, Y, coords.X, coords.Y);
+
+                if (minDist == null || distToFeature < minDist)
                 {
                     minDist = distToFeature;
-                    minFeature = i;
+                    minFeature = f;
                 }
             }
+
             return minFeature;
         }
 

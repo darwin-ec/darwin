@@ -41,6 +41,7 @@ namespace Darwin.Features
         }
 
         public FinFeatureSet(List<FeaturePoint> featurePoints)
+            : this()
         {
             if (featurePoints == null)
                 throw new ArgumentNullException(nameof(featurePoints));
@@ -53,29 +54,22 @@ namespace Darwin.Features
         }
 
         public FinFeatureSet(Chain chain, FloatContour chainPoints)
+            : this()
         {
-            FeatureSetType = FeatureSetType.DorsalFin;
-
             int tipPos = FindTip(chain, chainPoints);
             int notchPos = FindNotch(chain, tipPos);
             int beginLE = FindBeginLE(chain, tipPos);
             int endLE = FindEndLE(chain, beginLE, tipPos);
             int endTE = FindPointOfInflection(chain, tipPos);
 
-            FeaturePoints = new Dictionary<FeaturePointType, FeaturePoint>()
-            {
-                { FeaturePointType.Tip, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, Position = tipPos } },
-                { FeaturePointType.Notch, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, Position = notchPos } },
-                { FeaturePointType.LeadingEdgeBegin, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, Position = beginLE } },
-                { FeaturePointType.LeadingEdgeEnd, new FeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, Position = endLE } },
-                { FeaturePointType.PointOfInflection, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, Position = endTE } }
-            };
+            FeaturePoints[FeaturePointType.Tip].Position = tipPos;
+            FeaturePoints[FeaturePointType.Notch].Position = notchPos;
+            FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
+            FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
+            FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
 
             double leAngle = FindLEAngle(chain, tipPos, endLE);
-            Features = new Dictionary<FeatureType, Feature>()
-            {
-                { FeatureType.LeadingEdgeAngle, new Feature { Name = "Angle of Leading Edge", Type = FeatureType.LeadingEdgeAngle, Value = leAngle } }
-            };
+            Features[FeatureType.LeadingEdgeAngle].Value = leAngle;
         }
 
         public override void SetFeaturePointPosition(FeaturePointType featurePointType, int position)

@@ -41,7 +41,7 @@ namespace Darwin.Wpf.ViewModel
                 switch (DarwinDatabase.CatalogScheme.FeatureSetType)
                 {
                     case Features.FeatureSetType.Bear:
-                        return "Bear";
+                        return "Bears";
 
                     case Features.FeatureSetType.DorsalFin:
                         return "Dolphin Fins";

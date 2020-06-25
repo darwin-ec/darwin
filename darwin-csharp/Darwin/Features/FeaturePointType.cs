@@ -13,6 +13,9 @@ namespace Darwin.Features
         LeadingEdgeEnd = 2,
         Tip = 3,
         Notch = 4,
-        PointOfInflection = 5
+        PointOfInflection = 5,
+
+        StartOfSnout = 6,
+        Chin = 7
     }
 }

@@ -150,6 +150,7 @@ namespace Darwin.Features
             Array.Copy(chain.Data, 1, src, 0, numPoints - 1);
 
             int nextPowOfTwo = MathHelper.NextPowerOfTwo(numPoints - 1);
+
             // Now set up the variables needed to perform a wavelet
             // transform on the chain
             double[,] continuousResult = new double[TransformLevels + 1, nextPowOfTwo];
@@ -173,6 +174,7 @@ namespace Darwin.Features
             float highPointY = 10000.0f;
 
             for (int ptId = 0; ptId < numPoints; ptId++)
+            {
                 if (chainPoints[ptId].Y < highPointY)
                 {
                     highPointY = chainPoints[ptId].Y;
@@ -186,6 +188,7 @@ namespace Darwin.Features
                     // on the outline
                     highPointId = ptId;
                 }
+            }
 
             /*
             * while (!tipPosition && level > 0) { // Find the maxima of the
@@ -245,8 +248,7 @@ namespace Darwin.Features
                     }
                 }
                 else
-                    tipPosition =
-                        FindClosestMax(modMax, numPoints - 1, tipPosition);
+                    tipPosition = FindClosestMax(modMax, numPoints - 1, tipPosition);
 
                 level--;
             }
@@ -584,7 +586,6 @@ namespace Darwin.Features
             if (len <= 0)
                 throw new ArgumentOutOfRangeException(nameof(len));
 
-
             if (modmax[prevPosition] > 0)
                 return prevPosition;
 
@@ -599,14 +600,13 @@ namespace Darwin.Features
                     lowMax = i;
             }
 
-            for (int j = prevPosition + 1; j < len && highMax == -1;
-             j++, highDist++)
+            for (int j = prevPosition + 1; j < len && highMax == -1; j++, highDist++)
             {
                 if (modmax[j] > 0.0)
                     highMax = j;
             }
 
-            // don't really need to test whether they're both -1 here.  if
+            // Don't really need to test whether they're both -1 here.  if
             // they are, -1 will be returned, indicating that we haven't
             // found a closest max
             if (highMax == -1)
@@ -623,7 +623,6 @@ namespace Darwin.Features
 
             // if we get here, highDist == lowDist
             // we'll return the larger max
-
             if (modmax[lowMax] > modmax[highMax])
                 return lowMax;
 

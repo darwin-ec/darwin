@@ -56,5 +56,10 @@ namespace Darwin.Wpf
                 }
             }
         }
+
+        private void RediscoverFeaturesButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.RediscoverFeatures();
+        }
     }
 }
