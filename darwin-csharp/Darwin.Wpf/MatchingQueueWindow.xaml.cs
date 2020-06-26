@@ -136,9 +136,9 @@ namespace Darwin.Wpf
                     float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleFin(
                                         _vm.MatchingQueue.RegistrationMethod,
                                         (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
-                                        _vm.MatchingQueue.Database.Categories.Where(c => c.IsSelected).ToList(),
-                                        (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
-                                        true);
+                                        _vm.MatchingQueue.Database.Categories.ToList(),
+                                        (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false); // TODO: Not straightforward
+
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 

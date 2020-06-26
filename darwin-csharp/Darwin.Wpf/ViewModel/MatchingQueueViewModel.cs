@@ -33,7 +33,7 @@ namespace Darwin.Wpf.ViewModel
                         if (_selectedFin == null)
                             SelectedImageSource = null;
                         else
-                            SelectedImageSource = _selectedFin.OriginalFinImage.ToImageSource();
+                            SelectedImageSource = _selectedFin.FinImage.ToImageSource();
                     }
                     catch (Exception ex)
                     {

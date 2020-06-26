@@ -8,7 +8,7 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Matching Results" Height="750" Width="900">
+        Title="Matching Results" Height="750" Width="900" MinHeight="550">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Crimson" />
@@ -33,7 +33,7 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="250" />
+            <RowDefinition Height="250" MinHeight="200" />
             <RowDefinition Height="5" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
@@ -45,7 +45,7 @@
 
         <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition MinWidth="400" />
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>

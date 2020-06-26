@@ -112,15 +112,13 @@ namespace Darwin.Wpf
                                       _vm.RegistrationMethod,
                                       (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
                                       _vm.SelectableCategories.Where(c => c.IsSelected).ToList(),
-                                      (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false, // TODO: Not straightforward
-                                      true);
+                                      (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false); // TODO: Not straightforward
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 
                     _vm.MatchProgressPercent = roundedProgress;
                     _matchingWorker.ReportProgress(roundedProgress);
 
-                    // TODO: Verify this comparison always works correctly
                     if (percentComplete >= 1.0)
                     {
                         //***1.5 - sort the results here, ONCE, rather than as list is built

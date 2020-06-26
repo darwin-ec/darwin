@@ -132,37 +132,25 @@ namespace Darwin.Matching
         //    database is later modified.
         //
         public float MatchSingleFin(RegistrationMethodType registrationMethod, int regSegmentsUsed,
-                                    List<Category> categoryToMatch, bool useFullFinError,
-                                    bool useAbsoluteOffsets)
+                                    List<Category> categoriesToMatch, bool useFullFinError)
         {
             DatabaseFin thisDBFin;
 
-            if (useAbsoluteOffsets)
-            {
-                // there may be holes in the absolute offset list so we loop until
-                // a non NULL fin is returned or until we reach the end of the list
-                do
-                {
-                    if (CurrentFinIndex >= Database.AllFins.Count)
-                        return 100.0f;
-
-                    thisDBFin = Database.AllFins[CurrentFinIndex];
-
-                    if (null == thisDBFin)
-                        CurrentFinIndex++;
-                }
-                while (null == thisDBFin);
-            }
-            else
+            // there may be holes in the absolute offset list so we loop until
+            // a non NULL fin is returned or until we reach the end of the list
+            do
             {
                 if (CurrentFinIndex >= Database.AllFins.Count)
                     return 100.0f;
 
                 thisDBFin = Database.AllFins[CurrentFinIndex];
+
+                if (null == thisDBFin)
+                    CurrentFinIndex++;
             }
+            while (null == thisDBFin);
 
-
-            bool tryMatch = categoryToMatch.Exists(c => c.Name.ToLower() == thisDBFin.DamageCategory.ToLower());
+            bool tryMatch = categoriesToMatch.Exists(c => c.Name.ToLower() == thisDBFin.DamageCategory.ToLower());
 
             if (tryMatch)
             {
@@ -249,8 +237,6 @@ namespace Darwin.Matching
                     double errorBetweenFins = result.Error; //***005CM
 
                     // Now, store the result
-                    //string errorTemp = string.Format("{0:0.00}", errorBetweenFins);
-
                     Result r = new Result(
                         result.C1, //***005CM
                         result.C2, //***005CM
@@ -275,14 +261,6 @@ namespace Darwin.Matching
             }
 
             CurrentFinIndex++;
-
-            if (useAbsoluteOffsets)
-            {
-                if (CurrentFinIndex == Database.AllFins.Count)
-                    return 1.0f;
-
-                return (float)CurrentFinIndex / Database.AllFins.Count;
-            }
 
             if (CurrentFinIndex == Database.AllFins.Count)
                 return 1.0f;
