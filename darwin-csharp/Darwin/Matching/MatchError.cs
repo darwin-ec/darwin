@@ -4,13 +4,12 @@ using System.Text;
 
 namespace Darwin.Matching
 {
-	public class MseInfo
+	public class MatchError
 	{
-		// members
 		public double Error { get; set; }
 
-		public FloatContour C1 { get; set; }
-		public FloatContour C2 { get; set; }
+		public FloatContour Contour1 { get; set; }
+		public FloatContour Contour2 { get; set; }
 
 		public int B1 { get; set; }
 		public int T1 { get; set; }
@@ -19,13 +18,11 @@ namespace Darwin.Matching
 		public int T2 { get; set; }
 		public int E2 { get; set; }
 
-		// constructor and destructor
-
-		public MseInfo()
+		public MatchError()
 		{
 			Error = 10000.0;
-			C1 = null;
-			C2 = null;
+			Contour1 = null;
+			Contour2 = null;
 			B1 = 0;
 			T1 = 0;
 			E1 = 0;

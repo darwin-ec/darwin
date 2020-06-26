@@ -237,7 +237,11 @@ namespace Darwin.Wpf.ViewModel
             ContourWidth = 250;
             ContourHeight = 250;
 
-            Match = new Match(DatabaseFin, Database, UpdateOutlines);
+            Match = new Match(DatabaseFin,
+                Database,
+                UpdateOutlines,
+                RegistrationMethod,
+                (RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
 
             UpdateOutlines(DatabaseFin.FinOutline.ChainPoints, null);
 

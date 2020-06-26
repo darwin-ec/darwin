@@ -93,6 +93,8 @@ namespace Darwin.Wpf
         {
             bool done = false;
             _vm.MatchRunning = true;
+            _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
+                (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
             do
             {
                 if (_matchingWorker.CancellationPending)
@@ -108,11 +110,7 @@ namespace Darwin.Wpf
                 else
                 {
                     // Do Work
-                    float percentComplete = _vm.Match.MatchSingleFin(
-                                      _vm.RegistrationMethod,
-                                      (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
-                                      _vm.SelectableCategories.Where(c => c.IsSelected).ToList(),
-                                      (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false); // TODO: Not straightforward
+                    float percentComplete = _vm.Match.MatchSingleFin(_vm.SelectableCategories.Where(c => c.IsSelected).ToList()); 
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 

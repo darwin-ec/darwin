@@ -122,7 +122,9 @@ namespace Darwin.Wpf
                     {
                         _vm.MatchingQueue.Matches.Add(new Match(
                             _vm.MatchingQueue.Fins[currentIndex],
-                            _vm.MatchingQueue.Database, null));
+                            _vm.MatchingQueue.Database, null,
+                            _vm.MatchingQueue.RegistrationMethod,
+                            (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false));
 
                         // This needs to run on the UI thread since it affects dependency objects
                         Dispatcher.BeginInvoke(new Action(() =>
@@ -133,11 +135,7 @@ namespace Darwin.Wpf
 
                     // Do Work
                     // TODO: The registration method is hardcoded here.
-                    float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleFin(
-                                        _vm.MatchingQueue.RegistrationMethod,
-                                        (int)RangeOfPointsType.AllPoints, // TODO: This is hacky, since we have a radio button, but it's not straightforward
-                                        _vm.MatchingQueue.Database.Categories.ToList(),
-                                        (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false); // TODO: Not straightforward
+                    float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleFin(_vm.MatchingQueue.Database.Categories.ToList()); 
 
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
