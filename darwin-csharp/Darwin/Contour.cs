@@ -134,16 +134,28 @@ namespace Darwin
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
         }
 
-		public Contour(Contour c)
+		public Contour(Contour c, bool rescale = false)
 		{
 			if (c == null)
 				throw new ArgumentNullException(nameof(c));
 
-			_scale = c.Scale;
+
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
-			foreach (var p in c.Points)
-				_points.Add(new Darwin.Point(p.X, p.Y));
+			if (!rescale)
+			{
+				_scale = c.Scale;
+
+				foreach (var p in c.Points)
+					_points.Add(new Darwin.Point(p.X, p.Y));
+			}
+			else
+            {
+				foreach (var p in c.Points)
+					_points.Add(new Darwin.Point((int)Math.Round(p.X / c.Scale), (int)Math.Round(p.Y / c.Scale)));
+
+				_scale = 1.0;
+            }
 		}
 
 		public Contour(FloatContour c)
@@ -156,16 +168,23 @@ namespace Darwin
 				_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
 		}
 
-		public Contour(FloatContour c, double normalizationScale)
+		public Contour(FloatContour c, double normalizationScale, bool rescale = false)
 		{
 			_scale = normalizationScale;
 			_points = new ObservableNotifiableCollection<Darwin.Point>();
 
-			foreach (var p in c.Points)
-				_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
+			if (!rescale)
+			{
+				foreach (var p in c.Points)
+					_points.Add(new Darwin.Point((int)Math.Round(p.X), (int)Math.Round(p.Y)));
+			}
+			else
+			{
+				foreach (var p in c.Points)
+					_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
 
-			//foreach (var p in c.Points)
-			//	_points.Add(new Darwin.Point((int)Math.Round(p.X / normalizationScale), (int)Math.Round(p.Y / normalizationScale)));
+				_scale = 1.0;
+			}
 		}
 
 		public Contour(Outline outline, double normalizationScale)

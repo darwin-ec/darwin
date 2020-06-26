@@ -62,14 +62,14 @@
                     <RadioButton x:Name="TraceStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.TraceOutline}}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                             <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" />
+                            <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" Height="24" />
                             <Label HorizontalAlignment="Center" Padding="0">Trace Outline</Label>
                         </StackPanel>
                     </RadioButton>
                     <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsEnabled="{Binding IdentifyFeaturesEnabled}" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
                             <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" />
+                            <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" Height="24" />
                             <Label HorizontalAlignment="Center" Padding="0">Identify Features</Label>
                         </StackPanel>
                     </RadioButton>

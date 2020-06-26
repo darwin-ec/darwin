@@ -576,8 +576,10 @@ namespace Darwin.Wpf
 			AddContourUndo(_vm.Contour);
 
 			// use MovePoint code to display newly added point
-			//_moveInit = true;
-			_movePosition = _vm.Contour.AddPointInOrder(point.X, point.Y);
+			if (_vm.Contour.Scale == 1.0)
+				_vm.Contour.AddPointInOrder(point.X, point.Y);
+			else
+				_vm.Contour.AddPointInOrder((int)Math.Round(point.X * _vm.Contour.Scale), (int)Math.Round(point.Y * _vm.Contour.Scale));
 		}
 
 		private void TraceChopOutline(Darwin.Point point)
@@ -745,7 +747,10 @@ namespace Darwin.Wpf
 			if (_vm.Contour == null || -1 == _movePosition || point.IsEmpty)
 				return;
 
-			_vm.Contour[_movePosition].SetPosition(point.X, point.Y);
+			if (_vm.Contour.Scale == 1.0)
+				_vm.Contour[_movePosition].SetPosition(point.X, point.Y);
+			else
+				_vm.Contour[_movePosition].SetPosition((int)Math.Round(point.X * _vm.Contour.Scale), (int)Math.Round(point.Y * _vm.Contour.Scale));
 		}
 
 		private void TraceMovePointFinalize(Darwin.Point point)
@@ -760,12 +765,24 @@ namespace Darwin.Wpf
 			}
 			else
 			{
-				_vm.Contour[_movePosition] = new Darwin.Point
+				if (_vm.Contour.Scale == 1.0)
 				{
-					X = point.X,
-					Y = point.Y,
-					Type = PointType.Normal
-				};
+					_vm.Contour[_movePosition] = new Darwin.Point
+					{
+						X = point.X,
+						Y = point.Y,
+						Type = PointType.Normal
+					};
+				}
+				else
+                {
+					_vm.Contour[_movePosition] = new Darwin.Point
+					{
+						X = (int)Math.Round(point.X * _vm.Contour.Scale),
+						Y = (int)Math.Round(point.Y * _vm.Contour.Scale),
+						Type = PointType.Normal
+					};
+				}
 			}
 
 			_movePosition = -1;
@@ -1490,7 +1507,19 @@ namespace Darwin.Wpf
 					if (_vm.TraceFinalized)
 					{
 						if (_vm.BackupContour != null)
+						{
 							_vm.Contour = _vm.BackupContour;
+						}
+						else
+                        {
+							var tempContour = new Contour(_vm.Contour, true);
+							
+							double spacing = tempContour.GetTotalDistanceAlongContour() / 200.0;
+							if (spacing < SpaceBetweenPoints)
+								spacing = SpaceBetweenPoints;
+
+							_vm.Contour = tempContour.EvenlySpaceContourPoints(spacing);
+						}
 
 						_vm.Outline = null;
 
