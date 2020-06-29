@@ -520,12 +520,14 @@ namespace Darwin.Wpf
 				chunkSize = (int)(Options.CurrentUserOptions.SnakeMaximumIterations / (100.0 / ratio * 2 - 1));
 			else
 				chunkSize = Options.CurrentUserOptions.SnakeMaximumIterations;
+
 			int tripNum = 1;  // one trip at each scale
 
 			// at each ZoomRatio, create an EdgeMagImage and a contour at that scale
 			// and process with active contour
 			while (ratio <= 100 || tripNum == 1)
-			{ // if ratio > 100 take at least one trip
+			{
+				// if ratio > 100 take at least one trip
 				int iterations = (int)(Math.Pow(2.0, tripNum - 1) * chunkSize);
 
 				// Resize EdgeMagImage to current scale
@@ -1130,7 +1132,8 @@ namespace Darwin.Wpf
 				ZoomIn(e.GetPosition(ImageViewBox));
 			else if (e.Delta < 0)
 				ZoomOut(e.GetPosition(ImageViewBox));
-
+			ScaleTransform.ScaleX = _vm.ZoomRatio;
+			ScaleTransform.ScaleY = _vm.ZoomRatio;
 			e.Handled = true;
 		}
 
