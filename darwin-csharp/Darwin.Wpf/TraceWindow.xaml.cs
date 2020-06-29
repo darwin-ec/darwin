@@ -1132,8 +1132,10 @@ namespace Darwin.Wpf
 				ZoomIn(e.GetPosition(ImageViewBox));
 			else if (e.Delta < 0)
 				ZoomOut(e.GetPosition(ImageViewBox));
+
 			ScaleTransform.ScaleX = _vm.ZoomRatio;
 			ScaleTransform.ScaleY = _vm.ZoomRatio;
+
 			e.Handled = true;
 		}
 

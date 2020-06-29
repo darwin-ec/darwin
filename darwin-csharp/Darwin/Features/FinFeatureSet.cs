@@ -25,13 +25,13 @@ namespace Darwin.Features
         {
             FeatureSetType = FeatureSetType.DorsalFin;
 
-            FeaturePoints = new Dictionary<FeaturePointType, FeaturePoint>()
+            FeaturePoints = new Dictionary<FeaturePointType, ContourFeaturePoint>()
             {
-                { FeaturePointType.Tip, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
-                { FeaturePointType.Notch, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
-                { FeaturePointType.LeadingEdgeBegin, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
-                { FeaturePointType.LeadingEdgeEnd, new FeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
-                { FeaturePointType.PointOfInflection, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
+                { FeaturePointType.Tip, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
+                { FeaturePointType.Notch, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
+                { FeaturePointType.LeadingEdgeBegin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
+                { FeaturePointType.LeadingEdgeEnd, new ContourFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
+                { FeaturePointType.PointOfInflection, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
             Features = new Dictionary<FeatureType, Feature>()
@@ -40,7 +40,7 @@ namespace Darwin.Features
             };
         }
 
-        public FinFeatureSet(List<FeaturePoint> featurePoints)
+        public FinFeatureSet(List<ContourFeaturePoint> featurePoints)
             : this()
         {
             if (featurePoints == null)

@@ -1085,7 +1085,7 @@ namespace Darwin.Database
             }
         }
 
-        private List<FeaturePoint> SelectFeaturePointsByFkOutlineID(long fkoutlineid)
+        private List<ContourFeaturePoint> SelectFeaturePointsByFkOutlineID(long fkoutlineid)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1096,12 +1096,12 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM OutlineFeaturePoints WHERE fkOutlineID = @fkOutlineID;";
                     cmd.Parameters.AddWithValue("@fkOutlineID", fkoutlineid);
 
-                    List<FeaturePoint> points = new List<FeaturePoint>();
+                    List<ContourFeaturePoint> points = new List<ContourFeaturePoint>();
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            var featurePoint = new FeaturePoint
+                            var featurePoint = new ContourFeaturePoint
                             {
                                 ID = rdr.SafeGetInt("ID"),
                                 Type = (FeaturePointType)rdr.SafeGetInt("Type"),
@@ -1295,7 +1295,7 @@ namespace Darwin.Database
             }
         }
 
-        private long InsertFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref FeaturePoint point)
+        private long InsertFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref ContourFeaturePoint point)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
@@ -1480,7 +1480,7 @@ namespace Darwin.Database
             }
         }
 
-        private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<FeaturePoint> points)
+        private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<ContourFeaturePoint> points)
         {
             foreach (var p in points)
             {

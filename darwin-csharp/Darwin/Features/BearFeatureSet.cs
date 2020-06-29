@@ -28,20 +28,20 @@ namespace Darwin.Features
         {
             FeatureSetType = FeatureSetType.Bear;
 
-            FeaturePoints = new Dictionary<FeaturePointType, FeaturePoint>()
+            FeaturePoints = new Dictionary<FeaturePointType, ContourFeaturePoint>()
             {
-                { FeaturePointType.LeadingEdgeBegin, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
-                { FeaturePointType.LeadingEdgeEnd, new FeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
-                { FeaturePointType.StartOfSnout, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.StartOfSnout], Type = FeaturePointType.StartOfSnout, IsEmpty = true } },
-                { FeaturePointType.Tip, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
-                { FeaturePointType.Chin, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Chin], Type = FeaturePointType.Chin, IsEmpty = true } },
-                { FeaturePointType.PointOfInflection, new FeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
+                { FeaturePointType.LeadingEdgeBegin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
+                { FeaturePointType.LeadingEdgeEnd, new ContourFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
+                { FeaturePointType.StartOfSnout, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.StartOfSnout], Type = FeaturePointType.StartOfSnout, IsEmpty = true } },
+                { FeaturePointType.Tip, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
+                { FeaturePointType.Chin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Chin], Type = FeaturePointType.Chin, IsEmpty = true } },
+                { FeaturePointType.PointOfInflection, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
             Features = new Dictionary<FeatureType, Feature>();
         }
 
-        public BearFeatureSet(List<FeaturePoint> featurePoints)
+        public BearFeatureSet(List<ContourFeaturePoint> featurePoints)
             : this()
         {
             if (featurePoints == null)

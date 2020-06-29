@@ -19,12 +19,15 @@ namespace Darwin.Matching
         //    Invoked using ORIGINAL_3_POINT mathing_method
         //
         public static MatchError FindErrorBetweenFins_Original3Point(
+                List<FeaturePointType> controlPoints,
                 ErrorBetweenOutlinesDelegate errorBetweenOutlines,
                 UpdateDisplayOutlinesDelegate updateOutlines,
                 DatabaseFin unknownFin,
                 DatabaseFin dbFin,
                 MatchOptions options)
         {
+            // TODO: Use controlPoints?
+
             if (null == dbFin)
                 throw new ArgumentNullException(nameof(dbFin));
 
@@ -82,13 +85,13 @@ namespace Darwin.Matching
 
             //***1.5 - set key feature point locations
             results.Contour1 = mappedContour;
-            results.B1 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            results.T1 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            results.E1 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            results.Contour1ControlPoint1 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            results.Contour1ControlPoint2 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+            results.Contour1ControlPoint3 = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
             results.Contour2 = floatDBContour;
-            results.B2 = dbBeginLE;
-            results.T2 = dbTipPosition;
-            results.E2 = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            results.Contour2ControlPoint1 = dbBeginLE;
+            results.Contour2ControlPoint2 = dbTipPosition;
+            results.Contour2ControlPoint3 = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
 
             // both evenly spaced contours are returned as part of results
             return results; //***005C
@@ -426,6 +429,7 @@ namespace Darwin.Matching
             string traceOut = string.Format("pairs={0} S2E1(unk)={1} s2E2(db)={2} repeats={3} below3={4} err={5}f",
                 ptsFound, end1 + 1 - start1, end2 + 1 - start2,
                    repeatPtUsed, numErrBelow3, results.Error);
+
             Trace.WriteLine(traceOut);
 
             return results; //***005CM
@@ -440,12 +444,19 @@ namespace Darwin.Matching
         //    in process.
         //
         public static MatchError FindErrorBetweenFinsOptimal(
+                List<FeaturePointType> controlPoints,
                 ErrorBetweenOutlinesDelegate errorBetweenOutlines,
                 UpdateDisplayOutlinesDelegate updateOutlines,
                 DatabaseFin unknownFin,
                 DatabaseFin dbFin,
                 MatchOptions options) //***055ER
         {
+            if (controlPoints == null)
+                throw new ArgumentNullException(nameof(controlPoints));
+
+            if (controlPoints.Count < 3)
+                throw new ArgumentOutOfRangeException(nameof(controlPoints));
+
             if (dbFin == null)
                 throw new ArgumentNullException(nameof(dbFin));
 
@@ -458,24 +469,26 @@ namespace Darwin.Matching
             int
                 dbTipPosition,
                 dbBeginLE,
-                dbNotchPosition,
                 dbEndTE;
 
-            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            dbNotchPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Notch);
-            dbEndTE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            //dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+            //dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            //dbEndTE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
+            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
+            dbEndTE = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
 
             PointF
                 dbTipPositionPoint,
                 dbBeginLEPoint,
-                dbNotchPositionPoint,
                 dbEndTEPoint;
 
-            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
-            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
-            dbNotchPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Notch);
-            dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection);
+            //dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
+            //dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
+            //dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection);
+            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
+            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[0]);
+            dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
 
             FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints);
 
@@ -504,9 +517,12 @@ namespace Darwin.Matching
             //     else halve jumpSize and repeat beginning at (4)
             // 
 
-            var unknownTipPosition = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            var unknownBeginLE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            var unknownEndTE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            //var unknownTipPosition = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+            //var unknownBeginLE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+            //var unknownEndTE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+            var unknownTipPosition = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
+            var unknownBeginLE = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
+            var unknownEndTE = unknownFin.FinOutline.GetFeaturePoint(controlPoints[2]);
 
             // 1% and jumpSize for each leading edge
             int onePercentUnk = (int)((unknownTipPosition - unknownBeginLE) / 100.0);
@@ -564,7 +580,8 @@ namespace Darwin.Matching
             endTrailDB = dbEndTE;
 
             // set initial position of unknown TIP
-            movedTipUnk = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
+            //movedTipUnk = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip); //***1.1
+            movedTipUnk = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
 
             //***055OP
             // find inital lengths (# of points) for each outline
@@ -575,7 +592,8 @@ namespace Darwin.Matching
 
             // create initial mapping, using ENTIRE fin contour
 
-            var unknownTipPositionPoint = unknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
+            //var unknownTipPositionPoint = unknownFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
+            var unknownTipPositionPoint = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
 
             mappedContour = preMapUnknown.MapContour(
                     unknownTipPositionPoint,
@@ -614,8 +632,7 @@ namespace Darwin.Matching
                 }
             }
 
-            if (updateOutlines != null)
-                updateOutlines(mappedContour, floatDBContour);
+            updateOutlines?.Invoke(mappedContour, floatDBContour);
 
             // now try shortenning one or the other of the leading or trailing edges to 
             // find a more optimal mapping (one with smaller error)
@@ -651,8 +668,7 @@ namespace Darwin.Matching
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                if (updateOutlines != null)
-                    updateOutlines(shortenedDBMappedContour, floatDBContour);
+                updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                 // shorten UNKNOWN leading edge by 1% and test error
 
@@ -1187,12 +1203,12 @@ namespace Darwin.Matching
             results.Contour2 = floatDBContour;
 
             //***1.1 - set shifted feature point locations
-            results.B1 = startLeadUnk;
-            results.T1 = movedTipUnk;
-            results.E1 = endTrailUnk;
-            results.B2 = startLeadDB;
-            results.T2 = dbTipPosition;
-            results.E2 = endTrailDB;
+            results.Contour1ControlPoint1 = startLeadUnk;
+            results.Contour1ControlPoint2 = movedTipUnk;
+            results.Contour1ControlPoint3 = endTrailUnk;
+            results.Contour2ControlPoint1 = startLeadDB;
+            results.Contour2ControlPoint2 = dbTipPosition;
+            results.Contour2ControlPoint3 = endTrailDB;
 
             //***055ER - allow use of entire fin outlines in last determination
             // of error measure.  This should produce error more in line with visual
@@ -1232,8 +1248,7 @@ namespace Darwin.Matching
                         endTrailDB);
             }
 
-            if (updateOutlines != null)
-                updateOutlines(shortenedDBMappedContour, floatDBContour);
+            updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
             /*
                     // for now this is removed - JHS
@@ -1692,12 +1707,15 @@ namespace Darwin.Matching
         //    of the 13 trials is returned.
         //
         public static MatchError FindErrorBetweenFins(
+                List<FeaturePointType> controlPoints,
                 ErrorBetweenOutlinesDelegate errorBetweenOutlines,
                 UpdateDisplayOutlinesDelegate updateOutlines,
                 DatabaseFin unknownFin,
                 DatabaseFin dbFin,
                 MatchOptions options)
         {
+            // TODO: Use controlPoints?
+
             if (null == dbFin)
                 throw new ArgumentNullException(nameof(dbFin));
 
@@ -1765,12 +1783,12 @@ namespace Darwin.Matching
             results.Contour2 = floatDBContour; //***1.0LK - this doesn't change so set it here
             results.Error = 50000.0;
             //***1.5 - initialize key feature point locations
-            results.B1 = unknownBeginLE;
-            results.T1 = unknownTipPosition;
-            results.E1 = unknownEndTE;
-            results.B2 = dbBeginLE;
-            results.T2 = dbTipPosition;
-            results.E2 = dbEndTE;
+            results.Contour1ControlPoint1 = unknownBeginLE;
+            results.Contour1ControlPoint2 = unknownTipPosition;
+            results.Contour1ControlPoint3 = unknownEndTE;
+            results.Contour2ControlPoint1 = dbBeginLE;
+            results.Contour2ControlPoint2 = dbTipPosition;
+            results.Contour2ControlPoint3 = dbEndTE;
 
             Trace.WriteLine("matching unk " + unknownFin.IDCode + " to DB " + dbFin.IDCode);
 
@@ -1934,8 +1952,7 @@ namespace Darwin.Matching
                                             mappedContour,startLeadUnk,mUnknownEndTE));
                 */
 
-                if (updateOutlines != null)
-                    updateOutlines(mappedContour, floatDBContour);
+                updateOutlines?.Invoke(mappedContour, floatDBContour);
 
                 //***1.0LK - this if-else revised to fix memory leaks - JHS
                 if (0 == matchNum)
@@ -1944,8 +1961,8 @@ namespace Darwin.Matching
                     results.Contour1 = mappedContour;
                     results.Error = newError;
                     //***1.5 - set shifted feature point locations
-                    results.B1 = startLeadUnk;
-                    results.B2 = startLeadDB;
+                    results.Contour1ControlPoint1 = startLeadUnk;
+                    results.Contour2ControlPoint1 = startLeadDB;
                 }
                 else if (newError < results.Error)
                 {
@@ -1954,8 +1971,8 @@ namespace Darwin.Matching
                     results.Contour1 = mappedContour;
                     results.Error = newError;
                     //***1.5 - set shifted feature point locations
-                    results.B1 = startLeadUnk;
-                    results.B2 = startLeadDB;
+                    results.Contour1ControlPoint1 = startLeadUnk;
+                    results.Contour2ControlPoint1 = startLeadDB;
                 }
                 else
                 {
@@ -2150,7 +2167,7 @@ namespace Darwin.Matching
                     unkArcLength[1] += segLen1[k];
             }
 
-            // find length of database fin outline
+            // Find length of database fin outline
             dbArcLength[0] = 0.0;
             dbArcLength[1] = 0.0; //***1.982a
             segLen2.Add(0.0); // no segment entering first point
@@ -2173,7 +2190,6 @@ namespace Darwin.Matching
             // two mid points (TIPS) are known to be the same
             for (int part = 0; part < 2; part++)
             {
-
                 double ratio = unkArcLength[part] / dbArcLength[part];
 
                 // this process walks the database contour and at each point computes
@@ -2428,8 +2444,6 @@ namespace Darwin.Matching
             return error;
         }
 
-
-        //*********************************
         public static double TriangleArea(PointF p, PointF q, PointF r)
         {
             return (0.5 * (p.X * q.Y + q.X * r.Y + r.X * p.Y
@@ -2449,20 +2463,17 @@ namespace Darwin.Matching
                 int begin2,
                 int end2)
         {
-            double
-                //error = 50000.0,
-                dbArcLength, unkArcLength;
+            double dbArcLength;
+            double unkArcLength;
 
             // saved segment lengths, each is length of edge entering indexed point
             List<double> segLen1 = new List<double>(); ;
             List<double> segLen2 = new List<double>();
 
-            int k;
-
             // find length of unknown fin outline
             unkArcLength = 0.0;
             segLen1.Add(0.0); // no segment entering first point
-            for (k = 1; k < c1.Length; k++)
+            for (var k = 1; k < c1.Length; k++)
             {
                 double dx = c1[k].X - c1[k - 1].X;
                 double dy = c1[k].Y - c1[k - 1].Y;
@@ -2474,7 +2485,7 @@ namespace Darwin.Matching
             // find length of database fin outline
             dbArcLength = 0.0;
             segLen2.Add(0.0); // no segment entering first point
-            for (k = 1; k < c2.Length; k++)
+            for (var k = 1; k < c2.Length; k++)
             {
                 double dx = c2[k].X - c2[k - 1].X;
                 double dy = c2[k].Y - c2[k - 1].Y;
@@ -2708,11 +2719,9 @@ namespace Darwin.Matching
                     }
                 }
             }
+
             // total area at end should be normalized : divided by arclength of one or both contours
-
             return (2.0 * area / (unkArcLength + dbArcLength));
-
-            //return area;
         }
 
         public static double AreaBasedErrorBetweenOutlineSegments(

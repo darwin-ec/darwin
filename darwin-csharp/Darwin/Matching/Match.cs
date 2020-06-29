@@ -85,6 +85,9 @@ namespace Darwin.Matching
         {
             MatchFactors = new List<MatchFactor>();
 
+            // TODO: Move this elsewhere, change for Fins/Bears
+            var controlPoints = new List<FeaturePointType> { FeaturePointType.LeadingEdgeBegin, FeaturePointType.Tip, FeaturePointType.PointOfInflection };
+
             switch (registrationMethod)
             {
                 case RegistrationMethodType.Original3Point:
@@ -96,6 +99,7 @@ namespace Darwin.Matching
                     // mapped points
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
+                        controlPoints,
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFins_Original3Point,
                         _updateOutlines));
@@ -113,6 +117,7 @@ namespace Darwin.Matching
                     // during the mapping process.
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
+                        controlPoints,
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFins,
                         _updateOutlines));
@@ -136,6 +141,7 @@ namespace Darwin.Matching
                     //errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
+                        controlPoints,
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
@@ -150,6 +156,7 @@ namespace Darwin.Matching
                 case RegistrationMethodType.TrimOptimalTip:
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
+                        controlPoints,
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
@@ -163,6 +170,7 @@ namespace Darwin.Matching
                 case RegistrationMethodType.TrimOptimalArea: //***1.85 - new area based metric option
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
+                        controlPoints,
                         OutlineErrorFunctions.AreaBasedErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
@@ -215,10 +223,9 @@ namespace Darwin.Matching
         {
             if (MatchFactors == null || MatchFactors.Count < 1)
                 throw new Exception("Match factors haven't been set yet!");
+
             DatabaseFin thisDBFin;
 
-            // there may be holes in the absolute offset list so we loop until
-            // a non NULL fin is returned or until we reach the end of the list
             do
             {
                 if (CurrentFinIndex >= Database.AllFins.Count)
@@ -263,8 +270,8 @@ namespace Darwin.Matching
 
                 //***1.1 - set indices of beginning, tip and end points used in mapping
                 r.SetMappingControlPoints(
-                    result.B1, result.T1, result.E1,  // beginning, tip & end of unknown fin
-                    result.B2, result.T2, result.E2); // beginning, tip & end of database fin
+                    result.Contour1ControlPoint1, result.Contour1ControlPoint2, result.Contour1ControlPoint3,  // beginning, tip & end of unknown fin
+                    result.Contour2ControlPoint1, result.Contour2ControlPoint2, result.Contour2ControlPoint3); // beginning, tip & end of database fin
 
                 MatchResults.AddResult(r);
             }

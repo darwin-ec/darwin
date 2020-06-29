@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Features;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Text;
 namespace Darwin.Matching
 {
     public delegate MatchError ErrorBetweenIndividualsDelegate(
+        List<FeaturePointType> contourControlPoints,
         ErrorBetweenOutlinesDelegate errorBetweenOutlines,
         UpdateDisplayOutlinesDelegate updateOutlines,
         DatabaseFin unknownFin,
@@ -35,6 +37,17 @@ namespace Darwin.Matching
             {
                 _errorBetweenIndividuals = value;
                 RaisePropertyChanged("ErrorBetweenIndividuals");
+            }
+        }
+
+        private List<FeaturePointType> _contourControlPoints;
+        public List<FeaturePointType> ContourControlPoints
+        {
+            get => _contourControlPoints;
+            set
+            {
+                _contourControlPoints = value;
+                RaisePropertyChanged("ContourControlPoints");
             }
         }
 
@@ -90,6 +103,7 @@ namespace Darwin.Matching
 
         public static MatchFactor CreateOutlineFactor(
             float weight,
+            List<FeaturePointType> contourControlPoints,
             ErrorBetweenOutlinesDelegate errorMethod,
             ErrorBetweenIndividualsDelegate errorBetweenIndividuals,
             UpdateDisplayOutlinesDelegate updateOutlines,
@@ -98,6 +112,7 @@ namespace Darwin.Matching
             return new MatchFactor
             {
                 Weight = weight,
+                ContourControlPoints = contourControlPoints,
                 ErrorBetweenOutlines = errorMethod,
                 ErrorBetweenIndividuals = errorBetweenIndividuals,
                 UpdateOutlines = updateOutlines,
@@ -107,9 +122,8 @@ namespace Darwin.Matching
 
         public MatchError FindErrorBetweenIndividuals(DatabaseFin unknownFin, DatabaseFin databaseFin)
         {
-            return ErrorBetweenIndividuals(ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
+            return ErrorBetweenIndividuals(ContourControlPoints, ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
         }
-
 
         protected virtual void RaisePropertyChanged(string propertyName)
         {

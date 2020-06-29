@@ -24,7 +24,7 @@ namespace Darwin.Features
         public FeatureSetType FeatureSetType { get; set; }
 
         public Dictionary<FeatureType, Feature> Features { get; set; }
-        public Dictionary<FeaturePointType, FeaturePoint> FeaturePoints { get; set; }
+        public Dictionary<FeaturePointType, ContourFeaturePoint> FeaturePoints { get; set; }
 
         //public FeaturePoint this[FeaturePointType featurePointType]
         //{
@@ -42,12 +42,12 @@ namespace Darwin.Features
         //    }
         //}
 
-        public List<FeaturePoint> FeaturePointList
+        public List<ContourFeaturePoint> FeaturePointList
         {
             get
             {
                 if (FeaturePoints == null)
-                    return new List<FeaturePoint>();
+                    return new List<ContourFeaturePoint>();
 
                 return FeaturePoints.Values.ToList();
             }
@@ -105,7 +105,7 @@ namespace Darwin.Features
             }
         }
 
-        public static FeatureSet Load(FeatureSetType featuresType, List<FeaturePoint> featurePoints)
+        public static FeatureSet Load(FeatureSetType featuresType, List<ContourFeaturePoint> featurePoints)
         {
             if (featurePoints == null)
                 throw new ArgumentNullException(nameof(featurePoints));

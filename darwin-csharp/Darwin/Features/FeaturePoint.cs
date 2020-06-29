@@ -11,7 +11,6 @@ namespace Darwin.Features
 
         private string _name;
         private FeaturePointType _type;
-        private int _position;
         private bool _userSetPosition;
         private bool _isEmpty;
         private bool _ignore;
@@ -43,16 +42,6 @@ namespace Darwin.Features
             {
                 _type = value;
                 RaisePropertyChanged("Type");
-            }
-        }
-        public int Position
-        {
-            get => _position;
-            set
-            {
-                _position = value;
-                RaisePropertyChanged("Position");
-                IsEmpty = false;
             }
         }
 
