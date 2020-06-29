@@ -15,7 +15,7 @@ namespace Darwin.Features
         Notch = 4,
         PointOfInflection = 5,
 
-        StartOfSnout = 6,
+        Nasion = 6,
         Chin = 7
     }
 }

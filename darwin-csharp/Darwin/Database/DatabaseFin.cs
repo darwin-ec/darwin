@@ -54,7 +54,7 @@ using System.IO;
 
 namespace Darwin.Database
 {
-    public class DatabaseFin : INotifyPropertyChanged
+    public class DatabaseFin : BaseEntity, INotifyPropertyChanged
     {
         public Bitmap OriginalFinImage;
         public Bitmap FinImage;      // modified fin image from TraceWin, ...

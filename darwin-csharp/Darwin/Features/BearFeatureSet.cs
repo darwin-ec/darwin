@@ -18,9 +18,10 @@ namespace Darwin.Features
         {
             { FeaturePointType.LeadingEdgeBegin, "Beginning of Head" },
             { FeaturePointType.LeadingEdgeEnd, "End of Leading Edge" },
-            { FeaturePointType.StartOfSnout, "Start of Snout" },
+            { FeaturePointType.Nasion, "Nasion" },
             { FeaturePointType.Tip, "Tip of Nose" },
-            { FeaturePointType.Chin, "Chin" },
+            { FeaturePointType.Notch, "Under Nose Dent" },
+            //{ FeaturePointType.Chin, "Chin" },
             { FeaturePointType.PointOfInflection, "End of Jaw" }
         };
 
@@ -32,9 +33,9 @@ namespace Darwin.Features
             {
                 { FeaturePointType.LeadingEdgeBegin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
                 { FeaturePointType.LeadingEdgeEnd, new ContourFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
-                { FeaturePointType.StartOfSnout, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.StartOfSnout], Type = FeaturePointType.StartOfSnout, IsEmpty = true } },
+                { FeaturePointType.Nasion, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
                 { FeaturePointType.Tip, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
-                { FeaturePointType.Chin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Chin], Type = FeaturePointType.Chin, IsEmpty = true } },
+                { FeaturePointType.Notch, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
                 { FeaturePointType.PointOfInflection, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
@@ -58,17 +59,17 @@ namespace Darwin.Features
             : this()
         {
             int tipPos = FindTip(chain, chainPoints);
-            int chinPos = FindChin(chain, tipPos);
-            int startSnoutPos = FindStartOfSnout(chain, tipPos);
+            int notchPos = FindNotch(chain, tipPos);
+            int nasionPos = FindNasion(chain, tipPos);
             int beginLE = FindBeginLE(chain, tipPos);
             int endLE = FindEndLE(chain, beginLE, tipPos);
             int endTE = FindPointOfInflection(chain, tipPos);
 
             FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
             FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
-            FeaturePoints[FeaturePointType.StartOfSnout].Position = startSnoutPos;
+            FeaturePoints[FeaturePointType.Nasion].Position = nasionPos;
             FeaturePoints[FeaturePointType.Tip].Position = tipPos;
-            FeaturePoints[FeaturePointType.Chin].Position = chinPos;
+            FeaturePoints[FeaturePointType.Notch].Position = notchPos;
             FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
         }
 
@@ -279,7 +280,7 @@ namespace Darwin.Features
         }
 
         // This is based on dolphin FindNotch, but on the leading side
-        public int FindStartOfSnout(Chain chain, int tipPos)
+        public int FindNasion(Chain chain, int tipPos)
         {
             if (chain == null)
                 throw new ArgumentNullException(nameof(chain));
