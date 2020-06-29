@@ -22,6 +22,26 @@ namespace Darwin.Utilities
 			array[y1, y2] = temp;
 		}
 
+		public static double DotProduct(double x1, double y1, double x2, double y2)
+        {
+			return x1 * x2 + y1 * y2;
+        }
+
+		public static double DotProduct(double x1, double y1, double z1, double x2, double y2, double z2)
+		{
+			return x1 * x2 + y1 * y2 + z1 * z2;
+		}
+
+		public static double Magnitude(double x1, double y1)
+        {
+			return Math.Sqrt(Math.Pow(x1, 2) + Math.Pow(y1, 2));
+        }
+
+		public static double Magnitude(double x1, double y1, double z1)
+		{
+			return Math.Sqrt(Math.Pow(x1, 2) + Math.Pow(y1, 2) + Math.Pow(z1, 2));
+		}
+
 		//*******************************************************************
 		// gaussj()
 		//
