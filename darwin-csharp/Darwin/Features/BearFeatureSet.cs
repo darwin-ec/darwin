@@ -10,8 +10,10 @@ namespace Darwin.Features
 {
     public class BearFeatureSet : FeatureSet
     {
+        private const int NasionTransformLevels = 6;
+
         private const int NumChinMaxesToTrack = 5;
-        private const float StartOfSnoutPaddingPercentage = 0.30f;
+        private const float StartOfSnoutPaddingPercentage = 0.25f;
         private const int StartOfSnoutNumMinsToTrack = 5;
 
         private static Dictionary<FeaturePointType, string> FeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
@@ -279,7 +281,6 @@ namespace Darwin.Features
             return chinPosition + tipPos;
         }
 
-        // This is based on dolphin FindNotch, but on the leading side
         public int FindNasion(Chain chain, int tipPos)
         {
             if (chain == null)
@@ -290,211 +291,295 @@ namespace Darwin.Features
 
             int padding = (int)Math.Round(StartOfSnoutPaddingPercentage * tipPos);
 
-            // TODO
-            //if (_userSetNotch)
-            //    throw new Exception("findNotch() [User selected notch in use]");
+            int numPoints = chain.Length;
 
-            // We're only going to be looking on the "leading edge"
-            // of the bear head, so we're going to create an array from that data
-            // with a little padding
             int numLeadingEdgePts = tipPos - 2 * padding;
             double[] src = new double[numLeadingEdgePts];
 
-            //***1.95 - JHS
-            // The following original code copies the ABSOLUTE Chain angles into source.
-            // These are probably in the range -180 .. 180.  Is this causing problems with
-            // angles that cross quadrants between +180 and -180 thus producing a LARGE
-            // positive change in angle rather than a small negative one.  Should the
-            // angles all be SHIFTED by +180 so the range is 0..360?  NO, this does not
-            // work.  However, converting ONLY the negative angles (-91..-180) to positive 
-            // by adding 360 to them DOES WORK.  This way there is a continuous change in 
-            // positive outline orientation throughout all leftward extending notches 
-            // except narrow ones opening up and forward. In effect, we have removed potential
-            // discontinuities from the chain signal being sent into the wavelet code.
-            //memcpy(src, &((*_chain)[_tipPos + 1]), numTrailingEdgePts * sizeof(double));
             Array.Copy(chain.Data, padding, src, 0, numLeadingEdgePts);
 
-            //***1.95 - code to convert negative angles
-            for (int di = 0; di < numLeadingEdgePts; di++)
-            {
-                if (src[di] < -90)
-                    src[di] += 360.0; // force negative angles to be positive
-                                      //printf ("%5.2f\n",src[di]);
-            }
+            int nextPowOfTwo = MathHelper.NextPowerOfTwo(numPoints - 1);
 
-            // Now set up the variables needed to perform a wavelet
-            // transform on the chain
-            double[,] continuousResult = new double[TransformLevels + 1, MathHelper.NextPowerOfTwo(numLeadingEdgePts)];
+            // Now set up the variables needed to perform a wavelet transform on the chain
+            double[,] continuousResult = new double[NasionTransformLevels + 1, nextPowOfTwo];
 
             // Now perform the transformation
-            WIRWavelet.WL_FrwtVector(
-                    src,
+            WIRWavelet.WL_FrwtVector(src,
                     ref continuousResult,
                     numLeadingEdgePts,
-                    TransformLevels,
+                    NasionTransformLevels,
                     WaveletUtil.MZLowPassFilter,
                     WaveletUtil.MZHighPassFilter);
 
-            int i;
-            for (i = 1; i <= TransformLevels; i++)
-                for (int j = 0; j < numLeadingEdgePts; j++)
-                    continuousResult[i, j] *= WaveletUtil.NormalizationCoeff(i);
+            int
+                nasionPosition = 0,
+                level = NasionTransformLevels;
 
-            double[,] modMax = new double[TransformLevels, numLeadingEdgePts];
-
-            // ..and find its local minima and maxima
-            for (i = 0; i < TransformLevels; i++)
+            while (level > 1)
             {
-                double[] temp = new double[numLeadingEdgePts];
+                // Find the maxima of the coefficients
+                double[] modMax = new double[numPoints - 1];
 
-                double[] continousExtract = WaveletUtil.Extract1DArray(continuousResult, i + 1, numLeadingEdgePts);
+                for (int k = 0; k < numPoints - 1; k++)
+                    continuousResult[level, k] *= WaveletUtil.NormalizationCoeff(level);
 
-                WaveletUtil.ModulusMaxima(continousExtract, ref temp, numLeadingEdgePts);
+                double[] continousExtract = WaveletUtil.Extract1DArray(continuousResult, level, numPoints - 1);
+                WaveletUtil.ModulusMaxima(continousExtract, ref modMax, numPoints - 1);
 
-                WaveletUtil.Patch1DArray(temp, ref modMax, i, numLeadingEdgePts);
-            }
+                // Now, find the largest positive max, which we'll
+                // assume is the tip of the fin.
 
-            int level = TransformLevels / 2;
-
-            if (level < 1) level = 1;
-
-            // First, we'll find some local minima at an intermediate level
-            // to track.
-            int startOfSnoutPosition = 0;
-            List<int> mins = new List<int>();
-
-            while (level > 0)
-            {
-                for (i = 0; i < numLeadingEdgePts; i++)
-                    if (modMax[level, i] < 0.0)
-                        mins.Add(i);
-
-                if (mins.Count <= 0)
+                if (nasionPosition == 0)
                 {
-                    level--;
-                    continue;
+                    // Find the greatest min
+                    double min = double.MaxValue; //***1.6 - removed temporarily for tests
+                    for (int i = 0; i < numLeadingEdgePts; i++)
+                    { //***1.6 - removed temporarily for tests
+                        if (modMax[i] < min)
+                        {
+                            min = modMax[i];
+                            nasionPosition = i;
+                        }
+                    }
                 }
-
-                if (mins.Count == 1)
-                {
-                    startOfSnoutPosition = 1;
-
-                    if (0 == startOfSnoutPosition)
-                        startOfSnoutPosition = chain.Length - tipPos - 1;
-
-                    break;
-                }
-
-                // yes, bad code
-                break;
-            }
-
-            if (level == 0)
-                // Well, this really shouldn't happen: we've looked through
-                // all the fine transform levels and haven't found any local
-                // minima.  So, we'll just set the notch Position to the end
-                // of the chain.
-                startOfSnoutPosition = chain.Length - tipPos - 1;
-
-            if (startOfSnoutPosition == 0)
-            {
-                // Now, we'll take the lowest few mins, and look at how
-                // they change over the transform levels.
-
-                double[] minVals = new double[mins.Count];
-
-                for (i = 0; i < mins.Count; i++)
-                    minVals[i] = modMax[level, mins[i]];
-
-                Array.Sort(minVals);
-
-                int numMinsToTrack;
-
-                if ((int)mins.Count < StartOfSnoutNumMinsToTrack)
-                    numMinsToTrack = mins.Count;
                 else
-                    numMinsToTrack = StartOfSnoutNumMinsToTrack;
-
-                int[] positions = new int[numMinsToTrack];
-
-                for (int count = 0; count < numMinsToTrack; count++)
                 {
-                    for (i = 0; i < mins.Count; i++)
-                    {
-                        if (minVals[count] == modMax[level, mins[i]])
-                        {
-                            positions[count] = mins[i];
-                            break;
-                        }
-                    }
+                    var closestPosition = FindClosestMin(modMax, numPoints - 1, nasionPosition);
+
+                    if (closestPosition >= 0)
+                        nasionPosition = closestPosition;
                 }
 
-                // Ok, now that we've got the few lowest mins,
-                // let's find their corresponding positions in
-                // a coarser level
-                int coarserLevel = TransformLevels - 2;
-
-                int correspondingPos;
-
-                double difMax = 0.0, dif;
-                bool firstRun = true;
-
-                for (i = 0; i < numMinsToTrack; i++)
-                {
-                    var extract = WaveletUtil.Extract1DArray(modMax, coarserLevel, numLeadingEdgePts);
-                    correspondingPos = FindClosestMin(
-                            5,
-                            extract,
-                            numLeadingEdgePts,
-                            positions[i]);
-
-                    // If we found a corresponding min in a coarser
-                    // level...
-                    if (-1 != correspondingPos)
-                    {
-                        dif = Math.Abs(modMax[coarserLevel, correspondingPos]);
-
-                        if (firstRun)
-                        {
-                            firstRun = false;
-                            difMax = dif;
-                            startOfSnoutPosition = positions[i];
-                        }
-                        else if (dif > difMax)
-                        {
-                            difMax = dif;
-                            startOfSnoutPosition = positions[i];
-                        }
-                    }
-                }
-
-                if (firstRun)
-                    startOfSnoutPosition = (int)Math.Round(tipPos * 2 * StartOfSnoutPaddingPercentage);
+                level--;
             }
 
-            /*
-			list<ZeroCrossing> zeroCrossings =
-				findZeroCrossings(continuousResult[level], numTrailingEdgePts);
+            var correctedNasionPosition = nasionPosition + padding;
+            Trace.WriteLine("Nasion position: " + correctedNasionPosition);
 
-			list<ZeroCrossing>::iterator it = zeroCrossings.begin();
+            if (correctedNasionPosition < 5)
+                Trace.WriteLine("Probable bad nasion position.");
 
-			double maxDist = 0.0;
-
-			while (it != zeroCrossings.end()) {
-				if (it->leftMag < 0.0) {
-				double curDist = (fabs(it->leftMag) + fabs(it->rightMag));
-				if (curDist > maxDist) {
-					maxDist = curDist;
-					notchPosition = it->position;
-				}
-				}
-				++it;
-			}
-
-			zeroCrossings.clear();
-			*/
-
-            return startOfSnoutPosition + padding;
+            return correctedNasionPosition;
         }
+
+        // This is based on dolphin FindNotch, but on the leading side
+        //     public int FindNasion(Chain chain, int tipPos)
+        //     {
+        //         if (chain == null)
+        //             throw new ArgumentNullException(nameof(chain));
+
+        //         if (tipPos < 0 || tipPos > chain.Length)
+        //             throw new ArgumentOutOfRangeException(nameof(tipPos));
+
+        //         int padding = (int)Math.Round(StartOfSnoutPaddingPercentage * tipPos);
+
+        //         // TODO
+        //         //if (_userSetNotch)
+        //         //    throw new Exception("findNotch() [User selected notch in use]");
+
+        //         // We're only going to be looking on the "leading edge"
+        //         // of the bear head, so we're going to create an array from that data
+        //         // with a little padding
+        //         int numLeadingEdgePts = tipPos - 2 * padding;
+        //         double[] src = new double[numLeadingEdgePts];
+
+        //         //***1.95 - JHS
+        //         // The following original code copies the ABSOLUTE Chain angles into source.
+        //         // These are probably in the range -180 .. 180.  Is this causing problems with
+        //         // angles that cross quadrants between +180 and -180 thus producing a LARGE
+        //         // positive change in angle rather than a small negative one.  Should the
+        //         // angles all be SHIFTED by +180 so the range is 0..360?  NO, this does not
+        //         // work.  However, converting ONLY the negative angles (-91..-180) to positive 
+        //         // by adding 360 to them DOES WORK.  This way there is a continuous change in 
+        //         // positive outline orientation throughout all leftward extending notches 
+        //         // except narrow ones opening up and forward. In effect, we have removed potential
+        //         // discontinuities from the chain signal being sent into the wavelet code.
+        //         //memcpy(src, &((*_chain)[_tipPos + 1]), numTrailingEdgePts * sizeof(double));
+        //         Array.Copy(chain.Data, padding, src, 0, numLeadingEdgePts);
+
+        //         //***1.95 - code to convert negative angles
+        //         for (int di = 0; di < numLeadingEdgePts; di++)
+        //         {
+        //             if (src[di] < -90)
+        //                 src[di] += 360.0; // force negative angles to be positive
+        //                                   //printf ("%5.2f\n",src[di]);
+        //         }
+
+        //         // Now set up the variables needed to perform a wavelet
+        //         // transform on the chain
+        //         double[,] continuousResult = new double[NasionTransformLevels + 1, MathHelper.NextPowerOfTwo(numLeadingEdgePts)];
+
+        //         // Now perform the transformation
+        //         WIRWavelet.WL_FrwtVector(
+        //                 src,
+        //                 ref continuousResult,
+        //                 numLeadingEdgePts,
+        //                 NasionTransformLevels,
+        //                 WaveletUtil.MZLowPassFilter,
+        //                 WaveletUtil.MZHighPassFilter);
+
+        //         int i;
+        //         for (i = 1; i <= NasionTransformLevels; i++)
+        //             for (int j = 0; j < numLeadingEdgePts; j++)
+        //                 continuousResult[i, j] *= WaveletUtil.NormalizationCoeff(i);
+
+        //         double[,] modMax = new double[NasionTransformLevels, numLeadingEdgePts];
+
+        //         // ..and find its local minima and maxima
+        //         for (i = 0; i < NasionTransformLevels; i++)
+        //         {
+        //             double[] temp = new double[numLeadingEdgePts];
+
+        //             double[] continousExtract = WaveletUtil.Extract1DArray(continuousResult, i + 1, numLeadingEdgePts);
+
+        //             WaveletUtil.ModulusMaxima(continousExtract, ref temp, numLeadingEdgePts);
+
+        //             WaveletUtil.Patch1DArray(temp, ref modMax, i, numLeadingEdgePts);
+        //         }
+
+        //         // Start at the next-to-coarsest level
+        //         int level = NasionTransformLevels - 1;
+
+        //         if (level < 1)
+        //             level = 1;
+
+        //         // First, we'll find some local minima at an intermediate level
+        //         // to track.
+        //         int startOfSnoutPosition = 0;
+        //         List<int> mins = new List<int>();
+
+        //         while (level > 0)
+        //         {
+        //             for (i = 0; i < numLeadingEdgePts; i++)
+        //                 if (modMax[level, i] < 0.0)
+        //                     mins.Add(i);
+
+        //             if (mins.Count <= 0)
+        //             {
+        //                 level--;
+        //                 continue;
+        //             }
+
+        //             if (mins.Count == 1)
+        //             {
+        //                 startOfSnoutPosition = 1;
+
+        //                 if (0 == startOfSnoutPosition)
+        //                     startOfSnoutPosition = chain.Length - tipPos - 1;
+
+        //                 break;
+        //             }
+
+        //             // yes, bad code
+        //             break;
+        //         }
+
+        //         if (level == 0)
+        //             // Well, this really shouldn't happen: we've looked through
+        //             // all the fine transform levels and haven't found any local
+        //             // minima.  So, we'll just set the notch Position to the end
+        //             // of the chain.
+        //             startOfSnoutPosition = chain.Length - tipPos - 1;
+
+        //         if (startOfSnoutPosition == 0)
+        //         {
+        //             // Now, we'll take the lowest few mins, and look at how
+        //             // they change over the transform levels.
+
+        //             double[] minVals = new double[mins.Count];
+
+        //             for (i = 0; i < mins.Count; i++)
+        //                 minVals[i] = modMax[level, mins[i]];
+
+        //             Array.Sort(minVals);
+
+        //             int numMinsToTrack;
+
+        //             if ((int)mins.Count < StartOfSnoutNumMinsToTrack)
+        //                 numMinsToTrack = mins.Count;
+        //             else
+        //                 numMinsToTrack = StartOfSnoutNumMinsToTrack;
+
+        //             int[] positions = new int[numMinsToTrack];
+
+        //             for (int count = 0; count < numMinsToTrack; count++)
+        //             {
+        //                 for (i = 0; i < mins.Count; i++)
+        //                 {
+        //                     if (minVals[count] == modMax[level, mins[i]])
+        //                     {
+        //                         positions[count] = mins[i];
+        //                         break;
+        //                     }
+        //                 }
+        //             }
+
+        //             // Ok, now that we've got the few lowest mins,
+        //             // let's find their corresponding positions in
+        //             // a coarser level
+        //             int coarserLevel = TransformLevels - 2;
+
+        //             int correspondingPos;
+
+        //             double difMax = 0.0, dif;
+        //             bool firstRun = true;
+
+        //             for (i = 0; i < numMinsToTrack; i++)
+        //             {
+        //                 var extract = WaveletUtil.Extract1DArray(modMax, coarserLevel, numLeadingEdgePts);
+        //                 correspondingPos = FindClosestMin(
+        //                         5,
+        //                         extract,
+        //                         numLeadingEdgePts,
+        //                         positions[i]);
+
+        //                 // If we found a corresponding min in a coarser
+        //                 // level...
+        //                 if (-1 != correspondingPos)
+        //                 {
+        //                     dif = Math.Abs(modMax[coarserLevel, correspondingPos]);
+
+        //                     if (firstRun)
+        //                     {
+        //                         firstRun = false;
+        //                         difMax = dif;
+        //                         startOfSnoutPosition = positions[i];
+        //                     }
+        //                     else if (dif > difMax)
+        //                     {
+        //                         difMax = dif;
+        //                         startOfSnoutPosition = positions[i];
+        //                     }
+        //                 }
+        //             }
+
+        //             if (firstRun)
+        //                 startOfSnoutPosition = (int)Math.Round(tipPos * 2 * StartOfSnoutPaddingPercentage);
+        //         }
+
+        //         /*
+        //list<ZeroCrossing> zeroCrossings =
+        //	findZeroCrossings(continuousResult[level], numTrailingEdgePts);
+
+        //list<ZeroCrossing>::iterator it = zeroCrossings.begin();
+
+        //double maxDist = 0.0;
+
+        //while (it != zeroCrossings.end()) {
+        //	if (it->leftMag < 0.0) {
+        //	double curDist = (fabs(it->leftMag) + fabs(it->rightMag));
+        //	if (curDist > maxDist) {
+        //		maxDist = curDist;
+        //		notchPosition = it->position;
+        //	}
+        //	}
+        //	++it;
+        //}
+
+        //zeroCrossings.clear();
+        //*/
+
+        //         return startOfSnoutPosition + padding;
+        //     }
     }
 }

@@ -222,13 +222,13 @@ namespace Darwin.Matching
 
             // If we have any factors missing updateOutlines, but we know what
             // the delegate should be, fill them in
-            //if (_updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
-            //{
-            //    foreach (var matchFactor in MatchFactors.Where(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
-            //    {
-            //        matchFactor.UpdateOutlines = _updateOutlines;
-            //    }
-            //}
+            if (_updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+            {
+                foreach (var matchFactor in MatchFactors.Where(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+                {
+                    matchFactor.UpdateOutlines = _updateOutlines;
+                }
+            }
 
             DatabaseFin thisDBFin;
 

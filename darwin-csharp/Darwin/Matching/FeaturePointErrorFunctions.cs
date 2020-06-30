@@ -28,6 +28,17 @@ namespace Darwin.Matching
         public Vector<double> EigenValues { get; set; }
 
         public List<RatioItem> IndividualRatios { get; set; }
+
+        public List<IEnumerable<FeaturePointType>> RatioPermutations { get; set; }
+
+        public List<FeaturePointType> BenchmarkFeatures { get; set; }
+        public List<FeaturePointType> LandmarkFeatures { get; set; }
+
+        public Vector<double> AverageRatios { get; set; }
+
+        public Matrix<double> ProjectionMatrix { get; set; }
+
+        public Vector<double> UnknownRHat { get; set; }
     }
 
     public static class FeaturePointErrorFunctions
@@ -101,6 +112,58 @@ namespace Darwin.Matching
             var covarianceMatrix = galleryMatrix * galleryMatrix.Transpose();
         }
 
+        private static Vector<double> CalculateRatios(
+            DatabaseFin individual,
+            List<FeaturePointType> benchmarkFeatures,
+            List<FeaturePointType> landmarkFeatures,
+            List<IEnumerable<FeaturePointType>> ratioPermutations)
+        {
+            var coordinates = new Dictionary<FeaturePointType, PointF>();
+
+            // TODO: This is temporary to get the feature points we need set.
+            // This needs to be redone on the database or going forward as individuals
+            // are added!!!!!  This is also hardcoded to Bear!!
+            var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, FeatureSetType.Bear);
+            newFeatureOutline.RediscoverFeaturePoints(FeatureSetType.Bear);
+            foreach (var featurePoint in landmarkFeatures)
+            {
+                coordinates[featurePoint] = newFeatureOutline.GetFeaturePointCoords(featurePoint);
+            }
+
+            var benchmarkDistance = MathHelper.GetDistance(
+                coordinates[benchmarkFeatures[0]].X,
+                coordinates[benchmarkFeatures[0]].Y,
+                coordinates[benchmarkFeatures[1]].X,
+                coordinates[benchmarkFeatures[1]].Y);
+
+            Vector<double> ratios = CreateVector.Dense<double>(ratioPermutations.Count - 1);
+
+            int i = 0;
+            foreach (var permutation in ratioPermutations)
+            {
+                var permutationList = permutation.ToList();
+
+                if ((permutationList[0] == benchmarkFeatures[0] && permutationList[1] == benchmarkFeatures[1]) ||
+                    (permutationList[0] == benchmarkFeatures[1] && permutationList[1] == benchmarkFeatures[0]))
+                {
+                    // This is our benchmark
+                    continue;
+                }
+
+                var currentDistance = MathHelper.GetDistance(
+                    coordinates[permutationList[0]].X,
+                    coordinates[permutationList[0]].Y,
+                    coordinates[permutationList[1]].X,
+                    coordinates[permutationList[1]].Y);
+
+                ratios[i] = currentDistance / benchmarkDistance;
+
+                i += 1;
+            }
+
+            return ratios;
+        }
+
         /// <summary>
         /// J. Shi et al. / Computer Vision and Image Understanding 102 (2006) 117–133
         /// Section 4.2
@@ -108,65 +171,24 @@ namespace Darwin.Matching
         /// <param name="benchmarkFeatures">Needs to have just two values</param>
         /// <param name="landmarkFeatures"></param>
         /// <param name="allDatabaseIndividuals"></param>
-        public static RatioComparison ComputeRatioCovarianceMatrix(
+        public static RatioComparison ComputeInitialEigenRatios(
             List<FeaturePointType> benchmarkFeatures,
             List<FeaturePointType> landmarkFeatures,
             int numberOfDesiredRatios,
             List<DatabaseFin> allDatabaseIndividuals)
         {
-            var coordinates = new Dictionary<FeaturePointType, PointF>();
-
             var ratioPermutations = EnumerableHelper.GetPermutations(landmarkFeatures, 2).ToList();
 
             // Desired number of ratios needs to be <= the number of permutations
             if (numberOfDesiredRatios > ratioPermutations.Count - 1)
                 throw new ArgumentOutOfRangeException(nameof(numberOfDesiredRatios));
 
-            List<Vector<double>> ratioList = new List<Vector<double>>();
+            List <Vector<double>> ratioList = new List<Vector<double>>();
             var totalRatios = CreateVector.Dense<double>(ratioPermutations.Count - 1);
 
             foreach (var individual in allDatabaseIndividuals)
             {
-                // TODO: This is temporary to get the feature points we need set.
-                // This needs to be redone on the database or going forward as individuals
-                // are added!!!!!  This is also hardcoded to Bear!!
-                var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, FeatureSetType.Bear);
-                newFeatureOutline.RediscoverFeaturePoints(FeatureSetType.Bear);
-                foreach (var featurePoint in landmarkFeatures)
-                {
-                    coordinates[featurePoint] = newFeatureOutline.GetFeaturePointCoords(featurePoint);
-                }
-
-                var benchmarkDistance = MathHelper.GetDistance(
-                    coordinates[benchmarkFeatures[0]].X,
-                    coordinates[benchmarkFeatures[0]].Y,
-                    coordinates[benchmarkFeatures[1]].X,
-                    coordinates[benchmarkFeatures[1]].Y);
-
-                Vector<double> ratios = CreateVector.Dense<double>(ratioPermutations.Count - 1);
-
-                int i = 0;
-                foreach (var permutation in ratioPermutations)
-                {
-                    var permutationList = permutation.ToList();
-
-                    if ((permutationList[0] == benchmarkFeatures[0] && permutationList[1] == benchmarkFeatures[1]) ||
-                        (permutationList[0] == benchmarkFeatures[1] && permutationList[1] == benchmarkFeatures[0]))
-                    {
-                        // This is our benchmark
-                        continue;
-                    }
-
-                    var currentDistance = MathHelper.GetDistance(
-                        coordinates[permutationList[0]].X,
-                        coordinates[permutationList[0]].Y,
-                        coordinates[permutationList[1]].X,
-                        coordinates[permutationList[1]].Y);
-
-                    ratios[i] = currentDistance / benchmarkDistance;
-
-                    i += 1;
-                }
+                var ratios = CalculateRatios(individual, benchmarkFeatures, landmarkFeatures, ratioPermutations);
                 totalRatios += ratios;
                 ratioList.Add(ratios);
             }
@@ -190,9 +212,8 @@ namespace Darwin.Matching
 
             var covarianceMatrix = galleryMatrix * galleryMatrix.Transpose();
 
+            // Perform the Eigenvalue Decomposition
             var evd = covarianceMatrix.Evd(Symmetricity.Unknown);
-            //var eigenValues = evd.EigenValues;
-            //var eigenVectors = evd.EigenVectors;  // Maybe each column is an eigenvector?
 
             // Find all the EigenValues with only real components (no imaginary)
             // and store their original index, and sort them descending so we
@@ -211,7 +232,14 @@ namespace Darwin.Matching
             // numberOfDesiredRatios number of principal components)
             var projectionMatrix = CreateMatrix.Dense<double>(ratioPermutations.Count - 1, numberOfDesiredRatios);
 
-            var result = new RatioComparison { IndividualRatios = new List<RatioItem>() };
+            var result = new RatioComparison
+            {
+                RatioPermutations = ratioPermutations,
+                AverageRatios = averageRatios,
+                BenchmarkFeatures = benchmarkFeatures,
+                LandmarkFeatures = landmarkFeatures,
+                IndividualRatios = new List<RatioItem>()
+            };
             result.EigenValues = CreateVector.Dense<double>(numberOfDesiredRatios);
 
             for (int r = 0; r < numberOfDesiredRatios; r++)
@@ -225,6 +253,8 @@ namespace Darwin.Matching
                     projectionMatrix[k, r] = evd.EigenVectors[k, eigenValueIndices[r]];
                 }
             }
+
+            result.ProjectionMatrix = projectionMatrix;
 
             var principalComponents = galleryMatrix.Transpose() * projectionMatrix;
 
@@ -248,6 +278,59 @@ namespace Darwin.Matching
             }
 
             return result;
+        }
+
+        public static MatchError ComputeEigenValueWeightedCosineDistance(
+            RatioComparison ratioComparison,
+            DatabaseFin unknownFin,
+            DatabaseFin databaseFin,
+            MatchOptions options)
+        {
+            if (ratioComparison == null)
+                throw new ArgumentNullException(nameof(ratioComparison));
+
+            if (unknownFin == null)
+                throw new ArgumentNullException(nameof(unknownFin));
+
+            if (databaseFin == null)
+                throw new ArgumentNullException(nameof(databaseFin));
+
+            // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
+            Vector<double> unknownRatios = CalculateRatios(unknownFin,
+                ratioComparison.BenchmarkFeatures,
+                ratioComparison.LandmarkFeatures,
+                ratioComparison.RatioPermutations);
+
+            unknownRatios -= ratioComparison.AverageRatios;
+
+            var unknownRHatMatrix = unknownRatios.ToRowMatrix() * ratioComparison.ProjectionMatrix;
+            ratioComparison.UnknownRHat = CreateVector.Dense<double>(unknownRHatMatrix.ColumnCount);
+            for (int i = 0; i < unknownRHatMatrix.ColumnCount; i++)
+                ratioComparison.UnknownRHat[i] = unknownRHatMatrix[0, i];
+
+            var databaseRHat = ratioComparison.IndividualRatios
+                .Where(ir => ir.DatabaseFin == databaseFin)
+                .Select(ir => ir.RHat)
+                .First();
+
+            double numerator = -1 * ratioComparison.UnknownRHat.DotProduct(databaseRHat) / Math.Pow(ratioComparison.EigenValues.Sum(), 2);
+            double probeValue = 0;
+            double galleryValue = 0;
+            for (int i = 0; i < ratioComparison.UnknownRHat.Count; i++)
+            {
+                probeValue += Math.Pow(ratioComparison.UnknownRHat[i] / ratioComparison.EigenValues[i], 2);
+                galleryValue += Math.Pow(databaseRHat[i] / ratioComparison.EigenValues[i], 2);
+            }
+
+            double denominator = Math.Sqrt(probeValue * galleryValue);
+
+            double ewcDistance = numerator / denominator;
+
+            // TODO: Need to scale.. this is supposedly between -1 and 1 if done correctly?
+            return new MatchError
+            {
+                Error = ewcDistance
+            };
         }
     }
 }

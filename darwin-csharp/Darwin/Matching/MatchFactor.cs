@@ -15,6 +15,12 @@ namespace Darwin.Matching
         DatabaseFin databaseFin,
         MatchOptions options);
 
+    public delegate MatchError ErrorBetweenIndividualFeaturesDelegate(
+            RatioComparison ratioComparison,
+            DatabaseFin unknownFin,
+            DatabaseFin databaseFin,
+            MatchOptions options);
+
     public delegate MatchError ErrorBetweenIndividualFeaturePointsDelegate(
         List<FeaturePointType> contourControlPoints,
         ErrorBetweenOutlinesDelegate errorBetweenOutlines,
@@ -61,6 +67,17 @@ namespace Darwin.Matching
             {
                 _errorBetweenIndividualOutlines = value;
                 RaisePropertyChanged("ErrorBetweenIndividualOutlines");
+            }
+        }
+
+        private ErrorBetweenIndividualFeaturesDelegate _errorBetweenIndividualFeatures;
+        public ErrorBetweenIndividualFeaturesDelegate ErrorBetweenIndividualFeatures
+        {
+            get => _errorBetweenIndividualFeatures;
+            set
+            {
+                _errorBetweenIndividualFeatures = value;
+                RaisePropertyChanged("ErrorBetweenIndividualFeatures");
             }
         }
 
@@ -118,6 +135,8 @@ namespace Darwin.Matching
                 RaisePropertyChanged("Weight");
             }
         }
+
+        private RatioComparison _ratioComparison;
         
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -169,9 +188,10 @@ namespace Darwin.Matching
             List<FeaturePointType> benchmarkFeatures,
             List<FeaturePointType> landmarkFeatures,
             int numberOfDesiredRatios,
-            List<DatabaseFin> allDatabaseIndividuals)
+            List<DatabaseFin> allDatabaseIndividuals,
+            MatchOptions options = null)
         {
-            FeaturePointErrorFunctions.ComputeRatioCovarianceMatrix(
+            var ratioComparison = FeaturePointErrorFunctions.ComputeInitialEigenRatios(
                 benchmarkFeatures,
                 landmarkFeatures,
                 numberOfDesiredRatios,
@@ -179,8 +199,11 @@ namespace Darwin.Matching
 
             return new MatchFactor
             {
+                _ratioComparison = ratioComparison,
                 MatchFactorType = MatchFactorType.FeaturePoint,
-                Weight = weight
+                Weight = weight,
+                ErrorBetweenIndividualFeatures = FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance,
+                MatchOptions = options
             };
         }
 
@@ -190,9 +213,7 @@ namespace Darwin.Matching
                 return ErrorBetweenIndividualOutlines(ContourControlPoints, ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
 
             if (MatchFactorType == MatchFactorType.FeaturePoint)
-            {
-                return new MatchError();
-            }
+                return ErrorBetweenIndividualFeatures(_ratioComparison, unknownFin, databaseFin, MatchOptions);
 
             throw new NotImplementedException();
         }

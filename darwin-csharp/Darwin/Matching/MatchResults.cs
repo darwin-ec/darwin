@@ -136,8 +136,6 @@ namespace Darwin.Matching
             }
         }
 
-        // doesn't make a copy to save time... so DON'T DELETE
-        // THE RESULT WHEN DONE
         public Result GetResultNum(int resultNum)
         {
             if (Results == null || resultNum < 0 || resultNum >= Results.Count)

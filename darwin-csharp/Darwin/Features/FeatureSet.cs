@@ -852,6 +852,63 @@ namespace Darwin.Features
             return highMax;
         }
 
+        public int FindClosestMin(double[] modmax, int len, int prevPosition)
+        {
+            if (modmax == null)
+                throw new ArgumentNullException(nameof(modmax));
+
+            if (prevPosition < 0 || prevPosition >= len)
+                throw new ArgumentOutOfRangeException(nameof(prevPosition));
+
+            if (len <= 0)
+                throw new ArgumentOutOfRangeException(nameof(len));
+
+            if (modmax[prevPosition] > 0)
+                return prevPosition;
+
+            int
+                lowDist = 0,
+                highDist = 0;
+            int
+                lowMin = -1,
+                highMin = -1;
+
+            for (int i = prevPosition - 1; i >= 0 && lowMin == -1; i--, lowDist++)
+            {
+                if (modmax[i] < 0.0)
+                    lowMin = i;
+            }
+
+            for (int j = prevPosition + 1; j < len && highMin == -1; j++, highDist++)
+            {
+                if (modmax[j] < 0.0)
+                    highMin = j;
+            }
+
+            // don't really need to test whether they're both -1 here.  if
+            // they are, -1 will be returned, indicating that we haven't
+            // found a closest min
+            if (highMin == -1)
+                return lowMin;
+
+            if (lowMin == -1)
+                return highMin;
+
+            if (lowDist > highDist)
+                return highMin;
+
+            if (highDist > lowDist)
+                return lowMin;
+
+            // if we get here, highDist == lowDist
+            // we'll return the smaller min
+
+            if (modmax[lowMin] < modmax[highMin])
+                return lowMin;
+
+            return highMin;
+        }
+
         // return of -1 indicates inability to find a closest min
         public int FindClosestMin(int dist, double[] modmax, int len, int prevPosition)
         {
@@ -868,10 +925,10 @@ namespace Darwin.Features
                 return prevPosition;
 
             int
-            lowDist = 0,
-            highDist = 0;
+                lowDist = 0,
+                highDist = 0;
             int
-            lowMin = -1,
+                lowMin = -1,
                 highMin = -1;
 
             for (int i = prevPosition - 1; i >= 0 && i >= prevPosition - dist && lowMin == -1; i--, lowDist++)

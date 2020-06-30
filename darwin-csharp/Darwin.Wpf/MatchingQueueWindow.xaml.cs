@@ -35,6 +35,7 @@ namespace Darwin.Wpf
             InitializeComponent();
             
             _matchingWorker.WorkerReportsProgress = true;
+            _matchingWorker.WorkerSupportsCancellation = true;
             //_matchingWorker.ProgressChanged += ProgressChanged;
             _matchingWorker.DoWork += MatchWork;
             _matchingWorker.RunWorkerCompleted += MatchWorker_RunWorkerCompleted;
