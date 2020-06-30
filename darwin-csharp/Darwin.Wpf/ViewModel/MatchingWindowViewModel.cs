@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Features;
 using Darwin.Matching;
 using Darwin.Wpf.Model;
 using System;
@@ -237,17 +238,82 @@ namespace Darwin.Wpf.ViewModel
             ContourWidth = 250;
             ContourHeight = 250;
 
-            Match = new Match(DatabaseFin,
-                Database,
-                UpdateOutlines,
-                RegistrationMethod,
-                (RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+            if (database.CatalogScheme.FeatureSetType == Features.FeatureSetType.DorsalFin)
+            {
+                Match = new Match(DatabaseFin,
+                    Database,
+                    UpdateOutlines,
+                    RegistrationMethod,
+                    (RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+            }
+            else
+            {
+                // TODO: This should come from config or user input or something. Temporary to get things
+                // going
+
+                var matchFactors = CreateBearMatchFactors();
+
+                Match = new Match(DatabaseFin,
+                    Database,
+                    UpdateOutlines,
+                    matchFactors);
+            }
 
             UpdateOutlines(DatabaseFin.FinOutline.ChainPoints, null);
 
             ProgressBarVisibility = Visibility.Hidden;
 
             InitializeSelectableCategories();
+        }
+
+        // TODO: This should come from config or user input or something. Temporary to get things
+        // going
+        private List<MatchFactor> CreateBearMatchFactors()
+        {
+            var matchFactors = new List<MatchFactor>();
+
+            var controlPoints = new List<FeaturePointType>()
+            {
+                FeaturePointType.LeadingEdgeBegin,
+                FeaturePointType.Tip,
+                FeaturePointType.PointOfInflection
+            };
+
+            var benchmarkFeatures = new List<FeaturePointType>()
+            {
+                FeaturePointType.LeadingEdgeBegin,
+                FeaturePointType.Tip
+            };
+
+            var landmarkFeatures = new List<FeaturePointType>()
+            {
+                FeaturePointType.LeadingEdgeBegin,
+                FeaturePointType.Tip,
+                FeaturePointType.Nasion,
+                FeaturePointType.Notch,
+                FeaturePointType.PointOfInflection
+            };
+
+            matchFactors.Add(MatchFactor.CreateOutlineFactor(
+                1.0f,
+                controlPoints,
+                OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
+                OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
+                new FinFlagsMatchOptions
+                {
+                    MoveTip = true,
+                    MoveEndsInAndOut = false,
+                    UseFullFinError = true
+                }));
+
+            matchFactors.Add(MatchFactor.CreateFeaturePointFactor(
+                1.0f,
+                benchmarkFeatures,
+                landmarkFeatures,
+                5, // Number of desired ratios
+                Database.AllFins));
+
+            return matchFactors;
         }
 
         private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
@@ -271,7 +337,6 @@ namespace Darwin.Wpf.ViewModel
 
             if (Categories != null)
             {
-                //bool firstRun = true;
                 foreach (var cat in Categories)
                 {
                     SelectableCategories.Add(new Category
@@ -279,9 +344,6 @@ namespace Darwin.Wpf.ViewModel
                         IsSelected = true,
                         Name = cat.Name
                     });
-
-                    //if (firstRun)
-                    //    firstRun = false;
                 }
             }
         }

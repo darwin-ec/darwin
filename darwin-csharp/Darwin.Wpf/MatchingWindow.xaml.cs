@@ -93,8 +93,13 @@ namespace Darwin.Wpf
         {
             bool done = false;
             _vm.MatchRunning = true;
-            _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
-                (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+            //TODO -- shouldn't be hardcoded
+            if (_vm.Database.CatalogScheme.FeatureSetType != Features.FeatureSetType.Bear)
+            {
+                _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
+                    (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+            }
+
             do
             {
                 if (_matchingWorker.CancellationPending)

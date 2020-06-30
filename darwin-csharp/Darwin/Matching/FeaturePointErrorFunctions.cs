@@ -17,7 +17,20 @@ namespace Darwin.Matching
         public Vector<Complex> Landmarks { get; set; }
     }
 
-    public static class RatioErrorFunctions
+    public class RatioItem
+    {
+        public DatabaseFin DatabaseFin { get; set; }
+        public Vector<double> RHat { get; set; }
+    }
+
+    public class RatioComparison
+    {
+        public Vector<double> EigenValues { get; set; }
+
+        public List<RatioItem> IndividualRatios { get; set; }
+    }
+
+    public static class FeaturePointErrorFunctions
     {
         /// <summary>
         /// J. Shi et al. / Computer Vision and Image Understanding 102 (2006) 117–133
@@ -95,20 +108,33 @@ namespace Darwin.Matching
         /// <param name="benchmarkFeatures">Needs to have just two values</param>
         /// <param name="landmarkFeatures"></param>
         /// <param name="allDatabaseIndividuals"></param>
-        public static void ComputeRatioCovarianceMatrix(List<FeaturePointType> benchmarkFeatures, List<FeaturePointType> landmarkFeatures, List<DatabaseFin> allDatabaseIndividuals)
+        public static RatioComparison ComputeRatioCovarianceMatrix(
+            List<FeaturePointType> benchmarkFeatures,
+            List<FeaturePointType> landmarkFeatures,
+            int numberOfDesiredRatios,
+            List<DatabaseFin> allDatabaseIndividuals)
         {
             var coordinates = new Dictionary<FeaturePointType, PointF>();
 
             var ratioPermutations = EnumerableHelper.GetPermutations(landmarkFeatures, 2).ToList();
+
+            // Desired number of ratios needs to be <= the number of permutations
+            if (numberOfDesiredRatios > ratioPermutations.Count - 1)
+                throw new ArgumentOutOfRangeException(nameof(numberOfDesiredRatios));
 
             List<Vector<double>> ratioList = new List<Vector<double>>();
             var totalRatios = CreateVector.Dense<double>(ratioPermutations.Count - 1);
 
             foreach (var individual in allDatabaseIndividuals)
             {
+                // TODO: This is temporary to get the feature points we need set.
+                // This needs to be redone on the database or going forward as individuals
+                // are added!!!!!  This is also hardcoded to Bear!!
+                var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, FeatureSetType.Bear);
+                newFeatureOutline.RediscoverFeaturePoints(FeatureSetType.Bear);
                 foreach (var featurePoint in landmarkFeatures)
                 {
-                    coordinates[featurePoint] = individual.FinOutline.GetFeaturePointCoords(featurePoint);
+                    coordinates[featurePoint] = newFeatureOutline.GetFeaturePointCoords(featurePoint);
                 }
 
                 var benchmarkDistance = MathHelper.GetDistance(
@@ -147,7 +173,7 @@ namespace Darwin.Matching
 
             Vector<double> averageRatios = totalRatios / (ratioPermutations.Count - 1);
 
-            var galleryMatrix = CreateMatrix.Dense<Complex>(ratioPermutations.Count - 1, allDatabaseIndividuals.Count);
+            var galleryMatrix = CreateMatrix.Dense<double>(ratioPermutations.Count - 1, allDatabaseIndividuals.Count);
 
             int j = 0;
             foreach (var ratioVector in ratioList)
@@ -165,8 +191,63 @@ namespace Darwin.Matching
             var covarianceMatrix = galleryMatrix * galleryMatrix.Transpose();
 
             var evd = covarianceMatrix.Evd(Symmetricity.Unknown);
-            var eigenValues = evd.EigenValues;
-            var eigenVectors = evd.EigenVectors;
+            //var eigenValues = evd.EigenValues;
+            //var eigenVectors = evd.EigenVectors;  // Maybe each column is an eigenvector?
+
+            // Find all the EigenValues with only real components (no imaginary)
+            // and store their original index, and sort them descending so we
+            // can then find the numberOfDesiredFeatures most significant values
+            var sorted = evd.EigenValues
+                .Where(ev => ev.Imaginary == 0.0)
+                .Select((x, i) => new KeyValuePair<double, int>(x.Real, i))
+                .OrderByDescending(x => x.Key)
+                .ToList();
+
+            var eigenValues = sorted.Select(x => x.Key).ToList();
+            var eigenValueIndices = sorted.Select(x => x.Value).ToList();
+
+            // Now we want to build our projection matrix with the numberOfDesiredRatios
+            // EigenVectors we want to keep (these will end up yielding the 
+            // numberOfDesiredRatios number of principal components)
+            var projectionMatrix = CreateMatrix.Dense<double>(ratioPermutations.Count - 1, numberOfDesiredRatios);
+
+            var result = new RatioComparison { IndividualRatios = new List<RatioItem>() };
+            result.EigenValues = CreateVector.Dense<double>(numberOfDesiredRatios);
+
+            for (int r = 0; r < numberOfDesiredRatios; r++)
+            {
+                result.EigenValues[r] = eigenValues[r];
+
+                for (int k = 0; k < ratioPermutations.Count - 1; k++)
+                {
+                    // The EigenVectors are stored such that each column is an EigenVector
+                    // with the Math.NET implementation
+                    projectionMatrix[k, r] = evd.EigenVectors[k, eigenValueIndices[r]];
+                }
+            }
+
+            var principalComponents = galleryMatrix.Transpose() * projectionMatrix;
+
+            // Our principal components are now such that each database individual is a row
+            var rHats = new List<Vector<double>>();
+
+            for (int i = 0; i < allDatabaseIndividuals.Count; i++)
+            {
+                var item = new RatioItem
+                {
+                    DatabaseFin = allDatabaseIndividuals[i],
+                    RHat = CreateVector.Dense<double>(numberOfDesiredRatios)
+                };
+
+                for (int k = 0; k < numberOfDesiredRatios; k++)
+                {
+                    item.RHat[k] = principalComponents[i, k];
+                }
+
+                result.IndividualRatios.Add(item);
+            }
+
+            return result;
         }
     }
 }

@@ -61,22 +61,18 @@ namespace Darwin.Matching
             UpdateDisplayOutlinesDelegate updateOutlines,
             RegistrationMethodType registrationMethod,
             bool useFullFinError)
-        {
-            if (unknownFin == null)
-                throw new ArgumentNullException(nameof(unknownFin));
-
-            if (db == null)
-                throw new ArgumentNullException(nameof(db));
-
-            UnknownFin = new DatabaseFin(unknownFin);
-            Database = db;
-            _updateOutlines = updateOutlines;
-
-            CurrentFinIndex = 0;
-
-            MatchResults = new MatchResults(unknownFin.IDCode, unknownFin?.FinFilename, db?.Filename);
-
+            : this(unknownFin, db, updateOutlines)
+        { 
             SetMatchOptions(registrationMethod, useFullFinError);
+        }
+
+        public Match(DatabaseFin unknownFin,
+            DarwinDatabase db,
+            UpdateDisplayOutlinesDelegate updateOutlines,
+            List<MatchFactor> matchFactors)
+            : this(unknownFin, db, updateOutlines)
+        {
+            MatchFactors = matchFactors;
         }
 
         public void SetMatchOptions(
@@ -223,6 +219,16 @@ namespace Darwin.Matching
         {
             if (MatchFactors == null || MatchFactors.Count < 1)
                 throw new Exception("Match factors haven't been set yet!");
+
+            // If we have any factors missing updateOutlines, but we know what
+            // the delegate should be, fill them in
+            //if (_updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+            //{
+            //    foreach (var matchFactor in MatchFactors.Where(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+            //    {
+            //        matchFactor.UpdateOutlines = _updateOutlines;
+            //    }
+            //}
 
             DatabaseFin thisDBFin;
 

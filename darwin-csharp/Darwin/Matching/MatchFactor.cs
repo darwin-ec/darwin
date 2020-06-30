@@ -7,7 +7,15 @@ using System.Text;
 
 namespace Darwin.Matching
 {
-    public delegate MatchError ErrorBetweenIndividualsDelegate(
+    public delegate MatchError ErrorBetweenIndividualOutlinesDelegate(
+        List<FeaturePointType> contourControlPoints,
+        ErrorBetweenOutlinesDelegate errorBetweenOutlines,
+        UpdateDisplayOutlinesDelegate updateOutlines,
+        DatabaseFin unknownFin,
+        DatabaseFin databaseFin,
+        MatchOptions options);
+
+    public delegate MatchError ErrorBetweenIndividualFeaturePointsDelegate(
         List<FeaturePointType> contourControlPoints,
         ErrorBetweenOutlinesDelegate errorBetweenOutlines,
         UpdateDisplayOutlinesDelegate updateOutlines,
@@ -27,16 +35,32 @@ namespace Darwin.Matching
 
     public delegate void UpdateDisplayOutlinesDelegate(FloatContour unknownContour, FloatContour databaseContour);
 
+    public enum MatchFactorType
+    {
+        Outline = 0,
+        FeaturePoint = 1
+    }
+
     public class MatchFactor : INotifyPropertyChanged
     {
-        private ErrorBetweenIndividualsDelegate _errorBetweenIndividuals;
-        public ErrorBetweenIndividualsDelegate ErrorBetweenIndividuals
+        private MatchFactorType _matchFactorType;
+        public MatchFactorType MatchFactorType
         {
-            get => _errorBetweenIndividuals;
+            get => _matchFactorType;
             set
             {
-                _errorBetweenIndividuals = value;
-                RaisePropertyChanged("ErrorBetweenIndividuals");
+                _matchFactorType = value;
+                RaisePropertyChanged("MatchFactorType");
+            }
+        }
+        private ErrorBetweenIndividualOutlinesDelegate _errorBetweenIndividualOutlines;
+        public ErrorBetweenIndividualOutlinesDelegate ErrorBetweenIndividualOutlines
+        {
+            get => _errorBetweenIndividualOutlines;
+            set
+            {
+                _errorBetweenIndividualOutlines = value;
+                RaisePropertyChanged("ErrorBetweenIndividualOutlines");
             }
         }
 
@@ -105,24 +129,72 @@ namespace Darwin.Matching
             float weight,
             List<FeaturePointType> contourControlPoints,
             ErrorBetweenOutlinesDelegate errorMethod,
-            ErrorBetweenIndividualsDelegate errorBetweenIndividuals,
+            ErrorBetweenIndividualOutlinesDelegate errorBetweenIndividuals,
+            MatchOptions options = null)
+        {
+            return new MatchFactor
+            {
+                MatchFactorType = MatchFactorType.Outline,
+                Weight = weight,
+                ContourControlPoints = contourControlPoints,
+                ErrorBetweenOutlines = errorMethod,
+                ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
+                UpdateOutlines = null,
+                MatchOptions = options
+            };
+        }
+
+        public static MatchFactor CreateOutlineFactor(
+            float weight,
+            List<FeaturePointType> contourControlPoints,
+            ErrorBetweenOutlinesDelegate errorMethod,
+            ErrorBetweenIndividualOutlinesDelegate errorBetweenIndividuals,
             UpdateDisplayOutlinesDelegate updateOutlines,
             MatchOptions options = null)
         {
             return new MatchFactor
             {
+                MatchFactorType = MatchFactorType.Outline,
                 Weight = weight,
                 ContourControlPoints = contourControlPoints,
                 ErrorBetweenOutlines = errorMethod,
-                ErrorBetweenIndividuals = errorBetweenIndividuals,
+                ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
                 UpdateOutlines = updateOutlines,
                 MatchOptions = options
             };
         }
 
+        public static MatchFactor CreateFeaturePointFactor(
+            float weight,
+            List<FeaturePointType> benchmarkFeatures,
+            List<FeaturePointType> landmarkFeatures,
+            int numberOfDesiredRatios,
+            List<DatabaseFin> allDatabaseIndividuals)
+        {
+            FeaturePointErrorFunctions.ComputeRatioCovarianceMatrix(
+                benchmarkFeatures,
+                landmarkFeatures,
+                numberOfDesiredRatios,
+                allDatabaseIndividuals);
+
+            return new MatchFactor
+            {
+                MatchFactorType = MatchFactorType.FeaturePoint,
+                Weight = weight
+            };
+        }
+
         public MatchError FindErrorBetweenIndividuals(DatabaseFin unknownFin, DatabaseFin databaseFin)
         {
-            return ErrorBetweenIndividuals(ContourControlPoints, ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
+            if (MatchFactorType == MatchFactorType.Outline)
+                return ErrorBetweenIndividualOutlines(ContourControlPoints, ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
+
+            if (MatchFactorType == MatchFactorType.FeaturePoint)
+            {
+                return new MatchError();
+            }
+
+            throw new NotImplementedException();
         }
 
         protected virtual void RaisePropertyChanged(string propertyName)

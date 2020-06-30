@@ -49,13 +49,6 @@ namespace Darwin
 
         private FloatContour _remappedChainPoints;
         public FloatContour RemappedChainPoints { get => _remappedChainPoints; set => _remappedChainPoints = value; }
-        
-        //public double LeadingEdgeAngle { get => _LEAngle; set => _LEAngle = value; }
-        //public int TipPosition { get => _tipPos; set => _tipPos = value; }
-        //public int NotchPosition { get => _notchPos; set => _notchPos = value; }
-        //public int BeginLeadingEdgePosition { get => _beginLE; set => _beginLE = value; }
-        //public int EndLeadingEdgePosition { get => _endLE; set => _endLE = value; }
-        //public int EndTrailingEdgePosition { get => _endTE; set => _endTE = value; }
 
         public List<int> FeaturePointPositions
         {
@@ -64,7 +57,6 @@ namespace Darwin
                 return FeatureSet.FeaturePointPositions;
             }
         }
-
 
         //***008OL following two functions moved here from Chain class
         PointF GetSavedPoint(int pointNum)
@@ -167,18 +159,10 @@ namespace Darwin
             _remappedChainPoints = mappedContour;
         }
 
-        //    If compute = true then ignore theta and call findLEAngle()
-        //    else use theta as the angle value
-        //public void SetLEAngle(double theta, bool compute)
-        //{
-        //    if (compute)
-        //        _LEAngle = FindLEAngle();
-        //    else
-        //        _LEAngle = theta;
-        //}
-
-        // Attempts to determine the angle of the fin's leading edge.
-
+        public void RediscoverFeaturePoints(FeatureSetType featuresType)
+        {
+            FeatureSet = FeatureSet.Create(featuresType, _chain, _chainPoints);
+        }
 
         // inspectors for feature points
         public int GetFeaturePoint(FeaturePointType type)
