@@ -4,10 +4,16 @@ using System.Text;
 
 namespace Darwin.Matching
 {
+	public class MatchFactorError
+	{
+		public int FactorIndex { get; set; }
+		public double Error { get; set; }
+		public double Weight { get; set; }
+	}
+
 	public class MatchError
 	{
 		public double Error { get; set; }
-
 		public FloatContour Contour1 { get; set; }
 		public FloatContour Contour2 { get; set; }
 

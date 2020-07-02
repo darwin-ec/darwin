@@ -18,6 +18,8 @@ namespace Darwin.Matching
 
         public long DatabaseID { get; set; }
         public double Error { get; set; }
+        public double Confidence { get; set; }
+        public List<MatchFactorError> RawError { get; set; }
         public string IDCode { get; set; }
         public string Name { get; set; }
         public string Damage { get; set; }
@@ -32,6 +34,7 @@ namespace Darwin.Matching
         public int DBShiftedLEBegin { get; set; }
         public int DBShiftedTip { get; set; }
         public int DBShiftedTEEnd { get; set; }
+
 
         public Result(
             FloatContour unknown, //  005CM
@@ -68,6 +71,38 @@ namespace Darwin.Matching
             DBShiftedTEEnd = 0;
 
             ThumbnailFilenameUri = thumbnailFilenameUri;
+        }
+
+        public Result(
+            FloatContour unknown, //  005CM
+            FloatContour db, //  005CM
+            long databaseID,
+            string filename,   //  001DB
+            string thumbnailFilenameUri, //  1.0
+            int position,
+            List<MatchFactorError> rawError,
+            double error,
+            string idcode,
+            string name,
+            string damage,
+            string date,
+            string location
+        )
+            : this(unknown,
+                  db,
+                  databaseID,
+                  filename,
+                  thumbnailFilenameUri,
+                  position,
+                  error,
+                  idcode,
+                  name,
+                  damage,
+                  date,
+                  location)
+        {
+
+            RawError = rawError;
         }
 
         public Result(Result r)

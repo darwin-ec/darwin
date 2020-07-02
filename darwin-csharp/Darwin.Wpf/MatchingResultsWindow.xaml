@@ -8,7 +8,7 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Matching Results" Height="750" Width="900" MinHeight="550">
+        Title="Matching Results" Height="850" Width="1050" MinHeight="550" MinWidth="600">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Crimson" />
@@ -33,7 +33,7 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="250" MinHeight="200" />
+            <RowDefinition Height="350" MinHeight="200" />
             <RowDefinition Height="5" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto"/>
@@ -54,15 +54,15 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
+                <controls:SortableListView Grid.Row="0" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedResult}" SelectionChanged="DatabaseGrid_SelectionChanged" ItemsSource="{Binding Path=MatchResults.Results}" GridViewColumnHeader.Click="GridHeader_Click">
                     <ListView.View>
                         <GridView x:Name="GridView">
                             <GridViewColumn DisplayMemberBinding="{Binding Rank}" Width="40">
                                 <GridViewColumnHeader Content="Rank" Padding="5,0,0,0" HorizontalContentAlignment="Left" />
                             </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding Error, StringFormat=N2}">
+                            <GridViewColumn DisplayMemberBinding="{Binding Confidence, StringFormat=P}">
                                 <GridViewColumnHeader
-                                    Content="Error" Padding="5,0,0,0" HorizontalContentAlignment="Left"
+                                    Content="Match" Padding="5,0,0,0" HorizontalContentAlignment="Left"
                                     MinWidth="50"/>
                             </GridViewColumn>
                             <GridViewColumn>

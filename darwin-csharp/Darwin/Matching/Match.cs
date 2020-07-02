@@ -31,6 +31,22 @@ namespace Darwin.Matching
 
         public List<MatchFactor> MatchFactors { get; set; }
 
+        private List<MatchFactorError> _rawErrorTracking;
+        private List<MatchFactorError> RawErrorTracking
+        {
+            get
+            {
+                if (_rawErrorTracking == null)
+                    _rawErrorTracking = new List<MatchFactorError>();
+
+                return _rawErrorTracking;
+            }
+            set
+            {
+                _rawErrorTracking = value;
+            }
+        }
+
         public Match(DatabaseFin unknownFin,
             DarwinDatabase db,
             UpdateDisplayOutlinesDelegate updateOutlines)
@@ -252,11 +268,28 @@ namespace Darwin.Matching
                 MatchError result = new MatchError();
                 double errorBetweenFins = 0.0;
 
+                List<MatchFactorError> rawError = new List<MatchFactorError>();
+
+                int factorIndex = 0;
                 foreach (var factor in MatchFactors)
                 {
-                    result = factor.FindErrorBetweenIndividuals(UnknownFin, thisDBFin);
+                    var factorResult = factor.FindErrorBetweenIndividuals(UnknownFin, thisDBFin);
 
-                    errorBetweenFins += factor.Weight * result.Error;
+                    if (factor.MatchFactorType == MatchFactorType.Outline)
+                        result = factorResult;
+
+                    // We're going to rescale this later -- should probably remove this
+                    // errorBetweenFins += factor.Weight * result.Error;
+                    var matchFactorError = new MatchFactorError
+                    {
+                        FactorIndex = factorIndex,
+                        Error = result.Error,
+                        Weight = factor.Weight
+                    };
+                    rawError.Add(matchFactorError);
+                    RawErrorTracking.Add(matchFactorError);
+
+                    factorIndex += 1;
                 }
 
                 // Now, store the result
@@ -267,6 +300,7 @@ namespace Darwin.Matching
                     thisDBFin.ImageFilename,  //***001DB
                     thisDBFin.ThumbnailFilenameUri,
                     CurrentFinIndex,
+                    rawError,
                     errorBetweenFins,
                     thisDBFin.IDCode,
                     thisDBFin.Name,
@@ -284,8 +318,49 @@ namespace Darwin.Matching
 
             CurrentFinIndex++;
 
-            if (CurrentFinIndex == Database.AllFins.Count)
+            if (CurrentFinIndex >= Database.AllFins.Count)
+            {
+                if (RawErrorTracking != null && RawErrorTracking.Count > 0)
+                {
+                    // Now that we're through matching, let's rescale the errors
+
+                    Dictionary<int, float> scaleFactors = new Dictionary<int, float>();
+                    
+                    foreach (var idx in RawErrorTracking.Select(r => r.FactorIndex).Distinct())
+                    {
+                        double minError = RawErrorTracking.Where(r => r.FactorIndex == idx).Min(r => r.Error);
+                        double maxError = RawErrorTracking.Where(r => r.FactorIndex == idx).Max(r => r.Error);
+
+                        // Force minError to 0 if it's not <= already
+                        if (minError > 0)
+                            minError = 0;
+
+                        scaleFactors[idx] = (float)(1 / (maxError - minError));
+                    }
+
+                    foreach (var result in MatchResults.Results)
+                    {
+                        if (result.RawError != null && result.RawError.Count > 0)
+                        {
+                            double scaledError = 0.0;
+
+                            foreach (var raw in result.RawError)
+                            {
+                                scaledError += scaleFactors[raw.FactorIndex] * raw.Error * raw.Weight;
+                            }
+
+                            result.Error = scaledError;
+                            result.Confidence = 1.0f - scaledError;
+
+                            // For rounding issues so we prevent seeing "-0" in the UI
+                            if (result.Confidence < 0)
+                                result.Confidence = 0;
+                        }
+                    }
+                }
+
                 return 1.0f;
+            }
 
             return (float)CurrentFinIndex / Database.AllFins.Count;
         }

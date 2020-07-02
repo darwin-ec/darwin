@@ -189,6 +189,7 @@ namespace Darwin.Matching
             List<FeaturePointType> landmarkFeatures,
             int numberOfDesiredRatios,
             List<DatabaseFin> allDatabaseIndividuals,
+            ErrorBetweenIndividualFeaturesDelegate errorBetweenIndividualFeatures,
             MatchOptions options = null)
         {
             var ratioComparison = FeaturePointErrorFunctions.ComputeInitialEigenRatios(
@@ -202,7 +203,7 @@ namespace Darwin.Matching
                 _ratioComparison = ratioComparison,
                 MatchFactorType = MatchFactorType.FeaturePoint,
                 Weight = weight,
-                ErrorBetweenIndividualFeatures = FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance,
+                ErrorBetweenIndividualFeatures = errorBetweenIndividualFeatures,
                 MatchOptions = options
             };
         }

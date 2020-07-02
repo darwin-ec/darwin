@@ -20,16 +20,6 @@ using System.Text;
 
 namespace Darwin.Matching
 {
-    public enum MatchResultSortType
-    {
-        MR_ERROR,
-        MR_NAME,
-        MR_IDCODE,
-        MR_DAMAGE,
-        MR_DATE,
-        MR_LOCATION
-    };
-
     public class MatchResults
     {
         public List<Result> Results { get; set; }
@@ -37,7 +27,6 @@ namespace Darwin.Matching
         public MatchResults()
         {
             Results = new List<Result>();
-            mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = string.Empty;
             TracedFinFile = string.Empty;
@@ -47,7 +36,6 @@ namespace Darwin.Matching
         public MatchResults(string id)
         {
             Results = new List<Result>();
-            mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = id;
             TracedFinFile = string.Empty;
@@ -57,7 +45,6 @@ namespace Darwin.Matching
         public MatchResults(string id, string tracedFinFile, string databaseFile)
         {
             Results = new List<Result>();
-            mLastSortBy = MatchResultSortType.MR_ERROR;
             mTimeTaken = -1.00f;
             _finID = id;
             TracedFinFile = tracedFinFile;
@@ -66,8 +53,7 @@ namespace Darwin.Matching
 
         //  008OL -- MatchResultsWindow calls constructor of this type and none existed
         public MatchResults(MatchResults results)
-        {
-            mLastSortBy = results.mLastSortBy;
+        { 
             mTimeTaken = results.mTimeTaken;
             _finID = results._finID;
             // TODO: This should probably clone
@@ -117,17 +103,8 @@ namespace Darwin.Matching
             SetRankings();
         }
 
-        //  1.5 - indicates whether sorted order is by error measure, so rank numbering is appropriate
-        public bool LastSortedByError() //  1.5
-        {
-            return mLastSortBy == MatchResultSortType.MR_ERROR;
-        }
-
         public void SetRankings() //  1.5
         {
-            if (mLastSortBy != MatchResultSortType.MR_ERROR)
-                return;
-
             int i = 1;
             foreach (var r in Results)
             {
@@ -427,7 +404,6 @@ namespace Darwin.Matching
             return result;
         }
 
-        private MatchResultSortType mLastSortBy;
         private float mTimeTaken;
         private string _finID; // this is the unknown fin ID
     }

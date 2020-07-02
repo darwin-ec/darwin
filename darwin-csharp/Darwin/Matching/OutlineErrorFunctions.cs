@@ -643,12 +643,6 @@ namespace Darwin.Matching
             while (!foundBest)
             {
                 // shorten DATABASE leading edge by 1% and test error
-
-                if (null != shortenedDBMappedContour)
-                {
-                    shortenedDBMappedContour = null;
-                }
-
                 shortenedDBMappedContour = preMapUnknown.MapContour(
                                             //mUnknownTipPositionPoint,    //***1.1
                                             preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
@@ -671,12 +665,6 @@ namespace Darwin.Matching
                 updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                 // shorten UNKNOWN leading edge by 1% and test error
-
-                if (null != shortenedUnkMappedContour)
-                {
-                    shortenedUnkMappedContour = null;
-                }
-
                 shortenedUnkMappedContour = preMapUnknown.MapContour(
                         //mUnknownTipPositionPoint,    //***1.1
                         preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
@@ -696,16 +684,9 @@ namespace Darwin.Matching
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                if (updateOutlines != null)
-                    updateOutlines(shortenedDBMappedContour, floatDBContour);
+                updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                 // shorten DATABASE trailing edge by 1% and test error
-
-                if (null != shortenedDBMappedContour)
-                {
-                    shortenedDBMappedContour = null;
-                }
-
                 shortenedDBMappedContour = preMapUnknown.MapContour(
                         //mUnknownTipPositionPoint,    //***1.1
                         preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
@@ -725,17 +706,9 @@ namespace Darwin.Matching
                         dbTipPosition, //***1.85
                         endTrailDB -/*onePercentDB*/testIncDB); //***1.5
 
-                if (updateOutlines != null)
-                    updateOutlines(shortenedDBMappedContour, floatDBContour);
+                updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                 // shorten UNKNOWN trailing edge by 1% and test error
-
-                if (null != shortenedUnkMappedContour)
-                {
-                    //delete shortenedUnkMappedContour;
-                    shortenedUnkMappedContour = null;
-                }
-
                 shortenedUnkMappedContour = preMapUnknown.MapContour(
                         //mUnknownTipPositionPoint,    //***1.1
                         preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
@@ -755,8 +728,7 @@ namespace Darwin.Matching
                         dbTipPosition, //***1.85
                         endTrailDB);
 
-                if (updateOutlines != null)
-                    updateOutlines(shortenedDBMappedContour, floatDBContour);
+                updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                 // shift UNKNOWN tip by 1% and compute error (test both directions)
 
@@ -765,12 +737,6 @@ namespace Darwin.Matching
                     double shift2LeadError, shift2TrailError;
 
                     // shift Tip toward LEBegin
-
-                    if (null != shiftedUnkTipMappedContour)
-                    {
-                        shiftedUnkTipMappedContour = null;
-                    }
-
                     shiftedUnkTipMappedContour = preMapUnknown.MapContour(
                             preMapUnknown[movedTipUnk -/*onePercentUnk*/testIncUnk], //***1.5
                             preMapUnknown[startLeadUnk],
@@ -790,12 +756,6 @@ namespace Darwin.Matching
                             endTrailDB);
 
                     // shift Tip toward TEEnd
-
-                    if (null != shiftedUnkTipMappedContour)
-                    {
-                        shiftedUnkTipMappedContour = null;
-                    }
-
                     shiftedUnkTipMappedContour = preMapUnknown.MapContour(
                             preMapUnknown[movedTipUnk +/*onePercentUnk*/testIncUnk], //***1.5
                             preMapUnknown[startLeadUnk],
@@ -919,7 +879,6 @@ namespace Darwin.Matching
                             jumpingOn = 4;
                         }
                     }
-
                 }
                 else // moveTip == true
                 {
@@ -1040,9 +999,8 @@ namespace Darwin.Matching
 
                 if ((!foundBest) && (!skipThisJump))
                 {
-                    // make a big jump in direction of indicated improvement
-
-                    FloatContour jumpMappedContour = null;
+                    // Make a big jump in direction of indicated improvement
+                    FloatContour jumpMappedContour;
                     double jumpError;
                     bool goodJump = false;
 
@@ -1050,12 +1008,6 @@ namespace Darwin.Matching
                     {
                         // we only end up here more than once when the jump has been too far
                         // in which case there is a contour to be deleted
-
-                        if (null != jumpMappedContour)
-                        {
-                            jumpMappedContour = null;
-                        }
-
                         jumpMappedContour = preMapUnknown.MapContour(
                                                     //mUnknownTipPositionPoint,
                                                     preMapUnknown[jumpShiftTipUnk], //***1.1
@@ -1075,8 +1027,7 @@ namespace Darwin.Matching
                                     dbTipPosition, //***1.85
                                     jumpEndTrailDB);
 
-                        if (updateOutlines != null)
-                            updateOutlines(shortenedDBMappedContour, floatDBContour);
+                        updateOutlines?.Invoke(shortenedDBMappedContour, floatDBContour);
 
                         if (jumpError < error)
                         {
@@ -1156,12 +1107,6 @@ namespace Darwin.Matching
 
                     }
                     while (!goodJump && (jumpSizeDB > 0) && (jumpSizeUnk > 0));
-
-                    // free the jumpMappedCotour now that we are done
-                    if (null != jumpMappedContour)
-                    {
-                        jumpMappedContour = null;
-                    }
 
                     if ((jumpSizeDB == 0) || (jumpSizeUnk == 0))
                     {
@@ -1276,7 +1221,6 @@ namespace Darwin.Matching
 
             return results;
         }
-        //*************************** end ****************************************
 
 
         //*******************************************************************
@@ -2438,8 +2382,8 @@ namespace Darwin.Matching
             if (ptsFound > 0)
                 error = (sum / (double)ptsFound);
 
-            string traceOutput = string.Format("pair matched (medial): {0} points {1} error", ptsFound, error);
-            Trace.WriteLine(traceOutput);
+            //string traceOutput = string.Format("pair matched (medial): {0} points {1} error", ptsFound, error);
+            //Trace.WriteLine(traceOutput);
 
             return error;
         }

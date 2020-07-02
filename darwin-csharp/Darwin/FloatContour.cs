@@ -46,10 +46,7 @@ namespace Darwin
             }
         }
 
-        //********************************************************************
-        // FloatContour()
-        //
-        public FloatContour()  //***006FC revised
+        public FloatContour()
         {
         }
 
@@ -58,6 +55,9 @@ namespace Darwin
         //
         public FloatContour(FloatContour contour)  //***006FC new
         {
+            if (contour == null)
+                throw new ArgumentNullException(nameof(contour));
+
             _points = new ObservableNotifiableCollection<PointF>();
 
             foreach (var p in contour.Points)

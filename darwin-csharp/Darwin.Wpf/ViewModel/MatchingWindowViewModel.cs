@@ -281,7 +281,7 @@ namespace Darwin.Wpf.ViewModel
 
             var benchmarkFeatures = new List<FeaturePointType>()
             {
-                FeaturePointType.LeadingEdgeBegin,
+                FeaturePointType.Nasion,
                 FeaturePointType.Tip
             };
 
@@ -295,7 +295,7 @@ namespace Darwin.Wpf.ViewModel
             };
 
             matchFactors.Add(MatchFactor.CreateOutlineFactor(
-                1.0f,
+                0.5f,
                 controlPoints,
                 OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                 OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
@@ -307,11 +307,12 @@ namespace Darwin.Wpf.ViewModel
                 }));
 
             matchFactors.Add(MatchFactor.CreateFeaturePointFactor(
-                1.0f,
+                0.5f,
                 benchmarkFeatures,
                 landmarkFeatures,
-                5, // Number of desired ratios
-                Database.AllFins));
+                7, // Number of desired ratios
+                Database.AllFins,
+                FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));
 
             return matchFactors;
         }

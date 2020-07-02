@@ -5,6 +5,7 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -326,10 +327,11 @@ namespace Darwin.Matching
 
             double ewcDistance = numerator / denominator;
 
+            Trace.WriteLine("Unknown: " + unknownFin.IDCode + " DB: " + databaseFin.IDCode + " EWC Distance: " + ewcDistance);
             // TODO: Need to scale.. this is supposedly between -1 and 1 if done correctly?
             return new MatchError
             {
-                Error = ewcDistance
+                Error = ewcDistance * -1 // Multiplying by -1 for now so the "best" -1 is the highest
             };
         }
     }

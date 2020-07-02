@@ -54,7 +54,10 @@ namespace Darwin.Wpf
             var sortableListViewSender = sender as Controls.SortableListView;
 
             if (sortableListViewSender != null)
+            {
                 sortableListViewSender.GridViewColumnHeaderClickedHandler(sender, e);
+                CheckNextPreviousEnabled();
+            }
         }
 
         private void UnknownMatchSelectedFinOrientation_Click(object sender, RoutedEventArgs e)
@@ -62,26 +65,43 @@ namespace Darwin.Wpf
 
         }
 
+        private void CheckNextPreviousEnabled()
+        {
+            if (DatabaseGrid.SelectedIndex <= 0)
+                _vm.PreviousEnabled = false;
+            else if (DatabaseGrid.Items != null && DatabaseGrid.Items.Count > 0)
+                _vm.PreviousEnabled = true;
+
+            if (DatabaseGrid.Items != null && DatabaseGrid.Items.Count > 0 && DatabaseGrid.SelectedIndex < DatabaseGrid.Items.Count - 1)
+                _vm.NextEnabled = true;
+            else
+                _vm.NextEnabled = false;
+        }
+
         private void PreviousButton_Click(object sender, RoutedEventArgs e)
         {
-            int currentIndex = _vm.CurrentSelectedIndex;
+            if (DatabaseGrid.Items == null || DatabaseGrid.Items.Count < 1)
+                return;
 
-            if (currentIndex >= 1)
+            if (DatabaseGrid.SelectedIndex > 0)
             {
-                _vm.SelectedResult = _vm.MatchResults.Results[currentIndex - 1];
+                DatabaseGrid.SelectedIndex--;
                 DatabaseGrid.ScrollIntoView(_vm.SelectedResult);
             }
+            CheckNextPreviousEnabled();
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            int currentIndex = _vm.CurrentSelectedIndex;
+            if (DatabaseGrid.Items == null || DatabaseGrid.Items.Count < 1)
+                return;
 
-            if (currentIndex >= 0)
+            if (DatabaseGrid.SelectedIndex < DatabaseGrid.Items.Count - 1)
             {
-                _vm.SelectedResult = _vm.MatchResults.Results[currentIndex + 1];
+                DatabaseGrid.SelectedIndex++;
                 DatabaseGrid.ScrollIntoView(_vm.SelectedResult);
             }
+            CheckNextPreviousEnabled();
         }
 
         private void MatchesSelectedFinButton_Click(object sender, RoutedEventArgs e)
@@ -190,6 +210,11 @@ namespace Darwin.Wpf
                     DatabaseGrid.ScrollIntoView(_vm.SelectedResult);
                 }
             }
+        }
+
+        private void DatabaseGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CheckNextPreviousEnabled();
         }
     }
 }

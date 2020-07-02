@@ -70,7 +70,6 @@ namespace Darwin.Wpf.ViewModel
                 _selectedResult = value;
                 RaisePropertyChanged("SelectedResult");
 
-                CheckNextPreviousEnabled();
                 LoadSelectedResult();
             }
         }
@@ -286,21 +285,6 @@ namespace Darwin.Wpf.ViewModel
                 SelectedResult = MatchResults.Results[0];
                 LoadSelectedResult();
             }
-        }
-
-        private void CheckNextPreviousEnabled()
-        {
-            int curIndex = CurrentSelectedIndex;
-
-            if (curIndex <= 0)
-                PreviousEnabled = false;
-            else if (MatchResults.Results != null && MatchResults.Results.Count > 0)
-                PreviousEnabled = true;
-
-            if (MatchResults.Results != null && MatchResults.Results.Count > 0 && curIndex < MatchResults.Results.Count - 1)
-                NextEnabled = true;
-            else
-                NextEnabled = false;
         }
 
         private void LoadSelectedResult()
