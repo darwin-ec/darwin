@@ -17,6 +17,7 @@ namespace Darwin.Features
 
     public abstract class FeatureSet : INotifyPropertyChanged
     {
+        protected const int DefaultTipHighPointPadding = 75;
         private const int NotchNumMinsToTrack = 5;
         protected const int TransformLevels = 5;
         protected const double LETrimAmount = 0.05;
@@ -132,7 +133,7 @@ namespace Darwin.Features
         //
         //    Finds the tip as the index into the chain array
         //
-        public int FindTip(Chain chain, FloatContour chainPoints)
+        public int FindTip(Chain chain, FloatContour chainPoints, int highPointPaddingLeft = DefaultTipHighPointPadding, int highPointPaddingRight = DefaultTipHighPointPadding)
         {
             if (chain == null)
                 throw new Exception("findTip() [*_chain]");
@@ -152,8 +153,7 @@ namespace Darwin.Features
 
             int nextPowOfTwo = MathHelper.NextPowerOfTwo(numPoints - 1);
 
-            // Now set up the variables needed to perform a wavelet
-            // transform on the chain
+            // Now set up the variables needed to perform a wavelet transform on the chain
             double[,] continuousResult = new double[TransformLevels + 1, nextPowOfTwo];
 
             // Now perform the transformation
@@ -238,8 +238,8 @@ namespace Darwin.Features
                     // and retest against a database of fins traced without this limit.
                     // The new "Iterative, Tip Shifting" mapping approach probably conpensates
                     // for tip placement better than this limit on detection does. -- JHS (8/2/2006)
-                    double max = modMax[highPointId - 75]; //***1.6 - removed temporarily for tests
-                    for (int i = highPointId - 75; i < highPointId + 75; i++)
+                    double max = modMax[highPointId - highPointPaddingLeft]; //***1.6 - removed temporarily for tests
+                    for (int i = highPointId - highPointPaddingLeft; i < highPointId + highPointPaddingRight; i++)
                     { //***1.6 - removed temporarily for tests
                         if (modMax[i] > max)
                         {
@@ -249,12 +249,18 @@ namespace Darwin.Features
                     }
                 }
                 else
-                    tipPosition = FindClosestMax(modMax, numPoints - 1, tipPosition);
+                {
+                    int maxSearchPoints = numPoints - 1;
 
+                    if (highPointPaddingRight != DefaultTipHighPointPadding)
+                        maxSearchPoints = highPointId + highPointPaddingRight;
+
+                    // TODO: Left padding?
+
+                    tipPosition = FindClosestMax(modMax, maxSearchPoints, tipPosition);
+                }
                 level--;
             }
-
-            // ... and clean up
 
             // Note that the actual tip position is +1 because we
             // ignored the first value 
@@ -823,7 +829,9 @@ namespace Darwin.Features
                     lowMax = i;
             }
 
-            for (int j = prevPosition + 1; j < len && highMax == -1; j++, highDist++)
+            // Note: We're starting at prevPosition, not prevPosition + 1, since
+            // there might be a max in prevPosition itself
+            for (int j = prevPosition; j < len && highMax == -1; j++, highDist++)
             {
                 if (modmax[j] > 0.0)
                     highMax = j;
@@ -879,7 +887,9 @@ namespace Darwin.Features
                     lowMin = i;
             }
 
-            for (int j = prevPosition + 1; j < len && highMin == -1; j++, highDist++)
+            // Note: We're starting at prevPosition, not prevPosition + 1, since
+            // there might be a min in prevPosition itself
+            for (int j = prevPosition; j < len && highMin == -1; j++, highDist++)
             {
                 if (modmax[j] < 0.0)
                     highMin = j;
@@ -902,7 +912,6 @@ namespace Darwin.Features
 
             // if we get here, highDist == lowDist
             // we'll return the smaller min
-
             if (modmax[lowMin] < modmax[highMin])
                 return lowMin;
 
