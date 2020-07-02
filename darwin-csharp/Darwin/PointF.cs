@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Darwin.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -105,6 +106,41 @@ namespace Darwin
                 Y = (float)(this.Y * t),
                 Z = (float)(this.Z * t)
             };
+        }
+
+        /// <summary>
+        /// Returns a point that is rotated in 2 dimensions (ignores Z)
+        /// </summary>
+        /// <param name="centerPoint"></param>
+        /// <param name="degreesToRotate"></param>
+        /// <returns></returns>
+        public PointF Rotate(PointF centerPoint, float degreesToRotate)
+        {
+            if (this.IsEmpty)
+                throw new Exception("PointF is empty");
+
+            if (centerPoint == PointF.Empty)
+                throw new ArgumentOutOfRangeException(nameof(centerPoint));
+
+            var radiansToRotate = MathHelper.DegreesToRadians(degreesToRotate);
+
+            double rotatedX = Math.Cos(radiansToRotate) * (X - centerPoint.X) - Math.Sin(radiansToRotate) * (Y - centerPoint.Y) + centerPoint.X;
+            double rotatedY = Math.Sin(radiansToRotate) * (X - centerPoint.X) + Math.Cos(radiansToRotate) * (Y - centerPoint.Y) + centerPoint.Y; ;
+
+            return new PointF(rotatedX, rotatedY);
+        }
+
+        public float FindAngle(PointF otherPoint)
+        {
+            if (this.IsEmpty)
+                throw new Exception("PointF is empty");
+
+            if (otherPoint == PointF.Empty)
+                throw new ArgumentOutOfRangeException(nameof(otherPoint));
+
+            double angleInRadians = Math.Atan2(otherPoint.Y - Y, otherPoint.X - X);
+
+            return (float)MathHelper.RadiansToDegrees(angleInRadians);
         }
 
         public double Norm2D()

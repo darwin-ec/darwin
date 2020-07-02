@@ -28,22 +28,6 @@ namespace Darwin.Features
         public Dictionary<FeatureType, Feature> Features { get; set; }
         public Dictionary<FeaturePointType, ContourFeaturePoint> FeaturePoints { get; set; }
 
-        //public FeaturePoint this[FeaturePointType featurePointType]
-        //{
-        //    get
-        //    {
-        //        if (FeaturePoints == null || !FeaturePoints.ContainsKey(featurePointType))
-        //            return FeaturePoint.Empty;
-
-        //        return FeaturePoints[featurePointType];
-        //    }
-        //    set
-        //    {
-        //        FeaturePoints[featurePointType] = value;
-        //        RaisePropertyChanged("FeaturePoints");
-        //    }
-        //}
-
         public List<ContourFeaturePoint> FeaturePointList
         {
             get
@@ -238,8 +222,20 @@ namespace Darwin.Features
                     // and retest against a database of fins traced without this limit.
                     // The new "Iterative, Tip Shifting" mapping approach probably conpensates
                     // for tip placement better than this limit on detection does. -- JHS (8/2/2006)
-                    double max = modMax[highPointId - highPointPaddingLeft]; //***1.6 - removed temporarily for tests
-                    for (int i = highPointId - highPointPaddingLeft; i < highPointId + highPointPaddingRight; i++)
+
+                    int initialIndex = highPointId - highPointPaddingLeft;
+
+                    if (initialIndex < 0)
+                        initialIndex = 0;
+                    
+                    double max = modMax[initialIndex]; //***1.6 - removed temporarily for tests
+
+                    int endIndex = highPointId + highPointPaddingRight;
+
+                    if (endIndex >= modMax.Length)
+                        endIndex = modMax.Length - 1;
+
+                    for (int i = initialIndex; i < endIndex; i++)
                     { //***1.6 - removed temporarily for tests
                         if (modMax[i] > max)
                         {

@@ -16,7 +16,8 @@ namespace Darwin.Features
 
         private const int NumChinMaxesToTrack = 5;
         private const float StartOfSnoutPaddingPercentage = 0.25f;
-        private const int StartOfSnoutNumMinsToTrack = 5;
+
+        private const float DesiredAngleForTipDetection = -18.0f;
 
         private static Dictionary<FeaturePointType, string> FeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
         {
@@ -62,27 +63,43 @@ namespace Darwin.Features
         public BearFeatureSet(Chain chain, FloatContour chainPoints)
             : this()
         {
-            int tipPos = FindTip(chain, chainPoints);
+            if (chain == null)
+                throw new ArgumentNullException(nameof(chain));
+
+            if (chainPoints == null)
+                throw new ArgumentNullException(nameof(chainPoints));
+
+            if (chainPoints.Length < 5)
+                throw new Exception("FloatContour not long enough");
+
+            int tipPos = FindTipOfNose(chain, chainPoints);
             int notchPos = FindNotch(chain, tipPos);
 
             if (notchPos - tipPos < TipNotchMinDistance)
             {
                 // If the tip and notch are too close together, it's likely we have a really curved nose indent.
                 // Let's try to find the tip again with a bit of padding
-                tipPos = FindTip(chain, chainPoints, DefaultTipHighPointPadding, TipNotchMinDistance);
+                tipPos = FindTipOfNose(chain, chainPoints, DefaultTipHighPointPadding, TipNotchMinDistance);
             }
 
-            int nasionPos = FindNasion(chain, tipPos);
-            int beginLE = FindBeginLE(chain, tipPos);
-            int endLE = FindEndLE(chain, beginLE, tipPos);
-            int endTE = FindPointOfInflection(chain, tipPos);
+            try
+            {
+                int nasionPos = FindNasion(chain, tipPos);
+                int beginLE = FindBeginLE(chain, tipPos);
+                int endLE = FindEndLE(chain, beginLE, tipPos);
+                int endTE = FindPointOfInflection(chain, tipPos);
 
-            FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
-            FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
-            FeaturePoints[FeaturePointType.Nasion].Position = nasionPos;
-            FeaturePoints[FeaturePointType.Tip].Position = tipPos;
-            FeaturePoints[FeaturePointType.Notch].Position = notchPos;
-            FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
+                FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
+                FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
+                FeaturePoints[FeaturePointType.Nasion].Position = nasionPos;
+                FeaturePoints[FeaturePointType.Tip].Position = tipPos;
+                FeaturePoints[FeaturePointType.Notch].Position = notchPos;
+                FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         public override void SetFeaturePointPosition(FeaturePointType featurePointType, int position)
@@ -92,6 +109,19 @@ namespace Darwin.Features
 
             FeaturePoints[featurePointType].Position = position;
             FeaturePoints[featurePointType].UserSetPosition = true;
+        }
+        
+        public int FindTipOfNose(Chain chain,
+            FloatContour chainPoints,
+            int highPointPaddingLeft = DefaultTipHighPointPadding, int highPointPaddingRight = DefaultTipHighPointPadding)
+        {
+            float currentAngle = chainPoints[0].FindAngle(chainPoints.Points[chainPoints.Length - 1]);
+
+            float degreesToRotate = DesiredAngleForTipDetection - currentAngle;
+
+            FloatContour rotatedContour = chainPoints.Rotate(chainPoints[0], degreesToRotate);
+
+            return FindTip(chain, rotatedContour, highPointPaddingLeft, highPointPaddingRight);
         }
 
         public int FindChin(Chain chain, int tipPos)
@@ -324,17 +354,6 @@ namespace Darwin.Features
             int
                 nasionPosition = 0,
                 level = NasionTransformLevels;
-
-            //         for (i = 0; i < NasionTransformLevels; i++)
-            //         {
-            //             double[] temp = new double[numLeadingEdgePts];
-
-            //             double[] continousExtract = WaveletUtil.Extract1DArray(continuousResult, i + 1, numLeadingEdgePts);
-
-            //             WaveletUtil.ModulusMaxima(continousExtract, ref temp, numLeadingEdgePts);
-
-            //             WaveletUtil.Patch1DArray(temp, ref modMax, i, numLeadingEdgePts);
-            //         }
 
             while (level > 1)
             {

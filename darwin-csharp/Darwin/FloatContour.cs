@@ -127,12 +127,25 @@ namespace Darwin
             for (var i = 0; i < numPops; i++)
                 RemovePoint(0);
         }
+
         public void RemovePoint(int position)
         {
             if (position < 0 || position >= Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
 
             Points.RemoveAt(position);
+        }
+
+        public FloatContour Rotate(PointF centerPoint, float degreesToRotate)
+        {
+            FloatContour result = new FloatContour();
+
+            result.Points = new ObservableNotifiableCollection<PointF>();
+
+            foreach (var p in this.Points)
+                result.Points.Add(p.Rotate(centerPoint, degreesToRotate));
+
+            return result;
         }
 
         //********************************************************************
@@ -142,16 +155,12 @@ namespace Darwin
         //
         public int FindIndexFromChainPoint(float desx, float desy)
         {
-
-            float x = 0.0f, y = 0.0f;
-            double diff = 0.0, ldiff = 0.0;
+            double ldiff = 0.0;
             int lowest = 0;
 
             for (var i = 0; i < Length; i++)
             {
-                x = _points[i].X;
-                y = _points[i].Y;
-                diff = MathHelper.GetDistance(desx, desy, x, y);
+                var diff = MathHelper.GetDistance(desx, desy, _points[i].X, _points[i].Y);
                 if (i == 0)
                     ldiff = diff;
                 else if (diff < ldiff)
