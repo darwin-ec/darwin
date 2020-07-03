@@ -245,6 +245,62 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        public string IndividualTerminology
+        {
+            get
+            {
+                return Database.CatalogScheme.IndividualTerminology;
+            }
+        }
+
+        public string IndividualTerminologyInitialCaps
+        {
+            get
+            {
+                return Database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
+        public string SelectedLabelText
+        {
+            get
+            {
+                return "Selected " + Database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
+        public string UnknownLabelText
+        {
+            get
+            {
+                return "Unknown " + Database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
+        public string MatchSelectedOrientationText
+        {
+            get
+            {
+                return "Match Selected " + Database.CatalogScheme.IndividualTerminologyInitialCaps + " Orientation";
+            }
+        }
+
+        public string MatchesText
+        {
+            get
+            {
+                return "Matches Selected " + Database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
+        public string NoMatchText
+        {
+            get
+            {
+                return "No Match - New  " + Database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MatchingResultsWindowViewModel(

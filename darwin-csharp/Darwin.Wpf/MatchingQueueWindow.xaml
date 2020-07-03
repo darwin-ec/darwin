@@ -23,7 +23,11 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0">
-                <Label>Traced Fins</Label>
+                <Label>
+                    <TextBlock>
+                        Traced <Run Text="{Binding IndividualTerminologyInitialCaps,Mode=OneWay}"/>s
+                    </TextBlock>
+                </Label>
                 <controls:SortableListView Grid.Column="0" Height="330" Width="200" x:Name="DatabaseGrid" SelectionMode="Single" SelectedItem="{Binding SelectedFin}" ItemsSource="{Binding MatchingQueue.Fins}" GridViewColumnHeader.Click="GridHeader_Click">
                     <ListView.View>
                         <GridView>

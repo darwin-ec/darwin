@@ -189,7 +189,11 @@
                     </RadioButton>
                 </StackPanel>
                 
-                <ScrollViewer x:Name="TraceScrollViewer" Background="White" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1" ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown" MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
+                <ScrollViewer x:Name="TraceScrollViewer" Background="White"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1"
+                              ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown"
+                              MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp"
+                              MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
                     <Viewbox x:Name="ImageViewBox" Stretch="None">
                         <Viewbox.LayoutTransform>
                             <TransformGroup x:Name="ImageTransformGroup">
@@ -219,7 +223,7 @@
                     <RowDefinition />
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ScrollViewer Grid.Row="0">
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                     <StackPanel Orientation="Vertical" Margin="8">
                         <Label Padding="0 5">ID Code:</Label>
                         <TextBox  Text="{Binding Path=DatabaseFin.IDCode}" Margin="0,0,10,5"  />
@@ -262,19 +266,33 @@
                     </StackPanel>
                 </ScrollViewer>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-                    <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}" ToolTip="Attempt to match this fin against those in the database">Match</Button>
+                    <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}">
+                        <Button.ToolTip>
+                            <TextBlock>
+                                Attempt to match this <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>  against those in the database
+                            </TextBlock>
+                        </Button.ToolTip>
+                        Match
+                    </Button>
                     <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
                         <Button.ToolTip>
                             <TextBlock>
-                            Save this traced fin to a separate file<LineBreak/>
+                            Save this traced <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to a separate file<LineBreak/>
                             (NOTE: If you want to build a match queue or access this<LineBreak/>
-                            traced fin for processing at a later time, then use this<LineBreak/>
-                            option BEFORE adding fin to database or attempting a match)
+                            traced <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> for processing at a later time, then use this<LineBreak/>
+                            option BEFORE adding <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to database or attempting a match)
                             </TextBlock>
                         </Button.ToolTip>
                         Save
                     </Button>
-                    <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click" Visibility="{Binding AddToDatabaseVisibility}"  ToolTip="Add this fin to the database without attempting to match it">Add to Database</Button>
+                    <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click" Visibility="{Binding AddToDatabaseVisibility}">
+                        <Button.ToolTip>
+                            <TextBlock>
+                                Add this <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to the database without attempting to match it
+                            </TextBlock>
+                        </Button.ToolTip>
+                        Add to Database
+                    </Button>
                 </StackPanel>
             </Grid>
 

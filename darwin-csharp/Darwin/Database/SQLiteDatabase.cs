@@ -1320,7 +1320,7 @@ namespace Darwin.Database
             using (var cmd = new SQLiteCommand(conn))
             {
                 cmd.CommandText = "INSERT INTO OutlineFeaturePoints (ID, Type, Position, UserSetPosition, Ignore, fkOutlineID) " +
-                    "VALUES (NULL, @Type, @Position, @UserSetPosition, @fkOutlineID);";
+                    "VALUES (NULL, @Type, @Position, @UserSetPosition, @Ignore, @fkOutlineID);";
                 cmd.Parameters.AddWithValue("@Type", point.Type);
                 cmd.Parameters.AddWithValue("@Position", point.Position);
                 cmd.Parameters.AddWithValue("@UserSetPosition", (point.UserSetPosition) ? 1 : 0);

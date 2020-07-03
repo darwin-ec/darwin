@@ -461,6 +461,22 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
+		public string IndividualTerminology
+		{
+			get
+			{
+				return Database.CatalogScheme.IndividualTerminology;
+			}
+		}
+
+		public string IndividualTerminologyInitialCaps
+		{
+			get
+			{
+				return Database.CatalogScheme.IndividualTerminologyInitialCaps;
+			}
+		}
+
 		private MatchingResultsWindow _matchingResultsWindow;
 
 		private TraceWindowViewModel()

@@ -113,11 +113,36 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        public string IndividualTerminology
+        {
+            get
+            {
+                if (_database == null)
+                    return string.Empty;
+
+                return _database.CatalogScheme.IndividualTerminology;
+            }
+        }
+
+        public string IndividualTerminologyInitialCaps
+        {
+            get
+            {
+                if (_database == null)
+                    return string.Empty;
+
+                return _database.CatalogScheme.IndividualTerminologyInitialCaps;
+            }
+        }
+
+        private DarwinDatabase _database;
+
         public MatchingQueueViewModel()
         {
+            _database = CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName,
+                Options.CurrentUserOptions.DefaultCatalogScheme, false);
             MatchingQueue = new MatchingQueue(
-                CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName,
-                Options.CurrentUserOptions.DefaultCatalogScheme, false),
+                _database,
                 RegistrationMethodType.TrimOptimalTip,
                 RangeOfPointsType.AllPoints);
         }

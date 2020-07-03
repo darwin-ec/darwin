@@ -121,7 +121,7 @@
                         <ToggleButton.ToolTip>
                             <TextBlock>
                                     Start or stop an automatically scrolling<LineBreak/>
-                                    slide show of selected fins
+                                    slide show of selected <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>s
                             </TextBlock>
                         </ToggleButton.ToolTip>
                         Auto Scroll
@@ -169,7 +169,7 @@
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0">Selected Fin</Label>
+            <Label Grid.Row="0" Content="{Binding SelectedLabelText}" />
             <Image Grid.Row="1" x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
                 <ToggleButton x:Name="SelectedShowOriginalImage" IsChecked="{Binding SelectedShowOriginalImage}">
@@ -183,15 +183,13 @@
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Row="0">Unknown Fin</Label>
+            <Label Grid.Row="0" Content="{Binding UnknownLabelText}" />
             <Image Grid.Row="1" x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
                 <ToggleButton x:Name="UnknownShowOriginalImage" IsChecked="{Binding UnknownShowOriginalImage}">
                     Show Original Image
                 </ToggleButton>
-                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click">
-                    Match Selected Fin Orientation
-                </Button>
+                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click" Content="{Binding MatchSelectedOrientationText}" />
             </StackPanel>
         </Grid>
 
@@ -199,22 +197,22 @@
             <Button x:Name="MatchesSelectedFinButton" Click="MatchesSelectedFinButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
-                            The selected fin matches the unknown fin.  Add the<LineBreak/>
-                            unknown fin image to the database as an alternate<LineBreak/>
-                            image of hte selected fin.  Save sighting data, if desired.
+                            The selected <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> matches the unknown <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>.  Add the<LineBreak/>
+                            unknown <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> image to the database as an alternate<LineBreak/>
+                            image of the selected <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>.  Save sighting data, if desired.
                     </TextBlock>
                 </Button.ToolTip>
-                Matches Selected Fin
+                <Run Text="{Binding MatchesText,Mode=OneWay}" />
             </Button>
             <Button x:Name="NoMatchNewFinButton" Click="NoMatchNewFinButton_Click">
                 <Button.ToolTip>
                     <TextBlock>
-                            No fins match the unknown fin.  Add this unknown dolphin<LineBreak/>
+                            No matches for the unknown <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>.  Add this unknown <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/><LineBreak/>
                             to the database as a new entry.  Save the sighting data, if<LineBreak/>
                             desired.
                     </TextBlock>
                 </Button.ToolTip>
-                No Match - New Fin
+                <Run Text="{Binding NoMatchText,Mode=OneWay}"/>
             </Button>
             <Button x:Name="ReturnToMatchingDialogButton" Click="ReturnToMatchingDialogButton_Click">
                 <Button.ToolTip>

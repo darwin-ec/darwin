@@ -67,8 +67,9 @@
     </LinearGradientBrush>
 
     <Style TargetType="{x:Type ListViewItem}">
-        <Setter Property="FocusVisualStyle"
-                Value="{StaticResource &#279;}"/>
+        <!--<Setter Property="FocusVisualStyle"
+                Value="{StaticResource &#279;}"/>-->
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Background"
                 Value="Transparent"/>
         <Setter Property="BorderBrush"

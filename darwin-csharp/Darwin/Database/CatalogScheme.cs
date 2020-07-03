@@ -10,6 +10,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using Darwin.Features;
+using Darwin.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -68,6 +69,15 @@ namespace Darwin.Database
                     default:
                         return "Dolphin Fins";
                 }
+            }
+        }
+
+        [JsonIgnore]
+        public string IndividualTerminologyInitialCaps
+        {
+            get
+            {
+                return IndividualTerminology.ToFirstCharacterUpper();
             }
         }
 
