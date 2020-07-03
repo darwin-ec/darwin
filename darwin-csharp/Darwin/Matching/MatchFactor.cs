@@ -49,6 +49,17 @@ namespace Darwin.Matching
 
     public class MatchFactor : INotifyPropertyChanged
     {
+        private List<FeaturePointType> _dependentFeatures;
+        public List<FeaturePointType> DependentFeatures
+        {
+            get => _dependentFeatures;
+            set
+            {
+                _dependentFeatures = value;
+                RaisePropertyChanged("DependentFeatures");
+            }
+        }
+
         private MatchFactorType _matchFactorType;
         public MatchFactorType MatchFactorType
         {
@@ -159,7 +170,8 @@ namespace Darwin.Matching
                 ErrorBetweenOutlines = errorMethod,
                 ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
                 UpdateOutlines = null,
-                MatchOptions = options
+                MatchOptions = options,
+                DependentFeatures = new List<FeaturePointType>(contourControlPoints)
             };
         }
 
@@ -179,7 +191,8 @@ namespace Darwin.Matching
                 ErrorBetweenOutlines = errorMethod,
                 ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
                 UpdateOutlines = updateOutlines,
-                MatchOptions = options
+                MatchOptions = options,
+                DependentFeatures = new List<FeaturePointType>(contourControlPoints)
             };
         }
 
@@ -198,13 +211,18 @@ namespace Darwin.Matching
                 numberOfDesiredRatios,
                 allDatabaseIndividuals);
 
+            var dependentFeatures = new List<FeaturePointType>();
+            dependentFeatures.AddRange(benchmarkFeatures);
+            dependentFeatures.AddRange(landmarkFeatures);
+
             return new MatchFactor
             {
                 _ratioComparison = ratioComparison,
                 MatchFactorType = MatchFactorType.FeaturePoint,
                 Weight = weight,
                 ErrorBetweenIndividualFeatures = errorBetweenIndividualFeatures,
-                MatchOptions = options
+                MatchOptions = options,
+                DependentFeatures = dependentFeatures
             };
         }
 

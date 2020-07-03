@@ -250,7 +250,6 @@ namespace Darwin.Wpf.ViewModel
             {
                 // TODO: This should come from config or user input or something. Temporary to get things
                 // going
-
                 var matchFactors = CreateBearMatchFactors();
 
                 Match = new Match(DatabaseFin,
@@ -274,7 +273,7 @@ namespace Darwin.Wpf.ViewModel
 
             var controlPoints = new List<FeaturePointType>()
             {
-                FeaturePointType.LeadingEdgeBegin,
+                FeaturePointType.Nasion,
                 FeaturePointType.Tip,
                 FeaturePointType.PointOfInflection
             };

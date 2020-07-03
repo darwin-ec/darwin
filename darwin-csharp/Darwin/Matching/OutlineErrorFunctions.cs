@@ -495,7 +495,7 @@ namespace Darwin.Matching
             FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
 
             FloatContour
-                mappedContour = null,
+                mappedContour,
                 shortenedDBMappedContour = null,
                 shortenedUnkMappedContour = null,
                 shiftedUnkTipMappedContour = null; //***1.1
@@ -542,12 +542,6 @@ namespace Darwin.Matching
                 endTrailUnk,
                 endTrailDB,
                 movedTipUnk; //***1.1
-
-            // actual end points for registration, depends on regSegmentsUsed
-            /*int 
-                endDB,
-                endUnk;
-            */
 
             PointF
                 startLeadUnkPt,
@@ -634,9 +628,8 @@ namespace Darwin.Matching
 
             updateOutlines?.Invoke(mappedContour, floatDBContour);
 
-            // now try shortenning one or the other of the leading or trailing edges to 
+            // Now try shortening one or the other of the leading or trailing edges to 
             // find a more optimal mapping (one with smaller error)
-
             bool foundBest = false;
             bool skipThisJump = false; //***1.1
 
@@ -644,7 +637,7 @@ namespace Darwin.Matching
             {
                 // shorten DATABASE leading edge by 1% and test error
                 shortenedDBMappedContour = preMapUnknown.MapContour(
-                                            //mUnknownTipPositionPoint,    //***1.1
+                                            // mUnknownTipPositionPoint,    //***1.1
                                             preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
                                             preMapUnknown[startLeadUnk],
                                             preMapUnknown[endTrailUnk],
@@ -666,7 +659,6 @@ namespace Darwin.Matching
 
                 // shorten UNKNOWN leading edge by 1% and test error
                 shortenedUnkMappedContour = preMapUnknown.MapContour(
-                        //mUnknownTipPositionPoint,    //***1.1
                         preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
                         preMapUnknown[startLeadUnk +/*onePercentUnk*/testIncUnk], //***1.5
                         preMapUnknown[endTrailUnk],
@@ -775,7 +767,6 @@ namespace Darwin.Matching
                             endTrailDB);
 
                     // keep best shift to compare to end shifts
-
                     if (shift2LeadError < shift2TrailError)
                     {
                         movedTipUnkError = shift2LeadError;
@@ -1333,8 +1324,8 @@ namespace Darwin.Matching
                     //	mMatchingDialog->showErrorPt2Pt(c1, c2, c2[i].x, c2[i].y, x, y);
                     //}
 
-                    sqErrorPt2Pt = ((x - c2[i].X) * (x - c2[i].X) +
-                                    (y - c2[i].Y) * (y - c2[i].Y));
+                    sqErrorPt2Pt = (x - c2[i].X) * (x - c2[i].X) +
+                                   (y - c2[i].Y) * (y - c2[i].Y);
 
                     if (sqErrorPt2Pt < 9.0)
                         numErrBelow3++;
@@ -1413,7 +1404,6 @@ namespace Darwin.Matching
             // if no points found, the error stays the default
             if (ptsFound > 0)
                 error = (sum / (double)ptsFound);
-
 
             var traceOut = string.Format("pairs={0}  S2E1(unk)={1} s2E2(db)={2} repeats={3} below3={4} err={5}",
                 ptsFound, tip1 - start1, tip2 - start2,

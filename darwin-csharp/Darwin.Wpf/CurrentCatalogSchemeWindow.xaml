@@ -34,6 +34,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120" />
                     <ColumnDefinition />
+                    <ColumnDefinition Width="140" />
                 </Grid.ColumnDefinitions>
                 <Label HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0">Feature Set Type:</Label>
                 <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,6,0,0">
@@ -43,6 +44,9 @@
                     <RadioButton GroupName="FeatureSetTypeGroup" IsChecked="{Binding Path=SelectedScheme.FeatureSetType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static features:FeatureSetType.Bear}}">
                         Bear
                     </RadioButton>
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                    <Button x:Name="RediscoverDatabaseFeatures" Click="RediscoverDatabaseFeatures_Click">Rediscover Features</Button>
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="2">

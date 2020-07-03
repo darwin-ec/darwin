@@ -54,7 +54,6 @@ namespace Darwin.Matching
         {
             // First, let's find the X/Y coordinates of every feature of
             // every individual, translate/scale them, and create Complex vectors with them
-
             var comparisonValues = new List<LandmarkComparison>();
             var totalLandmarks = CreateVector.Dense<Complex>(landmarkFeatures.Count);
 
@@ -121,15 +120,8 @@ namespace Darwin.Matching
         {
             var coordinates = new Dictionary<FeaturePointType, PointF>();
 
-            // TODO: This is temporary to get the feature points we need set.
-            // This needs to be redone on the database or going forward as individuals
-            // are added!!!!!  This is also hardcoded to Bear!!
-            var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, FeatureSetType.Bear);
-            newFeatureOutline.RediscoverFeaturePoints(FeatureSetType.Bear);
             foreach (var featurePoint in landmarkFeatures)
-            {
-                coordinates[featurePoint] = newFeatureOutline.GetFeaturePointCoords(featurePoint);
-            }
+                coordinates[featurePoint] = individual.FinOutline.GetFeaturePointCoords(featurePoint);
 
             var benchmarkDistance = MathHelper.GetDistance(
                 coordinates[benchmarkFeatures[0]].X,

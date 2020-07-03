@@ -450,7 +450,7 @@ namespace Darwin.Database
                     dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
 
                     DBIndividual individual = new DBIndividual();
-                    individual.id = fin.DataPos; // mapping Individuals id to mDataPos
+                    individual.id = fin.ID; // mapping Individuals id to mDataPos
                     individual.idcode = fin.IDCode;
                     individual.name = fin.Name;
                     individual.fkdamagecategoryid = dmgCat.ID;
@@ -515,6 +515,66 @@ namespace Darwin.Database
             }
         }
 
+        public override void InvalidateCache()
+        {
+            InvalidateAllFins();
+        }
+
+        public override void UpdateOutline(DatabaseFin data, bool preventInvalidate = false)
+        {
+            if (!preventInvalidate)
+                InvalidateAllFins();
+
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            // Invalid ID
+            if (data.ID < 1)
+                throw new ArgumentOutOfRangeException(nameof(data));
+
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                conn.Open();
+
+                using (var transaction = conn.BeginTransaction())
+                {
+                    // we do this as we don't know what the outline id is
+                    var outline = SelectOutlineByFkIndividualID(data.ID);
+                    outline.scale = data.Scale;
+                    outline.beginle = data.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
+                    outline.endle = data.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeEnd);
+                    outline.notchposition = data.FinOutline.GetFeaturePoint(FeaturePointType.Notch);
+                    outline.tipposition = data.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
+                    outline.endte = data.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
+                    outline.fkindividualid = data.ID;
+                    UpdateOutline(conn, outline);
+
+                    List<DBPoint> points = new List<DBPoint>();
+                    var numPoints = data.FinOutline.Length;
+                    var fc = data.FinOutline.ChainPoints;
+
+                    for (var i = 0; i < numPoints; i++)
+                    {
+                        points.Add(new DBPoint
+                        {
+                            xcoordinate = fc[i].X,
+                            ycoordinate = fc[i].Y,
+                            orderid = i,
+                            fkoutlineid = outline.id
+                        });
+                    }
+                    DeletePoints(conn, outline.id);
+
+                    InsertPoints(conn, points);
+
+                    DeleteOutlineFeaturePointsByOutlineID(conn, outline.id);
+                    InsertFeaturePoints(conn, outline.id, data.FinOutline.FeatureSet.FeaturePointList);
+                    transaction.Commit();
+                }
+                conn.Close();
+            }
+        }
+
         public override void UpdateIndividual(DatabaseFin data)
         {
             InvalidateAllFins();
@@ -522,7 +582,7 @@ namespace Darwin.Database
             var dmgCat = SelectDamageCategoryByName(data.DamageCategory);
 
             DBIndividual individual = new DBIndividual();
-            individual.id = data.DataPos; // mapping Individuals id to mDataPos
+            individual.id = data.ID; // mapping Individuals id to mDataPos
             individual.idcode = data.IDCode;
             individual.name = data.Name;
             individual.fkdamagecategoryid = dmgCat.ID;
@@ -533,6 +593,29 @@ namespace Darwin.Database
                 UpdateDBIndividual(conn, individual);
                 conn.Close();
             }
+        }
+
+        public override bool ContainsAllFeaturePointTypes(List<FeaturePointType> featurePointTypes)
+        {
+            if (featurePointTypes == null || featurePointTypes.Count < 1)
+                return true;
+
+            if (AllFins == null || AllFins.Count < 1)
+                return true;
+
+            foreach (var individual in AllFins)
+            {
+                if (individual.FinOutline == null || individual.FinOutline.FeatureSet.FeaturePoints == null)
+                    return false;
+
+                foreach (var type in featurePointTypes)
+                {
+                    if (!individual.FinOutline.FeatureSet.FeaturePoints.ContainsKey(type))
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         // *****************************************************************************
@@ -548,7 +631,7 @@ namespace Darwin.Database
             long id;
 
             // mDataPos field will be used to map to id in db for individuals
-            id = fin.DataPos;
+            id = fin.ID;
 
             using (var conn = new SQLiteConnection(_connectionString))
             {

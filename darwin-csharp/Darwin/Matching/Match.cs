@@ -200,6 +200,27 @@ namespace Darwin.Matching
             }
         }
 
+        /// <summary>
+        /// This verifies whether the match settings can be run against the current database.
+        /// E.g., whether all the features are present on all database individuals.
+        /// </summary>
+        /// <returns>true if it can be run, false if not</returns>
+        public bool VerifyMatchSettings()
+        {
+            if (MatchFactors == null || MatchFactors.Count < 1)
+                return false;
+
+            var featurePointTypes = new List<FeaturePointType>();
+
+            foreach (var factor in MatchFactors)
+            {
+                if (factor.DependentFeatures != null)
+                    featurePointTypes.AddRange(factor.DependentFeatures);
+            }
+
+            return Database.ContainsAllFeaturePointTypes(featurePointTypes.Distinct().ToList());
+        }
+
         //*******************************************************************
         //
         // float Match::matchSingleFin(int registrationMethod, int regSegmentsUsed, 

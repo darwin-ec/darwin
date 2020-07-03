@@ -107,6 +107,22 @@ namespace Darwin.Wpf.ViewModel
                 SelectedScheme.Categories.Move(idx, idx + 1);
         }
 
+        public void RediscoverAllFeatures()
+        {
+            if (Database != null)
+            {
+                foreach (var individual in Database.AllFins)
+                {
+                    var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, SelectedScheme.FeatureSetType);
+                    newFeatureOutline.RediscoverFeaturePoints(SelectedScheme.FeatureSetType);
+                    individual.FinOutline = newFeatureOutline;
+                    Database.UpdateOutline(individual, true);
+                }
+
+                Database.InvalidateCache();
+            }
+        }
+
         private void RaisePropertyChanged(string propertyName)
         {
             var handler = PropertyChanged;

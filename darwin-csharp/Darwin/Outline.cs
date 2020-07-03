@@ -170,6 +170,9 @@ namespace Darwin
             if (type == FeaturePointType.NoFeature)
                 throw new ArgumentOutOfRangeException(nameof(type));
 
+            if (!FeatureSet.FeaturePoints.ContainsKey(type))
+                return 0;
+
             return FeatureSet.FeaturePoints[type].Position;
         }
 

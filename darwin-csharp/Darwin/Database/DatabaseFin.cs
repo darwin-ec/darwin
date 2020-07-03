@@ -71,7 +71,6 @@ namespace Darwin.Database
         private string _shortDescription;
         private string _imageFilename; //  001DB
         private string _thumbnailFileName;
-        public long DataPos;     //  001DB
         public char[,] ThumbnailPixmap;
         public int ThumbnailRows;
 
@@ -333,7 +332,7 @@ namespace Darwin.Database
             LocationCode = locationCode;
             DamageCategory = damageCategory;
             ShortDescription = shortDescription;
-            DataPos = datapos;
+            ID = datapos;
             mLeft = true; //  1.4
             mFlipped = false; //  1.4
             XMin = 0.0; //  1.4
@@ -371,7 +370,7 @@ namespace Darwin.Database
             ImageFilename = fin.ImageFilename;        //  001DB
 			OriginalFinImage = null;                          //   major change JHS
             FinImage = null; //  1.5
-            DataPos = fin.DataPos;                    //  001DB
+            ID = fin.ID;                    //  001DB
             FinOutline = new Outline(fin.FinOutline); //  006DF,008OL
             IDCode = fin.IDCode;
             Name = fin.Name;

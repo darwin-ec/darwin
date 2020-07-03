@@ -11,6 +11,7 @@
 //
 //*******************************************************************
 
+using Darwin.Features;
 using Darwin.Matching;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,12 @@ namespace Darwin.Database
         public abstract long Add(DatabaseFin data);
         public abstract void Update(DatabaseFin data);
         public abstract void UpdateIndividual(DatabaseFin data);
+        public abstract void UpdateOutline(DatabaseFin data, bool preventInvalidate = false);
         public abstract void Delete(DatabaseFin fin);
+
+        public abstract bool ContainsAllFeaturePointTypes(List<FeaturePointType> featurePointTypes);
+
+        public abstract void InvalidateCache();
 
         public abstract void SetCatalogScheme(CatalogScheme catalogScheme);
         

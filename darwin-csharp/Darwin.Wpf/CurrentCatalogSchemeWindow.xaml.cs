@@ -86,5 +86,23 @@ namespace Darwin.Wpf
         {
             _vm.MoveSelectedCategoryDown();
         }
+
+        private void RediscoverDatabaseFeatures_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Warning: This will overwrite all features with algorithmically discovered feature points.  There is no undo on this feature."
+                + Environment.NewLine + Environment.NewLine +
+                "Are you sure you want to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _vm.RediscoverAllFeatures();
+
+                MessageBox.Show("Feature discovery complete.", "Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+
+                if (mainWindow != null)
+                    mainWindow.RefreshDatabase();
+            }
+        }
     }
 }

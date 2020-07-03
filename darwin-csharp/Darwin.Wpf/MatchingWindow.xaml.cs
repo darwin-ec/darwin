@@ -41,8 +41,25 @@ namespace Darwin.Wpf
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            _vm.ProgressBarVisibility = Visibility.Visible;
-            _matchingWorker.RunWorkerAsync();
+            //TODO -- shouldn't be hardcoded
+            if (_vm.Database.CatalogScheme.FeatureSetType != Features.FeatureSetType.Bear)
+            {
+                _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
+                    (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+            }
+
+            if (!_vm.Match.VerifyMatchSettings())
+            {
+                MessageBox.Show("Sorry, at least some individuals in your database" + 
+                    "are missing feature points needed to run the current match settings." + Environment.NewLine + Environment.NewLine +
+                    "Please use Rediscover Features in the Current Catalog Schemes settings, " +
+                    "or recreate your database with the current feature set scheme.", "Missing Features", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                _vm.ProgressBarVisibility = Visibility.Visible;
+                _matchingWorker.RunWorkerAsync();
+            }
         }
 
         private void PauseButton_Click(object sender, RoutedEventArgs e)
@@ -94,12 +111,6 @@ namespace Darwin.Wpf
         {
             bool done = false;
             _vm.MatchRunning = true;
-            //TODO -- shouldn't be hardcoded
-            if (_vm.Database.CatalogScheme.FeatureSetType != Features.FeatureSetType.Bear)
-            {
-                _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
-                    (_vm.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
-            }
 
             do
             {
