@@ -66,35 +66,6 @@ namespace Darwin.Wpf
 
 		private TraceWindowViewModel _vm;
 
-		//private TraceWindow()
-		//{
-		//	InitializeComponent();
-
-		//	_moveFeature = FeaturePointType.NoFeature;
-		//	_movePosition = -1;
-
-		//	_vm = new TraceWindowViewModel
-		//	{
-		//		Bitmap = null,
-		//		Contour = null,
-		//		TraceTool = TraceToolType.Hand,
-		//		TraceLocked = false,
-		//		ZoomRatio = 1.0f,
-		//		ZoomValues = new List<double>()
-		//	};
-
-		//	_vm.ZoomValues.Add(16);
-		//	_vm.ZoomValues.Add(8);
-		//	_vm.ZoomValues.Add(4);
-		//	_vm.ZoomValues.Add(2);
-		//	_vm.ZoomValues.Add(1);
-		//	_vm.ZoomValues.Add(0.75);
-		//	_vm.ZoomValues.Add(0.50);
-		//	_vm.ZoomValues.Add(0.25);
-
-		//	this.DataContext = _vm;
-		//}
-
 		public TraceWindow(TraceWindowViewModel vm)
 		{
 			InitializeComponent();
@@ -926,6 +897,9 @@ namespace Darwin.Wpf
 			var croppedBitmap = ImageTransform.CropBitmap(_vm.Bitmap, cropRect);
 
 			_vm.Bitmap = _vm.BaseBitmap = croppedBitmap;
+
+			// Force trace tool checked again to reset stuff
+			TraceTool_Checked(null, null);
 		}
 
 		private void RotateInit(Darwin.Point point)
@@ -979,8 +953,15 @@ namespace Darwin.Wpf
 		{
 			if (TraceCanvas != null)
 			{
+				var adornerLayer = AdornerLayer.GetAdornerLayer(TraceCanvas);
+
+				if (_cropSelector != null)
+				{
+					adornerLayer.Remove(_cropSelector);
+					_cropSelector = null;
+				}
+
 				// Set the appropriate cursor
-				// TODO: Maybe this could be done better with databinding
 				switch (_vm.TraceTool)
 				{
 					case TraceToolType.AddPoint:
@@ -989,11 +970,10 @@ namespace Darwin.Wpf
 						break;
 
 					case TraceToolType.Crop:
-						//TraceCanvas.Cursor = Cursors.SizeNWSE;
-						var layer = AdornerLayer.GetAdornerLayer(TraceCanvas);
+						TraceCanvas.Cursor = Cursors.Cross;
 						_cropSelector = new CroppingAdorner(TraceCanvas);
 						_cropSelector.Crop += CropApply;
-						layer.Add(_cropSelector);
+						adornerLayer.Add(_cropSelector);
 						break;
 
 					case TraceToolType.ChopOutline:
@@ -1224,6 +1204,7 @@ namespace Darwin.Wpf
 						}
 						else
 						{
+							AddContourUndo(_vm.Contour);
 							_drawingWithPencil = true;
 							TraceAddNormalPoint(bitmapPoint);
 						}
@@ -1274,6 +1255,7 @@ namespace Darwin.Wpf
 			}
 		}
 
+		private Cursor _previousCursor;
 		private void TraceCanvas_MouseMove(object sender, MouseEventArgs e)
 		{
 			var clickedPoint = e.GetPosition(this.TraceCanvas);
@@ -1283,11 +1265,6 @@ namespace Darwin.Wpf
 				CursorPositionMessage.Text = string.Empty;
 			else
 				CursorPositionMessage.Text = string.Format("{0}, {1}", imagePoint.X, imagePoint.Y);
-
-			//bool shiftKeyDown = false;
-
-			//if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-			//	shiftKeyDown = true;
 
 			if (e.LeftButton == MouseButtonState.Pressed)
 			{
@@ -1316,11 +1293,6 @@ namespace Darwin.Wpf
 						e.Handled = true;
 						break;
 
-					//case TraceToolType.Crop:
-					//	CropUpdate(imagePoint);
-					//	e.Handled = true;
-					//	break;
-
 					case TraceToolType.ChopOutline:
 						TraceChopOutlineUpdate(imagePoint);
 						e.Handled = true;
@@ -1332,6 +1304,28 @@ namespace Darwin.Wpf
 						break;
 				}
 			}
+			else
+            {
+				switch (_vm.TraceTool)
+                {
+					case TraceToolType.Crop:
+						if (_cropSelector != null && _cropSelector.CropEnabled &&
+						_cropSelector.SelectRect != null && _cropSelector.SelectRect.Contains(clickedPoint))
+						{
+							if (_previousCursor == null)
+								_previousCursor = TraceCanvas.Cursor;
+
+							if (Cursor != Cursors.ScrollAll)
+								TraceCanvas.Cursor = Cursors.ScrollAll;
+						}
+						else if (_previousCursor != null)
+						{
+							TraceCanvas.Cursor = _previousCursor;
+							_previousCursor = null;
+						}
+						break;
+				}
+            }
 		}
 
 		private async void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -1588,6 +1582,9 @@ namespace Darwin.Wpf
 						ApplyImageModificationsToOriginal(_vm.UndoItems);
 						break;
 				}
+
+				// Force the trace tool checked which does things like reset the crop adorner
+				TraceTool_Checked(null, null);
 			}
 		}
 
@@ -1632,7 +1629,10 @@ namespace Darwin.Wpf
 						ApplyImageModificationsToOriginal(_vm.UndoItems);
 						break;
                 }
-            }
+
+				// Force the trace tool checked which does things like reset the crop adorner
+				TraceTool_Checked(null, null);
+			}
         }
 
 
@@ -1653,6 +1653,9 @@ namespace Darwin.Wpf
 
 		private void AddContourUndo(Contour contour)
         {
+			if (contour == null)
+				contour = new Contour();
+
 			_vm.UndoItems.Push(new Modification
 			{
 				ModificationType = ModificationType.Contour,

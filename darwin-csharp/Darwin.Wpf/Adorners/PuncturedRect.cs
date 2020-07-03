@@ -49,7 +49,6 @@ namespace Darwin.Wpf.Adorners
 			set { SetValue(RectInteriorProperty, value); }
 		}
 
-
 		public static readonly DependencyProperty RectExteriorProperty =
 			DependencyProperty.Register(
 				"RectExterior",
