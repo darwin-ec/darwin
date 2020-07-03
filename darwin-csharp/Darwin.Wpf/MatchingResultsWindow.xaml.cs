@@ -1,5 +1,6 @@
 ﻿using Darwin.Database;
 using Darwin.Wpf.ViewModel;
+using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -62,7 +63,7 @@ namespace Darwin.Wpf
 
         private void UnknownMatchSelectedFinOrientation_Click(object sender, RoutedEventArgs e)
         {
-
+            // TODO
         }
 
         private void CheckNextPreviousEnabled()
@@ -111,7 +112,11 @@ namespace Darwin.Wpf
                 _vm.DatabaseFin.Name = _vm.SelectedResult.Name;
 
             var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
-                "Matches [" + _vm.SelectedResult.IDCode + "] - Add to Database as Additional Fin Image", this);
+                "Matches ["
+                + _vm.SelectedResult.IDCode
+                + "] - Add to Database as Additional "
+                + _vm.Database.CatalogScheme.IndividualTerminology.ToFirstCharacterUpper()
+                + " Image", this);
 
             TraceWindow traceWindow = new TraceWindow(vm);
 
@@ -121,9 +126,12 @@ namespace Darwin.Wpf
         private void NoMatchNewFinButton_Click(object sender, RoutedEventArgs e)
         {
             var vm = new TraceWindowViewModel(_vm.DatabaseFin, _vm.Database,
-                "No Match - Add to Database as NEW Fin/Image", this);
-                        TraceWindow traceWindow = new TraceWindow(vm);
-                        traceWindow.Show();
+                "No Match - Add to Database as NEW "
+                + _vm.Database.CatalogScheme.IndividualTerminology.ToFirstCharacterUpper()
+                + "/Image", this);
+
+            TraceWindow traceWindow = new TraceWindow(vm);
+            traceWindow.Show();
         }
 
         private void ReturnToMatchingDialogButton_Click(object sender, RoutedEventArgs e)

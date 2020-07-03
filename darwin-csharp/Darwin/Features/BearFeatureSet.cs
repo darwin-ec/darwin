@@ -34,20 +34,20 @@ namespace Darwin.Features
         {
             FeatureSetType = FeatureSetType.Bear;
 
-            FeaturePoints = new Dictionary<FeaturePointType, ContourFeaturePoint>()
+            FeaturePoints = new Dictionary<FeaturePointType, OutlineFeaturePoint>()
             {
-                { FeaturePointType.LeadingEdgeBegin, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
-                { FeaturePointType.LeadingEdgeEnd, new ContourFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
-                { FeaturePointType.Nasion, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
-                { FeaturePointType.Tip, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
-                { FeaturePointType.Notch, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
-                { FeaturePointType.PointOfInflection, new ContourFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
+                { FeaturePointType.LeadingEdgeBegin, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
+                { FeaturePointType.LeadingEdgeEnd, new OutlineFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
+                { FeaturePointType.Nasion, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
+                { FeaturePointType.Tip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
+                { FeaturePointType.Notch, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
+                { FeaturePointType.PointOfInflection, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
             Features = new Dictionary<FeatureType, Feature>();
         }
 
-        public BearFeatureSet(List<ContourFeaturePoint> featurePoints)
+        public BearFeatureSet(List<OutlineFeaturePoint> featurePoints)
             : this()
         {
             if (featurePoints == null)
@@ -55,8 +55,12 @@ namespace Darwin.Features
 
             foreach (var fp in featurePoints)
             {
-                fp.Name = FeaturePointNameMapping[fp.Type];
-                FeaturePoints[fp.Type] = fp;
+                // Note: This will ignore any features that are not in the FeaturePointNameMapping dictionary!
+                if (FeaturePointNameMapping.ContainsKey(fp.Type))
+                {
+                    fp.Name = FeaturePointNameMapping[fp.Type];
+                    FeaturePoints[fp.Type] = fp;
+                }
             }
         }
 

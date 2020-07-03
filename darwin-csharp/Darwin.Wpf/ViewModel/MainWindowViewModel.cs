@@ -38,17 +38,7 @@ namespace Darwin.Wpf.ViewModel
                 if (DarwinDatabase == null || DarwinDatabase.CatalogScheme == null)
                     return string.Empty;
 
-                switch (DarwinDatabase.CatalogScheme.FeatureSetType)
-                {
-                    case Features.FeatureSetType.Bear:
-                        return "Bears";
-
-                    case Features.FeatureSetType.DorsalFin:
-                        return "Dolphin Fins";
-
-                    default:
-                        return string.Empty;
-                }
+                return DarwinDatabase.CatalogScheme.CollectionTerminology;
             }
         }
 

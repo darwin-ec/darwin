@@ -183,12 +183,12 @@ namespace Darwin
         }
 
         // returns the type of feature point closest to the given point
-        public ContourFeaturePoint FindClosestFeaturePoint(PointF p)
+        public OutlineFeaturePoint FindClosestFeaturePoint(PointF p)
         {
             return FindClosestFeaturePoint(p.X, p.Y);
         }
 
-        public ContourFeaturePoint FindClosestFeaturePoint(System.Drawing.Point p)
+        public OutlineFeaturePoint FindClosestFeaturePoint(System.Drawing.Point p)
         {
             return FindClosestFeaturePoint(p.X, p.Y);
         }
@@ -220,9 +220,9 @@ namespace Darwin
                 next = Length - 1;
         }
 
-        public ContourFeaturePoint FindClosestFeaturePoint(float X, float Y)
+        public OutlineFeaturePoint FindClosestFeaturePoint(float X, float Y)
         {
-            var minFeature = ContourFeaturePoint.Empty;
+            var minFeature = OutlineFeaturePoint.Empty;
             double? minDist = null;
 
             foreach (var f in FeatureSet.FeaturePoints.Values.Where(fp => !fp.Ignore))

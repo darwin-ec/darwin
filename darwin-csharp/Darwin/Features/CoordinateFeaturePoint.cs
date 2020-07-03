@@ -8,7 +8,7 @@ namespace Darwin.Features
 {
     public class CoordinateFeaturePoint : FeaturePoint, INotifyPropertyChanged
     {
-        public static new readonly ContourFeaturePoint Empty = new ContourFeaturePoint { IsEmpty = true };
+        public static new readonly OutlineFeaturePoint Empty = new OutlineFeaturePoint { IsEmpty = true };
 
         private Point _coordinate;
 

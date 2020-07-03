@@ -10,6 +10,7 @@
 /////////////////////////////////////////////////////////////////////
 
 using Darwin.Features;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -50,6 +51,40 @@ namespace Darwin.Database
             {
                 _featureSetType = value;
                 RaisePropertyChanged("FeatureSetType");
+            }
+        }
+
+        [JsonIgnore]
+        public string CollectionTerminology
+        {
+            get
+            {
+                switch (FeatureSetType)
+                {
+                    case FeatureSetType.Bear:
+                        return "Bears";
+
+                    case FeatureSetType.DorsalFin:
+                    default:
+                        return "Dolphin Fins";
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public string IndividualTerminology
+        {
+            get
+            {
+                switch (FeatureSetType)
+                {
+                    case FeatureSetType.Bear:
+                        return "bear";
+
+                    case FeatureSetType.DorsalFin:
+                    default:
+                        return "fin";
+                }
             }
         }
 

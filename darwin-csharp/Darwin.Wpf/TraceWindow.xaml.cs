@@ -38,7 +38,7 @@ namespace Darwin.Wpf
     {
 		private const int ImagePadding = 20;
 		private const string NoTraceErrorMessageDatabase = "You must trace your image before it can be added to the database.";
-		private const string NoIDErrorMessage = "You must enter an ID Code before\nyou can add a fin to the database.";
+		private const string NoIDErrorMessage = "You must enter an ID Code before\nyou can add a {0} to the database.";
 		private const string NoCategoryErrorMessage = "You must select a category before proceeding.";
 
 		private CroppingAdorner _cropSelector;
@@ -1721,6 +1721,14 @@ namespace Darwin.Wpf
 			{
 				MessageBox.Show("You must trace your image before it can be matched.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
+			else if (_vm.Database.AllFins.Count < 1)
+			{
+				var result = MessageBox.Show("The database is empty, so there is nothing to match against." + Environment.NewLine +
+					string.Format("Would you like to just add this {0} to the database?", _vm.Database.CatalogScheme.IndividualTerminology), "Nothing to Match", MessageBoxButton.YesNo);
+
+				if (result == MessageBoxResult.Yes)
+					AddToDatabaseButton_Click(null, null);
+			}
 			else
 			{
 				if (_vm.Outline == null)
@@ -1733,6 +1741,12 @@ namespace Darwin.Wpf
 
 				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database);
 				var matchingWindow = new MatchingWindow(matchingWindowVM);
+
+				var mainWindow = Application.Current.MainWindow as MainWindow;
+
+				if (mainWindow != null)
+					matchingWindow.Owner = mainWindow;
+
 				this.Close();
 				matchingWindow.Show();
 			}
@@ -1776,7 +1790,7 @@ namespace Darwin.Wpf
 				}
 				else if (_vm.DatabaseFin == null || string.IsNullOrEmpty(_vm.DatabaseFin.IDCode))
 				{
-					MessageBox.Show(NoIDErrorMessage, "No ID", MessageBoxButton.OK, MessageBoxImage.Warning);
+					MessageBox.Show(string.Format(NoIDErrorMessage, _vm.Database.CatalogScheme.IndividualTerminology), "No ID", MessageBoxButton.OK, MessageBoxImage.Warning);
 				}
 				else if (string.IsNullOrEmpty(_vm.DatabaseFin.DamageCategory) || _vm.Categories.Count < 1 || _vm.DatabaseFin.DamageCategory.ToUpper() == _vm.Categories[0]?.Name?.ToUpper())
 				{

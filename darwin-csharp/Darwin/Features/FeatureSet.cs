@@ -26,14 +26,14 @@ namespace Darwin.Features
         public FeatureSetType FeatureSetType { get; set; }
 
         public Dictionary<FeatureType, Feature> Features { get; set; }
-        public Dictionary<FeaturePointType, ContourFeaturePoint> FeaturePoints { get; set; }
+        public Dictionary<FeaturePointType, OutlineFeaturePoint> FeaturePoints { get; set; }
 
-        public List<ContourFeaturePoint> FeaturePointList
+        public List<OutlineFeaturePoint> FeaturePointList
         {
             get
             {
                 if (FeaturePoints == null)
-                    return new List<ContourFeaturePoint>();
+                    return new List<OutlineFeaturePoint>();
 
                 return FeaturePoints.Values.ToList();
             }
@@ -91,7 +91,7 @@ namespace Darwin.Features
             }
         }
 
-        public static FeatureSet Load(FeatureSetType featuresType, List<ContourFeaturePoint> featurePoints)
+        public static FeatureSet Load(FeatureSetType featuresType, List<OutlineFeaturePoint> featurePoints)
         {
             if (featurePoints == null)
                 throw new ArgumentNullException(nameof(featurePoints));

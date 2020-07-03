@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Darwin.Features
 {
-    public class ContourFeaturePoint : FeaturePoint, INotifyPropertyChanged
+    public class OutlineFeaturePoint : FeaturePoint, INotifyPropertyChanged
     {
-        public static new readonly ContourFeaturePoint Empty = new ContourFeaturePoint { IsEmpty = true };
+        public static new readonly OutlineFeaturePoint Empty = new OutlineFeaturePoint { IsEmpty = true };
 
         private int _position;
 
@@ -22,7 +22,7 @@ namespace Darwin.Features
             }
         }
 
-        public ContourFeaturePoint()
+        public OutlineFeaturePoint()
             : base()
         {
         }

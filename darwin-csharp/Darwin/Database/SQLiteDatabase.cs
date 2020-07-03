@@ -23,7 +23,7 @@ namespace Darwin.Database
         private const string SettingsCatalogSchemeName = "CatalogSchemeName";
         private const string SettingsFeatureSetType = "FeatureSetType";
 
-        public const int LatestDBVersion = 4;
+        public const int LatestDBVersion = 5;
 
         private CatalogScheme _catalogScheme;
         public override CatalogScheme CatalogScheme
@@ -132,7 +132,10 @@ namespace Darwin.Database
                 if (version < 3)
                     UpgradeToVersion3(conn);
 
-                UpgradeToVersion4(conn);
+                if (version < 4)
+                    UpgradeToVersion4(conn);
+
+                UpgradeToVersion5(conn);
             }
         }
 
@@ -205,6 +208,23 @@ namespace Darwin.Database
             catch { }
         }
 
+        private void UpgradeToVersion5(SQLiteConnection conn)
+        {
+            try
+            {
+                const string AlterOutlineFeaturePoints = @"ALTER TABLE OutlineFeaturePoints ADD COLUMN Ignore INTEGER DEFAULT 0";
+
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = AlterOutlineFeaturePoints;
+                    cmd.ExecuteNonQuery();
+                }
+
+                SetVersion(conn, 5);
+            }
+            catch { }
+        }
+
         // *****************************************************************************
         //
         // Returns complete DatabaseFin<ColorImage>. mDataPos field will be used to map to id in 
@@ -245,15 +265,14 @@ namespace Darwin.Database
 
             var featurePoints = SelectFeaturePointsByFkOutlineID(outline.id);
 
-            // TODO: The type shouldn't be hardcoded
             if (featurePoints != null && featurePoints.Count > 0)
             {
-                var featureSet = FeatureSet.Load(FeatureSetType.DorsalFin, featurePoints);
-                finOutline = new Outline(fc, FeatureSetType.DorsalFin, featureSet);
+                var featureSet = FeatureSet.Load(CatalogScheme.FeatureSetType, featurePoints);
+                finOutline = new Outline(fc, CatalogScheme.FeatureSetType, featureSet);
             }
             else
             {
-                finOutline = new Outline(fc, FeatureSetType.DorsalFin);
+                finOutline = new Outline(fc, CatalogScheme.FeatureSetType);
                 finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeBegin, outline.beginle);
                 finOutline.SetFeaturePoint(FeaturePointType.LeadingEdgeEnd, outline.endle);
                 finOutline.SetFeaturePoint(FeaturePointType.Notch, outline.notchposition);
@@ -1085,7 +1104,7 @@ namespace Darwin.Database
             }
         }
 
-        private List<ContourFeaturePoint> SelectFeaturePointsByFkOutlineID(long fkoutlineid)
+        private List<OutlineFeaturePoint> SelectFeaturePointsByFkOutlineID(long fkoutlineid)
         {
             using (var conn = new SQLiteConnection(_connectionString))
             {
@@ -1096,17 +1115,18 @@ namespace Darwin.Database
                     cmd.CommandText = "SELECT * FROM OutlineFeaturePoints WHERE fkOutlineID = @fkOutlineID;";
                     cmd.Parameters.AddWithValue("@fkOutlineID", fkoutlineid);
 
-                    List<ContourFeaturePoint> points = new List<ContourFeaturePoint>();
+                    List<OutlineFeaturePoint> points = new List<OutlineFeaturePoint>();
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
                         {
-                            var featurePoint = new ContourFeaturePoint
+                            var featurePoint = new OutlineFeaturePoint
                             {
                                 ID = rdr.SafeGetInt("ID"),
                                 Type = (FeaturePointType)rdr.SafeGetInt("Type"),
                                 Position = rdr.SafeGetInt("Position"),
-                                UserSetPosition = rdr.SafeGetInt("UserSetPosition") != 0
+                                UserSetPosition = rdr.SafeGetInt("UserSetPosition") != 0,
+                                Ignore = rdr.SafeGetInt("Ignore") != 0
                             };
 
                             points.Add(featurePoint);
@@ -1295,15 +1315,16 @@ namespace Darwin.Database
             }
         }
 
-        private long InsertFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref ContourFeaturePoint point)
+        private long InsertFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref OutlineFeaturePoint point)
         {
             using (var cmd = new SQLiteCommand(conn))
             {
-                cmd.CommandText = "INSERT INTO OutlineFeaturePoints (ID, Type, Position, UserSetPosition, fkOutlineID) " +
+                cmd.CommandText = "INSERT INTO OutlineFeaturePoints (ID, Type, Position, UserSetPosition, Ignore, fkOutlineID) " +
                     "VALUES (NULL, @Type, @Position, @UserSetPosition, @fkOutlineID);";
                 cmd.Parameters.AddWithValue("@Type", point.Type);
                 cmd.Parameters.AddWithValue("@Position", point.Position);
                 cmd.Parameters.AddWithValue("@UserSetPosition", (point.UserSetPosition) ? 1 : 0);
+                cmd.Parameters.AddWithValue("@Ignore", (point.Ignore) ? 1 : 0);
                 cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
 
                 cmd.ExecuteNonQuery();
@@ -1480,7 +1501,7 @@ namespace Darwin.Database
             }
         }
 
-        private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<ContourFeaturePoint> points)
+        private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<OutlineFeaturePoint> points)
         {
             foreach (var p in points)
             {
@@ -1931,6 +1952,7 @@ namespace Darwin.Database
                         Type INTEGER,
                         Position INTEGER,
                         UserSetPosition INTEGER,
+                        Ignore INTEGER,
                         fkOutlineID INTEGER
                     );
 
