@@ -150,7 +150,6 @@ namespace Darwin.Matching
                     // shorten the leading AND trailing edges of each fin to produce a correspondence
                     // that yeilds the BEST match.  A fin Outline walking approach
                     // is used to compute the meanSqError....
-                    //errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments; //***1.85 -- vc++6.0
                     MatchFactors.Add(MatchFactor.CreateOutlineFactor(
                         1.0f,
                         controlPoints,
@@ -344,7 +343,6 @@ namespace Darwin.Matching
                 if (RawErrorTracking != null && RawErrorTracking.Count > 0)
                 {
                     // Now that we're through matching, let's rescale the errors
-
                     Dictionary<int, float> scaleFactors = new Dictionary<int, float>();
                     
                     foreach (var idx in RawErrorTracking.Select(r => r.FactorIndex).Distinct())

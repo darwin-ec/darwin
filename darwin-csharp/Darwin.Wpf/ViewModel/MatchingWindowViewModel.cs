@@ -289,15 +289,16 @@ namespace Darwin.Wpf.ViewModel
                 FeaturePointType.LeadingEdgeBegin,
                 FeaturePointType.Tip,
                 FeaturePointType.Nasion,
-                FeaturePointType.Notch,
+                //FeaturePointType.Notch,
                 FeaturePointType.PointOfInflection
             };
 
             matchFactors.Add(MatchFactor.CreateOutlineFactor(
                 0.5f,
                 controlPoints,
+                //OutlineErrorFunctions.MeanSquaredErrorBetweenOutlinesWithControlPoints,
                 OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
-                OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
+                OutlineErrorFunctions.FindErrorBetweenOutlinesTrimEnds,
                 new FinFlagsMatchOptions
                 {
                     MoveTip = true,
@@ -309,9 +310,10 @@ namespace Darwin.Wpf.ViewModel
                 0.5f,
                 benchmarkFeatures,
                 landmarkFeatures,
-                7, // Number of desired ratios
+                3, // Number of desired ratios
                 Database.AllFins,
-                FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));
+                FeaturePointErrorFunctions.ComputeMahalanobisDistance));
+                //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));
 
             return matchFactors;
         }

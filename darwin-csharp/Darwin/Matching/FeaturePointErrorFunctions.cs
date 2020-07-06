@@ -172,9 +172,10 @@ namespace Darwin.Matching
         {
             var ratioPermutations = EnumerableHelper.GetPermutations(landmarkFeatures, 2).ToList();
 
-            // Desired number of ratios needs to be <= the number of permutations
+            // Desired number of ratios needs to be <= the number of permutations.  We're going to set
+            // it at that max if it's too large
             if (numberOfDesiredRatios > ratioPermutations.Count - 1)
-                throw new ArgumentOutOfRangeException(nameof(numberOfDesiredRatios));
+                numberOfDesiredRatios = ratioPermutations.Count - 1;
 
             List <Vector<double>> ratioList = new List<Vector<double>>();
             var totalRatios = CreateVector.Dense<double>(ratioPermutations.Count - 1);
@@ -186,7 +187,7 @@ namespace Darwin.Matching
                 ratioList.Add(ratios);
             }
 
-            Vector<double> averageRatios = totalRatios / (ratioPermutations.Count - 1);
+            Vector<double> averageRatios = totalRatios / allDatabaseIndividuals.Count;
 
             var galleryMatrix = CreateMatrix.Dense<double>(ratioPermutations.Count - 1, allDatabaseIndividuals.Count);
 
@@ -273,6 +274,53 @@ namespace Darwin.Matching
             return result;
         }
 
+        public static MatchError ComputeMahalanobisDistance(
+            RatioComparison ratioComparison,
+            DatabaseFin unknownFin,
+            DatabaseFin databaseFin,
+            MatchOptions options)
+        {
+            if (ratioComparison == null)
+                throw new ArgumentNullException(nameof(ratioComparison));
+
+            if (unknownFin == null)
+                throw new ArgumentNullException(nameof(unknownFin));
+
+            if (databaseFin == null)
+                throw new ArgumentNullException(nameof(databaseFin));
+
+            // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
+            Vector<double> unknownRatios = CalculateRatios(unknownFin,
+                ratioComparison.BenchmarkFeatures,
+                ratioComparison.LandmarkFeatures,
+                ratioComparison.RatioPermutations);
+
+            unknownRatios -= ratioComparison.AverageRatios;
+
+            var unknownRHatMatrix = unknownRatios.ToRowMatrix() * ratioComparison.ProjectionMatrix;
+            ratioComparison.UnknownRHat = CreateVector.Dense<double>(unknownRHatMatrix.ColumnCount);
+            for (int i = 0; i < unknownRHatMatrix.ColumnCount; i++)
+                ratioComparison.UnknownRHat[i] = unknownRHatMatrix[0, i];
+
+            var databaseRHat = ratioComparison.IndividualRatios
+                .Where(ir => ir.DatabaseFin == databaseFin)
+                .Select(ir => ir.RHat)
+                .First();
+
+            double mahalanobisDistanceSum = 0;
+            for (int i = 0; i < ratioComparison.UnknownRHat.Count; i++)
+            {
+                mahalanobisDistanceSum += Math.Abs(ratioComparison.UnknownRHat[i] - databaseRHat[i]) / ratioComparison.EigenValues[i];
+            }
+
+            Trace.WriteLine("Unknown: " + unknownFin.IDCode + " DB: " + databaseFin.IDCode + " Mahalanobis Distance: " + mahalanobisDistanceSum);
+
+            return new MatchError
+            {
+                Error = mahalanobisDistanceSum
+            };
+        }
+
         public static MatchError ComputeEigenValueWeightedCosineDistance(
             RatioComparison ratioComparison,
             DatabaseFin unknownFin,
@@ -306,14 +354,18 @@ namespace Darwin.Matching
                 .Select(ir => ir.RHat)
                 .First();
 
-            double numerator = -1 * ratioComparison.UnknownRHat.DotProduct(databaseRHat) / Math.Pow(ratioComparison.EigenValues.Sum(), 2);
+            double numerator = 0;
             double probeValue = 0;
             double galleryValue = 0;
             for (int i = 0; i < ratioComparison.UnknownRHat.Count; i++)
             {
+                numerator += (databaseRHat[i] * ratioComparison.UnknownRHat[i]) / Math.Pow(ratioComparison.EigenValues[i], 2);
+
                 probeValue += Math.Pow(ratioComparison.UnknownRHat[i] / ratioComparison.EigenValues[i], 2);
                 galleryValue += Math.Pow(databaseRHat[i] / ratioComparison.EigenValues[i], 2);
             }
+
+            numerator *= -1;
 
             double denominator = Math.Sqrt(probeValue * galleryValue);
 
@@ -323,7 +375,7 @@ namespace Darwin.Matching
             // TODO: Need to scale.. this is supposedly between -1 and 1 if done correctly?
             return new MatchError
             {
-                Error = ewcDistance * -1 // Multiplying by -1 for now so the "best" -1 is the highest
+                Error = ewcDistance + 1 // Adding 1 so this should always be positive with 0 as the "best" match
             };
         }
     }

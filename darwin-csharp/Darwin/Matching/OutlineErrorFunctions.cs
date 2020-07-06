@@ -1,5 +1,7 @@
 ﻿using Darwin.Database;
 using Darwin.Features;
+using Darwin.Utilities;
+using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -251,6 +253,196 @@ namespace Darwin.Matching
             return results; //***005CM
         }
 
+        /// <summary>
+        /// This function "walks" the database fin.
+        /// At each point it computes an intersection of a perpendicular 
+        /// to the database fin outline at that point and the unknown fin
+        /// outline to dtermine the "closest" corresponding unknown fin
+        /// point. The mean sqred error is computed based on the distances
+        /// between ALL such pairs of points.
+        /// 
+        /// This version uses the control points, and trims the 
+        /// contour before the start and after the end
+        /// </summary>
+        /// <param name="c1"></param>
+        /// <param name="start1"></param>
+        /// <param name="mid1"></param>
+        /// <param name="end1"></param>
+        /// <param name="c2"></param>
+        /// <param name="start2"></param>
+        /// <param name="mid2"></param>
+        /// <param name="end2"></param>
+        /// <returns></returns>
+        public static double MeanSquaredErrorBetweenOutlinesWithControlPoints(
+                FloatContour c1, // mapped unknown fin 
+                int start1,
+                int mid1, // Not used here, but this is to make the signature match the delegate
+                int end1,
+                FloatContour c2, // Evenly spaced database fin
+                int start2,
+                int mid2,  // Not used here, but this is to make the signature match the delegate
+                int end2)
+        {
+            // this process walks the database contour and at each point finds the
+            // closest point along the edge sequence defining the unknown outline
+            // (these may or may not be float contour points on the unknown fin)
+            // the error measure computed is thus a measure of the distance between
+            // outlines not the distance between similarly indexed contour points
+
+            // we walk the database fin because the unknown has been mapped and 
+            // therefore the spacing of sample points is no longer uniform on the
+            // unknown.  The database fin outline should be evenly spaced at approx.
+            // 3.0 unit intervals
+
+            // both contours are examined in their respective index ranges
+            // [start1,end1] and [start2,end2]
+
+            double
+                x = c1[start1].X,
+                y = c1[start1].Y;
+
+            double dx1, dy1; // components of tangent to database outline at point	
+            double dx2, dy2; // conponents of current segment on unknown fin
+            double beta;    // parameter on unknown fin outline segment where it
+                            // intersects the perpendicular through the database outline
+
+            double sqErrorPt2Pt; // current point to point error squared
+
+            double sum = 0.0;
+            int ptsFound = 0;
+            int c1skips = 0, c2skips = 0; // count jumps forward on non-point-pair event
+            //bool ptPairFound = false;
+
+            bool prevPtInSegment = false; // previous point has been found in THIS segment of unknown
+            bool prevPtExists = false;     // some previous point has been found (use 1st in unknown initially)
+            double betaPrev = 0.0;        // beta of previous point
+            int repeatPtUsed = 0;         // number of times previous point is used in error calculation
+
+            int numErrBelow3 = 0;         // count pairs with error dist below 3.0 (sqErr < 9.0)
+                                          // i is index on database 
+                                          // j is index on unknown
+            int i = start2 + 1, j = start1 + 1;
+
+            // not done if at least 3 points remain on each contour
+            //bool morePts = ((i+1 < c2->length()) && (j+1 < c1->length())); // old method
+            bool morePts = (i + 1 <= end2) && (j + 1 <= end1);
+
+            // set default values
+            double error = 50000.0; //***005CM set default value
+
+            // compute the mean squared error
+            while (morePts)
+            {
+                // for debugging
+                float x1 = c1[j - 1].X;  // coords of unknown point j-1
+                float y1 = c1[j - 1].Y;
+                float x2 = c2[i].X;    // coords of database point i
+                float y2 = c2[i].Y;
+
+                // tangent to database fin outline at point i
+                dx2 = c2[i + 1].X - c2[i - 1].X;
+                dy2 = c2[i + 1].Y - c2[i - 1].Y;
+                // slope of unknown fin outline segment between points j-1 and j 
+                dx1 = c1[j].X - c1[j - 1].X;
+                dy1 = c1[j].Y - c1[j - 1].Y;
+
+                // parameter value of intersection point between perpendicular to
+                // database fin at point i and the unknonwn outline segment between
+                // points j-1 and j
+                beta = betaPrev;
+                if ((dx1 * dx2 + dy1 * dy2) != 0.0)
+                    beta = -(dx2 * (c1[j - 1].X - c2[i].X) + dy2 * (c1[j - 1].Y - c2[i].Y))
+                            / (dx1 * dx2 + dy1 * dy2);
+
+                if ((0.0 <= beta) && (beta <= 1.0))
+                {
+                    // do not backtrack prior to last point found in segment
+                    if (prevPtInSegment && (beta < betaPrev))
+                        beta = betaPrev;
+
+                    // good intersection
+                    x = c1[j - 1].X + beta * dx1;
+                    y = c1[j - 1].Y + beta * dy1;
+
+                    sqErrorPt2Pt = ((x - c2[i].X) * (x - c2[i].X) +
+                                    (y - c2[i].Y) * (y - c2[i].Y));
+
+                    if (sqErrorPt2Pt < 9.0)
+                        numErrBelow3++;
+
+                    //***041 new strategy -- progressive error increase for pt pairs far apart
+                    //if (sqErrorPt2Pt > 36.0)
+                    //	sqErrorPt2Pt *= 2.0; // double the error for pt pairs more than 6.0 units apart
+
+                    sum += sqErrorPt2Pt;
+
+                    ptsFound++; // count the point
+
+                    i++; // advance to next point on database contour
+
+                    betaPrev = beta; // remember this point
+
+                    prevPtExists = true;
+                    prevPtInSegment = true;
+                }
+                else if (beta < 0.0)
+                {
+                    // not a good intersection within the current unknown segment
+                    // intersection is in a previous segment
+                    if (prevPtExists)
+                    {
+                        // use previous point in THIS segment if it exists
+                        // note: x & y are still the last point found and used
+                        sqErrorPt2Pt = ((x - c2[i].X) * (x - c2[i].X) +
+                                        (y - c2[i].Y) * (y - c2[i].Y));
+
+                        if (sqErrorPt2Pt < 9.0)
+                            numErrBelow3++;
+
+                        sum += sqErrorPt2Pt;
+
+                        ptsFound++; // count the point
+                        repeatPtUsed++;
+
+                        i++; // advance to next point on database contour
+                    }
+                    else
+                    {
+                        // intersection is before segment and no previous point has ever
+                        // been found, so advance position along database fin
+                        i++;
+
+                        c2skips++;
+                    }
+                }
+                else // beta > 1.0
+                {
+                    // intersection is past current segement so advance to next
+                    // segment along unknown fin
+                    j++;
+
+                    c1skips++;
+                    prevPtInSegment = false;
+                }
+
+                // see if we are done (ie, we have run out of points or segments
+                //morePts = ((i+1 < c2->length()) && (j+1 < c1->length())); // old method
+                morePts = (i + 1 <= end2) && (j + 1 <= end1);
+            }
+
+            // if no points found, the error stays the default
+            if (ptsFound > 0)
+                error = (sum / (double)ptsFound);
+
+            //string traceOut = string.Format("pairs={0} S2E1(unk)={1} s2E2(db)={2} repeats={3} below3={4} err={5}f",
+            //    ptsFound, end1 + 1 - start1, end2 + 1 - start2,
+            //       repeatPtUsed, numErrBelow3, error);
+
+            //Trace.WriteLine(traceOut);
+
+            return error;
+        }
+
         //*******************************************************************
         //
         // mseInfo Match::meanSquaredErrorBetweenOutlines(...)
@@ -266,7 +458,7 @@ namespace Darwin.Matching
                 FloatContour c1, // mapped unknown fin 
                 int start1,
                 int end1,
-                FloatContour c2, // envenly spaced database fin //***0005CM
+                FloatContour c2, // Evenly spaced database fin //***0005CM
                 int start2,
                 int end2)
         {
@@ -315,7 +507,7 @@ namespace Darwin.Matching
 
             // not done if at least 3 points remain on each contour
             //bool morePts = ((i+1 < c2->length()) && (j+1 < c1->length())); // old method
-            bool morePts = ((i + 1 <= end2) && (j + 1 <= end1));
+            bool morePts = (i + 1 <= end2) && (j + 1 <= end1);
 
             // set default values
             results.Error = 50000.0; //***005CM set default value
@@ -419,7 +611,7 @@ namespace Darwin.Matching
 
                 // see if we are done (ie, we have run out of points or segments
                 //morePts = ((i+1 < c2->length()) && (j+1 < c1->length())); // old method
-                morePts = ((i + 1 <= end2) && (j + 1 <= end1));
+                morePts = (i + 1 <= end2) && (j + 1 <= end1);
             }
 
             // if no points found, the error stays the default
@@ -466,29 +658,17 @@ namespace Darwin.Matching
             // errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments;
             // this is actually set prior to calling this function
 
-            int
-                dbTipPosition,
-                dbBeginLE,
-                dbEndTE;
+            // The points are labelled for what they originally were, and are by default for dolphin dorsal
+            // fins.  The control points are passed into this function now, though.
+            int dbTipPosition = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
+            int dbBeginLE = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
+            int dbEndTE = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
 
-            //dbTipPosition = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            //dbBeginLE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            //dbEndTE = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
-            dbTipPosition = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
-            dbBeginLE = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
-            dbEndTE = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
-
-            PointF
-                dbTipPositionPoint,
-                dbBeginLEPoint,
-                dbEndTEPoint;
-
-            //dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.Tip);
-            //dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.LeadingEdgeBegin);
-            //dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(FeaturePointType.PointOfInflection);
-            dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
-            dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[0]);
-            dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
+            // The points are labelled for what they originally were, and are by default for dolphin dorsal
+            // fins.  The control points are passed into this function now, though.
+            PointF dbTipPositionPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
+            PointF dbBeginLEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[0]);
+            PointF dbEndTEPoint = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
 
             FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints);
 
@@ -517,9 +697,6 @@ namespace Darwin.Matching
             //     else halve jumpSize and repeat beginning at (4)
             // 
 
-            //var unknownTipPosition = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.Tip);
-            //var unknownBeginLE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.LeadingEdgeBegin);
-            //var unknownEndTE = unknownFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
             var unknownTipPosition = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
             var unknownBeginLE = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             var unknownEndTE = unknownFin.FinOutline.GetFeaturePoint(controlPoints[2]);
@@ -635,7 +812,7 @@ namespace Darwin.Matching
 
             while (!foundBest)
             {
-                // shorten DATABASE leading edge by 1% and test error
+                // Shorten DATABASE leading edge by 1% and test error
                 shortenedDBMappedContour = preMapUnknown.MapContour(
                                             // mUnknownTipPositionPoint,    //***1.1
                                             preMapUnknown[movedTipUnk], //***1.1 - only changes if (moveTip == true)
@@ -1101,7 +1278,7 @@ namespace Darwin.Matching
 
                     if ((jumpSizeDB == 0) || (jumpSizeUnk == 0))
                     {
-                        // we've run out of space to adjust so we've found the best
+                        // We've run out of space to adjust so we've found the best
                         foundBest = true;
                     }
 
@@ -1134,7 +1311,7 @@ namespace Darwin.Matching
                     startLeadDBPt,
                     endTrailDBPt); // changed
 
-            // set coutour pointers
+            // Set coutour pointers
             results.Contour1 = mappedContour;
             results.Contour2 = floatDBContour;
 
@@ -1158,14 +1335,10 @@ namespace Darwin.Matching
                 //cout << "Full Fin Error computed!\n";
                 results.Error = errorBetweenOutlines(
                         mappedContour,
-                        //mUnknownBeginLE, // old limits
-                        //mUnknownEndTE,   // old limits
                         startLeadUnk,
                         movedTipUnk, //***1.85
                         endTrailUnk,
                         floatDBContour,
-                        //dbBeginLE,       // old limits
-                        //dbEndTE);        // old limits
                         startLeadDB,
                         dbTipPosition, //***1.85
                         endTrailDB);
@@ -1207,12 +1380,11 @@ namespace Darwin.Matching
             */
 
             // both float contours are returned as part of results
-            // the DB fin coutour is evenly spaced and the unknown coutour
+            // the DB fin contour is evenly spaced and the unknown coutour
             // is mapped after having been evenly spaced
 
             return results;
         }
-
 
         //*******************************************************************
         //
@@ -1223,14 +1395,13 @@ namespace Darwin.Matching
         //    remapped prior to final calculation of meanSquaredErrorBetweenFins.
         //
         public static double MeanSquaredErrorBetweenOutlineSegmentsNew(
-                FloatContour c1, // mapped unknown fin 
-              int start1,
-                int tip1,
-                FloatContour c2, // envenly spaced database fin //***0005CM
-              int start2,
-                int tip2)
+            FloatContour c1, // mapped unknown fin 
+            int start1,
+            int tip1,
+            FloatContour c2, // envenly spaced database fin //***0005CM
+            int start2,
+            int tip2)
         {
-
             double error;
 
             // this process walks the database contour and at each point finds the
@@ -1648,8 +1819,6 @@ namespace Darwin.Matching
                 DatabaseFin dbFin,
                 MatchOptions options)
         {
-            // TODO: Use controlPoints?
-
             if (null == dbFin)
                 throw new ArgumentNullException(nameof(dbFin));
 
@@ -2048,7 +2217,6 @@ namespace Darwin.Matching
             return error;
         }
 
-
         // Really new stuff -- method to use perpendiculars to medial axis (of sorts)
         // to find  better "shortest" distances between pairs of contour points
 
@@ -2080,7 +2248,7 @@ namespace Darwin.Matching
             double[] dbArcLength = new double[2];
             double[] unkArcLength = new double[2]; //***1.982a - lead and trail done separately
 
-            // saved segment lengths, each is length of edge entering indexed point
+            // Saved segment lengths, each is length of edge entering indexed point
             List<double> segLen1 = new List<double>();
             List<double> segLen2 = new List<double>();
 
@@ -2658,6 +2826,234 @@ namespace Darwin.Matching
             return (2.0 * area / (unkArcLength + dbArcLength));
         }
 
+        /// <summary>
+        /// New try initially for bears
+        /// </summary>
+        /// <param name="controlPoints"></param>
+        /// <param name="errorBetweenOutlines"></param>
+        /// <param name="updateOutlines"></param>
+        /// <param name="unknownFin"></param>
+        /// <param name="dbFin"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static MatchError FindErrorBetweenOutlinesTrimEnds(
+                List<FeaturePointType> controlPoints,
+                ErrorBetweenOutlinesDelegate errorBetweenOutlines,
+                UpdateDisplayOutlinesDelegate updateOutlines,
+                DatabaseFin unknownFin,
+                DatabaseFin dbFin,
+                MatchOptions options)
+        {
+            if (null == dbFin)
+                throw new ArgumentNullException(nameof(dbFin));
+
+            int dbControlPoint1 = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
+            int dbControlPoint2 = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
+            int dbControlPoint3 = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
+
+            PointF dbControlPoint1Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[0]);
+            PointF dbControlPoint2Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
+            PointF dbControlPoint3Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
+
+            FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
+
+            //***008OL new strategy 
+            // follows strategy of stepping along database fin and finding "closest"
+            // point on unknown contour.  It computes the error 7 times and returns the
+            // smallest mean squared error.  The 7 contour walks use different start and 
+            // stop points.
+            //
+            // walk 0 : entire unknown outline
+            // walk 1 : skips first 1/20 of unknown fin leading edge
+            // walk 2 : skips first 1/20 of database fin leading edge
+            // walk 3 : skips first 2/20 of unknown fin leading edge
+            // walk 4 : skips first 2/20 of database fin leading edge
+            // walk 5 : skips first 3/20 of unknown fin leading edge
+            // walk 6 : skips first 3/20 of database fin leading edge
+            // walk 7 : skips first 4/20 of unknown fin leading edge
+            // walk 8 : skips first 4/20 of database fin leading edge
+            // walk 9 : skips first 5/20 of unknown fin leading edge
+            // walk 10: skips first 5/20 of database fin leading edge
+            // walk 11: skips first 6/20 of unknown fin leading edge
+            // walk 12: skips first 6/20 of database fin leading edge
+            //
+            // reasoning : since the error is highly dependent on the ill defined 
+            // beginning of the leading edge, we try several points
+
+            FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
+
+            double newError; //***1.0LK
+
+            var unknownControlPoint1 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
+            var unknownControlPoint2 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
+            var unknownControlPoint3 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[2]);
+
+            // 1/20th distance up each leading edge is basic adjustment
+            int oneFractionUnk = (unknownControlPoint2 - unknownControlPoint1) / 20;
+            int oneFractionDB = (dbControlPoint2 - dbControlPoint1) / 20;
+            int startLeadUnk = 0, startLeadDB = 0;
+            PointF startLeadUnkPt, startLeadDBPt;
+
+            // set up default error
+            MatchError results = new MatchError();
+            results.Contour2 = floatDBContour; // This doesn't change so set it here
+            results.Error = 50000.0;
+
+            //***1.5 - initialize key feature point locations
+            results.Contour1ControlPoint1 = unknownControlPoint1;
+            results.Contour1ControlPoint2 = unknownControlPoint2;
+            results.Contour1ControlPoint3 = unknownControlPoint3;
+
+            results.Contour2ControlPoint1 = dbControlPoint1;
+            results.Contour2ControlPoint2 = dbControlPoint2;
+            results.Contour2ControlPoint3 = dbControlPoint3;
+
+            Trace.WriteLine("matching unk " + unknownFin.IDCode + " to DB " + dbFin.IDCode);
+
+            //***055ER - found and fixed adjustment of Leading Edge Begin 
+            // now all points prior to mUnknownBeginLE and dbBeginLE are ignored
+            for (int matchNum = 0; matchNum < 13; matchNum++)
+            {
+                switch (matchNum)
+                {
+                    case 0: // match entire unknown fin to entire database fin
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 1: // match without first 1/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 2: // match without first 1/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + oneFractionDB;
+                        break;
+                    case 3: // match without first 2/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + 2 * oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 4: // match without first 2/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + 2 * oneFractionDB;
+                        break;
+                    case 5: // match without first 3/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + 3 * oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 6: // match without first 3/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + 3 * oneFractionDB;
+                        break;
+                    case 7: // match without first 4/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + 4 * oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 8: // match without first 4/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + 4 * oneFractionDB;
+                        break;
+                    case 9: // match without first 5/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + 5 * oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 10: // match without first 5/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + 5 * oneFractionDB;
+                        break;
+                    case 11: // match without first 6/20 unknown leading edge
+                        startLeadUnk = unknownControlPoint1 + 6 * oneFractionUnk;
+                        startLeadDB = dbControlPoint1;
+                        break;
+                    case 12: // match without first 6/20 database leading edge
+                        startLeadUnk = unknownControlPoint1;
+                        startLeadDB = dbControlPoint1 + 6 * oneFractionDB;
+                        break;
+                }
+
+                // Beginning of leading edge point to use for this match 
+                startLeadUnkPt = preMapUnknown[startLeadUnk];
+                startLeadDBPt = floatDBContour[startLeadDB];
+
+                var unknownControlPoint2Coords = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
+                var unknownControlPoint3Coords = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
+
+                var mappedContour = preMapUnknown.MapContour(
+                        unknownControlPoint2Coords,
+                        startLeadUnkPt,
+                        unknownControlPoint3Coords,
+                        dbControlPoint2Coord,
+                        startLeadDBPt,
+                        dbControlPoint3Coord);
+
+                var dbBeginningDistance = MathHelper.GetDistance(floatDBContour[0].X, floatDBContour[0].Y,
+                    floatDBContour[dbControlPoint1].X, floatDBContour[dbControlPoint1].Y);
+                var unknownBeginningDistance = MathHelper.GetDistance(mappedContour[0].X, mappedContour[0].Y,
+                    mappedContour[unknownControlPoint1].X, mappedContour[unknownControlPoint1].Y);
+
+                FloatContour trimmedUnknownContour;
+                FloatContour trimmedDBContour;
+                int dbAdjustPosition = 0;
+                int unknownAdjustPosition = 0;
+
+                if (dbBeginningDistance < unknownBeginningDistance)
+                {
+                    trimmedDBContour = new FloatContour(floatDBContour);
+                    int numPointsTrimmed;
+                    trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
+                        mappedContour[unknownControlPoint1], out numPointsTrimmed);
+                    unknownAdjustPosition = numPointsTrimmed;
+                }
+                else
+                {
+                    trimmedUnknownContour = new FloatContour(mappedContour);
+                    int numPointsTrimmed;
+                    trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
+                        floatDBContour[dbControlPoint1], out numPointsTrimmed);
+                    dbAdjustPosition = numPointsTrimmed;
+                }
+
+                newError = errorBetweenOutlines(
+                            trimmedUnknownContour,
+                            unknownControlPoint1 - unknownAdjustPosition,
+                            unknownControlPoint2 - unknownAdjustPosition,
+                            unknownControlPoint3 - unknownAdjustPosition,
+                            trimmedDBContour,
+                            dbControlPoint1 - dbAdjustPosition,
+                            dbControlPoint2 - dbAdjustPosition,
+                            dbControlPoint3 - dbAdjustPosition);
+              
+                updateOutlines?.Invoke(mappedContour, floatDBContour);
+
+                //***1.0LK - this if-else revised to fix memory leaks - JHS
+                if (0 == matchNum)
+                {
+                    // initialize database contour and error for result
+                    //results.Contour1 = mappedContour;
+                    results.Contour1 = trimmedUnknownContour;
+                    results.Contour2 = trimmedDBContour;
+                    results.Error = newError;
+                    //***1.5 - set shifted feature point locations
+                    results.Contour1ControlPoint1 = startLeadUnk;
+                    results.Contour2ControlPoint1 = startLeadDB;
+                }
+                else if (newError < results.Error)
+                {
+                    //***1.0LK - delete existing mapped contour and replace with new
+                    // mapped contour and error
+                    //results.Contour1 = mappedContour;
+                    results.Contour1 = trimmedUnknownContour;
+                    results.Contour2 = trimmedDBContour;
+                    results.Error = newError;
+                    //***1.5 - set shifted feature point locations
+                    results.Contour1ControlPoint1 = startLeadUnk;
+                    results.Contour2ControlPoint1 = startLeadDB;
+                }
+            }
+
+            // both evenly spaced contours are returned as part of results
+            return results; //***005C
+        }
+
         public static double AreaBasedErrorBetweenOutlineSegments(
                 FloatContour c1, // mapped unknown fin 
                 int begin1,
@@ -2669,11 +3065,11 @@ namespace Darwin.Matching
                 int end2)
         {
             double retVal = AreaMatch.AreaBasedErrorBetweenOutlineSegments_NEW(
-                c1, // mapped unknown fin 
+                c1, // Mapped unknown fin 
                 begin1,
                 mid1,
                 end1,
-                c2, // envenly spaced database fin //***0005CM
+                c2, // Evenly spaced database fin //***0005CM
                 begin2,
                 mid2,
                 end2);

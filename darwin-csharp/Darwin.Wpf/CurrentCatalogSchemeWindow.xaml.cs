@@ -97,7 +97,8 @@ namespace Darwin.Wpf
             {
                 _vm.RediscoverAllFeatures();
 
-                MessageBox.Show("Feature discovery complete.", "Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Feature discovery complete." + Environment.NewLine + "Your database has been updated.",
+                    "Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                 MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
 
                 if (mainWindow != null)

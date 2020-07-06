@@ -65,28 +65,6 @@ namespace Darwin
         }
 
         //********************************************************************
-        // operator=()
-        //
-        //FloatContour& FloatContour::operator=(FloatContour& fc)
-        //{ //***006FC new
-
-        //    if (this == &fc)
-        //        return *this;
-
-        //    // empty this mPointVector
-        //    mPointVector.erase(mPointVector.begin(), mPointVector.end());
-
-        //    // copy items over from fc.mPointVector
-        //    vector<point_t>::iterator it;
-        //    it = fc.mPointVector.begin();
-        //    while (it != fc.mPointVector.end())
-        //        mPointVector.push_back(*it);
-
-        //    return *this;
-        //}
-
-
-        //********************************************************************
         //
         // bool Contour::findPositionOfClosestPoint(float x, float y, int &position) const
         //
@@ -116,7 +94,6 @@ namespace Darwin
             return position;
         }
 
-
         //***005FC next 5 functions are new
         //********************************************************************
         // popFront()
@@ -144,6 +121,29 @@ namespace Darwin
 
             foreach (var p in this.Points)
                 result.Points.Add(p.Rotate(centerPoint, degreesToRotate));
+
+            return result;
+        }
+
+        public FloatContour TrimBeginningToDistanceFromPoint(double distance, PointF referencePoint, out int numPointsTrimmed)
+        {
+            FloatContour result = new FloatContour();
+
+            result.Points = new ObservableNotifiableCollection<PointF>();
+
+            bool foundBeginning = false;
+            numPointsTrimmed = 0;
+
+            foreach (var p in this.Points)
+            {
+                if (!foundBeginning && MathHelper.GetDistance(p.X, p.Y, referencePoint.X, referencePoint.Y) < distance)
+                        foundBeginning = true;
+
+                if (foundBeginning)
+                    result.Points.Add(p);
+                else
+                    numPointsTrimmed += 1;
+            }
 
             return result;
         }
@@ -195,7 +195,6 @@ namespace Darwin
         //
         public Contour ToContour()
         {
-
             Contour c = new Contour();
             int length = Length, i, x, y;
 
@@ -380,7 +379,6 @@ namespace Darwin
             // matrix form, and solve for the a(rc)'s that will transform
             // the initial four points to the desired four points.
 
-            //FloatContour *dstContour = NULL; removed 008OL
             float[,] a = new float[3, 3];
             float[,] b = new float[3, 4];
 
@@ -440,7 +438,7 @@ namespace Darwin
                 }
             }
 
-            // and, obviously, this time, we're going to solve for the second row of
+            // This time, we're going to solve for the second row of
             // coefficients, so we'll put the desired y values in the augmented
             // section
             b[0, 3] = (float)desP1.Y;
@@ -455,22 +453,18 @@ namespace Darwin
 
             // Now that we have all the required coefficients, we'll transform
             // the points in the original Contour, and store them in a new one
-
-
             FloatContour dstContour = new FloatContour(); //***008OL
-            int numPoints = Length;
-            //int cx, cy; removed 008OL
-            float cx, cy; //***008OL
-            float x, y;
-            for (int i = 0; i < numPoints; i++)
-            {
-                cx = this[i].X;
-                cy = this[i].Y;
 
-                x = transformCoeff[0, 0] * cx
+            for (int i = 0; i < Length; i++)
+            {
+                float cx = this[i].X;
+                float cy = this[i].Y;
+
+                float x = transformCoeff[0, 0] * cx
                     + transformCoeff[0, 1] * cy
                     + transformCoeff[0, 2];
-                y = transformCoeff[1, 0] * cx
+
+                float y = transformCoeff[1, 0] * cx
                     + transformCoeff[1, 1] * cy
                     + transformCoeff[1, 2];
 
@@ -545,8 +539,6 @@ namespace Darwin
             else
                 displayDBContour = new Contour(dbContour, ratioInverse);
         }
-
-        //***006FC next function moved from header
 
         //********************************************************************
         // print()

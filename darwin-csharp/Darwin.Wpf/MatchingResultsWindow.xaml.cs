@@ -31,12 +31,12 @@ namespace Darwin.Wpf
         {
             InitializeComponent();
 
+            _vm = vm;
+            this.DataContext = _vm;
+
             _autoScrollTimer = new DispatcherTimer();
             _autoScrollTimer.Interval = TimeSpan.FromSeconds(AutoScrollSeconds);
             _autoScrollTimer.Tick += AutoScrollTimer_Tick;
-
-            _vm = vm;
-            this.DataContext = _vm;
 
             // After the window is loaded, make a backup of all the columns  in the list.  (This is
             // so we can have copies as we hide/show columns.)
@@ -209,13 +209,13 @@ namespace Darwin.Wpf
                 }
                 else
                 {
-                    int currentIndex = _vm.MatchResults.Results.IndexOf(_vm.SelectedResult);
-                    int nextIndex = currentIndex += 1;
-                    if (currentIndex >= _vm.MatchResults.Results.Count - 1)
-                        nextIndex = 0;
+                    if (DatabaseGrid.SelectedIndex < DatabaseGrid.Items.Count - 1)
+                        DatabaseGrid.SelectedIndex++;
+                    else
+                        DatabaseGrid.SelectedIndex = 0;
 
-                    _vm.SelectedResult = _vm.MatchResults.Results[nextIndex];
                     DatabaseGrid.ScrollIntoView(_vm.SelectedResult);
+                    CheckNextPreviousEnabled();
                 }
             }
         }
