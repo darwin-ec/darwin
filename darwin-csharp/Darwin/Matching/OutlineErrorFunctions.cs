@@ -351,8 +351,10 @@ namespace Darwin.Matching
                 // points j-1 and j
                 beta = betaPrev;
                 if ((dx1 * dx2 + dy1 * dy2) != 0.0)
+                {
                     beta = -(dx2 * (c1[j - 1].X - c2[i].X) + dy2 * (c1[j - 1].Y - c2[i].Y))
                             / (dx1 * dx2 + dy1 * dy2);
+                }
 
                 if ((0.0 <= beta) && (beta <= 1.0))
                 {
@@ -2847,6 +2849,12 @@ namespace Darwin.Matching
             if (null == dbFin)
                 throw new ArgumentNullException(nameof(dbFin));
 
+            if (null == controlPoints)
+                throw new ArgumentNullException(nameof(controlPoints));
+
+            if (controlPoints.Count < 3)
+                throw new ArgumentOutOfRangeException(nameof(controlPoints));
+
             int dbControlPoint1 = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             int dbControlPoint2 = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
             int dbControlPoint3 = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
@@ -2856,33 +2864,9 @@ namespace Darwin.Matching
             PointF dbControlPoint3Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
 
             FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
-
-            //***008OL new strategy 
-            // follows strategy of stepping along database fin and finding "closest"
-            // point on unknown contour.  It computes the error 7 times and returns the
-            // smallest mean squared error.  The 7 contour walks use different start and 
-            // stop points.
-            //
-            // walk 0 : entire unknown outline
-            // walk 1 : skips first 1/20 of unknown fin leading edge
-            // walk 2 : skips first 1/20 of database fin leading edge
-            // walk 3 : skips first 2/20 of unknown fin leading edge
-            // walk 4 : skips first 2/20 of database fin leading edge
-            // walk 5 : skips first 3/20 of unknown fin leading edge
-            // walk 6 : skips first 3/20 of database fin leading edge
-            // walk 7 : skips first 4/20 of unknown fin leading edge
-            // walk 8 : skips first 4/20 of database fin leading edge
-            // walk 9 : skips first 5/20 of unknown fin leading edge
-            // walk 10: skips first 5/20 of database fin leading edge
-            // walk 11: skips first 6/20 of unknown fin leading edge
-            // walk 12: skips first 6/20 of database fin leading edge
-            //
-            // reasoning : since the error is highly dependent on the ill defined 
-            // beginning of the leading edge, we try several points
-
             FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
 
-            double newError; //***1.0LK
+            double newError;
 
             var unknownControlPoint1 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             var unknownControlPoint2 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
@@ -2910,15 +2894,22 @@ namespace Darwin.Matching
 
             Trace.WriteLine("matching unk " + unknownFin.IDCode + " to DB " + dbFin.IDCode);
 
-            //***055ER - found and fixed adjustment of Leading Edge Begin 
-            // now all points prior to mUnknownBeginLE and dbBeginLE are ignored
+            bool trimBeginLeadingEdge = false;
+            int controlPoint1PosDB = dbControlPoint1;
+            int controlPoint1PosUnk = unknownControlPoint1;
+            int controlPoint2PosDB = dbControlPoint2;
+            int controlPoint2PosUnk = unknownControlPoint2;
+
             for (int matchNum = 0; matchNum < 13; matchNum++)
             {
                 switch (matchNum)
                 {
-                    case 0: // match entire unknown fin to entire database fin
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1;
+                    case 0: // Match entire outline without changing anything
+                        trimBeginLeadingEdge = false;
+                        controlPoint1PosDB = dbControlPoint1;
+                        controlPoint1PosUnk = unknownControlPoint1;
+                        controlPoint2PosDB = dbControlPoint2;
+                        controlPoint2PosUnk = unknownControlPoint2;
                         break;
                     case 1: // match without first 1/20 unknown leading edge
                         startLeadUnk = unknownControlPoint1 + oneFractionUnk;
@@ -3024,7 +3015,6 @@ namespace Darwin.Matching
               
                 updateOutlines?.Invoke(mappedContour, floatDBContour);
 
-                //***1.0LK - this if-else revised to fix memory leaks - JHS
                 if (0 == matchNum)
                 {
                     // initialize database contour and error for result
@@ -3050,8 +3040,7 @@ namespace Darwin.Matching
                 }
             }
 
-            // both evenly spaced contours are returned as part of results
-            return results; //***005C
+            return results;
         }
 
         public static double AreaBasedErrorBetweenOutlineSegments(
