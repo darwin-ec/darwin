@@ -5,6 +5,7 @@ using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace Darwin.Matching
@@ -1397,10 +1398,10 @@ namespace Darwin.Matching
         //    remapped prior to final calculation of meanSquaredErrorBetweenFins.
         //
         public static double MeanSquaredErrorBetweenOutlineSegmentsNew(
-            FloatContour c1, // mapped unknown fin 
+            FloatContour c1, // Mapped unknown fin 
             int start1,
             int tip1,
-            FloatContour c2, // envenly spaced database fin //***0005CM
+            FloatContour c2, // Evenly spaced database fin //***0005CM
             int start2,
             int tip2)
         {
@@ -2311,13 +2312,17 @@ namespace Darwin.Matching
 
                 if (part == 0) // leading edge
                 {
-                    start1 = begin1; limit1 = mid1;
-                    start2 = begin2; limit2 = mid2;
+                    start1 = begin1;
+                    limit1 = mid1;
+                    start2 = begin2;
+                    limit2 = mid2;
                 }
                 else // part == 1 trailing edge
                 {
-                    start1 = mid1; limit1 = end1;
-                    start2 = mid2; limit2 = end2;
+                    start1 = mid1;
+                    limit1 = end1;
+                    start2 = mid2;
+                    limit2 = end2;
                 }
 
                 // i is index on database 
@@ -2330,7 +2335,7 @@ namespace Darwin.Matching
                 double segLenUsed = 0.0;
 
                 //while (i < end2)
-                while (i < limit2) //***1.982a
+                while (i < limit2 && i < segLen2.Count) //***1.982a
                 {
                     // find dist to next point on database fin, and scaled distance to
                     // corresponding point on unknown
@@ -2838,7 +2843,7 @@ namespace Darwin.Matching
         /// <param name="dbFin"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static MatchError FindErrorBetweenOutlinesTrimEnds(
+        public static MatchError FindErrorBetweenOutlinesWithControlPointJitter(
                 List<FeaturePointType> controlPoints,
                 ErrorBetweenOutlinesDelegate errorBetweenOutlines,
                 UpdateDisplayOutlinesDelegate updateOutlines,
@@ -2859,8 +2864,6 @@ namespace Darwin.Matching
             int dbControlPoint2 = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
             int dbControlPoint3 = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
 
-            PointF dbControlPoint1Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[0]);
-            PointF dbControlPoint2Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
             PointF dbControlPoint3Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
 
             FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
@@ -2871,19 +2874,15 @@ namespace Darwin.Matching
             var unknownControlPoint1 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             var unknownControlPoint2 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
             var unknownControlPoint3 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[2]);
-
-            // 1/20th distance up each leading edge is basic adjustment
-            int oneFractionUnk = (unknownControlPoint2 - unknownControlPoint1) / 20;
-            int oneFractionDB = (dbControlPoint2 - dbControlPoint1) / 20;
-            int startLeadUnk = 0, startLeadDB = 0;
-            PointF startLeadUnkPt, startLeadDBPt;
+            
+            var unknownControlPoint3Coords = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
 
             // set up default error
             MatchError results = new MatchError();
             results.Contour2 = floatDBContour; // This doesn't change so set it here
             results.Error = 50000.0;
 
-            //***1.5 - initialize key feature point locations
+            // Initialize key feature point locations
             results.Contour1ControlPoint1 = unknownControlPoint1;
             results.Contour1ControlPoint2 = unknownControlPoint2;
             results.Contour1ControlPoint3 = unknownControlPoint3;
@@ -2897,98 +2896,41 @@ namespace Darwin.Matching
             // TODO: Put in options?
             bool trimBeginLeadingEdge = true;
 
-            int controlPoint1PosDB = dbControlPoint1;
-            int controlPoint1PosUnk = unknownControlPoint1;
-            int controlPoint2PosDB = dbControlPoint2;
-            int controlPoint2PosUnk = unknownControlPoint2;
-
             // TODO: Put in options?
             // 1% of the length of the db contour
             int jumpDistance = (int)Math.Round(0.01f * floatDBContour.Length);
-            //List<int> jumpOptions = new List<int>() { 0, }
+            List<int> jumpOptions = new List<int>() { -1 * jumpDistance, 0, jumpDistance };
+            var jumpCombinations = EnumerableHelper.CombinationsWithRepetition(jumpOptions, 4);
 
-            for (int matchNum = 0; matchNum < 13; matchNum++)
+            foreach (var jumpCombo in jumpCombinations)
             {
-                switch (matchNum)
-                {
-                    case 0: // Match entire outline without changing anything
-                        controlPoint1PosDB = dbControlPoint1;
-                        controlPoint1PosUnk = unknownControlPoint1;
-                        controlPoint2PosDB = dbControlPoint2;
-                        controlPoint2PosUnk = unknownControlPoint2;
-                        break;
-                    case 1: // match without first 1/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 2: // match without first 1/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + oneFractionDB;
-                        break;
-                    case 3: // match without first 2/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + 2 * oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 4: // match without first 2/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + 2 * oneFractionDB;
-                        break;
-                    case 5: // match without first 3/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + 3 * oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 6: // match without first 3/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + 3 * oneFractionDB;
-                        break;
-                    case 7: // match without first 4/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + 4 * oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 8: // match without first 4/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + 4 * oneFractionDB;
-                        break;
-                    case 9: // match without first 5/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + 5 * oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 10: // match without first 5/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + 5 * oneFractionDB;
-                        break;
-                    case 11: // match without first 6/20 unknown leading edge
-                        startLeadUnk = unknownControlPoint1 + 6 * oneFractionUnk;
-                        startLeadDB = dbControlPoint1;
-                        break;
-                    case 12: // match without first 6/20 database leading edge
-                        startLeadUnk = unknownControlPoint1;
-                        startLeadDB = dbControlPoint1 + 6 * oneFractionDB;
-                        break;
-                }
+                var jumpComboList = jumpCombo.ToList();
+                int controlPoint1PosDB = dbControlPoint1 + jumpComboList[0];
+                int controlPoint1PosUnk = unknownControlPoint1 + jumpComboList[1];
+                int controlPoint2PosDB = dbControlPoint2 + jumpComboList[2];
+                int controlPoint2PosUnk = unknownControlPoint2 + jumpComboList[3];
 
-                // Beginning of leading edge point to use for this match 
-                startLeadUnkPt = preMapUnknown[startLeadUnk];
-                startLeadDBPt = floatDBContour[startLeadDB];
-
-                var unknownControlPoint2Coords = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[1]);
-                var unknownControlPoint3Coords = unknownFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
-
+                var shiftedDBControlPoint1Coords = floatDBContour[controlPoint1PosDB];
+                var shiftedDBControlPoint2Coords = floatDBContour[controlPoint2PosDB];
+                var shiftedUnknownControlPoint1Coords = preMapUnknown[controlPoint1PosUnk];
+                var shiftedUnknownControlPoint2Coords = preMapUnknown[controlPoint2PosUnk];
+                
                 var mappedContour = preMapUnknown.MapContour(
-                        unknownControlPoint2Coords,
-                        startLeadUnkPt,
+                        shiftedUnknownControlPoint2Coords,
+                        shiftedUnknownControlPoint1Coords,
                         unknownControlPoint3Coords,
-                        dbControlPoint2Coord,
-                        startLeadDBPt,
+                        shiftedDBControlPoint2Coords,
+                        shiftedDBControlPoint1Coords,
                         dbControlPoint3Coord);
+
                 if (!trimBeginLeadingEdge)
                 {
                     newError = errorBetweenOutlines(
-                        floatDBContour,
+                        mappedContour,
                         unknownControlPoint1,
                         unknownControlPoint2,
                         unknownControlPoint3,
-                        mappedContour,
+                        floatDBContour,
                         dbControlPoint1,
                         dbControlPoint2,
                         dbControlPoint3);
@@ -3022,41 +2964,34 @@ namespace Darwin.Matching
                         dbAdjustPosition = numPointsTrimmed;
                     }
 
+                    // Note that we're matching from the beginning of the outline, not from
+                    // the 1st control point.
                     newError = errorBetweenOutlines(
                                 trimmedUnknownContour,
-                                unknownControlPoint1 - unknownAdjustPosition,
+                                0,
+                                //unknownControlPoint1 - unknownAdjustPosition,
                                 unknownControlPoint2 - unknownAdjustPosition,
                                 unknownControlPoint3 - unknownAdjustPosition,
                                 trimmedDBContour,
-                                dbControlPoint1 - dbAdjustPosition,
+                                0,
+                                //dbControlPoint1 - dbAdjustPosition,
                                 dbControlPoint2 - dbAdjustPosition,
                                 dbControlPoint3 - dbAdjustPosition);
                 }
               
                 updateOutlines?.Invoke(mappedContour, floatDBContour);
 
-                if (0 == matchNum)
-                {
-                    // initialize database contour and error for result
-                    results.Contour1 = mappedContour;
-                    //results.Contour1 = trimmedUnknownContour;
-                    //results.Contour2 = trimmedDBContour;
-                    results.Error = newError;
-                    //***1.5 - set shifted feature point locations
-                    results.Contour1ControlPoint1 = startLeadUnk;
-                    results.Contour2ControlPoint1 = startLeadDB;
-                }
-                else if (newError < results.Error)
+                if (newError < results.Error)
                 {
                     //***1.0LK - delete existing mapped contour and replace with new
                     // mapped contour and error
                     results.Contour1 = mappedContour;
-                    //results.Contour1 = trimmedUnknownContour;
-                    //results.Contour2 = trimmedDBContour;
                     results.Error = newError;
-                    //***1.5 - set shifted feature point locations
-                    results.Contour1ControlPoint1 = startLeadUnk;
-                    results.Contour2ControlPoint1 = startLeadDB;
+                    // Set shifted feature point locations
+                    results.Contour1ControlPoint1 = controlPoint1PosUnk;
+                    results.Contour1ControlPoint2 = controlPoint2PosUnk;
+                    results.Contour2ControlPoint1 = controlPoint1PosDB;
+                    results.Contour2ControlPoint2 = controlPoint2PosDB;
                 }
             }
 

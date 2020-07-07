@@ -303,7 +303,7 @@ namespace Darwin.Matching
                     var matchFactorError = new MatchFactorError
                     {
                         FactorIndex = factorIndex,
-                        Error = result.Error,
+                        Error = factorResult.Error,
                         Weight = factor.Weight
                     };
                     rawError.Add(matchFactorError);

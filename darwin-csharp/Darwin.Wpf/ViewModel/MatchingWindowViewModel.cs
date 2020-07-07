@@ -298,7 +298,7 @@ namespace Darwin.Wpf.ViewModel
                 controlPoints,
                 //OutlineErrorFunctions.MeanSquaredErrorBetweenOutlinesWithControlPoints,
                 OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
-                OutlineErrorFunctions.FindErrorBetweenOutlinesTrimEnds,
+                OutlineErrorFunctions.FindErrorBetweenOutlinesWithControlPointJitter,
                 new FinFlagsMatchOptions
                 {
                     MoveTip = true,
