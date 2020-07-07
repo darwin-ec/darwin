@@ -2894,18 +2894,24 @@ namespace Darwin.Matching
 
             Trace.WriteLine("matching unk " + unknownFin.IDCode + " to DB " + dbFin.IDCode);
 
-            bool trimBeginLeadingEdge = false;
+            // TODO: Put in options?
+            bool trimBeginLeadingEdge = true;
+
             int controlPoint1PosDB = dbControlPoint1;
             int controlPoint1PosUnk = unknownControlPoint1;
             int controlPoint2PosDB = dbControlPoint2;
             int controlPoint2PosUnk = unknownControlPoint2;
+
+            // TODO: Put in options?
+            // 1% of the length of the db contour
+            int jumpDistance = (int)Math.Round(0.01f * floatDBContour.Length);
+            //List<int> jumpOptions = new List<int>() { 0, }
 
             for (int matchNum = 0; matchNum < 13; matchNum++)
             {
                 switch (matchNum)
                 {
                     case 0: // Match entire outline without changing anything
-                        trimBeginLeadingEdge = false;
                         controlPoint1PosDB = dbControlPoint1;
                         controlPoint1PosUnk = unknownControlPoint1;
                         controlPoint2PosDB = dbControlPoint2;
@@ -2975,52 +2981,66 @@ namespace Darwin.Matching
                         dbControlPoint2Coord,
                         startLeadDBPt,
                         dbControlPoint3Coord);
-
-                var dbBeginningDistance = MathHelper.GetDistance(floatDBContour[0].X, floatDBContour[0].Y,
-                    floatDBContour[dbControlPoint1].X, floatDBContour[dbControlPoint1].Y);
-                var unknownBeginningDistance = MathHelper.GetDistance(mappedContour[0].X, mappedContour[0].Y,
-                    mappedContour[unknownControlPoint1].X, mappedContour[unknownControlPoint1].Y);
-
-                FloatContour trimmedUnknownContour;
-                FloatContour trimmedDBContour;
-                int dbAdjustPosition = 0;
-                int unknownAdjustPosition = 0;
-
-                if (dbBeginningDistance < unknownBeginningDistance)
+                if (!trimBeginLeadingEdge)
                 {
-                    trimmedDBContour = new FloatContour(floatDBContour);
-                    int numPointsTrimmed;
-                    trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
-                        mappedContour[unknownControlPoint1], out numPointsTrimmed);
-                    unknownAdjustPosition = numPointsTrimmed;
+                    newError = errorBetweenOutlines(
+                        floatDBContour,
+                        unknownControlPoint1,
+                        unknownControlPoint2,
+                        unknownControlPoint3,
+                        mappedContour,
+                        dbControlPoint1,
+                        dbControlPoint2,
+                        dbControlPoint3);
                 }
                 else
                 {
-                    trimmedUnknownContour = new FloatContour(mappedContour);
-                    int numPointsTrimmed;
-                    trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
-                        floatDBContour[dbControlPoint1], out numPointsTrimmed);
-                    dbAdjustPosition = numPointsTrimmed;
-                }
+                    var dbBeginningDistance = MathHelper.GetDistance(floatDBContour[0].X, floatDBContour[0].Y,
+                        floatDBContour[dbControlPoint1].X, floatDBContour[dbControlPoint1].Y);
+                    var unknownBeginningDistance = MathHelper.GetDistance(mappedContour[0].X, mappedContour[0].Y,
+                        mappedContour[unknownControlPoint1].X, mappedContour[unknownControlPoint1].Y);
 
-                newError = errorBetweenOutlines(
-                            trimmedUnknownContour,
-                            unknownControlPoint1 - unknownAdjustPosition,
-                            unknownControlPoint2 - unknownAdjustPosition,
-                            unknownControlPoint3 - unknownAdjustPosition,
-                            trimmedDBContour,
-                            dbControlPoint1 - dbAdjustPosition,
-                            dbControlPoint2 - dbAdjustPosition,
-                            dbControlPoint3 - dbAdjustPosition);
+                    FloatContour trimmedUnknownContour;
+                    FloatContour trimmedDBContour;
+                    int dbAdjustPosition = 0;
+                    int unknownAdjustPosition = 0;
+
+                    if (dbBeginningDistance < unknownBeginningDistance)
+                    {
+                        trimmedDBContour = new FloatContour(floatDBContour);
+                        int numPointsTrimmed;
+                        trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
+                            mappedContour[unknownControlPoint1], out numPointsTrimmed);
+                        unknownAdjustPosition = numPointsTrimmed;
+                    }
+                    else
+                    {
+                        trimmedUnknownContour = new FloatContour(mappedContour);
+                        int numPointsTrimmed;
+                        trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
+                            floatDBContour[dbControlPoint1], out numPointsTrimmed);
+                        dbAdjustPosition = numPointsTrimmed;
+                    }
+
+                    newError = errorBetweenOutlines(
+                                trimmedUnknownContour,
+                                unknownControlPoint1 - unknownAdjustPosition,
+                                unknownControlPoint2 - unknownAdjustPosition,
+                                unknownControlPoint3 - unknownAdjustPosition,
+                                trimmedDBContour,
+                                dbControlPoint1 - dbAdjustPosition,
+                                dbControlPoint2 - dbAdjustPosition,
+                                dbControlPoint3 - dbAdjustPosition);
+                }
               
                 updateOutlines?.Invoke(mappedContour, floatDBContour);
 
                 if (0 == matchNum)
                 {
                     // initialize database contour and error for result
-                    //results.Contour1 = mappedContour;
-                    results.Contour1 = trimmedUnknownContour;
-                    results.Contour2 = trimmedDBContour;
+                    results.Contour1 = mappedContour;
+                    //results.Contour1 = trimmedUnknownContour;
+                    //results.Contour2 = trimmedDBContour;
                     results.Error = newError;
                     //***1.5 - set shifted feature point locations
                     results.Contour1ControlPoint1 = startLeadUnk;
@@ -3030,9 +3050,9 @@ namespace Darwin.Matching
                 {
                     //***1.0LK - delete existing mapped contour and replace with new
                     // mapped contour and error
-                    //results.Contour1 = mappedContour;
-                    results.Contour1 = trimmedUnknownContour;
-                    results.Contour2 = trimmedDBContour;
+                    results.Contour1 = mappedContour;
+                    //results.Contour1 = trimmedUnknownContour;
+                    //results.Contour2 = trimmedDBContour;
                     results.Error = newError;
                     //***1.5 - set shifted feature point locations
                     results.Contour1ControlPoint1 = startLeadUnk;

@@ -170,7 +170,7 @@ namespace Darwin.Matching
             int numberOfDesiredRatios,
             List<DatabaseFin> allDatabaseIndividuals)
         {
-            var ratioPermutations = EnumerableHelper.GetPermutations(landmarkFeatures, 2).ToList();
+            var ratioPermutations = EnumerableHelper.GetUniquePermutations(landmarkFeatures, 2).ToList();
 
             // Desired number of ratios needs to be <= the number of permutations.  We're going to set
             // it at that max if it's too large
