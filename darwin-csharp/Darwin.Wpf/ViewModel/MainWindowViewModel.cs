@@ -28,6 +28,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _darwinDatabase = value;
                 RaisePropertyChanged("FeatureSetTypeDisplay");
+                RaisePropertyChanged("DarwinDatabase");
             }
         }
 

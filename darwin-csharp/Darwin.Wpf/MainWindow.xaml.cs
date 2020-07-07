@@ -131,7 +131,7 @@ namespace Darwin.Wpf
 
         private void OpenImageCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.DarwinDatabase != null;
         }
 
         private void OpenImageCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -150,7 +150,7 @@ namespace Darwin.Wpf
 
         private void OpenTracedFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.DarwinDatabase != null;
         }
 
         private void OpenTracedFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -193,6 +193,19 @@ namespace Darwin.Wpf
 
             if (openDatabaseDialog.ShowDialog() == true)
                 OpenDatabase(openDatabaseDialog.FileName, true);
+        }
+
+        private void CloseDatabaseCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = _vm.DarwinDatabase != null;
+        }
+
+        private void CloseDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _vm.SelectedFin = null;
+            _vm.Fins = null;
+            _vm.DarwinDatabase = null;
+            CheckNextPreviousEnabled();
         }
 
         public void OpenDatabase(string filename, bool saveOptions = false)
@@ -256,7 +269,7 @@ namespace Darwin.Wpf
 
         private void MatchingQueueCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.DarwinDatabase != null;
         }
 
         private void MatchingQueueCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -271,7 +284,7 @@ namespace Darwin.Wpf
 
         private void ImportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.DarwinDatabase != null;
         }
 
         private void ImportFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -299,7 +312,7 @@ namespace Darwin.Wpf
 
         private void ExportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.SelectedFin != null;
         }
 
         private void ExportFinCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -350,7 +363,7 @@ namespace Darwin.Wpf
 
         private void CurrentCatalogSchemeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = _vm.DarwinDatabase != null;
         }
 
         private void CurrentCatalogSchemeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -417,8 +430,11 @@ namespace Darwin.Wpf
 
         private void SaveFinData_Click(object sender, RoutedEventArgs e)
         {
-            _vm.DarwinDatabase.UpdateIndividual(_vm.SelectedFin);
-            _vm.SelectedFin.FieldsChanged = false;
+            if (_vm.DarwinDatabase != null && _vm.SelectedFin != null)
+            {
+                _vm.DarwinDatabase.UpdateIndividual(_vm.SelectedFin);
+                _vm.SelectedFin.FieldsChanged = false;
+            }
         }
 
         private void OpenImageToolbarButton_Click(object sender, RoutedEventArgs e)

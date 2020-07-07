@@ -26,7 +26,8 @@
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenTracedFin" CanExecute="OpenTracedFinCommand_CanExecute" Executed="OpenTracedFinCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
-
+        <CommandBinding Command="commands:CustomCommands.CloseDatabase" CanExecute="CloseDatabaseCommand_CanExecute" Executed="CloseDatabaseCommand_Executed" />
+        
         <CommandBinding Command="commands:CustomCommands.MatchingQueue" CanExecute="MatchingQueueCommand_CanExecute" Executed="MatchingQueueCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Backup" />
@@ -88,6 +89,7 @@
                         <MenuItem Command="commands:CustomCommands.OpenImage" />
                         <MenuItem Command="commands:CustomCommands.OpenTracedFin" />
                         <MenuItem Command="commands:CustomCommands.OpenDatabase" />
+                        <MenuItem Command="commands:CustomCommands.CloseDatabase" />
                         <Separator/>
                         <MenuItem Command="commands:CustomCommands.MatchingQueue" />
                         <Separator/>
@@ -132,22 +134,22 @@
             </Grid>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Background="{StaticResource LightBackground}">
-                <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                <Button x:Name="OpenImageToolbarButton" Click="OpenImageToolbarButton_Click" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                     <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                         <Image Source="/Darwin.Wpf;component/Resources/Images/open_image.png" Height="23"  />
-                        <TextBlock HorizontalAlignment="Center">Open Image</TextBlock>
+                        <Label HorizontalAlignment="Center" Padding="2">Open Image</Label>
                     </StackPanel>
                 </Button>
-                <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                <Button x:Name="OpenTracedFinToolbarButton" Click="OpenTracedFinToolbarButton_Click" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                     <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                         <Image Source="/Darwin.Wpf;component/Resources/Images/open_trace.png" Height="23"  />
-                        <TextBlock HorizontalAlignment="Center">Open Trace</TextBlock>
+                        <Label HorizontalAlignment="Center" Padding="2">Open Trace</Label>
                     </StackPanel>
                 </Button>
-                <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Style="{StaticResource ToolbarButton}">
+                <Button x:Name="MatchingQueueToolbarButton" Click="MatchingQueueToolbarButton_Click" Style="{StaticResource ToolbarButton}" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                     <StackPanel  Orientation="Vertical" HorizontalAlignment="Center">
                         <Image Source="/Darwin.Wpf;component/Resources/Images/matching_queue.png" Height="23" />
-                        <TextBlock HorizontalAlignment="Center">Matching Queue</TextBlock>
+                        <Label HorizontalAlignment="Center" Padding="2">Matching Queue</Label>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -231,9 +233,9 @@
                                 <Label FontFamily="{StaticResource FontAwesomeSolid}" Foreground="SlateGray" Padding="5,0,0,0" VerticalAlignment="Center">&#xf054;</Label>
                             </StackPanel>
                         </Button>
-                        <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="5">
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="5" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                             <Label VerticalAlignment="Center">Filter:</Label>
-                            <TextBox x:Name="FilterTextBox" Width="100" VerticalAlignment="Center" TextChanged="FilterTextBox_TextChanged"></TextBox>
+                            <TextBox x:Name="FilterTextBox" Width="100" VerticalAlignment="Center" TextChanged="FilterTextBox_TextChanged" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}"></TextBox>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -293,7 +295,7 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2">
                                 <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}">Save Changes</Button>
-                                <Button x:Name="DeleteFin" Click="DeleteFin_Click">Delete</Button>
+                                <Button x:Name="DeleteFin" Click="DeleteFin_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Delete</Button>
                             </StackPanel>
                             <Label Grid.Row="1" Grid.Column="0">ID Code:</Label>
                             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />

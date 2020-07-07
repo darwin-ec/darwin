@@ -50,6 +50,12 @@ namespace Darwin.Wpf.Commands
         );
         public static string OpenDatabaseFilter = "Database files (*.db)|*.db";
 
+        public static readonly RoutedUICommand CloseDatabase = new RoutedUICommand(
+            "Close Database",
+            "Close Database",
+            typeof(CustomCommands)
+        );
+
         public static readonly RoutedUICommand ImportCatalog = new RoutedUICommand(
             "Import catalog",
             "Import catalog",
