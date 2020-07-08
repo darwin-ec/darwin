@@ -282,6 +282,20 @@ namespace Darwin.Wpf
             matchingQueueWindow.Show();
         }
 
+        private void BackupCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = _vm.DarwinDatabase != null;
+        }
+
+        private void BackupCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var backupFilename = _vm.BackupDatabase();
+            MessageBox.Show("Your database has been backed up to the file:"
+                + Environment.NewLine
+                + Environment.NewLine
+                + backupFilename, "Backup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void ImportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = _vm.DarwinDatabase != null;

@@ -381,7 +381,7 @@ namespace Darwin.Matching
                 Result r = new Result(
                         mappedUnknownContour,                      //***1.3 - Mem Leak - constructor make copy now
                         thisDBFin.FinOutline.ChainPoints, //***1.3 - Mem Leak - constructor make copy now
-                        thisDBFin.DatabaseID,
+                        thisDBFin.ID,
                         thisDBFin.ImageFilename,
                         thisDBFin.ThumbnailFilenameUri,
                         dbFinPosition - 1, // position of fin in database

@@ -41,7 +41,7 @@ namespace Darwin.Wpf
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO -- shouldn't be hardcoded
+            // TODO -- shouldn't be hardcoded
             if (_vm.Database.CatalogScheme.FeatureSetType != Features.FeatureSetType.Bear)
             {
                 _vm.Match.SetMatchOptions(_vm.RegistrationMethod,
@@ -50,9 +50,9 @@ namespace Darwin.Wpf
 
             if (!_vm.Match.VerifyMatchSettings())
             {
-                MessageBox.Show("Sorry, at least some individuals in your database" + 
+                MessageBox.Show("Sorry, at least some individuals in your database " + 
                     "are missing feature points needed to run the current match settings." + Environment.NewLine + Environment.NewLine +
-                    "Please use Rediscover Features in the Current Catalog Schemes settings, " +
+                    "Please use Rediscover Features in Settings -> Current Catalog Schemes in the main window, " +
                     "or recreate your database with the current feature set scheme.", "Missing Features", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
@@ -151,12 +151,13 @@ namespace Darwin.Wpf
                 if (_vm.Match.MatchResults == null || _vm.Match.MatchResults.Count < 1)
                 {
                     MessageBox.Show("Selected Catalog Categories are ALL EMPTY!");
+                    return;
                 }
                 else
                 {
                     // Matching is done, go to the results window
                     var matchingResultsWindowVM = new MatchingResultsWindowViewModel(
-                        _vm.DatabaseFin,
+                        _vm.Match.UnknownFin,
                         _vm.Match.MatchResults,
                         _vm.Database);
                     var matchingResultsWindow = new MatchingResultsWindow(matchingResultsWindowVM);

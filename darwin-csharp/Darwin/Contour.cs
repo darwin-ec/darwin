@@ -865,6 +865,14 @@ namespace Darwin
             }
         }
 
+		public void ClipToBounds(int xMin, int yMin)
+        {
+			for (int i = 0; i < Points.Count; i++)
+			{
+				Points[i] = new Point(Points[i].X - xMin, Points[i].Y - yMin, Points[i].Type);
+			}
+		}
+
 		//  bool trimAndReorder(Contour &c, Contour_point_t start, Contour_point_t end)
 		//  
 		// Trims excess points off Contour and reorders if necessary.

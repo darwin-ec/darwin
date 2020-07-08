@@ -71,6 +71,19 @@ namespace Darwin.Database
 			}
 		}
 
+		public static string GetOriginalImageFilenameFromPng(string imageFilename)
+        {
+			string originalFilename;
+			PngHelper.ParsePngText(imageFilename, out _, out _, out _, out originalFilename);
+
+			var bottomDirectoryName = Path.GetFileName(Path.GetDirectoryName(imageFilename));
+
+			if (!string.IsNullOrEmpty(originalFilename))
+				return Path.Combine(bottomDirectoryName, originalFilename);
+
+			return null;
+		}
+
 		public static DatabaseFin OpenFinz(string filename)
 		{
 			if (string.IsNullOrEmpty(filename))
@@ -368,6 +381,92 @@ namespace Darwin.Database
 			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQueuesFolderName));
 			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQResultsFolderName));
 			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.SightingsFolderName));
+		}
+
+        public static string BackupDatabase(DarwinDatabase database)
+        {
+			string backupFileName = Options.CurrentUserOptions.CurrentSurveyArea
+                           + "_"
+                           + Path.GetFileNameWithoutExtension(database.Filename)
+                           + "_"
+                           + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss")
+                           + ".zip";
+
+			// If the directories exist, CreateDirectory does nothing. 
+			Directory.CreateDirectory(Options.CurrentUserOptions.CurrentDarwinHome);
+			Directory.CreateDirectory(Options.CurrentUserOptions.CurrentBackupsPath);
+
+			string fullBackupName = Path.Combine(Options.CurrentUserOptions.CurrentBackupsPath, backupFileName);
+
+			using (var zipToOpen = new FileStream(fullBackupName, FileMode.CreateNew))
+			{
+				using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+				{
+					ZipArchiveEntry databaseFile = archive.CreateEntryFromFile(database.Filename, Path.GetFileName(database.Filename));
+
+					foreach (var fin in database.AllFins)
+                    {
+						DatabaseFin finToSave = new DatabaseFin(fin);
+						//UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, finToSave);
+
+						var imageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finToSave.ImageFilename);
+						if (File.Exists(imageFilename))
+							archive.CreateEntryFromFile(imageFilename, Path.GetFileName(imageFilename));
+
+
+						string originalImageFilename = (string.IsNullOrEmpty(fin.OriginalImageFilename)) ? GetOriginalImageFilenameFromPng(imageFilename) : fin.OriginalImageFilename;
+
+						if (!string.IsNullOrEmpty(originalImageFilename))
+						{
+							var fullOriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, originalImageFilename);
+							if (File.Exists(fullOriginalImageFilename))
+								archive.CreateEntryFromFile(fullOriginalImageFilename, Path.GetFileName(fullOriginalImageFilename));
+						}
+					}
+				}
+			}
+
+			return fullBackupName;
+		}
+
+		public static DatabaseFin FullyLoadFin(DatabaseFin fin)
+		{
+			DatabaseFin finCopy = new DatabaseFin(fin);
+			// TODO: Cache images?
+			if (!string.IsNullOrEmpty(finCopy.ImageFilename))
+			{
+				CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy);
+
+				string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.ImageFilename);
+
+				if (File.Exists(fullImageFilename))
+				{
+					var img = System.Drawing.Image.FromFile(fullImageFilename);
+
+					var bitmap = new Bitmap(img);
+					// TODO: Hack for HiDPI -- this should be more intelligent.
+					bitmap.SetResolution(96, 96);
+
+					finCopy.OriginalFinImage = new Bitmap(bitmap);
+
+					// TODO: Refactor this so we're not doing it every time, which is a little crazy
+					if (finCopy.ImageMods != null && finCopy.ImageMods.Count > 0)
+					{
+						bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, finCopy.ImageMods);
+						// TODO: HiDPI hack
+						bitmap.SetResolution(96, 96);
+					}
+
+					finCopy.FinImage = bitmap;
+				}
+			}
+
+			if (!string.IsNullOrEmpty(finCopy.OriginalImageFilename) && !File.Exists(finCopy.OriginalImageFilename))
+			{
+				finCopy.OriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.OriginalImageFilename);
+			}
+
+			return finCopy;
 		}
 	}
 }

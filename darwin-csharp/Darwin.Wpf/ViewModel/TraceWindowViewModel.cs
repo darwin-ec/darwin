@@ -527,12 +527,12 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
-		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, MainWindow mainWindow)
+		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db, string windowTitle, MainWindow mainWindow, bool viewOnly = false)
 			: this(fin, db)
 		{
 			WindowTitle = windowTitle;
 
-			if (mainWindow != null)
+			if (mainWindow != null || viewOnly)
 			{
 				TraceTool = TraceToolType.Hand;
 				MatchVisibility = Visibility.Collapsed;

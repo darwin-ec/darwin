@@ -141,6 +141,11 @@ namespace Darwin.Wpf.ViewModel
             RaisePropertyChanged("FeatureSetTypeDisplay");
         }
 
+        public string BackupDatabase()
+        {
+            return CatalogSupport.BackupDatabase(DarwinDatabase);
+        }
+
         public void SaveSelectedItemAsFinz(string filename)
         {
             if (SelectedFin == null)
@@ -156,43 +161,9 @@ namespace Darwin.Wpf.ViewModel
         public DatabaseFin FullyLoadFin()
         {
             DatabaseFin finCopy = null;
+
             if (SelectedFin != null)
-            {
-                finCopy = new DatabaseFin(SelectedFin);
-                // TODO: Cache images?
-                if (!string.IsNullOrEmpty(finCopy.ImageFilename))
-                {
-                    CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy);
-
-                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.ImageFilename);
-
-                    if (File.Exists(fullImageFilename))
-                    {
-                        var img = System.Drawing.Image.FromFile(fullImageFilename);
-
-                        var bitmap = new Bitmap(img);
-                        // TODO: Hack for HiDPI -- this should be more intelligent.
-                        bitmap.SetResolution(96, 96);
-
-                        finCopy.OriginalFinImage = new Bitmap(bitmap);
-
-                        // TODO: Refactor this so we're not doing it every time, which is a little crazy
-                        if (finCopy.ImageMods != null && finCopy.ImageMods.Count > 0)
-                        {
-                            bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, finCopy.ImageMods);
-                            // TODO: HiDPI hack
-                            bitmap.SetResolution(96, 96);
-                        }
-
-                        finCopy.FinImage = bitmap;
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(finCopy.OriginalImageFilename) && !File.Exists(finCopy.OriginalImageFilename))
-                {
-                    finCopy.OriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.OriginalImageFilename);
-                }
-            }
+                finCopy = CatalogSupport.FullyLoadFin(SelectedFin);
 
             return finCopy;
         }

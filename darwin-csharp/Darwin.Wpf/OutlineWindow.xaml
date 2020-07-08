@@ -7,17 +7,26 @@
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Outline Information" Height="550" Width="800">
+        Title="Outline Information" Height="680" Width="800" MinHeight="550" MinWidth="500">
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Lime" />
-            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Yellow" />
             <x:Static Member="Brushes.Crimson" />
             <x:Static Member="Brushes.Cyan" />
             <x:Static Member="Brushes.Blue" />
             <x:Static Member="Brushes.Magenta" />
         </x:Array>
+        <x:Array Type="Brush" x:Key="comparisonBrushes">
+            <x:Static Member="Brushes.Crimson" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Cyan" />
+            <x:Static Member="Brushes.Blue" />
+            <x:Static Member="Brushes.Magenta" />
+        </x:Array>
         <x:Static x:Key="chainBrush" Member="Brushes.Lime" />
+        <x:Static x:Key="chainComparisonBrush" Member="Brushes.Crimson" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -38,11 +47,20 @@
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0">Outline</Label>
                 <Viewbox Grid.Row="1" Margin="10,10,10,10">
-                    <fe:PointVisuals IsHitTestVisible="False" Width="{Binding DisplayContour.XMax}" Height="{Binding DisplayContour.YMax}"
-                                         Background="Transparent"
-                                         PointSize="3"
-                                         ItemsSource="{Binding DisplayContour.Points}"     
-                                         Brushes="{StaticResource brushes}" />
+                    <Grid>
+                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding XMax}" Height="{Binding YMax}"
+                                             Background="Transparent"
+                                             PointSize="{Binding ContourPointSize}"
+                                             FeaturePointSize="{Binding ComparisonFeaturePointSize}"
+                                             ItemsSource="{Binding DisplayComparisonContour.Points}"     
+                                             Brushes="{StaticResource comparisonBrushes}" />
+                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding XMax}" Height="{Binding YMax}"
+                                             Background="Transparent"
+                                             PointSize="{Binding ContourPointSize}"
+                                             FeaturePointSize="{Binding FeaturePointSize}"
+                                             ItemsSource="{Binding DisplayContour.Points}"     
+                                             Brushes="{StaticResource brushes}" />
+                    </Grid>
                 </Viewbox>
             </Grid>
             <Grid Grid.Column="1">
@@ -52,7 +70,10 @@
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0">Chain Code</Label>
                 <Viewbox Grid.Row="1" Stretch="Uniform" Margin="10,10,10,10">
-                    <controls:ChainCode Chain="{Binding DisplayChain}" Brush="{StaticResource chainBrush}" Width="300" Height="200" />
+                    <Grid>
+                        <controls:ChainCode Chain="{Binding DisplayChain}" Brush="{StaticResource chainBrush}" Width="300" Height="200" />
+                        <controls:ChainCode Chain="{Binding DisplayComparisonChain}" Brush="{StaticResource chainComparisonBrush}" Width="300" Height="200" />
+                    </Grid>
                 </Viewbox>
             </Grid>
         </Grid>
@@ -61,29 +82,50 @@
                 Generate Coefficient Files
             </Button>
             <Label>Number of Levels:</Label>
-            <ComboBox x:Name="NumberOfLevelsCombo" SelectedValue="{Binding Path=NumWaveletLevels, Mode=TwoWay}" SelectedValuePath="Content">
-                <ComboBoxItem>1</ComboBoxItem>
-                <ComboBoxItem>2</ComboBoxItem>
-                <ComboBoxItem>3</ComboBoxItem>
-                <ComboBoxItem>4</ComboBoxItem>
-                <ComboBoxItem>5</ComboBoxItem>
-                <ComboBoxItem>6</ComboBoxItem>
-                <ComboBoxItem>7</ComboBoxItem>
-                <ComboBoxItem>8</ComboBoxItem>
-                <ComboBoxItem>9</ComboBoxItem>
-            </ComboBox>
+            <StackPanel>
+                <ComboBox x:Name="NumberOfLevelsCombo" Margin="0,3,0,0" SelectedValue="{Binding Path=NumWaveletLevels, Mode=TwoWay}" SelectedValuePath="Content">
+                    <ComboBoxItem>1</ComboBoxItem>
+                    <ComboBoxItem>2</ComboBoxItem>
+                    <ComboBoxItem>3</ComboBoxItem>
+                    <ComboBoxItem>4</ComboBoxItem>
+                    <ComboBoxItem>5</ComboBoxItem>
+                    <ComboBoxItem>6</ComboBoxItem>
+                    <ComboBoxItem>7</ComboBoxItem>
+                    <ComboBoxItem>8</ComboBoxItem>
+                    <ComboBoxItem>9</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
         <StackPanel Grid.Row="1" HorizontalAlignment="Right">
-            <Button x:Name="RediscoverFeaturesButton" Click="RediscoverFeaturesButton_Click">Rediscover Features</Button>
+            <Button x:Name="RediscoverFeaturesButton" Click="RediscoverFeaturesButton_Click" Visibility="{Binding RediscoverVisibility}">Rediscover Features</Button>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Vertical" Margin="20,5,5,5">
-            <TextBlock xml:space="preserve">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve">
+Database:
+
 <Run Text="{Binding Path=DatabaseFin.IDCode, Mode=OneWay}"/>
 Outline - Number of Points : <Run Text="{Binding Path=DatabaseFin.FinOutline.Length, Mode=OneWay}" />
 Chain Code - Number of Points : <Run Text="{Binding Path=DatabaseFin.FinOutline.Length, Mode=OneWay}" />
 
 <Run Text="{Binding Path=FeaturePointPositionsDisplay, Mode=OneWay}" />
-            </TextBlock>
+                </TextBlock>
+                    <TextBlock Grid.Column="1" xml:space="preserve" Visibility="{Binding ComparisonTextVisibility}">
+Unknown:
+                        
+<Run Text="{Binding Path=ComparisonFin.IDCode, Mode=OneWay}"/>
+Outline - Number of Points : <Run Text="{Binding Path=ComparisonFin.FinOutline.Length, Mode=OneWay}" />
+Chain Code - Number of Points : <Run Text="{Binding Path=ComparisonFin.FinOutline.Length, Mode=OneWay}" />
+
+<Run Text="{Binding Path=ComparisonFeaturePointPositionsDisplay, Mode=OneWay}" />
+                    </TextBlock>
+                </Grid>
+            </ScrollViewer>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
             <Button x:Name="CloseButton" IsCancel="True" Click="CloseButton_Click">

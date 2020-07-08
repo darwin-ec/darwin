@@ -17,6 +17,7 @@ namespace Darwin
     {
         public const string DarwinDataFolderName = "darwinPhotoIdData";
         public const string SurveyAreasFolderName = "surveyAreas";
+        public const string BackupFolderName = "backups";
         public const string DefaultSurveyAreaName = "default";
         public const string CatalogFolderName = "catalog";
         public const string TracedFinsFolderName = "tracedFins";
@@ -92,6 +93,18 @@ namespace Darwin
                     return string.Empty;
 
                 return Path.Combine(CurrentDataPath, CurrentSurveyArea);
+            }
+        }
+
+        [JsonIgnore]
+        public string CurrentBackupsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CurrentDarwinHome))
+                    return string.Empty;
+
+                return Path.Combine(CurrentDarwinHome, BackupFolderName);
             }
         }
 

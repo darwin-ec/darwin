@@ -610,8 +610,11 @@ namespace Darwin.Database
 
                 foreach (var type in featurePointTypes)
                 {
-                    if (!individual.FinOutline.FeatureSet.FeaturePoints.ContainsKey(type))
+                    if (!individual.FinOutline.FeatureSet.FeaturePoints.ContainsKey(type)
+                        || individual.FinOutline.FeatureSet.FeaturePoints[type].IsEmpty)
+                    {
                         return false;
+                    }
                 }
             }
 

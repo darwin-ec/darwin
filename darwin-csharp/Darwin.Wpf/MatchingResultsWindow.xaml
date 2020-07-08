@@ -33,9 +33,9 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="350" MinHeight="200" />
+            <RowDefinition />
             <RowDefinition Height="5" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="350" MinHeight="200" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -43,7 +43,43 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Top">
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="{Binding SelectedLabelText}" />
+            <Button Grid.Row="1" x:Name="ViewSelectedImageButton" Click="ViewSelectedImageButton_Click" Cursor="Hand" Margin="0" Padding="1" Background="Transparent" BorderThickness="0">
+                <Image x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
+            </Button>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
+                <ToggleButton x:Name="SelectedShowOriginalImage" IsChecked="{Binding SelectedShowOriginalImage}">
+                    Show Original Image
+                </ToggleButton>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="{Binding UnknownLabelText}" />
+            <Button Grid.Row="1" x:Name="ViewUnknownImageButton" Click="ViewUnknownImageButton_Click" Cursor="Hand" Margin="0" Padding="1" Background="Transparent" BorderThickness="0">
+                <Image x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
+            </Button>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
+                <ToggleButton x:Name="UnknownShowOriginalImage" IsChecked="{Binding UnknownShowOriginalImage}">
+                    Show Original Image
+                </ToggleButton>
+                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click" Content="{Binding MatchSelectedOrientationText}" />
+            </StackPanel>
+        </Grid>
+
+        <GridSplitter Height="5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" />
+
+        <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="400" />
                 <ColumnDefinition Width="5"/>
@@ -128,9 +164,9 @@
                     </ToggleButton>
                 </StackPanel>
             </Grid>
-            
+
             <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-            
+
             <Grid Grid.Row="0" Grid.Column="2" Margin="10,0,10,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -138,59 +174,29 @@
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0">Registered Outlines</Label>
                 <Viewbox Grid.Row="1">
-                    <Grid>
-                        <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
-                                             Background="Transparent"
-                                             PointSize="1"
-                                             XOffset="{Binding ContourXOffset}"
-                                             YOffset="{Binding ContourYOffset}"
-                                             ContourScale="{Binding UnknownContour.Scale}"
-                                             ItemsSource="{Binding UnknownContour.Points}"     
-                                             Brushes="{StaticResource brushes}" />
+                    <Button x:Name="ViewOutlineInformationButton" Click="ViewOutlineInformationButton_Click" Cursor="Hand" Background="Transparent" BorderThickness="0">
+                        <Grid>
+                            <fe:PointVisuals x:Name="UnknownContourVisuals" IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
+                                                 Background="Transparent"
+                                                 PointSize="1"
+                                                 XOffset="{Binding ContourXOffset}"
+                                                 YOffset="{Binding ContourYOffset}"
+                                                 ContourScale="{Binding UnknownContour.Scale}"
+                                                 ItemsSource="{Binding UnknownContour.Points}"     
+                                                 Brushes="{StaticResource brushes}" />
 
-                        <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
-                                             Background="Transparent"
-                                             PointSize="1"
-                                             XOffset="{Binding ContourXOffset}"
-                                             YOffset="{Binding ContourYOffset}"
-                                             ContourScale="{Binding DBContour.Scale}"
-                                             ItemsSource="{Binding DBContour.Points}"     
-                                             Brushes="{StaticResource dbBrushes}" />
-                    </Grid>
+                            <fe:PointVisuals IsHitTestVisible="False" Width="{Binding ContourWidth}" Height="{Binding ContourHeight}"
+                                                 Background="Transparent"
+                                                 PointSize="1"
+                                                 XOffset="{Binding ContourXOffset}"
+                                                 YOffset="{Binding ContourYOffset}"
+                                                 ContourScale="{Binding DBContour.Scale}"
+                                                 ItemsSource="{Binding DBContour.Points}"     
+                                                 Brushes="{StaticResource dbBrushes}" />
+                        </Grid>
+                    </Button>
                 </Viewbox>
             </Grid>
-        </Grid>
-        
-        <GridSplitter Height="5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" />
-
-        <Grid Grid.Row="2" Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="{Binding SelectedLabelText}" />
-            <Image Grid.Row="1" x:Name="SelectedImage" Source="{Binding Path=SelectedImageSource}" />
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
-                <ToggleButton x:Name="SelectedShowOriginalImage" IsChecked="{Binding SelectedShowOriginalImage}">
-                    Show Original Image
-                </ToggleButton>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="2" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="{Binding UnknownLabelText}" />
-            <Image Grid.Row="1" x:Name="UnknownImage" Source="{Binding Path=UnknownImageSource}" />
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,10,10" HorizontalAlignment="Center">
-                <ToggleButton x:Name="UnknownShowOriginalImage" IsChecked="{Binding UnknownShowOriginalImage}">
-                    Show Original Image
-                </ToggleButton>
-                <Button x:Name="UnknownMatchSelectedFinOrientation" Click="UnknownMatchSelectedFinOrientation_Click" Content="{Binding MatchSelectedOrientationText}" />
-            </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="15">

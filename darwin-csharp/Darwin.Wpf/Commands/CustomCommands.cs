@@ -29,8 +29,8 @@ namespace Darwin.Wpf.Commands
         public static string OpenImageFilter = "Image files|*.jpg;*.bmp;*.png;*.tif;*.ppm|All files|*.*";
 
         public static readonly RoutedUICommand OpenTracedFin = new RoutedUICommand(
-            "Open Traced Fin...",
-            "Open Traced Fin",
+            "Open Trace...",
+            "Open Trace",
             typeof(CustomCommands),
             new InputGestureCollection()
             {

@@ -224,5 +224,52 @@ namespace Darwin.Wpf
         {
             CheckNextPreviousEnabled();
         }
+
+        private void ViewSelectedImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectedResult != null)
+            {
+                var fin = _vm.FullyLoadFinByID(_vm.SelectedResult.DatabaseID);
+
+                fin.FinOutline.ChainPoints = null;
+                fin.FinImage = fin.OriginalFinImage;
+                var vm = new TraceWindowViewModel(fin, _vm.Database, "Viewing Selected: " + fin.IDCode, null, true);
+                TraceWindow traceWindow = new TraceWindow(vm);
+                traceWindow.Show();
+            }
+        }
+
+        private void ViewUnknownImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectedResult != null)
+            {
+                var fin = new DatabaseFin(_vm.DatabaseFin);
+
+                fin.FinOutline.ChainPoints = null;
+                fin.FinImage = fin.OriginalFinImage;
+                var vm = new TraceWindowViewModel(fin, _vm.Database, "Viewing Unknown", null, true);
+                TraceWindow traceWindow = new TraceWindow(vm);
+                traceWindow.Show();
+            }
+        }
+
+        private void ViewOutlineInformationButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_vm.SelectedResult != null)
+            {
+                var selectedDBFin = _vm.FullyLoadFinByID(_vm.SelectedResult.DatabaseID);
+
+                selectedDBFin.FinOutline.ChainPoints = _vm.SelectedResult.dbContour;
+
+                DatabaseFin copyUnknown = new DatabaseFin(_vm.DatabaseFin);
+                copyUnknown.FinOutline.ChainPoints = _vm.SelectedResult.unknownContour;
+
+                var outlineWindowVM = new OutlineWindowViewModel(_vm.Database, selectedDBFin, copyUnknown);
+
+                var outlineWindow = new OutlineWindow(outlineWindowVM);
+
+                outlineWindow.Show();
+            }
+        }
     }
 }

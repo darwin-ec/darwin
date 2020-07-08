@@ -343,6 +343,18 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
+        public DatabaseFin FullyLoadFinByID(long id)
+        {
+            DatabaseFin finCopy = null;
+
+            var dbFin = Database.AllFins.Where(f => f.ID == id).FirstOrDefault();
+
+            if (dbFin != null)
+                finCopy = CatalogSupport.FullyLoadFin(dbFin);
+
+            return finCopy;
+        }
+
         private void LoadSelectedResult()
         {
             if (SelectedResult != null)

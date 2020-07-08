@@ -217,7 +217,14 @@ namespace Darwin.Matching
                     featurePointTypes.AddRange(factor.DependentFeatures);
             }
 
-            return Database.ContainsAllFeaturePointTypes(featurePointTypes.Distinct().ToList());
+            var distinctFeatureList = featurePointTypes.Distinct().ToList();
+
+            // If the current unknown is missing any feature points, rediscover them
+            // algorithmically
+            if (UnknownFin.FinOutline != null && !UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
+                UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
+
+            return Database.ContainsAllFeaturePointTypes(distinctFeatureList);
         }
 
         //*******************************************************************
@@ -316,7 +323,7 @@ namespace Darwin.Matching
                 Result r = new Result(
                     result.Contour1, //***005CM
                     result.Contour2, //***005CM
-                    thisDBFin.DatabaseID,
+                    thisDBFin.ID,
                     thisDBFin.ImageFilename,  //***001DB
                     thisDBFin.ThumbnailFilenameUri,
                     CurrentFinIndex,

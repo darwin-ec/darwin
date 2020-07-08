@@ -59,7 +59,7 @@ namespace Darwin.Database
         public Bitmap OriginalFinImage;
         public Bitmap FinImage;      // modified fin image from TraceWin, ...
 
-        public long DatabaseID { get; set; }
+        //public long DatabaseID { get; set; }
 
         private Outline _finOutline;
         private string _IDCode;
@@ -322,7 +322,7 @@ namespace Darwin.Database
 			long datapos
 		)
         {
-            DatabaseID = id;
+            ID = id;
             ImageFilename = filename; //  001DB
 			FinOutline = new Outline(outline); //  006DF,008OL
             IDCode = idcode;
@@ -366,7 +366,6 @@ namespace Darwin.Database
         //
         public DatabaseFin(DatabaseFin fin)
         {
-            DatabaseID = fin.DatabaseID;
             ImageFilename = fin.ImageFilename;        //  001DB
 			OriginalFinImage = null;                          //   major change JHS
             FinImage = null; //  1.5
