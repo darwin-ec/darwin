@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -24,6 +25,12 @@ namespace Darwin.Matching
 		public int Contour2ControlPoint2 { get; set; }
 		public int Contour2ControlPoint3 { get; set; }
 
+		public Vector<double> RHat { get; set; }
+		public Vector<double> RawRatios { get; set; }
+
+		public Vector<double> DBRHat { get; set; }
+		public Vector<double> DBRawRatios { get; set; }
+
 		public MatchError()
 		{
 			Error = 10000.0;
@@ -35,6 +42,12 @@ namespace Darwin.Matching
 			Contour2ControlPoint1 = 0;
 			Contour2ControlPoint2 = 0;
 			Contour2ControlPoint3 = 0;
+
+			RHat = null;
+			RawRatios = null;
+
+			DBRHat = null;
+			DBRawRatios = null;
 		}
 	};
 }

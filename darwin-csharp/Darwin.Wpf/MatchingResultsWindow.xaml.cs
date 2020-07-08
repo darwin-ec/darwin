@@ -264,7 +264,7 @@ namespace Darwin.Wpf
                 DatabaseFin copyUnknown = new DatabaseFin(_vm.DatabaseFin);
                 copyUnknown.FinOutline.ChainPoints = _vm.SelectedResult.unknownContour;
 
-                var outlineWindowVM = new OutlineWindowViewModel(_vm.Database, selectedDBFin, copyUnknown);
+                var outlineWindowVM = new OutlineWindowViewModel(_vm.Database, selectedDBFin, copyUnknown, _vm.SelectedResult);
 
                 var outlineWindow = new OutlineWindow(outlineWindowVM);
 

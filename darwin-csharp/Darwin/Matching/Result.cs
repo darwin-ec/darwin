@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -35,6 +36,11 @@ namespace Darwin.Matching
         public int DBShiftedTip { get; set; }
         public int DBShiftedTEEnd { get; set; }
 
+        public Vector<double> RHat { get; set; }
+        public Vector<double> RawRatios { get; set; }
+
+        public Vector<double> DBRHat { get; set; }
+        public Vector<double> DBRawRatios { get; set; }
 
         public Result(
             FloatContour unknown, //  005CM
@@ -108,7 +114,7 @@ namespace Darwin.Matching
         public Result(Result r)
         {
             DatabaseID = r.DatabaseID;
-            ImageFilename = r.ImageFilename;   //  001DB
+            ImageFilename = r.ImageFilename;
             Position = r.Position;
             Error = r.Error;
             IDCode = r.IDCode;
@@ -116,8 +122,8 @@ namespace Darwin.Matching
             Damage = r.Damage;
             Location = r.Location;
             Rank = r.Rank; //  1.5
-            unknownContour = new FloatContour(r.unknownContour); //  1.3 - Mem Leak - make copies now
-            dbContour = new FloatContour(r.dbContour);           //  1.3 - Mem Leak - make copies now
+            unknownContour = new FloatContour(r.unknownContour);
+            dbContour = new FloatContour(r.dbContour);
             UnkShiftedLEBegin = r.UnkShiftedLEBegin;
             UnkShiftedTip = r.UnkShiftedTip;
             UnkShiftedTEEnd = r.UnkShiftedTEEnd;

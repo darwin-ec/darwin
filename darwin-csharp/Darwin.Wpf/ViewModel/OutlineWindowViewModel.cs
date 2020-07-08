@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Matching;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -176,7 +177,9 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        public string FeaturePointPositionsDisplay
+        private Result _matchResult;
+
+        public string DisplayText
         {
             get
             {
@@ -202,11 +205,31 @@ namespace Darwin.Wpf.ViewModel
                     }
                 }
 
+                if (_matchResult != null)
+                {
+                    if (_matchResult.DBRHat != null)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine("RHat:");
+                        for (int i = 0; i < _matchResult.DBRHat.Count; i++)
+                            sb.AppendLine(_matchResult.DBRHat[i].ToString("N2"));
+                        sb.AppendLine();
+                    }
+
+                    if (_matchResult.DBRawRatios != null)
+                    {
+                        sb.AppendLine("Raw Ratios:");
+                        for (int i = 0; i < _matchResult.DBRawRatios.Count; i++)
+                            sb.AppendLine(_matchResult.DBRawRatios[i].ToString("N2"));
+                        sb.AppendLine();
+                    }
+                }
+
                 return sb.ToString();
             }
         }
 
-        public string ComparisonFeaturePointPositionsDisplay
+        public string ComparisonDisplayText
         {
             get
             {
@@ -232,6 +255,38 @@ namespace Darwin.Wpf.ViewModel
                     }
                 }
 
+                if (_matchResult != null)
+                {
+                    if (_matchResult.RHat != null)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine("RHat:");
+                        for (int i = 0; i < _matchResult.RHat.Count; i++)
+                            sb.AppendLine(_matchResult.RHat[i].ToString("N2"));
+                        sb.AppendLine();
+                    }
+
+                    if (_matchResult.RawRatios != null)
+                    {
+                        sb.AppendLine("Raw Ratios:");
+                        for (int i = 0; i < _matchResult.RawRatios.Count; i++)
+                            sb.AppendLine(_matchResult.RawRatios[i].ToString("N2"));
+                        sb.AppendLine();
+                    }
+
+                    if (_matchResult.RawError != null && _matchResult.RawError.Count > 0)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine("Raw Error");
+                        foreach (var re in _matchResult.RawError)
+                        {
+                            sb.Append("Factor " + re.FactorIndex + ": ");
+                            sb.Append(re.Error);
+                            sb.AppendLine(" (" + re.Weight.ToString("P") + ")");
+                        }
+                    }
+                }
+
                 return sb.ToString();
             }
         }
@@ -254,7 +309,10 @@ namespace Darwin.Wpf.ViewModel
             SetupDisplayElements();
         }
 
-        public OutlineWindowViewModel(DarwinDatabase database, DatabaseFin databaseFin, DatabaseFin comparisonFin)
+        public OutlineWindowViewModel(DarwinDatabase database,
+            DatabaseFin databaseFin,
+            DatabaseFin comparisonFin,
+            Result matchResult)
             : this()
         {
             Database = database;
@@ -265,6 +323,8 @@ namespace Darwin.Wpf.ViewModel
             ContourPointSize = 5;
             FeaturePointSize = 20;
             ComparisonFeaturePointSize = 28;
+
+            _matchResult = matchResult;
 
             SetupDisplayElements();
         }

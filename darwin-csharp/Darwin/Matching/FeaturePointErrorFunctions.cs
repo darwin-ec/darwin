@@ -22,6 +22,7 @@ namespace Darwin.Matching
     {
         public DatabaseFin DatabaseFin { get; set; }
         public Vector<double> RHat { get; set; }
+        public Vector<double> RawRatios { get; set; }
     }
 
     public class RatioComparison
@@ -260,7 +261,8 @@ namespace Darwin.Matching
                 var item = new RatioItem
                 {
                     DatabaseFin = allDatabaseIndividuals[i],
-                    RHat = CreateVector.Dense<double>(numberOfDesiredRatios)
+                    RHat = CreateVector.Dense<double>(numberOfDesiredRatios),
+                    RawRatios = ratioList[i]
                 };
 
                 for (int k = 0; k < numberOfDesiredRatios; k++)
@@ -290,12 +292,12 @@ namespace Darwin.Matching
                 throw new ArgumentNullException(nameof(databaseFin));
 
             // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
-            Vector<double> unknownRatios = CalculateRatios(unknownFin,
+            Vector<double> unknownRatiosUncorrected = CalculateRatios(unknownFin,
                 ratioComparison.BenchmarkFeatures,
                 ratioComparison.LandmarkFeatures,
                 ratioComparison.RatioPermutations);
 
-            unknownRatios -= ratioComparison.AverageRatios;
+            var unknownRatios = unknownRatiosUncorrected - ratioComparison.AverageRatios;
 
             var unknownRHatMatrix = unknownRatios.ToRowMatrix() * ratioComparison.ProjectionMatrix;
             ratioComparison.UnknownRHat = CreateVector.Dense<double>(unknownRHatMatrix.ColumnCount);
@@ -305,6 +307,10 @@ namespace Darwin.Matching
             var databaseRHat = ratioComparison.IndividualRatios
                 .Where(ir => ir.DatabaseFin == databaseFin)
                 .Select(ir => ir.RHat)
+                .First();
+            var databaseRawRatios = ratioComparison.IndividualRatios
+                .Where(ir => ir.DatabaseFin == databaseFin)
+                .Select(ir => ir.RawRatios)
                 .First();
 
             double mahalanobisDistanceSum = 0;
@@ -317,7 +323,11 @@ namespace Darwin.Matching
 
             return new MatchError
             {
-                Error = mahalanobisDistanceSum
+                Error = mahalanobisDistanceSum,
+                RHat = ratioComparison.UnknownRHat,
+                RawRatios = unknownRatiosUncorrected,
+                DBRawRatios = databaseRawRatios,
+                DBRHat = databaseRHat
             };
         }
 
@@ -337,12 +347,12 @@ namespace Darwin.Matching
                 throw new ArgumentNullException(nameof(databaseFin));
 
             // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
-            Vector<double> unknownRatios = CalculateRatios(unknownFin,
+            Vector<double> unknownRatiosUncorrected = CalculateRatios(unknownFin,
                 ratioComparison.BenchmarkFeatures,
                 ratioComparison.LandmarkFeatures,
                 ratioComparison.RatioPermutations);
 
-            unknownRatios -= ratioComparison.AverageRatios;
+            var unknownRatios = unknownRatiosUncorrected - ratioComparison.AverageRatios;
 
             var unknownRHatMatrix = unknownRatios.ToRowMatrix() * ratioComparison.ProjectionMatrix;
             ratioComparison.UnknownRHat = CreateVector.Dense<double>(unknownRHatMatrix.ColumnCount);
@@ -352,6 +362,10 @@ namespace Darwin.Matching
             var databaseRHat = ratioComparison.IndividualRatios
                 .Where(ir => ir.DatabaseFin == databaseFin)
                 .Select(ir => ir.RHat)
+                .First();
+            var databaseRawRatios = ratioComparison.IndividualRatios
+                .Where(ir => ir.DatabaseFin == databaseFin)
+                .Select(ir => ir.RawRatios)
                 .First();
 
             double numerator = 0;
@@ -372,10 +386,15 @@ namespace Darwin.Matching
             double ewcDistance = numerator / denominator;
 
             Trace.WriteLine("Unknown: " + unknownFin.IDCode + " DB: " + databaseFin.IDCode + " EWC Distance: " + ewcDistance);
-            // TODO: Need to scale.. this is supposedly between -1 and 1 if done correctly?
+
+            // Raw EWC is between -1 and 1.  -1 is the best match, 1 is the worst
             return new MatchError
             {
-                Error = ewcDistance + 1 // Adding 1 so this should always be positive with 0 as the "best" match
+                Error = ewcDistance + 1, // Adding 1 so this should always be positive with 0 as the "best" match,
+                RHat = ratioComparison.UnknownRHat,
+                RawRatios = unknownRatiosUncorrected,
+                DBRawRatios = databaseRawRatios,
+                DBRHat = databaseRHat
             };
         }
     }

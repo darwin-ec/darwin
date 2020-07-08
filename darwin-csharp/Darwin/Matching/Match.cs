@@ -12,6 +12,8 @@
 
 using Darwin.Database;
 using Darwin.Features;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Complex;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -292,7 +294,7 @@ namespace Darwin.Matching
             if (tryMatch)
             {
                 // TODO: This isn't done quite right yet
-                MatchError result = new MatchError();
+                MatchError matchErrorResult = new MatchError();
                 double errorBetweenFins = 0.0;
 
                 List<MatchFactorError> rawError = new List<MatchFactorError>();
@@ -303,7 +305,41 @@ namespace Darwin.Matching
                     var factorResult = factor.FindErrorBetweenIndividuals(UnknownFin, thisDBFin);
 
                     if (factor.MatchFactorType == MatchFactorType.Outline)
-                        result = factorResult;
+                    {
+                        Vector<double> saveRawRatios = null;
+                        if (matchErrorResult.RawRatios != null)
+                            saveRawRatios = matchErrorResult.RawRatios;
+
+                        Vector<double> saveRHat = null;
+                        if (matchErrorResult.RHat != null)
+                            saveRHat = matchErrorResult.RHat;
+
+                        Vector<double> saveDBRHat = null;
+                        if (matchErrorResult.DBRHat != null)
+                            saveDBRHat = matchErrorResult.DBRHat;
+
+                        Vector<double> saveDBRawRatios = null;
+                        if (matchErrorResult.DBRawRatios != null)
+                            saveDBRawRatios = matchErrorResult.DBRawRatios;
+
+                        matchErrorResult = factorResult;
+
+                        if (saveRawRatios != null)
+                            matchErrorResult.RawRatios = saveRawRatios;
+                        if (saveRHat != null)
+                            matchErrorResult.RHat = saveRHat;
+                        if (saveDBRawRatios != null)
+                            matchErrorResult.DBRawRatios = saveDBRawRatios;
+                        if (saveDBRHat != null)
+                            matchErrorResult.DBRHat = saveDBRHat;
+                    }
+                    else
+                    {
+                        matchErrorResult.RawRatios = factorResult.RawRatios;
+                        matchErrorResult.RHat = factorResult.RHat;
+                        matchErrorResult.DBRawRatios = factorResult.DBRawRatios;
+                        matchErrorResult.DBRHat = factorResult.DBRHat;
+                    }
 
                     // We're going to rescale this later -- should probably remove this
                     // errorBetweenFins += factor.Weight * result.Error;
@@ -321,8 +357,8 @@ namespace Darwin.Matching
 
                 // Now, store the result
                 Result r = new Result(
-                    result.Contour1, //***005CM
-                    result.Contour2, //***005CM
+                    matchErrorResult.Contour1, //***005CM
+                    matchErrorResult.Contour2, //***005CM
                     thisDBFin.ID,
                     thisDBFin.ImageFilename,  //***001DB
                     thisDBFin.ThumbnailFilenameUri,
@@ -335,10 +371,22 @@ namespace Darwin.Matching
                     thisDBFin.DateOfSighting,
                     thisDBFin.LocationCode);
 
+                if (matchErrorResult.RHat != null)
+                    r.RHat = matchErrorResult.RHat;
+
+                if (matchErrorResult.RawRatios != null)
+                    r.RawRatios = matchErrorResult.RawRatios;
+
+                if (matchErrorResult.DBRHat != null)
+                    r.DBRHat = matchErrorResult.DBRHat;
+
+                if (matchErrorResult.DBRawRatios != null)
+                    r.DBRawRatios = matchErrorResult.DBRawRatios;
+
                 //***1.1 - set indices of beginning, tip and end points used in mapping
                 r.SetMappingControlPoints(
-                    result.Contour1ControlPoint1, result.Contour1ControlPoint2, result.Contour1ControlPoint3,  // beginning, tip & end of unknown fin
-                    result.Contour2ControlPoint1, result.Contour2ControlPoint2, result.Contour2ControlPoint3); // beginning, tip & end of database fin
+                    matchErrorResult.Contour1ControlPoint1, matchErrorResult.Contour1ControlPoint2, matchErrorResult.Contour1ControlPoint3,  // beginning, tip & end of unknown fin
+                    matchErrorResult.Contour2ControlPoint1, matchErrorResult.Contour2ControlPoint2, matchErrorResult.Contour2ControlPoint3); // beginning, tip & end of database fin
 
                 MatchResults.AddResult(r);
             }

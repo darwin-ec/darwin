@@ -32,7 +32,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="240"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -99,34 +99,34 @@
         <StackPanel Grid.Row="1" HorizontalAlignment="Right">
             <Button x:Name="RediscoverFeaturesButton" Click="RediscoverFeaturesButton_Click" Visibility="{Binding RediscoverVisibility}">Rediscover Features</Button>
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="20,5,5,5">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve">
+
+        <ScrollViewer Grid.Row="2"  VerticalScrollBarVisibility="Auto" Margin="20,5,5,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" xml:space="preserve">
 Database:
 
 <Run Text="{Binding Path=DatabaseFin.IDCode, Mode=OneWay}"/>
 Outline - Number of Points : <Run Text="{Binding Path=DatabaseFin.FinOutline.Length, Mode=OneWay}" />
 Chain Code - Number of Points : <Run Text="{Binding Path=DatabaseFin.FinOutline.Length, Mode=OneWay}" />
 
-<Run Text="{Binding Path=FeaturePointPositionsDisplay, Mode=OneWay}" />
-                </TextBlock>
-                    <TextBlock Grid.Column="1" xml:space="preserve" Visibility="{Binding ComparisonTextVisibility}">
+<Run Text="{Binding Path=DisplayText, Mode=OneWay}" />
+            </TextBlock>
+                <TextBlock Grid.Column="1" xml:space="preserve" Visibility="{Binding ComparisonTextVisibility}">
 Unknown:
                         
 <Run Text="{Binding Path=ComparisonFin.IDCode, Mode=OneWay}"/>
 Outline - Number of Points : <Run Text="{Binding Path=ComparisonFin.FinOutline.Length, Mode=OneWay}" />
 Chain Code - Number of Points : <Run Text="{Binding Path=ComparisonFin.FinOutline.Length, Mode=OneWay}" />
 
-<Run Text="{Binding Path=ComparisonFeaturePointPositionsDisplay, Mode=OneWay}" />
-                    </TextBlock>
-                </Grid>
-            </ScrollViewer>
-        </StackPanel>
+<Run Text="{Binding Path=ComparisonDisplayText, Mode=OneWay}" />
+                </TextBlock>
+            </Grid>
+        </ScrollViewer>
+
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
             <Button x:Name="CloseButton" IsCancel="True" Click="CloseButton_Click">
                 Close
