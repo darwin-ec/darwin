@@ -44,8 +44,6 @@ namespace Darwin.Wpf
 
                 if (result == System.Windows.Forms.DialogResult.OK)
                 {
-                    var s = dialog.SelectedPath;
-
                     WaveletUtil.GenerateCoefficientFiles(
                         dialog.SelectedPath,
                         _vm.DatabaseFin.IDCode,

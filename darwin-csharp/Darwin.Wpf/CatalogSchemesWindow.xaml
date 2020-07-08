@@ -19,10 +19,12 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" Margin="10,10,0,10">
+        <Border Grid.Row="0" Margin="10" BorderBrush="LightGray" BorderThickness="1">
+            <TextBlock TextWrapping="WrapWithOverflow" Background="White" Padding="10">
             <Run FontWeight="Bold">Note:</Run> Catalog Scheme Presets are used as templates when you create a new database.  If you want
             to edit the scheme for the current database, use <Run FontWeight="Bold">Current Catalog Scheme</Run>.
-        </TextBlock>
+            </TextBlock>
+        </Border>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="310"/>

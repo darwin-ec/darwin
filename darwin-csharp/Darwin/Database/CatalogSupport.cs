@@ -17,24 +17,46 @@ namespace Darwin.Database
     {
 		public const string FinzDatabaseFilename = "database.db";
 
+		public static string CalculateDatabaseFilename(string darwinHome, string databaseName, string area = "default")
+        {
+			string filename = databaseName ?? string.Empty;
+			if (!filename.ToLower().EndsWith(".db"))
+				filename += ".db";
+
+			return Path.Combine(darwinHome, Options.SurveyAreasFolderName, area, Options.CatalogFolderName, filename);
+		}
+
         public static DarwinDatabase OpenDatabase(string databaseFilename,
 			CatalogScheme catalogScheme, bool create, string area = "default")
         {
 			string filename = databaseFilename;
 			if (create)
 			{
-				filename = Path.Combine(Options.CurrentUserOptions.CurrentDataPath, area, Options.CatalogFolderName, filename);
+				filename = CalculateDatabaseFilename(Options.CurrentUserOptions.CurrentDarwinHome, filename, area);
 
 				if (File.Exists(filename))
 					throw new Exception("The database " + filename + Environment.NewLine +
 						"already exists.  Please pick another name.");
 
-				RebuildFolders(Options.CurrentUserOptions.CurrentDataPath, area);
+				RebuildFolders(filename);
 			}
 
             DarwinDatabase db = new SQLiteDatabase(filename, catalogScheme, create);
 
             return db;
+		}
+
+		public static DarwinDatabase CreateAndOpenDatabase(string fullDatabaseName, string surveyAreaName, CatalogScheme catalogScheme)
+		{
+			if (File.Exists(fullDatabaseName))
+				throw new Exception("The database " + fullDatabaseName + Environment.NewLine +
+					"already exists.  Please pick another name.");
+
+			RebuildFolders(fullDatabaseName);
+
+			DarwinDatabase db = new SQLiteDatabase(fullDatabaseName, catalogScheme, true);
+
+			return db;
 		}
 
 		public static void UpdateFinFieldsFromImage(string basePath, DatabaseFin fin)
@@ -221,6 +243,27 @@ namespace Darwin.Database
 			return results;
         }
 
+		public static List<string> GetExistingSurveyAreas(string darwinHome)
+		{
+			string datapath = Path.Combine(darwinHome, Options.SurveyAreasFolderName);
+
+			if (!Directory.Exists(datapath))
+				return null;
+
+			DirectoryInfo dirInfo = new DirectoryInfo(datapath);
+
+			var directories = dirInfo.GetDirectories();
+
+			List<string> results = new List<string>();
+
+			foreach (var dir in directories)
+			{
+				results.Add(dir.Name);
+			}
+
+			return results;
+		}
+
 		public static string SaveFinz(DatabaseFin fin, string filename, bool forceFilename = true)
         {
 			if (fin == null)
@@ -361,26 +404,27 @@ namespace Darwin.Database
 			database.Add(databaseFin);
         }
 
-		public static void RebuildFolders(string currentDataPath, string area)
+		public static void RebuildFolders(string databasePath)
 		{
-			if (string.IsNullOrEmpty(currentDataPath))
-				throw new ArgumentNullException(nameof(currentDataPath));
-
-			if (string.IsNullOrEmpty(area))
-				throw new ArgumentNullException(nameof(area));
+			if (string.IsNullOrEmpty(databasePath))
+				throw new ArgumentNullException(nameof(databasePath));
 
 			Trace.WriteLine("Creating folders...");
 
-			var surveyAreasPath = Path.Combine(new string[] { currentDataPath, area });
+			var dirInfo = new DirectoryInfo(databasePath);
+
+			Directory.CreateDirectory(dirInfo.Parent.Parent.Parent.Parent.FullName);
+			Directory.CreateDirectory(dirInfo.Parent.Parent.Parent.FullName);
+			string surveyAreaPath = dirInfo.Parent.Parent.FullName;
+			Directory.CreateDirectory(surveyAreaPath);
 
 			// Note that CreateDirectory won't do anything if the path already exists, so no need
 			// to check first.
-			Directory.CreateDirectory(surveyAreasPath);
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.CatalogFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.TracedFinsFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQueuesFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.MatchQResultsFolderName));
-			Directory.CreateDirectory(Path.Combine(surveyAreasPath, Options.SightingsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreaPath, Options.CatalogFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreaPath, Options.TracedFinsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreaPath, Options.MatchQueuesFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreaPath, Options.MatchQResultsFolderName));
+			Directory.CreateDirectory(Path.Combine(surveyAreaPath, Options.SightingsFolderName));
 		}
 
         public static string BackupDatabase(DarwinDatabase database)

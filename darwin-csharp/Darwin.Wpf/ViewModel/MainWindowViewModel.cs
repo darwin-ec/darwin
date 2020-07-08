@@ -17,6 +17,17 @@ namespace Darwin.Wpf.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public string WindowTitle
+        {
+            get
+            {
+                if (DarwinDatabase == null)
+                    return "DARWIN";
+
+                return Path.GetFileName(DarwinDatabase.Filename) + " - DARWIN";
+            }
+        }
+
         private DarwinDatabase _darwinDatabase;
         public DarwinDatabase DarwinDatabase
         {
@@ -28,10 +39,22 @@ namespace Darwin.Wpf.ViewModel
             {
                 _darwinDatabase = value;
                 RaisePropertyChanged("FeatureSetTypeDisplay");
+                RaisePropertyChanged("FeatureSetTypeVisibility");
                 RaisePropertyChanged("DarwinDatabase");
+                RaisePropertyChanged("WindowTitle");
             }
         }
 
+        public Visibility FeatureSetTypeVisibility
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FeatureSetTypeDisplay))
+                    return Visibility.Collapsed;
+
+                return Visibility.Visible;
+            }
+        }
         public string FeatureSetTypeDisplay
         {
             get
@@ -139,6 +162,7 @@ namespace Darwin.Wpf.ViewModel
         {
             // This should probably do more
             RaisePropertyChanged("FeatureSetTypeDisplay");
+            RaisePropertyChanged("FeatureSetTypeVisibility");
         }
 
         public string BackupDatabase()

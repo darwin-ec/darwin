@@ -59,5 +59,20 @@ namespace Darwin.Wpf
         {
             NewSurveyAreaTextbox.Focus();
         }
+
+        private void BrowseDarwinHome_Click(object sender, RoutedEventArgs e)
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                dialog.SelectedPath = _vm.DarwinHome;
+                dialog.Description = "Pick a Folder for your DARWIN Home";
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    _vm.DarwinHome = dialog.SelectedPath;
+                }
+            }
+        }
     }
 }

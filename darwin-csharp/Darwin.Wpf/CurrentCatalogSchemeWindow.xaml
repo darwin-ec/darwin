@@ -20,10 +20,12 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" TextWrapping="WrapWithOverflow" Margin="10,10,0,10">
+        <Border Grid.Row="0" Margin="10" BorderBrush="LightGray" BorderThickness="1">
+            <TextBlock TextWrapping="WrapWithOverflow" Background="White" Padding="10">
             <Run FontWeight="Bold">Note:</Run> The current catalog scheme is the one that's currently being used.  If you want to edit a catalog scheme for a new database,
             use <Run FontWeight="Bold">Catalog Scheme Presets</Run>.
-        </TextBlock>
+            </TextBlock>
+        </Border>
         <Grid Grid.Row="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="10"/>

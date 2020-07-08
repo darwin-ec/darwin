@@ -13,6 +13,39 @@ namespace Darwin.Wpf.ViewModel
 {
     public class NewDatabaseViewModel : INotifyPropertyChanged
     {
+        private string _darwinHome;
+        public string DarwinHome
+        {
+            get => _darwinHome;
+            set
+            { 
+                _darwinHome = value;
+                RaisePropertyChanged("DarwinHome");
+                RaisePropertyChanged("DatabaseFilename");
+                RefreshSurveyAreas();
+            }
+        }
+
+        public string DatabaseFilename
+        {
+            get
+            {
+                string surveyArea;
+
+                if (_newDatabaseSurveyAreaType == NewDatabaseSurveyAreaType.Existing)
+                    surveyArea = _selectedSurveyArea;
+                else
+                    surveyArea = _newSurveyArea;
+
+                if (string.IsNullOrEmpty(surveyArea))
+                {
+                    surveyArea = "[Enter Survey Area]";
+                }
+
+                return CatalogSupport.CalculateDatabaseFilename(DarwinHome, _databaseName, surveyArea);
+            }
+        }
+
         private NewDatabaseSurveyAreaType _newDatabaseSurveyAreaType;
         public NewDatabaseSurveyAreaType NewDatabaseSurveyAreaType
         {
@@ -32,6 +65,8 @@ namespace Darwin.Wpf.ViewModel
                     NewSurveyAreaVisibility = Visibility.Collapsed;
                     ExistingSurveyAreaVisibility = Visibility.Visible;
                 }
+
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -43,6 +78,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _selectedSurveyArea = value;
                 RaisePropertyChanged("SelectedSurveyArea");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -54,6 +90,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _newSurveyArea = value;
                 RaisePropertyChanged("NewSurveyArea");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -65,6 +102,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _existingSurveyAreas = value;
                 RaisePropertyChanged("ExistingSurveyAreas");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -76,6 +114,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _catalogSchemes = value;
                 RaisePropertyChanged("CatalogSchemes");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -87,6 +126,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _selectedCatalogScheme = value;
                 RaisePropertyChanged("SelectedCatalogScheme");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -98,6 +138,7 @@ namespace Darwin.Wpf.ViewModel
             {
                 _databaseName = value;
                 RaisePropertyChanged("DatabaseName");
+                RaisePropertyChanged("DatabaseFilename");
             }
         }
 
@@ -127,21 +168,32 @@ namespace Darwin.Wpf.ViewModel
 
         public NewDatabaseViewModel()
         {
+            DarwinHome = Options.CurrentUserOptions.CurrentDarwinHome;
+            NewSurveyArea = Options.DefaultSurveyAreaName;
             NewDatabaseSurveyAreaType = NewDatabaseSurveyAreaType.Existing;
 
             CatalogSchemes = new ObservableCollection<CatalogScheme>(Options.CurrentUserOptions.CatalogSchemes);
             SelectedCatalogScheme = CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault();
 
-            var existingSurveyAreas = CatalogSupport.GetExistingSurveyAreas();
+            RefreshSurveyAreas();
+        }
+
+        private void RefreshSurveyAreas()
+        {
+            var existingSurveyAreas = CatalogSupport.GetExistingSurveyAreas(DarwinHome);
 
             if (existingSurveyAreas == null)
             {
                 ExistingSurveyAreas = new ObservableCollection<string>();
+                NewDatabaseSurveyAreaType = NewDatabaseSurveyAreaType.New;
             }
             else
             {
                 ExistingSurveyAreas = new ObservableCollection<string>(existingSurveyAreas);
                 SelectedSurveyArea = ExistingSurveyAreas.FirstOrDefault();
+
+                if (SelectedSurveyArea == null)
+                    NewDatabaseSurveyAreaType = NewDatabaseSurveyAreaType.New;
             }
         }
 
@@ -157,7 +209,7 @@ namespace Darwin.Wpf.ViewModel
             if (string.IsNullOrEmpty(surveyArea))
             {
                 if (NewDatabaseSurveyAreaType == NewDatabaseSurveyAreaType.Existing)
-                    throw new Exception("Please select an existing survey area.");
+                    throw new Exception("Please select an existing survey area, or create a new survey area if there aren't any existing survey areas to select.");
                 else
                     throw new Exception("Please enter a survey area name.");
             }
@@ -168,13 +220,7 @@ namespace Darwin.Wpf.ViewModel
             if (string.IsNullOrEmpty(DatabaseName))
                 throw new Exception("Please enter a database name.");
 
-
-            string dbName = DatabaseName;
-
-            if (!dbName.ToLower().EndsWith(".db"))
-                dbName += ".db";
-
-            var db = CatalogSupport.OpenDatabase(dbName, SelectedCatalogScheme, true, surveyArea);
+            var db = CatalogSupport.CreateAndOpenDatabase(DatabaseFilename, surveyArea, SelectedCatalogScheme);
 
             return db.Filename;
         }

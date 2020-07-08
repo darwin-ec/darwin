@@ -7,19 +7,32 @@
         xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" ResizeMode="NoResize" Background="{StaticResource LightBackground}"
-        Title="New Database" Height="350" Width="500">
+        Title="New Database" Height="460" Width="640">
     <Window.Resources>
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <Grid Width="400">
+        <Border Grid.Row="0" Margin="10" BorderBrush="LightGray" BorderThickness="1">
+            <TextBlock TextWrapping="WrapWithOverflow" Background="White" Padding="10">
+                A database holds a collection of your images, their details, and traces.  You can match new, or unknown
+                covariates against your database.  You need to create a database to work with DARWIN.
+            </TextBlock>
+        </Border>
+        
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid Width="550">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="10" />
                     <RowDefinition Height="Auto" />
@@ -30,8 +43,20 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Survey Area:</Label>
-                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,7,0,0">
+                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">DARWIN Home:</Label>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="0,1,0,0">
+                    <Label Content="{Binding DarwinHome}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="BrowseDarwinHome" Click="BrowseDarwinHome_Click">Change...</Button>
+                    </Grid>
+                </StackPanel>
+                
+                <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Survey Area:</Label>
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,7,0,0">
                     <RadioButton GroupName="SurveyAreaType" IsChecked="{Binding Path=NewDatabaseSurveyAreaType, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:NewDatabaseSurveyAreaType.Existing}}">
                         Existing Survey Area
                     </RadioButton>
@@ -43,18 +68,22 @@
                         <ComboBox x:Name="SurveyAreasListBox" ItemsSource="{Binding Path=ExistingSurveyAreas}" SelectedItem="{Binding Path=SelectedSurveyArea, Mode=TwoWay}"/>
                     </StackPanel>
                     <StackPanel Visibility="{Binding NewSurveyAreaVisibility}">
-                        <Label>New Survey Area:</Label>
+                        <Label Padding="0,8,0,5">New Survey Area:</Label>
                         <TextBox x:Name="NewSurveyAreaTextbox" Text="{Binding Path=NewSurveyArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </StackPanel>
-                <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Catalog Scheme:</Label>
-                <ComboBox Margin="0,4,0,0" Grid.Row="2" Grid.Column="1" x:Name="CatalogSchemeComboBox" DisplayMemberPath="SchemeName" ItemsSource="{Binding Path=CatalogSchemes}" SelectedItem="{Binding Path=SelectedCatalogScheme,Mode=TwoWay}"/>
+                <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Catalog Scheme:</Label>
+                <ComboBox Margin="0,4,0,0" Grid.Row="4" Grid.Column="1" x:Name="CatalogSchemeComboBox" DisplayMemberPath="SchemeName" ItemsSource="{Binding Path=CatalogSchemes}" SelectedItem="{Binding Path=SelectedCatalogScheme,Mode=TwoWay}"/>
 
-                <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Database Name:</Label>
-                <TextBox Margin="0,4,0,0" Grid.Row="4" Grid.Column="1" x:Name="DatabaseNameTextbox" Text="{Binding Path=DatabaseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0">Database Name:</Label>
+                <TextBox Margin="0,4,0,0" Grid.Row="6" Grid.Column="1" x:Name="DatabaseNameTextbox" Text="{Binding Path=DatabaseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </ScrollViewer>
-        <StackPanel Grid.Row="1" Margin="10" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10,0,0,10">
+            <Label Padding="1">Your database will be created as:</Label>
+            <Label Content="{Binding DatabaseFilename}" />
+        </StackPanel>
+        <StackPanel Grid.Row="3" Margin="10" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="OKButton" IsDefault="True" Click="OKButton_Click">OK</Button>
             <Button x:Name="CancelButton" IsCancel="True" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>

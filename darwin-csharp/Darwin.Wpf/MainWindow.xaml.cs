@@ -333,7 +333,8 @@ namespace Darwin.Wpf
         {
             if (_vm.SelectedFin == null)
             {
-                MessageBox.Show("You must select an item in the database first.", "No Fin Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You must select an item in the database first.", "No " + _vm.DarwinDatabase.CatalogScheme.IndividualTerminologyInitialCaps + " Selected",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
@@ -427,7 +428,8 @@ namespace Darwin.Wpf
 
         private void DeleteFin_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to delete this fin from the database?", "Delete Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Are you sure you want to delete this " + _vm.DarwinDatabase.CatalogScheme.IndividualTerminology + " from the database?",
+                "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 _vm.DarwinDatabase.Delete(_vm.SelectedFin);
                 var index = _vm.Fins.IndexOf(_vm.SelectedFin);
