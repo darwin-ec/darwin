@@ -465,7 +465,7 @@ namespace Darwin.Wpf.ViewModel
 		{
 			get
 			{
-				return Database.CatalogScheme.IndividualTerminology;
+				return Database?.CatalogScheme?.IndividualTerminology;
 			}
 		}
 
@@ -473,7 +473,7 @@ namespace Darwin.Wpf.ViewModel
 		{
 			get
 			{
-				return Database.CatalogScheme.IndividualTerminologyInitialCaps;
+				return Database?.CatalogScheme?.IndividualTerminologyInitialCaps;
 			}
 		}
 
@@ -493,19 +493,31 @@ namespace Darwin.Wpf.ViewModel
 			AttachEvents();
 		}
 
-		public TraceWindowViewModel(DatabaseFin fin)
+		public TraceWindowViewModel(DatabaseFin fin, bool viewOnly = false)
 			: this()
         {
 			LoadFin(fin);
+
+			if (viewOnly)
+			{
+				TraceTool = TraceToolType.Hand;
+				MatchVisibility = Visibility.Collapsed;
+				SaveVisibility = Visibility.Collapsed;
+				AddToDatabaseVisibility = Visibility.Collapsed;
+				ViewerMode = true;
+
+				TopToolbarVisibility = Visibility.Collapsed;
+				TraceLocked = true;
+				TraceFinalized = true;
+				FeatureToolsVisibility = Visibility.Collapsed;
+			}
 		}
 
 		public TraceWindowViewModel(DatabaseFin fin, DarwinDatabase db)
-			: this()
+			: this(fin)
         {
 			Database = db;
 			Categories = db.Categories;
-
-			LoadFin(fin);
 		}
 
 		// Little hacky, keeping a reference to the MatchResultsWindow, so we can close it when adding to the DB

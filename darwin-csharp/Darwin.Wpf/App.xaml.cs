@@ -76,7 +76,7 @@ namespace Darwin.Wpf
                     }
                     else
                     {
-                        var vm = new TraceWindowViewModel(fin);
+                        var vm = new TraceWindowViewModel(fin, true);
 
                         TraceWindow traceWindow = new TraceWindow(vm);
                         traceWindow.Show();
