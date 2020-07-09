@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Darwin.Wpf.Extensions;
 using Darwin.Matching;
 using System.Diagnostics;
+using Darwin.Features;
 
 namespace Darwin.Wpf.ViewModel
 {
@@ -161,6 +162,14 @@ namespace Darwin.Wpf.ViewModel
 
             if (MatchingQueue.Fins?.Count > 0)
                 SelectedFin = MatchingQueue.Fins.First();
+        }
+
+        public void CheckDatabaseFin(DatabaseFin individual, FeatureSetType featureSetType, List<FeaturePointType> distinctFeatureList)
+        {
+            // If the current unknown is missing any feature points, rediscover them
+            // algorithmically
+            if (individual.FinOutline != null && !individual.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
+                individual.FinOutline.RediscoverFeaturePoints(featureSetType);
         }
 
         // Pass-through

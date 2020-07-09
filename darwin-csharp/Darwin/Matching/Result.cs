@@ -63,6 +63,12 @@ namespace Darwin.Matching
             ImageFilename = filename; //  001DB
             Position = position;
             Error = error;
+            if (error >= 0.0 && error <= 1.0)
+            {
+                Confidence = 1.0f - error;
+                if (Confidence < 0.0)
+                    Confidence = 0.0;
+            }
             IDCode = idcode;
             Name = name;
             Damage = damage;
@@ -117,6 +123,7 @@ namespace Darwin.Matching
             ImageFilename = r.ImageFilename;
             Position = r.Position;
             Error = r.Error;
+            Confidence = r.Confidence;
             IDCode = r.IDCode;
             Name = r.Name;
             Damage = r.Damage;

@@ -1,4 +1,5 @@
 ﻿using Darwin.Database;
+using Darwin.Features;
 using Darwin.Matching;
 using Darwin.Wpf.Commands;
 using Darwin.Wpf.ViewModel;
@@ -121,11 +122,44 @@ namespace Darwin.Wpf
                     // TODO: Put this logic inside the MatchingQueue class?
                     if (_vm.MatchingQueue.Matches.Count < currentIndex + 1)
                     {
-                        _vm.MatchingQueue.Matches.Add(new Match(
-                            _vm.MatchingQueue.Fins[currentIndex],
-                            _vm.MatchingQueue.Database, null,
-                            _vm.MatchingQueue.RegistrationMethod,
-                            (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false));
+                        switch (_vm.MatchingQueue.Database.CatalogScheme.FeatureSetType)
+                        {
+                            case Features.FeatureSetType.DorsalFin:
+                                _vm.MatchingQueue.Matches.Add(new Match(
+                                    _vm.MatchingQueue.Fins[currentIndex],
+                                    _vm.MatchingQueue.Database, null,
+                                    _vm.MatchingQueue.RegistrationMethod,
+                                    (_vm.MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false));
+                                break;
+
+                            case Features.FeatureSetType.Bear:
+                                var matchFactors = MatchFactorPresets.CreateBearMatchFactors(_vm.MatchingQueue.Database);
+
+                                _vm.MatchingQueue.Matches.Add(new Match(
+                                    _vm.MatchingQueue.Fins[currentIndex],
+                                    _vm.MatchingQueue.Database,
+                                    null,
+                                    matchFactors));
+
+                                // Check whether our unknown has our latest features, and add them if not
+                                var featurePointTypes = new List<FeaturePointType>();
+
+                                foreach (var factor in matchFactors)
+                                {
+                                    if (factor.DependentFeatures != null)
+                                        featurePointTypes.AddRange(factor.DependentFeatures);
+                                }
+
+                                var distinctFeatureList = featurePointTypes.Distinct().ToList();
+
+                                _vm.CheckDatabaseFin(
+                                    _vm.MatchingQueue.Matches[currentIndex].UnknownFin,
+                                    _vm.MatchingQueue.Database.CatalogScheme.FeatureSetType, distinctFeatureList);
+                                break;
+
+                            default:
+                                throw new NotImplementedException();
+                        }
 
                         // This needs to run on the UI thread since it affects dependency objects
                         Dispatcher.BeginInvoke(new Action(() =>
@@ -135,9 +169,7 @@ namespace Darwin.Wpf
                     }
 
                     // Do Work
-                    // TODO: The registration method is hardcoded here.
-                    float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleFin(_vm.MatchingQueue.Database.Categories.ToList()); 
-
+                    float percentComplete = _vm.MatchingQueue.Matches[currentIndex].MatchSingleIndividual(_vm.MatchingQueue.Database.Categories.ToList()); 
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 
@@ -249,6 +281,8 @@ namespace Darwin.Wpf
 
         private void RunMatchButton_Click(object sender, RoutedEventArgs e)
         {
+
+
             _matchingWorker.RunWorkerAsync();
         }
     }

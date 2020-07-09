@@ -2917,8 +2917,12 @@ namespace Darwin.Matching
                 int controlPoint2PosUnk = unknownControlPoint2 + ((jumpComboList.Count > 0) ? jumpComboList[3] : 0);
                 int controlPoint3PosUnk = unknownControlPoint3 + ((jumpComboList.Count > 0) ? jumpComboList[4] : 0);
 
-                if (controlPoint3PosUnk > preMapUnknown.Length)
-                    controlPoint3PosUnk = preMapUnknown.Length - 1;
+                ConstraintHelper.ConstrainInt(ref controlPoint1PosDB, 0, floatDBContour.Length - 1);
+                ConstraintHelper.ConstrainInt(ref controlPoint2PosDB, 0, floatDBContour.Length - 1);
+
+                ConstraintHelper.ConstrainInt(ref controlPoint1PosUnk, 0, preMapUnknown.Length - 1);
+                ConstraintHelper.ConstrainInt(ref controlPoint2PosUnk, 0, preMapUnknown.Length - 1);
+                ConstraintHelper.ConstrainInt(ref controlPoint3PosUnk, 0, preMapUnknown.Length - 1);
 
                 var shiftedDBControlPoint1Coords = floatDBContour[controlPoint1PosDB];
                 var shiftedDBControlPoint2Coords = floatDBContour[controlPoint2PosDB];

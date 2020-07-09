@@ -127,7 +127,7 @@ namespace Darwin.Wpf
                 else
                 {
                     // Do Work
-                    float percentComplete = _vm.Match.MatchSingleFin(_vm.SelectableCategories.Where(c => c.IsSelected).ToList()); 
+                    float percentComplete = _vm.Match.MatchSingleIndividual(_vm.SelectableCategories.Where(c => c.IsSelected).ToList()); 
 
                     int roundedProgress = (int)Math.Round(percentComplete * 100);
 

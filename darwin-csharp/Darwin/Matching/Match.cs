@@ -260,7 +260,7 @@ namespace Darwin.Matching
         //    QUEUES are being processed, and it keeps the fin numbers correct even if the
         //    database is later modified.
         //
-        public float MatchSingleFin(List<Category> categoriesToMatch)
+        public float MatchSingleIndividual(List<Category> categoriesToMatch)
         {
             if (MatchFactors == null || MatchFactors.Count < 1)
                 throw new Exception("Match factors haven't been set yet!");
@@ -300,62 +300,69 @@ namespace Darwin.Matching
                 List<MatchFactorError> rawError = new List<MatchFactorError>();
 
                 int factorIndex = 0;
-                foreach (var factor in MatchFactors)
+                try
                 {
-                    var factorResult = factor.FindErrorBetweenIndividuals(UnknownFin, thisDBFin);
-
-                    if (factor.MatchFactorType == MatchFactorType.Outline)
+                    foreach (var factor in MatchFactors)
                     {
-                        Vector<double> saveRawRatios = null;
-                        if (matchErrorResult.RawRatios != null)
-                            saveRawRatios = matchErrorResult.RawRatios;
+                        var factorResult = factor.FindErrorBetweenIndividuals(UnknownFin, thisDBFin);
 
-                        Vector<double> saveRHat = null;
-                        if (matchErrorResult.RHat != null)
-                            saveRHat = matchErrorResult.RHat;
+                        if (factor.MatchFactorType == MatchFactorType.Outline)
+                        {
+                            Vector<double> saveRawRatios = null;
+                            if (matchErrorResult.RawRatios != null)
+                                saveRawRatios = matchErrorResult.RawRatios;
 
-                        Vector<double> saveDBRHat = null;
-                        if (matchErrorResult.DBRHat != null)
-                            saveDBRHat = matchErrorResult.DBRHat;
+                            Vector<double> saveRHat = null;
+                            if (matchErrorResult.RHat != null)
+                                saveRHat = matchErrorResult.RHat;
 
-                        Vector<double> saveDBRawRatios = null;
-                        if (matchErrorResult.DBRawRatios != null)
-                            saveDBRawRatios = matchErrorResult.DBRawRatios;
+                            Vector<double> saveDBRHat = null;
+                            if (matchErrorResult.DBRHat != null)
+                                saveDBRHat = matchErrorResult.DBRHat;
 
-                        matchErrorResult = factorResult;
+                            Vector<double> saveDBRawRatios = null;
+                            if (matchErrorResult.DBRawRatios != null)
+                                saveDBRawRatios = matchErrorResult.DBRawRatios;
 
-                        if (factorResult.Contour1 != null)
-                            UnknownFin.FinOutline.RemappedChainPoints = factorResult.Contour1;
+                            matchErrorResult = factorResult;
 
-                        if (saveRawRatios != null)
-                            matchErrorResult.RawRatios = saveRawRatios;
-                        if (saveRHat != null)
-                            matchErrorResult.RHat = saveRHat;
-                        if (saveDBRawRatios != null)
-                            matchErrorResult.DBRawRatios = saveDBRawRatios;
-                        if (saveDBRHat != null)
-                            matchErrorResult.DBRHat = saveDBRHat;
+                            if (factorResult.Contour1 != null)
+                                UnknownFin.FinOutline.RemappedChainPoints = factorResult.Contour1;
+
+                            if (saveRawRatios != null)
+                                matchErrorResult.RawRatios = saveRawRatios;
+                            if (saveRHat != null)
+                                matchErrorResult.RHat = saveRHat;
+                            if (saveDBRawRatios != null)
+                                matchErrorResult.DBRawRatios = saveDBRawRatios;
+                            if (saveDBRHat != null)
+                                matchErrorResult.DBRHat = saveDBRHat;
+                        }
+                        else
+                        {
+                            matchErrorResult.RawRatios = factorResult.RawRatios;
+                            matchErrorResult.RHat = factorResult.RHat;
+                            matchErrorResult.DBRawRatios = factorResult.DBRawRatios;
+                            matchErrorResult.DBRHat = factorResult.DBRHat;
+                        }
+
+                        // We're going to rescale this later -- should probably remove this
+                        // errorBetweenFins += factor.Weight * result.Error;
+                        var matchFactorError = new MatchFactorError
+                        {
+                            FactorIndex = factorIndex,
+                            Error = factorResult.Error,
+                            Weight = factor.Weight
+                        };
+                        rawError.Add(matchFactorError);
+                        RawErrorTracking.Add(matchFactorError);
+
+                        factorIndex += 1;
                     }
-                    else
-                    {
-                        matchErrorResult.RawRatios = factorResult.RawRatios;
-                        matchErrorResult.RHat = factorResult.RHat;
-                        matchErrorResult.DBRawRatios = factorResult.DBRawRatios;
-                        matchErrorResult.DBRHat = factorResult.DBRHat;
-                    }
-
-                    // We're going to rescale this later -- should probably remove this
-                    // errorBetweenFins += factor.Weight * result.Error;
-                    var matchFactorError = new MatchFactorError
-                    {
-                        FactorIndex = factorIndex,
-                        Error = factorResult.Error,
-                        Weight = factor.Weight
-                    };
-                    rawError.Add(matchFactorError);
-                    RawErrorTracking.Add(matchFactorError);
-
-                    factorIndex += 1;
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
                 }
 
                 // Now, store the result
