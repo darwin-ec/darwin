@@ -1,4 +1,5 @@
-﻿using Darwin.Helpers;
+﻿using Darwin.Extensions;
+using Darwin.Helpers;
 using Darwin.Utilities;
 using System;
 using System.Collections.Generic;
@@ -295,7 +296,7 @@ namespace Darwin.Database
 
 				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppendPng);
 
-				fin.FinImage.Save(fin.ImageFilename);
+				fin.FinImage.SaveAsCompressedPng(fin.ImageFilename);
 
 				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
 
@@ -389,11 +390,11 @@ namespace Darwin.Database
 
 			if (databaseFin.FinImage != null)
             {
-				databaseFin.FinImage.Save(modifiedImageSaveAs);
+				databaseFin.FinImage.SaveAsCompressedPng(modifiedImageSaveAs);
             }
 			else
             {
-				databaseFin.OriginalFinImage.Save(modifiedImageSaveAs);
+				databaseFin.OriginalFinImage.SaveAsCompressedPng(modifiedImageSaveAs);
             }
 
 			// Now let's overwrite the filenames without any paths

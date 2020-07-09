@@ -362,7 +362,7 @@ namespace Darwin.Database
                 {
                     dmgCat = SelectDamageCategoryByName(fin.DamageCategory);
 
-                    if (dmgCat.ID == -1)
+                    if (dmgCat == null || dmgCat.ID == -1)
                         dmgCat = SelectDamageCategoryByName("NONE");
 
                     individual.idcode = fin.IDCode;
@@ -825,7 +825,7 @@ namespace Darwin.Database
             {
                 catalogScheme.Categories[i].Order = i;
 
-                if (catalogScheme.Categories[i].ID > 0)
+                if (catalogScheme.Categories[i].ID > 0 && SelectDamageCategoryByID(catalogScheme.Categories[i].ID) != null)
                 {
                     UpdateDamageCategory(conn, catalogScheme.Categories[i]);
                 }

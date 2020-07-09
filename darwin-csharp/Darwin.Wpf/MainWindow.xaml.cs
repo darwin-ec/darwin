@@ -22,6 +22,7 @@ using System.ComponentModel;
 using Darwin.Utilities;
 using System.Diagnostics;
 using System.IO;
+using Darwin.Extensions;
 
 namespace Darwin.Wpf
 {
@@ -140,7 +141,6 @@ namespace Darwin.Wpf
             openDialog.Filter = CustomCommands.OpenImageFilter;
             if (openDialog.ShowDialog() == true)
             {
-                // TODO: Move this logic into the constructor?
                 var vm = new TraceWindowViewModel(openDialog.FileName, _vm.DarwinDatabase);
 
                 TraceWindow traceWindow = new TraceWindow(vm);

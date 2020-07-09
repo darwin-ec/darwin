@@ -49,7 +49,8 @@ namespace Darwin.Matching
             }
         }
 
-        public Match(DatabaseFin unknownFin,
+        public Match(
+            DatabaseFin unknownFin,
             DarwinDatabase db,
             UpdateDisplayOutlinesDelegate updateOutlines)
         {
@@ -68,13 +69,8 @@ namespace Darwin.Matching
             MatchResults = new MatchResults(unknownFin.IDCode, unknownFin?.FinFilename, db?.Filename);
         }
 
-        //*******************************************************************
-        //
-        // Match::Match(...)
-        //
-        //    CONSTRUCTOR
-        //
-        public Match(DatabaseFin unknownFin,
+        public Match(
+            DatabaseFin unknownFin,
             DarwinDatabase db,
             UpdateDisplayOutlinesDelegate updateOutlines,
             RegistrationMethodType registrationMethod,
@@ -84,13 +80,33 @@ namespace Darwin.Matching
             SetMatchOptions(registrationMethod, useFullFinError);
         }
 
-        public Match(DatabaseFin unknownFin,
+        public Match(
+            DatabaseFin unknownFin,
             DarwinDatabase db,
             UpdateDisplayOutlinesDelegate updateOutlines,
-            List<MatchFactor> matchFactors)
+            List<MatchFactor> matchFactors,
+            bool createDefaultFactors = false)
             : this(unknownFin, db, updateOutlines)
         {
-            MatchFactors = matchFactors;
+            if (!createDefaultFactors)
+            {
+                MatchFactors = matchFactors;
+            }
+            else if (Database.CatalogScheme != null)
+            {
+                switch (db.CatalogScheme.FeatureSetType)
+                {
+                    case FeatureSetType.DorsalFin:
+                        SetMatchOptions(RegistrationMethodType.TrimOptimalTip, true);
+                        break;
+
+                    case FeatureSetType.Bear:
+                        MatchFactors = MatchFactorPresets.CreateBearMatchFactors(db);
+                        break;
+                }
+            }
+
+            CheckUnknownForRequiredFeatures();
         }
 
         public void SetMatchOptions(
@@ -99,7 +115,7 @@ namespace Darwin.Matching
         {
             MatchFactors = new List<MatchFactor>();
 
-            // TODO: Move this elsewhere, change for Fins/Bears
+            // TODO: Move this elsewhere, change for Fins/Bears?
             var controlPoints = new List<FeaturePointType> { FeaturePointType.LeadingEdgeBegin, FeaturePointType.Tip, FeaturePointType.PointOfInflection };
 
             switch (registrationMethod)
@@ -199,6 +215,8 @@ namespace Darwin.Matching
                 default:
                     throw new NotImplementedException();
             }
+
+            CheckUnknownForRequiredFeatures();
         }
 
         /// <summary>
@@ -447,6 +465,28 @@ namespace Darwin.Matching
             }
 
             return (float)CurrentFinIndex / Database.AllFins.Count;
+        }
+
+        private void CheckUnknownForRequiredFeatures()
+        {
+            if (UnknownFin == null || MatchFactors == null || MatchFactors.Count < 1)
+                return;
+
+            // Check whether our unknown has our latest features, and add them if not
+            var featurePointTypes = new List<FeaturePointType>();
+
+            foreach (var factor in MatchFactors)
+            {
+                if (factor.DependentFeatures != null)
+                    featurePointTypes.AddRange(factor.DependentFeatures);
+            }
+
+            var distinctFeatureList = featurePointTypes.Distinct().ToList();
+
+            // If the current unknown is missing any feature points, rediscover them
+            // algorithmically
+            if (Database.CatalogScheme != null && UnknownFin.FinOutline != null && !UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
+                UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
         }
     }
 }

@@ -1,10 +1,18 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Rectangle = System.Drawing.Rectangle;
+using Color = System.Drawing.Color;
+using ColorMatrix = System.Drawing.Imaging.ColorMatrix;
 
 namespace Darwin.Extensions
 {
@@ -73,6 +81,29 @@ namespace Darwin.Extensions
             }
 
             return enhancedContrastBitmap;
+        }
+
+        public static void SaveAsCompressedPng(this Bitmap bitmap, string filename)
+        {
+            using (FileStream fs = File.Create(filename))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    using (var imageSharpImage = SixLabors.ImageSharp.Image.Load<Bgr24>(memoryStream))
+                    {
+                        var encoder = new PngEncoder
+                        {
+                            CompressionLevel = PngCompressionLevel.BestCompression
+                        };
+
+                        imageSharpImage.SaveAsPng(fs, encoder);
+                    }
+                }
+            }
         }
 
         /// <summary>

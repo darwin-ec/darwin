@@ -164,14 +164,6 @@ namespace Darwin.Wpf.ViewModel
                 SelectedFin = MatchingQueue.Fins.First();
         }
 
-        public void CheckDatabaseFin(DatabaseFin individual, FeatureSetType featureSetType, List<FeaturePointType> distinctFeatureList)
-        {
-            // If the current unknown is missing any feature points, rediscover them
-            // algorithmically
-            if (individual.FinOutline != null && !individual.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
-                individual.FinOutline.RediscoverFeaturePoints(featureSetType);
-        }
-
         // Pass-through
         public MatchResults LoadMatchResults(string filename, out DarwinDatabase database, out DatabaseFin databaseFin)
         {

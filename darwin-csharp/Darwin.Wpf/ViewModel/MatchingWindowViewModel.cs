@@ -248,12 +248,11 @@ namespace Darwin.Wpf.ViewModel
             }
             else
             {
-                var matchFactors = MatchFactorPresets.CreateBearMatchFactors(Database);
-
                 Match = new Match(DatabaseFin,
                     Database,
                     UpdateOutlines,
-                    matchFactors);
+                    null,
+                    true);
             }
 
             UpdateOutlines(DatabaseFin.FinOutline.ChainPoints, null);

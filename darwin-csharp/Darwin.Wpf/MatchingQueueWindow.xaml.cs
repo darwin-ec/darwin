@@ -133,28 +133,12 @@ namespace Darwin.Wpf
                                 break;
 
                             case Features.FeatureSetType.Bear:
-                                var matchFactors = MatchFactorPresets.CreateBearMatchFactors(_vm.MatchingQueue.Database);
-
                                 _vm.MatchingQueue.Matches.Add(new Match(
                                     _vm.MatchingQueue.Fins[currentIndex],
                                     _vm.MatchingQueue.Database,
                                     null,
-                                    matchFactors));
-
-                                // Check whether our unknown has our latest features, and add them if not
-                                var featurePointTypes = new List<FeaturePointType>();
-
-                                foreach (var factor in matchFactors)
-                                {
-                                    if (factor.DependentFeatures != null)
-                                        featurePointTypes.AddRange(factor.DependentFeatures);
-                                }
-
-                                var distinctFeatureList = featurePointTypes.Distinct().ToList();
-
-                                _vm.CheckDatabaseFin(
-                                    _vm.MatchingQueue.Matches[currentIndex].UnknownFin,
-                                    _vm.MatchingQueue.Database.CatalogScheme.FeatureSetType, distinctFeatureList);
+                                    null,
+                                    true));
                                 break;
 
                             default:

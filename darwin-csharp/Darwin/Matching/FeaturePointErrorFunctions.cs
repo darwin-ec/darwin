@@ -7,8 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Text;
+
+using Complex = System.Numerics.Complex;
 
 namespace Darwin.Matching
 {
