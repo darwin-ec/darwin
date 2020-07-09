@@ -8,10 +8,15 @@ namespace Darwin.Matching
     {
     }
 
-    public class FinFlagsMatchOptions : MatchOptions
+    public class OutlineMatchOptions : MatchOptions
     {
         public bool MoveTip { get; set; }
         public bool MoveEndsInAndOut { get; set; }
         public bool UseFullFinError { get; set; }
+    }
+
+    public class FeatureSetMatchOptions : MatchOptions
+    {
+        public bool UseRemappedOutline { get; set; }
     }
 }

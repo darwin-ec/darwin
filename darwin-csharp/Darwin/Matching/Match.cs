@@ -158,7 +158,7 @@ namespace Darwin.Matching
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
-                        new FinFlagsMatchOptions
+                        new OutlineMatchOptions
                         {
                             MoveTip = false,
                             MoveEndsInAndOut = false,
@@ -173,7 +173,7 @@ namespace Darwin.Matching
                         OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
-                        new FinFlagsMatchOptions
+                        new OutlineMatchOptions
                         {
                             MoveTip = true,
                             MoveEndsInAndOut = false,
@@ -187,7 +187,7 @@ namespace Darwin.Matching
                         OutlineErrorFunctions.AreaBasedErrorBetweenOutlineSegments,
                         OutlineErrorFunctions.FindErrorBetweenFinsOptimal,
                         _updateOutlines,
-                        new FinFlagsMatchOptions
+                        new OutlineMatchOptions
                         {
                             MoveTip = true,
                             MoveEndsInAndOut = false,
@@ -324,6 +324,9 @@ namespace Darwin.Matching
 
                         matchErrorResult = factorResult;
 
+                        if (factorResult.Contour1 != null)
+                            UnknownFin.FinOutline.RemappedChainPoints = factorResult.Contour1;
+
                         if (saveRawRatios != null)
                             matchErrorResult.RawRatios = saveRawRatios;
                         if (saveRHat != null)
@@ -391,7 +394,7 @@ namespace Darwin.Matching
                 MatchResults.AddResult(r);
             }
 
-            CurrentFinIndex++;
+            CurrentFinIndex += 1;
 
             if (CurrentFinIndex >= Database.AllFins.Count)
             {

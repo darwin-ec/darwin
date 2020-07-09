@@ -655,7 +655,7 @@ namespace Darwin.Matching
             if (dbFin == null)
                 throw new ArgumentNullException(nameof(dbFin));
 
-            FinFlagsMatchOptions matchOptions = options as FinFlagsMatchOptions;
+            OutlineMatchOptions matchOptions = options as OutlineMatchOptions;
 
             //***1.85 - new function pointer to generalize algorithm
             // errorBetweenOutlines = meanSquaredErrorBetweenOutlineSegments;

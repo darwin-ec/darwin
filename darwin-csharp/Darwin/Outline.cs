@@ -202,6 +202,17 @@ namespace Darwin
             return _chainPoints[FeatureSet.FeaturePoints[type].Position];
         }
 
+        public PointF GetRemappedFeaturePointCoords(FeaturePointType type)
+        {
+            if (type == FeaturePointType.NoFeature)
+                throw new ArgumentOutOfRangeException(nameof(type));
+
+            if (_remappedChainPoints != null)
+                return _remappedChainPoints[FeatureSet.FeaturePoints[type].Position];
+
+            return _chainPoints[FeatureSet.FeaturePoints[type].Position];
+        }
+
         // returns the type of feature point closest to the given point
         public OutlineFeaturePoint FindClosestFeaturePoint(PointF p)
         {

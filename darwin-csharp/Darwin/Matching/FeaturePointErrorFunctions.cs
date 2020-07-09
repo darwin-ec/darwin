@@ -117,12 +117,18 @@ namespace Darwin.Matching
             DatabaseFin individual,
             List<FeaturePointType> benchmarkFeatures,
             List<FeaturePointType> landmarkFeatures,
-            List<IEnumerable<FeaturePointType>> ratioPermutations)
+            List<IEnumerable<FeaturePointType>> ratioPermutations,
+            bool useRemappedOutline = false)
         {
             var coordinates = new Dictionary<FeaturePointType, PointF>();
 
             foreach (var featurePoint in landmarkFeatures)
-                coordinates[featurePoint] = individual.FinOutline.GetFeaturePointCoords(featurePoint);
+            {
+                if (useRemappedOutline)
+                    coordinates[featurePoint] = individual.FinOutline.GetRemappedFeaturePointCoords(featurePoint);
+                else
+                    coordinates[featurePoint] = individual.FinOutline.GetFeaturePointCoords(featurePoint);
+            }
 
             var benchmarkDistance = MathHelper.GetDistance(
                 coordinates[benchmarkFeatures[0]].X,
@@ -291,11 +297,18 @@ namespace Darwin.Matching
             if (databaseFin == null)
                 throw new ArgumentNullException(nameof(databaseFin));
 
+            bool useRemappedOutline = false;
+
+            var featureSetMatchOptions = options as FeatureSetMatchOptions;
+            if (featureSetMatchOptions != null)
+                useRemappedOutline = featureSetMatchOptions.UseRemappedOutline;
+
             // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
             Vector<double> unknownRatiosUncorrected = CalculateRatios(unknownFin,
                 ratioComparison.BenchmarkFeatures,
                 ratioComparison.LandmarkFeatures,
-                ratioComparison.RatioPermutations);
+                ratioComparison.RatioPermutations,
+                useRemappedOutline);
 
             var unknownRatios = unknownRatiosUncorrected - ratioComparison.AverageRatios;
 
@@ -346,11 +359,18 @@ namespace Darwin.Matching
             if (databaseFin == null)
                 throw new ArgumentNullException(nameof(databaseFin));
 
+            bool useRemappedOutline = false;
+
+            var featureSetMatchOptions = options as FeatureSetMatchOptions;
+            if (featureSetMatchOptions != null)
+                useRemappedOutline = featureSetMatchOptions.UseRemappedOutline;
+
             // TODO: Some of this is the same for each comparison, so we're doing extra work here.  Might want to refactor some of this.
             Vector<double> unknownRatiosUncorrected = CalculateRatios(unknownFin,
                 ratioComparison.BenchmarkFeatures,
                 ratioComparison.LandmarkFeatures,
-                ratioComparison.RatioPermutations);
+                ratioComparison.RatioPermutations,
+                useRemappedOutline);
 
             var unknownRatios = unknownRatiosUncorrected - ratioComparison.AverageRatios;
 

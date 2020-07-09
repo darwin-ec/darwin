@@ -248,9 +248,7 @@ namespace Darwin.Wpf.ViewModel
             }
             else
             {
-                // TODO: This should come from config or user input or something. Temporary to get things
-                // going
-                var matchFactors = CreateBearMatchFactors();
+                var matchFactors = MatchFactorPresets.CreateBearMatchFactors(Database);
 
                 Match = new Match(DatabaseFin,
                     Database,
@@ -263,59 +261,6 @@ namespace Darwin.Wpf.ViewModel
             ProgressBarVisibility = Visibility.Hidden;
 
             InitializeSelectableCategories();
-        }
-
-        // TODO: This should come from config or user input or something. Temporary to get things
-        // going
-        private List<MatchFactor> CreateBearMatchFactors()
-        {
-            var matchFactors = new List<MatchFactor>();
-
-            var controlPoints = new List<FeaturePointType>()
-            {
-                FeaturePointType.Nasion,
-                FeaturePointType.Tip,
-                FeaturePointType.PointOfInflection
-            };
-
-            var benchmarkFeatures = new List<FeaturePointType>()
-            {
-                FeaturePointType.Nasion,
-                FeaturePointType.Tip
-            };
-
-            var landmarkFeatures = new List<FeaturePointType>()
-            {
-                FeaturePointType.LeadingEdgeBegin,
-                FeaturePointType.Tip,
-                FeaturePointType.Nasion,
-                FeaturePointType.Notch,
-                FeaturePointType.PointOfInflection
-            };
-
-            matchFactors.Add(MatchFactor.CreateOutlineFactor(
-                0.5f,
-                controlPoints,
-                //OutlineErrorFunctions.MeanSquaredErrorBetweenOutlinesWithControlPoints,
-                OutlineErrorFunctions.MeanSquaredErrorBetweenOutlineSegments,
-                OutlineErrorFunctions.FindErrorBetweenOutlinesWithControlPointJitter,
-                new FinFlagsMatchOptions
-                {
-                    MoveTip = true,
-                    MoveEndsInAndOut = false,
-                    UseFullFinError = true
-                }));
-
-            matchFactors.Add(MatchFactor.CreateFeaturePointFactor(
-                0.5f,
-                benchmarkFeatures,
-                landmarkFeatures,
-                4, // Number of desired ratios
-                Database.AllFins,
-                FeaturePointErrorFunctions.ComputeMahalanobisDistance));
-                //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));
-
-            return matchFactors;
         }
 
         private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
