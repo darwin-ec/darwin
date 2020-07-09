@@ -2900,28 +2900,50 @@ namespace Darwin.Matching
             // 1% of the length of the db contour
             int jumpDistance = (int)Math.Round(0.01f * floatDBContour.Length);
             List<int> jumpOptions = new List<int>() { -1 * jumpDistance, 0, jumpDistance };
-            var jumpCombinations = EnumerableHelper.CombinationsWithRepetition(jumpOptions, 4);
+            
+            // The jump combinations here are combined with repetition, then used to move the control points
+            // in the loop below.
+            var jumpCombinationsEnumerable = EnumerableHelper.CombinationsWithRepetition(jumpOptions, 5);
+            var jumpCombinations = jumpCombinationsEnumerable.ToList();
+            //var blankJumpCombination = new List<int>();
+            //jumpCombinations.Add(blankJumpCombination);
 
             foreach (var jumpCombo in jumpCombinations)
             {
                 var jumpComboList = jumpCombo.ToList();
-                int controlPoint1PosDB = dbControlPoint1 + jumpComboList[0];
-                int controlPoint1PosUnk = unknownControlPoint1 + jumpComboList[1];
-                int controlPoint2PosDB = dbControlPoint2 + jumpComboList[2];
-                int controlPoint2PosUnk = unknownControlPoint2 + jumpComboList[3];
+                int controlPoint1PosDB = dbControlPoint1 + ((jumpComboList.Count > 0) ? jumpComboList[0] : 0);
+                int controlPoint1PosUnk = unknownControlPoint1 + ((jumpComboList.Count > 0) ? jumpComboList[1] : 0);
+                int controlPoint2PosDB = dbControlPoint2 + ((jumpComboList.Count > 0) ? jumpComboList[2] : 0);
+                int controlPoint2PosUnk = unknownControlPoint2 + ((jumpComboList.Count > 0) ? jumpComboList[3] : 0);
+                int controlPoint3PosUnk = unknownControlPoint3 + ((jumpComboList.Count > 0) ? jumpComboList[4] : 0);
+
+                if (controlPoint3PosUnk > preMapUnknown.Length)
+                    controlPoint3PosUnk = preMapUnknown.Length - 1;
 
                 var shiftedDBControlPoint1Coords = floatDBContour[controlPoint1PosDB];
                 var shiftedDBControlPoint2Coords = floatDBContour[controlPoint2PosDB];
                 var shiftedUnknownControlPoint1Coords = preMapUnknown[controlPoint1PosUnk];
                 var shiftedUnknownControlPoint2Coords = preMapUnknown[controlPoint2PosUnk];
-                
-                var mappedContour = preMapUnknown.MapContour(
-                        shiftedUnknownControlPoint2Coords,
-                        shiftedUnknownControlPoint1Coords,
-                        unknownControlPoint3Coords,
-                        shiftedDBControlPoint2Coords,
-                        shiftedDBControlPoint1Coords,
-                        dbControlPoint3Coord);
+                var shiftedUnknownControlPoint3Coords = preMapUnknown[controlPoint3PosUnk];
+
+                FloatContour mappedContour = null;
+
+                mappedContour = preMapUnknown.MapContour(
+                    shiftedUnknownControlPoint2Coords,
+                    shiftedUnknownControlPoint1Coords,
+                    shiftedUnknownControlPoint3Coords,
+                    shiftedDBControlPoint2Coords,
+                    shiftedDBControlPoint1Coords,
+                    dbControlPoint3Coord);
+
+                //// Just a 2D mapping with the first two control points. We're doing this
+                //// to try without the end of the trailing edge/end of the jaw, since that point
+                //// can move at times.
+                //mappedContour = preMapUnknown.MapContour2D(
+                //        shiftedUnknownControlPoint1Coords,
+                //        shiftedUnknownControlPoint2Coords,
+                //        shiftedDBControlPoint1Coords,
+                //        shiftedDBControlPoint2Coords);
 
                 if (!trimBeginLeadingEdge)
                 {
@@ -2981,6 +3003,9 @@ namespace Darwin.Matching
               
                 updateOutlines?.Invoke(mappedContour, floatDBContour);
 
+                //if (jumpComboList.Count < 1)
+                //    System.Threading.Thread.Sleep(5000);
+
                 if (newError < results.Error)
                 {
                     //***1.0LK - delete existing mapped contour and replace with new
@@ -2990,6 +3015,7 @@ namespace Darwin.Matching
                     // Set shifted feature point locations
                     results.Contour1ControlPoint1 = controlPoint1PosUnk;
                     results.Contour1ControlPoint2 = controlPoint2PosUnk;
+                    results.Contour1ControlPoint3 = controlPoint3PosUnk;
                     results.Contour2ControlPoint1 = controlPoint1PosDB;
                     results.Contour2ControlPoint2 = controlPoint2PosDB;
                 }

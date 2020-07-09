@@ -792,6 +792,7 @@ namespace Darwin.Wpf
 			StatusBarMessage.Text = "Moving " + feature.Name + " -- Drag into position and release mouse button.";
 
 			_movePosition = feature.Position;
+			Trace.WriteLine("Moving from position: " + _movePosition);
 
 			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
@@ -835,6 +836,8 @@ namespace Darwin.Wpf
 			if (posit > previous && posit < next)
 				_movePosition = posit;
 
+			Trace.WriteLine("Moving position: " + _movePosition);
+
 			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 		}
 
@@ -855,6 +858,8 @@ namespace Darwin.Wpf
 			_vm.Outline.SetFeaturePoint(_moveFeature, _movePosition);
 
 			_vm.Contour[_movePosition].Type = PointType.Feature;
+
+			Trace.WriteLine("Final moving position: " + _movePosition);
 
 			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;

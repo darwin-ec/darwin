@@ -289,7 +289,7 @@ namespace Darwin.Wpf.ViewModel
                 FeaturePointType.LeadingEdgeBegin,
                 FeaturePointType.Tip,
                 FeaturePointType.Nasion,
-                //FeaturePointType.Notch,
+                FeaturePointType.Notch,
                 FeaturePointType.PointOfInflection
             };
 
@@ -310,7 +310,7 @@ namespace Darwin.Wpf.ViewModel
                 0.5f,
                 benchmarkFeatures,
                 landmarkFeatures,
-                3, // Number of desired ratios
+                4, // Number of desired ratios
                 Database.AllFins,
                 FeaturePointErrorFunctions.ComputeMahalanobisDistance));
                 //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));

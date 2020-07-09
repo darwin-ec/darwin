@@ -353,6 +353,53 @@ namespace Darwin
             return newContour;
         }
 
+        /// <summary>
+        /// This will do a specific mapping with p1 and desP1 as centers and will
+        /// rotate, scale, and translate so that p1 and p2 are on top of desP1 and desP2,
+        /// respectively. Note: The precision on this isn't great -- would probably be better
+        /// to do the linear equation solving to find a transformation matrix similar to the 
+        /// regular MapContour method.
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="desP1"></param>
+        /// <param name="desP2"></param>
+        /// <returns></returns>
+        public FloatContour MapContour2D(
+            PointF p1,
+            PointF p2,
+            PointF desP1,
+            PointF desP2)
+        {
+            float currentAngle = p1.FindAngle(p2);
+            float desiredAngle = desP1.FindAngle(desP2);
+
+            float degreesToRotate = desiredAngle - currentAngle;
+
+            FloatContour transformedContour = this.Rotate(p1, degreesToRotate);
+
+            var p2rotated = p2.Rotate(p1, degreesToRotate);
+
+            // Figure out the scaling ratio
+            double currentDistance = MathHelper.GetDistance(p1.X, p1.Y, p2.X, p2.Y);
+            double targetDistance = MathHelper.GetDistance(desP1.X, desP1.Y, desP2.X, desP2.Y);
+
+            double scaleRatio = targetDistance / currentDistance;
+
+            // So we've rotated the contour, let's translate it so that p1 is on top of desP1
+            // and scale them at the same time.
+            double xDiff = desP1.X - p1.X * scaleRatio;
+            double yDiff = desP1.Y - p1.Y * scaleRatio;
+
+            foreach (var p in transformedContour.Points)
+            {
+                p.X = (float)((p.X + xDiff) * scaleRatio);
+                p.Y = (float)((p.Y + yDiff) * scaleRatio);
+            }
+
+            return transformedContour;
+        }
+
         public FloatContour MapContour(
             PointF p1,
             PointF p2,
