@@ -1781,7 +1781,10 @@ namespace Darwin.Wpf
 				if (string.IsNullOrEmpty(_vm.DatabaseFin.FinFilename))
 				{
 					dlg.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
-					dlg.FileName = "Untitled";
+					if (string.IsNullOrEmpty(_vm.DatabaseFin.IDCode))
+						dlg.FileName = "Untitled";
+					else
+						dlg.FileName = _vm.DatabaseFin.IDCode;
 				}
 				else
 				{

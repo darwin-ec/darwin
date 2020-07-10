@@ -26,7 +26,7 @@ namespace Darwin.Wpf.Commands
                 new KeyGesture(Key.O, ModifierKeys.Control)
             }
         );
-        public static string OpenImageFilter = "Image files|*.jpg;*.bmp;*.png;*.tif;*.ppm|All files|*.*";
+        public static string OpenImageFilter = "Image files|*.jpg;*.bmp;*.png;*.tif|All files|*.*";
 
         public static readonly RoutedUICommand OpenTracedFin = new RoutedUICommand(
             "Open Trace...",

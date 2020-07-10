@@ -331,18 +331,18 @@ namespace Darwin.Matching
                 sb.AppendLine();
 
                 if (numFinsWithID == 1)
-                    sb.AppendLine("Out of 1 fin with an ID");
+                    sb.AppendLine("Out of 1 " + Database.CatalogScheme.IndividualTerminology + " with an ID");
                 else
-                    sb.AppendLine("Out of " + numFinsWithID + " fins with IDs");
+                    sb.AppendLine("Out of " + numFinsWithID + " " + Database.CatalogScheme.IndividualTerminology + "s with IDs");
 
                 sb.AppendLine("\tAverage rank: " + ((float)rankingSum / numFinsWithID).ToString("N2"));
 
                 if (numTop10 == 0)
-                    sb.AppendLine("\tNo fins ranked in the top ten.");
+                    sb.AppendLine("\tNo " + Database.CatalogScheme.IndividualTerminology + "s ranked in the top ten.");
                 else if (numTop10 == 1)
-			        sb.AppendLine("\t1 fin (" + (float)1 / numFinsWithID * 100.0 + "%) ranked in the top ten.");
+			        sb.AppendLine("\t1 " + Database.CatalogScheme.IndividualTerminology + " (" + ((float)1 / numFinsWithID * 100.0).ToString("N2") + "%) ranked in the top ten.");
                  else
-			        sb.AppendLine("\t" + numTop10 + " fins (" + (float)numTop10 / numFinsWithID * 100.0 + "%) ranked in the top ten.");
+			        sb.AppendLine("\t" + numTop10 + " fins (" + ((float)numTop10 / numFinsWithID * 100.0).ToString("N2") + "%) ranked in the top ten.");
 
                 sb.AppendLine();
 
@@ -352,11 +352,11 @@ namespace Darwin.Matching
             }
 
             if (Fins.Count - numFinsWithID == 0)
-		        sb.AppendLine("All fins had an ID provided.");
+		        sb.AppendLine("All " + Database.CatalogScheme.IndividualTerminology + "s had an ID provided.");
             else if (Fins.Count - numFinsWithID == 1)
-		        sb.AppendLine("1 fin with no ID provided." );
+		        sb.AppendLine("1 " + Database.CatalogScheme.IndividualTerminology + " with no ID provided.");
             else
-		        sb.AppendLine((Fins.Count - numFinsWithID) + " fins with no ID provided.");
+		        sb.AppendLine((Fins.Count - numFinsWithID) + " " + Database.CatalogScheme.IndividualTerminology + "s with no ID provided.");
 
             return sb.ToString();
         }
