@@ -179,7 +179,7 @@ namespace Darwin.Wpf.ViewModel
                 throw new ArgumentNullException(nameof(filename));
 
             var finCopy = FullyLoadFin();
-            CatalogSupport.SaveFinz(finCopy, filename, true);
+            CatalogSupport.SaveFinz(DarwinDatabase.CatalogScheme, finCopy, filename, true);
         }
 
         public DatabaseFin FullyLoadFin()

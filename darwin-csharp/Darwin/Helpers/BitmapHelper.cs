@@ -33,6 +33,21 @@ namespace Darwin.Helpers
             return ResizeBitmap(bmp, newWidth, newHeight, InterpolationMode.NearestNeighbor);
         }
 
+        public static Bitmap ResizeKeepAspectRatio(Bitmap bmp, int maxWidth, int maxHeight)
+        {
+            // Figure out the ratio
+            double ratioX = (double)maxWidth / (double)bmp.Width;
+            double ratioY = (double)maxHeight / (double)bmp.Height;
+
+            // Use whichever multiplier is smaller
+            double ratio = ratioX < ratioY ? ratioX : ratioY;
+
+            int newHeight = Convert.ToInt32(bmp.Height * ratio);
+            int newWidth = Convert.ToInt32(bmp.Width * ratio);
+
+            return ResizeBitmap(bmp, newWidth, newHeight);
+        }
+
         public static Bitmap ResizeBitmap(Bitmap bmp, int newWidth, int newHeight, InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic)
         {
             if (bmp == null)
@@ -124,6 +139,37 @@ namespace Darwin.Helpers
             result.UnlockBits(resultData);
 
             return result;
+        }
+
+        public static ImageFormat GetImageFormatFromExtension(string filename)
+        {
+            string extension = Path.GetExtension(filename);
+
+            if (string.IsNullOrEmpty(extension))
+                throw new ArgumentOutOfRangeException(nameof(filename));
+
+            switch (extension.ToLower())
+            {
+                case ".bmp":
+                    return ImageFormat.Bmp;
+
+                case ".gif":
+                    return ImageFormat.Gif;
+
+                case ".jpg":
+                case ".jpeg":
+                    return ImageFormat.Jpeg;
+
+                case ".png":
+                    return ImageFormat.Png;
+
+                case ".tif":
+                case ".tiff":
+                    return ImageFormat.Tiff;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

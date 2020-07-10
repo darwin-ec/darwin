@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Darwin.Database
 {
     public static class CatalogSupport
     {
+		public const int FinzThumbnailMaxDim = 256;
 		public const string FinzDatabaseFilename = "database.db";
 
 		public static string CalculateDatabaseFilename(string darwinHome, string databaseName, string area = "default")
@@ -138,10 +140,11 @@ namespace Darwin.Database
 
 				List<ImageMod> imageMods;
 				bool thumbOnly;
-				string originalFilename;
+				string originalFilenameFromPng;
 				float normScale;
 
-				PngHelper.ParsePngText(fin.ImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilename);
+				// The old version kept this info inside PNG text.  The newer version saves it all in the SQLite database.
+				PngHelper.ParsePngText(fin.ImageFilename, out normScale, out imageMods, out thumbOnly, out originalFilenameFromPng);
 
 				if (imageMods != null && imageMods.Count > 0)
 					fin.ImageMods = imageMods;
@@ -149,33 +152,39 @@ namespace Darwin.Database
 				if (normScale != 1.0)
 					fin.Scale = normScale;
 
-				// TODO: Do something with thumbOnly?
+				string originalFilenameToUse = (string.IsNullOrEmpty(originalFilenameFromPng)) ? fin.OriginalImageFilename : originalFilenameFromPng;
 
-				// We're loading the image this way because Bitmap keeps a lock on the original file, and
-				// we want to try to delete the file below.  So we open the file in another object in a using statement
-				// then copy it over to our actual working object.
-				using (var imageFromFile = (Bitmap)Image.FromFile(fin.ImageFilename))
+				if (!string.IsNullOrEmpty(originalFilenameToUse))
 				{
-					fin.FinImage = new Bitmap(imageFromFile);
-					fin.FinImage?.SetResolution(96, 96);
-				}
+					fin.OriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(originalFilenameToUse));
 
-				if (!string.IsNullOrEmpty(originalFilename))
-				{
-					fin.OriginalImageFilename = Path.Combine(fullDirectoryName, Path.GetFileName(originalFilename));
-
+					// We're loading the image this way because Bitmap keeps a lock on the original file, and
+					// we want to try to delete the file below.  So we open the file in another object in a using statement
+					// then copy it over to our actual working object.
 					using (var originalImageFromFile = (Bitmap)Image.FromFile(fin.OriginalImageFilename))
 					{
 						fin.OriginalFinImage = new Bitmap(originalImageFromFile);
 						fin.OriginalFinImage?.SetResolution(96, 96);
 
 						if (fin.ImageMods != null)
-						{
 							fin.FinImage = ModificationHelper.ApplyImageModificationsToOriginal(fin.OriginalFinImage, fin.ImageMods);
-							fin.FinImage?.SetResolution(96, 96);
-						}
+                        else
+							fin.FinImage = new Bitmap(fin.OriginalFinImage);
+
+						fin.FinImage?.SetResolution(96, 96);
 					}
 				}
+
+				// TODO: Do something with thumbOnly?
+
+				// We're loading the image this way because Bitmap keeps a lock on the original file, and
+				// we want to try to delete the file below.  So we open the file in another object in a using statement
+				// then copy it over to our actual working object.
+				//using (var imageFromFile = (Bitmap)Image.FromFile(fin.ImageFilename))
+				//{
+				//	fin.FinImage = new Bitmap(imageFromFile);
+				//	fin.FinImage?.SetResolution(96, 96);
+				//}
 
 				return fin;
             }
@@ -265,8 +274,11 @@ namespace Darwin.Database
 			return results;
 		}
 
-		public static string SaveFinz(DatabaseFin fin, string filename, bool forceFilename = true)
+		public static string SaveFinz(CatalogScheme catalogScheme, DatabaseFin fin, string filename, bool forceFilename = true)
         {
+			if (catalogScheme == null)
+				throw new ArgumentNullException(nameof(catalogScheme));
+
 			if (fin == null)
 				throw new ArgumentNullException(nameof(fin));
 
@@ -284,11 +296,20 @@ namespace Darwin.Database
 				Directory.CreateDirectory(fullDirectoryName);
 
 				string originalDestination = Path.Combine(fullDirectoryName, Path.GetFileName(fin.OriginalImageFilename));
-				
+
 				if (File.Exists(fin.OriginalImageFilename))
+				{
 					File.Copy(fin.OriginalImageFilename, originalDestination);
+				}
 				else if (fin.OriginalFinImage != null)
-					fin.OriginalFinImage.Save(originalDestination);
+				{
+					var imageFormat = BitmapHelper.GetImageFormatFromExtension(originalDestination);
+
+					if (imageFormat == ImageFormat.Png)
+						fin.OriginalFinImage.SaveAsCompressedPng(originalDestination);
+					else
+						fin.OriginalFinImage.Save(originalDestination, imageFormat);
+				}
 
 				fin.OriginalImageFilename = originalDestination;
 
@@ -296,22 +317,22 @@ namespace Darwin.Database
 
 				fin.ImageFilename = Path.Combine(fullDirectoryName, Path.GetFileNameWithoutExtension(filename) + AppSettings.DarwinModsFilenameAppendPng);
 
-				fin.FinImage.SaveAsCompressedPng(fin.ImageFilename);
+				//fin.FinImage.SaveAsCompressedPng(fin.ImageFilename);
+
+				// Saving a thumbnail to save disk space.  We'll reconstruct this based on image mods when we open
+				// it back up.
+				var finImageThumbnail = BitmapHelper.ResizeKeepAspectRatio(fin.FinImage, FinzThumbnailMaxDim, FinzThumbnailMaxDim);
+				finImageThumbnail.SaveAsCompressedPng(fin.ImageFilename);
 
 				string dbFilename = Path.Combine(fullDirectoryName, "database.db");
 
-				CatalogScheme cat = Options.CurrentUserOptions.CatalogSchemes.Where(cs => cs.IsDefault).FirstOrDefault();
+				if (catalogScheme.Categories == null)
+					catalogScheme.Categories = new ObservableCollection<Category>();
 
-				if (cat == null)
-					cat = new CatalogScheme();
+				if (!catalogScheme.Categories.ToList().Exists(c => c != null && c.Name?.ToUpper() == fin.DamageCategory.ToUpper()))
+					catalogScheme.Categories.Add(new Category(fin.DamageCategory));
 
-				if (cat.Categories == null)
-					cat.Categories = new ObservableCollection<Category>();
-
-				if (!cat.Categories.ToList().Exists(c => c != null && c.Name?.ToUpper() == fin.DamageCategory.ToUpper()))
-					cat.Categories.Add(new Category(fin.DamageCategory));
-
-				SQLiteDatabase db = new SQLiteDatabase(dbFilename, cat, true);
+				SQLiteDatabase db = new SQLiteDatabase(dbFilename, catalogScheme, true);
 				db.Add(fin);
 
 				// The below before we try to create a ZIP is because SQLite tries to hold onto the database file
@@ -381,7 +402,12 @@ namespace Darwin.Database
             }
 			else
             {
-				databaseFin.OriginalFinImage.Save(originalImageSaveAs);
+				var imageFormat = BitmapHelper.GetImageFormatFromExtension(originalImageSaveAs);
+
+				if (imageFormat == ImageFormat.Png)
+					databaseFin.OriginalFinImage.SaveAsCompressedPng(originalImageSaveAs);
+				else
+					databaseFin.OriginalFinImage.Save(originalImageSaveAs, imageFormat);
             }
 
 			// Now save the modified image (or the original if for some reason we don't have the modified one)

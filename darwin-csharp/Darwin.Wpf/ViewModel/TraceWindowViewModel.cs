@@ -601,7 +601,7 @@ namespace Darwin.Wpf.ViewModel
 		public void SaveFinz(string filename)
         {
 			UpdateDatabaseFin();
-			CatalogSupport.SaveFinz(DatabaseFin, filename);
+			CatalogSupport.SaveFinz(Database.CatalogScheme, DatabaseFin, filename);
         }
 
 		public void SaveToDatabase()

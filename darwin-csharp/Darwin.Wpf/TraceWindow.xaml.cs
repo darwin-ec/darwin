@@ -17,6 +17,8 @@ using System.Drawing;
 using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 using System.Text;
+using Path = System.IO.Path;
+using FileInfo = System.IO.FileInfo;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -1760,7 +1762,7 @@ namespace Darwin.Wpf
 			}
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
 			if (_vm.Contour == null && _vm.Outline == null)
 			{
@@ -1775,15 +1777,44 @@ namespace Darwin.Wpf
 				}
 
 				SaveFileDialog dlg = new SaveFileDialog();
-				dlg.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
-				dlg.FileName = "Untitled";
+
+				if (string.IsNullOrEmpty(_vm.DatabaseFin.FinFilename))
+				{
+					dlg.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
+					dlg.FileName = "Untitled";
+				}
+				else
+				{
+					dlg.InitialDirectory = new FileInfo(_vm.DatabaseFin.FinFilename).Directory.FullName;
+					dlg.FileName = Path.GetFileName(_vm.DatabaseFin.FinFilename);
+				}
+
 				dlg.DefaultExt = ".finz";
 				dlg.Filter = CustomCommands.TracedFinFilter;
 
 				if (dlg.ShowDialog() == true)
 				{
-					_vm.SaveFinz(dlg.FileName);
-					StatusBarMessage.Text = "Finz file saved.";
+					try
+					{
+						this.IsHitTestVisible = false;
+						Mouse.OverrideCursor = Cursors.Wait;
+						
+						await Task.Run(() => _vm.SaveFinz(dlg.FileName));
+						StatusBarMessage.Text = "Finz file saved.";
+					}
+					catch (Exception ex)
+                    {
+						Mouse.OverrideCursor = null;
+						this.IsHitTestVisible = true;
+						Trace.Write(ex);
+						MessageBox.Show("There was an error saving your Finz file." + Environment.NewLine + Environment.NewLine +
+							"Please try again or contact support.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+					}
+					finally
+					{
+						Mouse.OverrideCursor = null;
+						this.IsHitTestVisible = true;
+					}
 				}
 			}
 		}

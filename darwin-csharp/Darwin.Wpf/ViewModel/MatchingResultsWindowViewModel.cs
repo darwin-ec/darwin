@@ -434,7 +434,7 @@ namespace Darwin.Wpf.ViewModel
         {
             string baseFilename = (string.IsNullOrEmpty(DatabaseFin.FinFilename)) ? DatabaseFin.ImageFilename : DatabaseFin.FinFilename;
             finzSaveFilename = Path.Combine(Options.CurrentUserOptions.CurrentTracedFinsPath, Path.GetFileNameWithoutExtension(baseFilename) + ".finz");
-            finzSaveFilename = CatalogSupport.SaveFinz(DatabaseFin, finzSaveFilename, false);
+            finzSaveFilename = CatalogSupport.SaveFinz(Database.CatalogScheme, DatabaseFin, finzSaveFilename, false);
 
             string resultsFilename = Path.GetFileNameWithoutExtension(Database.Filename) + "-DB-match-for-" + Path.GetFileNameWithoutExtension(baseFilename) + ".res";
             resultsSaveFilename = Path.Combine(Options.CurrentUserOptions.CurrentMatchQueueResultsPath, resultsFilename);
