@@ -283,6 +283,8 @@ namespace Darwin.Matching
             if (MatchFactors == null || MatchFactors.Count < 1)
                 throw new Exception("Match factors haven't been set yet!");
 
+            var stopWatch = System.Diagnostics.Stopwatch.StartNew();
+
             // If we have any factors missing updateOutlines, but we know what
             // the delegate should be, fill them in
             if (_updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
@@ -293,19 +295,10 @@ namespace Darwin.Matching
                 }
             }
 
-            DatabaseFin thisDBFin;
+            if (CurrentFinIndex >= Database.AllFins.Count)
+                return 100.0f;
 
-            do
-            {
-                if (CurrentFinIndex >= Database.AllFins.Count)
-                    return 100.0f;
-
-                thisDBFin = Database.AllFins[CurrentFinIndex];
-
-                if (null == thisDBFin)
-                    CurrentFinIndex++;
-            }
-            while (null == thisDBFin);
+            DatabaseFin thisDBFin = Database.AllFins[CurrentFinIndex];
 
             bool tryMatch = categoriesToMatch.Exists(c => c.Name.ToLower() == thisDBFin.DamageCategory.ToLower());
 
@@ -415,8 +408,11 @@ namespace Darwin.Matching
                 r.SetMappingControlPoints(
                     matchErrorResult.Contour1ControlPoint1, matchErrorResult.Contour1ControlPoint2, matchErrorResult.Contour1ControlPoint3,  // beginning, tip & end of unknown fin
                     matchErrorResult.Contour2ControlPoint1, matchErrorResult.Contour2ControlPoint2, matchErrorResult.Contour2ControlPoint3); // beginning, tip & end of database fin
-
+              
                 MatchResults.AddResult(r);
+
+                stopWatch.Stop();
+                MatchResults.TimeTaken += stopWatch.ElapsedMilliseconds;
             }
 
             CurrentFinIndex += 1;

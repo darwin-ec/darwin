@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Matching Queue" Height="485" Width="800">
+        Title="{Binding WindowTitle}" Height="485" Width="800">
     <Window.Resources>
         <converters:NullConverter x:Key="NullConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0">
+            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10,0,0,0" IsEnabled="{Binding Path=MatchingQueue.MatchRunning, Converter={StaticResource InverseBooleanConverter}}">
                 <Label>
                     <TextBlock>
                         Traced <Run Text="{Binding IndividualTerminologyInitialCaps,Mode=OneWay}"/>s
@@ -68,9 +68,9 @@
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
             <Button x:Name="RunMatchButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" IsDefault="True" Click="RunMatchButton_Click">Run Queue</Button>
-            <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click">View Results</Button>
+            <Button x:Name="ViewResultsButton" Click="ViewResultsButton_Click" IsEnabled="{Binding Path=MatchingQueue.MatchRunning, Converter={StaticResource InverseBooleanConverter}}">View Results</Button>
             <Button x:Name="SaveQueueButton" IsEnabled="{Binding MatchingQueue.QueueRunnable}" Click="SaveQueueButton_Click">Save Queue</Button>
-            <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click">Load Queue</Button>
+            <Button x:Name="LoadQueueButton" Click="LoadQueueButton_Click" IsEnabled="{Binding Path=MatchingQueue.MatchRunning, Converter={StaticResource InverseBooleanConverter}}">Load Queue</Button>
             <Button x:Name="CancelButton" Click="CancelButton_Click" IsCancel="True">Cancel</Button>
         </StackPanel>
     </Grid>

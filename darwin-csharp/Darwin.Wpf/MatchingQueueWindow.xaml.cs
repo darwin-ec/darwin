@@ -89,8 +89,15 @@ namespace Darwin.Wpf
                 }
                 else
                 {
-                    _vm.MatchingQueue.Fins.Add(fin);
-                    _vm.SelectedFin = _vm.MatchingQueue.Fins.Last();
+                    if (_vm.MatchingQueue.Fins.Where(f => f.FinFilename == fin.FinFilename).Any())
+                    {
+                        MessageBox.Show("This finz file was previously added to the queue.", "Already Added", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        _vm.MatchingQueue.Fins.Add(fin);
+                        _vm.SelectedFin = _vm.MatchingQueue.Fins.Last();
+                    }
                 }
             }
         }
@@ -111,6 +118,7 @@ namespace Darwin.Wpf
                 {
                     e.Cancel = true;
                     done = true;
+                    _vm.MatchingQueue.MatchRunning = false;
                 }
                 else if (_vm.PauseMatching)
                 {
@@ -172,7 +180,8 @@ namespace Darwin.Wpf
                         if (currentIndex >= _vm.MatchingQueue.Fins.Count - 1)
                         {
                             _vm.SaveMatchResults();
-                            done = true; 
+                            done = true;
+                            _vm.MatchingQueue.MatchRunning = false;
                         }
                         else
                         {
@@ -265,8 +274,6 @@ namespace Darwin.Wpf
 
         private void RunMatchButton_Click(object sender, RoutedEventArgs e)
         {
-
-
             _matchingWorker.RunWorkerAsync();
         }
     }

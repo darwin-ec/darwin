@@ -17,6 +17,17 @@ namespace Darwin.Wpf.ViewModel
     {
         private static object selectedFinSync = new object();
 
+        private string _windowTitle;
+        public string WindowTitle
+        {
+            get => _windowTitle;
+            set
+            {
+                _windowTitle = value;
+                RaisePropertyChanged("WindowTitle");
+            }
+        }
+
         private DatabaseFin _selectedFin;
         public DatabaseFin SelectedFin
         {
@@ -140,6 +151,8 @@ namespace Darwin.Wpf.ViewModel
 
         public MatchingQueueViewModel()
         {
+            WindowTitle = "Matching Queue";
+
             _database = CatalogSupport.OpenDatabase(Options.CurrentUserOptions.DatabaseFileName,
                 Options.CurrentUserOptions.DefaultCatalogScheme, false);
             MatchingQueue = new MatchingQueue(
@@ -152,6 +165,8 @@ namespace Darwin.Wpf.ViewModel
         public void SaveQueue(string filename)
         {
             MatchingQueue.SaveQueue(filename);
+
+            WindowTitle = "Matching Queue - " + System.IO.Path.GetFileName(filename);
         }
 
         // Pass-through
@@ -159,6 +174,7 @@ namespace Darwin.Wpf.ViewModel
         {
             SelectedFin = null;
             MatchingQueue.LoadQueue(filename);
+            WindowTitle = "Matching Queue - " + System.IO.Path.GetFileName(filename);
 
             if (MatchingQueue.Fins?.Count > 0)
                 SelectedFin = MatchingQueue.Fins.First();

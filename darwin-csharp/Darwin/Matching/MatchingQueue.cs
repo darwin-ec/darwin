@@ -3,6 +3,7 @@ using Darwin.Database;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,11 +13,6 @@ namespace Darwin.Matching
 {
     public class MatchingQueue : INotifyPropertyChanged
     {
-        // TODO: These need to be populated
-        public int NumValidTimes { get; set; }
-        public int TotalTime { get; set; }
-        public int NumInvalidTimes { get; set; }
-
         public int NumNoID { get; set; }
 
         private List<Match> _matches;
@@ -172,7 +168,7 @@ namespace Darwin.Matching
             {
                 foreach (var line in lines)
                 {
-                    var splitLine = line.Split(new char[] { ' ' });
+                    var splitLine = line.Split(new char[] { ' ' }, 2);
 
                     if (splitLine.Length > 1)
                     {
@@ -264,25 +260,34 @@ namespace Darwin.Matching
 
             StringBuilder sb = new StringBuilder();
 
+            var numValidTimes = Matches.Count(m => m.MatchResults.TimeTaken > 0);
+            var numInvalidTimes = Matches.Count(m => m.MatchResults.TimeTaken <= 0);
+            var totalTime = Matches.Sum(m => m.MatchResults.TimeTaken);
+
+            var averageTime = TimeSpan.FromMilliseconds(totalTime / numValidTimes);
+
             sb.AppendLine();
             sb.AppendLine("Matching completed.");
-            sb.Append("\tAverage time per match: " + ((NumValidTimes == 0) ? "[None]" : (TotalTime / NumValidTimes).ToString()) + " over ");
+            sb.Append("\tAverage time per match: " + ((numValidTimes == 0) ? "[None]" : String.Format(CultureInfo.CurrentCulture, "{0}m {1}s {2}ms",
+                averageTime.Minutes,
+                averageTime.Seconds,
+                averageTime.Milliseconds)) + " over ");
 
-            if (NumValidTimes == 0)
+            if (numValidTimes == 0)
                 sb.AppendLine("no valid times.");
-            else if (NumValidTimes == 1)
+            else if (numValidTimes == 1)
                 sb.AppendLine("1 valid time.");
             else
-                sb.AppendLine(NumValidTimes + " valid times.");
+                sb.AppendLine(numValidTimes + " valid times.");
 
-            if (NumInvalidTimes > 0)
+            if (numInvalidTimes > 0)
             {
                 sb.Append("Warning: ");
 
-                if (NumInvalidTimes == 1)
+                if (numInvalidTimes == 1)
                     sb.AppendLine("1 set of results didn't have a valid time entered.");
                 else
-                    sb.AppendLine(NumInvalidTimes + " sets of results didn't have valid times entered.");
+                    sb.AppendLine(numInvalidTimes + " sets of results didn't have valid times entered.");
             }
 
             sb.AppendLine();
@@ -330,7 +335,7 @@ namespace Darwin.Matching
                 else
                     sb.AppendLine("Out of " + numFinsWithID + " fins with IDs");
 
-                sb.AppendLine("\tAverage rank: " + (float)rankingSum / numFinsWithID);
+                sb.AppendLine("\tAverage rank: " + ((float)rankingSum / numFinsWithID).ToString("N2"));
 
                 if (numTop10 == 0)
                     sb.AppendLine("\tNo fins ranked in the top ten.");

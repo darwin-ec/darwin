@@ -9,7 +9,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="Darwin" Height="750" Width="1050" MinWidth="615" MinHeight="500">
+        Title="Darwin" Height="750" Width="1200" MinWidth="615" MinHeight="500">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" />
@@ -165,7 +165,7 @@
         </DataGrid>-->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="500" />
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>

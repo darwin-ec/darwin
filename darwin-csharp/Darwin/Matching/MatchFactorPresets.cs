@@ -53,12 +53,12 @@ namespace Darwin.Matching
                 landmarkFeatures,
                 3, // Number of desired ratios
                 database.AllFins,
+                //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance,
                 FeaturePointErrorFunctions.ComputeMahalanobisDistance,
                 new FeatureSetMatchOptions
                 {
                     UseRemappedOutline = false
                 }));
-            //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance));
 
             return matchFactors;
         }

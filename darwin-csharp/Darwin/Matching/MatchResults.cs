@@ -23,11 +23,11 @@ namespace Darwin.Matching
     public class MatchResults
     {
         public List<Result> Results { get; set; }
-
+        public float TimeTaken { get; set; }
         public MatchResults()
         {
             Results = new List<Result>();
-            mTimeTaken = -1.00f;
+            TimeTaken = 0f;
             _finID = string.Empty;
             TracedFinFile = string.Empty;
             DatabaseFile = string.Empty;
@@ -36,7 +36,7 @@ namespace Darwin.Matching
         public MatchResults(string id)
         {
             Results = new List<Result>();
-            mTimeTaken = -1.00f;
+            TimeTaken = 0f;
             _finID = id;
             TracedFinFile = string.Empty;
             DatabaseFile = string.Empty;
@@ -45,7 +45,7 @@ namespace Darwin.Matching
         public MatchResults(string id, string tracedFinFile, string databaseFile)
         {
             Results = new List<Result>();
-            mTimeTaken = -1.00f;
+            TimeTaken = 0f;
             _finID = id;
             TracedFinFile = tracedFinFile;
             DatabaseFile = databaseFile;
@@ -54,7 +54,7 @@ namespace Darwin.Matching
         //  008OL -- MatchResultsWindow calls constructor of this type and none existed
         public MatchResults(MatchResults results)
         { 
-            mTimeTaken = results.mTimeTaken;
+            TimeTaken = results.TimeTaken;
             _finID = results._finID;
             // TODO: This should probably clone
             Results = results.Results;
@@ -121,19 +121,6 @@ namespace Darwin.Matching
             return Results[resultNum];
         }
 
-        public void SetTimeTaken(float timeTaken)
-        {
-            mTimeTaken = timeTaken;
-        }
-
-        // getTimeTaken
-        // 	A return of -1.00 indicates that the amount of
-        // 	time is undefined.
-        public float GetTimeTaken()
-        {
-            return mTimeTaken;
-        }
-
         /// <summary>
         /// This will overwrite if the filename matches
         /// </summary>
@@ -158,8 +145,8 @@ namespace Darwin.Matching
                 }
 
 
-                if (mTimeTaken > 0.0)
-                    writer.WriteLine("Match Time: " + mTimeTaken + Environment.NewLine);
+                if (TimeTaken > 0.0)
+                    writer.WriteLine("Match Time: " + TimeTaken + Environment.NewLine);
 
                 writer.WriteLine(" Rank\tError\tID\tDBPosit\tunkBegin\tunkTip\tunkEnd\tdbBegin\tdbTip\tdbEnd\tDamage");
                 writer.WriteLine("_____________________________________________________________________");
@@ -404,7 +391,6 @@ namespace Darwin.Matching
             return result;
         }
 
-        private float mTimeTaken;
         private string _finID; // this is the unknown fin ID
     }
 }
