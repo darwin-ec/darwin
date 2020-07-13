@@ -128,6 +128,7 @@ namespace Darwin.Wpf.Commands
                 new KeyGesture(Key.R, ModifierKeys.Control)
             }
         );
+        public static string RestoreFilenameFilter = "Backup archives (*.zip)|*.zip";
 
         public static readonly RoutedUICommand CurrentCatalogScheme = new RoutedUICommand(
             "Current Catalog Scheme...",

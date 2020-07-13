@@ -192,6 +192,26 @@ namespace Darwin.Wpf.ViewModel
             return finCopy;
         }
 
+        public void CheckSurveyAreaDatabaseNameFromBackup(string backupFile, out string surveyArea, out string databaseName)
+        {
+            CatalogSupport.CheckSurveyAreaDatabaseNameFromBackup(backupFile, out surveyArea, out databaseName);
+        }
+
+        public void CloseDatabase()
+        {
+            DarwinDatabase = null;
+            SelectedFin = null;
+            Fins = null;
+            SelectedImageSource = null;
+            SelectedOriginalImageSource = null;
+            CatalogSupport.CloseDatabase(DarwinDatabase);
+        }
+
+        public string RestoreDatabase(string backupFile, string surveyArea, string databaseName)
+        {
+            return CatalogSupport.RestoreDatabase(backupFile, surveyArea, databaseName);
+        }
+
         private void LoadSelectedFin()
         {
             if (SelectedFin == null)

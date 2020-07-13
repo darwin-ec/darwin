@@ -539,5 +539,61 @@ namespace Darwin.Database
 
 			return finCopy;
 		}
+
+		public static string RestoreDatabase(string backupFile, string surveyArea, string databaseName)
+		{
+			var fullDatabaseName = CatalogSupport.CalculateDatabaseFilename(Options.CurrentUserOptions.CurrentDarwinHome, databaseName, surveyArea);
+
+			RebuildFolders(fullDatabaseName);
+
+			using (var fs = new FileStream(backupFile, FileMode.Open, FileAccess.Read))
+			{
+				using (var zipArchive = new ZipArchive(fs, ZipArchiveMode.Read))
+				{
+					string destinationDirectory = new FileInfo(fullDatabaseName).Directory.FullName;
+
+					// We need to loop through the entries, as we want to be able to overwrite the destination
+					// files.  There's no option to do that with ExtractToDirectory
+					foreach (var entry in zipArchive.Entries)
+						entry.ExtractToFile(Path.Combine(destinationDirectory, entry.FullName), true);
+				}
+			}
+
+			return fullDatabaseName;
+		}
+
+		public static void CloseDatabase(DarwinDatabase db)
+        {
+			//db = null;
+			SQLiteConnection.ClearAllPools();
+
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+        }
+
+		public static void CheckSurveyAreaDatabaseNameFromBackup(string backupFile, out string surveyArea, out string databaseName)
+        {
+			if (backupFile == null)
+				throw new ArgumentNullException(nameof(backupFile));
+
+			surveyArea = Path.GetFileName(backupFile).Split(new char[] { '_' })[0];
+
+			if (string.IsNullOrEmpty(surveyArea))
+				throw new ArgumentOutOfRangeException(nameof(backupFile));
+
+			databaseName = null;
+			using (var fs = new FileStream(backupFile, FileMode.Open, FileAccess.Read))
+			{
+				using (var zipArchive = new ZipArchive(fs, ZipArchiveMode.Read))
+				{
+					var dbEntry = zipArchive.Entries.Where(e => Path.GetExtension(e.Name).ToLowerInvariant() == ".db").FirstOrDefault();
+
+					if (dbEntry == null)
+						throw new ArgumentOutOfRangeException(nameof(backupFile));
+
+					databaseName = dbEntry.Name;
+				}
+			}
+        }
 	}
 }

@@ -31,7 +31,7 @@
         <CommandBinding Command="commands:CustomCommands.MatchingQueue" CanExecute="MatchingQueueCommand_CanExecute" Executed="MatchingQueueCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Backup" CanExecute="BackupCommand_CanExecute" Executed="BackupCommand_Executed" />
-        <CommandBinding Command="commands:CustomCommands.Restore" />
+        <CommandBinding Command="commands:CustomCommands.Restore" CanExecute="RestoreCommand_CanExecute" Executed="RestoreCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.ImportCatalog" />
         <CommandBinding Command="commands:CustomCommands.ImportFin" CanExecute="ImportFinCommand_CanExecute" Executed="ImportFinCommand_Executed" />

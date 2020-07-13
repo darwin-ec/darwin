@@ -23,6 +23,7 @@ using Darwin.Utilities;
 using System.Diagnostics;
 using System.IO;
 using Darwin.Extensions;
+using System.Threading;
 
 namespace Darwin.Wpf
 {
@@ -32,6 +33,8 @@ namespace Darwin.Wpf
     public partial class MainWindow : Window
     {
         private MainWindowViewModel _vm;
+        private const int NumRestoreRetries = 4;
+        private const int RestoreSleepMilliseconds = 2000;
 
         public MainWindow()
         {
@@ -294,6 +297,103 @@ namespace Darwin.Wpf
                 + Environment.NewLine
                 + Environment.NewLine
                 + backupFilename, "Backup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void RestoreCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void RestoreWorker(string backupFilename, string surveyArea, string databaseName)
+        {
+            // We have some files that might still be open.  So we're going to have a retry loop with a sleep
+            // and hopefully we get a chance to write over the files, if necessary
+
+            for (int i = 0; i < NumRestoreRetries; i ++)
+            {
+                try
+                {
+                    Thread.Sleep(RestoreSleepMilliseconds);
+
+                    // This is hacky, but let's force GC again.  Otherwise, the ListView -> Image often is still holding
+                    // exclusive access to thumbnails
+                    _vm.CloseDatabase();
+
+                    string dbFullFilename = _vm.RestoreDatabase(backupFilename, surveyArea, databaseName);
+
+                    // Run this back on the UI thread
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        OpenDatabase(dbFullFilename, true);
+                    }));
+                }
+                catch
+                {
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        private async void RestoreDatabaseAsync(string backupFilename, string surveyArea, string databaseName)
+        {
+            try
+            {
+                this.IsHitTestVisible = false;
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                await Task.Run(() => RestoreWorker(backupFilename, surveyArea, databaseName));
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+                this.IsHitTestVisible = true;
+            }
+        }
+
+        private void RestoreCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var restoreDialog = new OpenFileDialog();
+            restoreDialog.Filter = CustomCommands.RestoreFilenameFilter;
+            restoreDialog.InitialDirectory = Options.CurrentUserOptions.CurrentBackupsPath;
+
+            if (restoreDialog.ShowDialog() == true)
+            {
+                string surveyArea;
+                string databaseName;
+
+                try
+                {
+                    _vm.CheckSurveyAreaDatabaseNameFromBackup(restoreDialog.FileName, out surveyArea, out databaseName);
+
+                    if (string.IsNullOrEmpty(surveyArea) || string.IsNullOrEmpty(databaseName))
+                        throw new Exception("Empty value when reading from file.");
+
+                    var restoreQuestionResult = MessageBox.Show("You are about to replace the database below with the backup copy you selected.  DO NOT PROCEED " +
+                        "if you are attempting to move this database to a different location."
+                        + Environment.NewLine
+                        + Environment.NewLine
+                        + "DARWIN Home: " + Options.CurrentUserOptions.CurrentDarwinHome + Environment.NewLine
+                        + "Survey Area: " + surveyArea + Environment.NewLine
+                        + "Database: " + databaseName
+                        + Environment.NewLine + Environment.NewLine
+                        + "Are you sure you want to proceed with restoring the database in the location indicated?",
+                        "Caution, restore cannot be undone!", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (restoreQuestionResult == MessageBoxResult.Yes)
+                    {
+                        _vm.CloseDatabase();
+
+                        RestoreDatabaseAsync(restoreDialog.FileName, surveyArea, databaseName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                    MessageBox.Show("There was a problem with the backup you selected.  Please choose another or contact support.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void ImportFinCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
