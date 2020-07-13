@@ -827,7 +827,7 @@ namespace Darwin.Features
 
             // Note: We're starting at prevPosition, not prevPosition + 1, since
             // there might be a max in prevPosition itself
-            for (int j = prevPosition; j < len && highMax == -1; j++, highDist++)
+            for (int j = prevPosition; j < len && highMax == -1 && j < modmax.Length; j++, highDist++)
             {
                 if (modmax[j] > 0.0)
                     highMax = j;

@@ -20,6 +20,11 @@ namespace Darwin.Features
         private const int UnderNoseDentNumMinsToTrack = 5;
         private const float UnderNoseDentAfterTipPadding = 0.10f;
 
+        private const int UpperLipNumTransformsForMin = 6;
+        private const float UpperLipEndPadding = 0.50f;
+        private const float UpperLipDesiredAngle = -2;
+        private const int UpperLipTipPadding = 40;
+
         private const int NumChinMaxesToTrack = 5;
 
         private static Dictionary<FeaturePointType, string> FeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
@@ -29,6 +34,7 @@ namespace Darwin.Features
             { FeaturePointType.Nasion, "Nasion" },
             { FeaturePointType.Tip, "Tip of Nose" },
             { FeaturePointType.Notch, "Under Nose Dent" },
+            { FeaturePointType.UpperLip, "Upper Lip" },
             //{ FeaturePointType.Chin, "Chin" },
             { FeaturePointType.PointOfInflection, "End of Jaw" }
         };
@@ -44,6 +50,8 @@ namespace Darwin.Features
                 { FeaturePointType.Nasion, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
                 { FeaturePointType.Tip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
                 { FeaturePointType.Notch, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
+                //{ FeaturePointType.Chin, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Chin], Type = FeaturePointType.Chin, IsEmpty = true } },
+                { FeaturePointType.UpperLip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.UpperLip], Type = FeaturePointType.UpperLip, IsEmpty = true } },
                 { FeaturePointType.PointOfInflection, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
@@ -96,11 +104,19 @@ namespace Darwin.Features
                 int endLE = FindEndLE(chain, beginLE, tipPosition);
                 int endTE = FindPointOfInflection(chain, tipPosition);
 
+                bool hasMouthDent;
+                int mouthDentPosition;
+                int upperLipPosition = FindUpperLip(chain, chainPoints, underNoseDentPosition, out hasMouthDent, out mouthDentPosition);
+
+                //int chinPosition = FindChin(chain, tipPosition);
+
                 FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
                 FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
                 FeaturePoints[FeaturePointType.Nasion].Position = nasionPos;
                 FeaturePoints[FeaturePointType.Tip].Position = tipPosition;
                 FeaturePoints[FeaturePointType.Notch].Position = underNoseDentPosition;
+                FeaturePoints[FeaturePointType.UpperLip].Position = upperLipPosition;
+                //FeaturePoints[FeaturePointType.Chin].Position = chinPosition;
                 FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
             }
             catch (Exception ex)
@@ -645,6 +661,101 @@ namespace Darwin.Features
             }
 
             return underNoseDentPosition + tipPosition;
+        }
+
+        /// <summary>
+        /// Tries to find the position of the upper lip on the outline.  If there's a mouth dent,
+        /// it'll return that (and set the output parameter hasMouthDent to true).  If there isn't,
+        /// it'll return the greatest max to the right of the mouth dent.
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="chainPoints"></param>
+        /// <param name="underNoseDentPosition"></param>
+        /// <param name="hasMouthDent"></param>
+        /// <param name="mouthDentPosition"></param>
+        /// <returns></returns>
+        public int FindUpperLip(Chain chain, FloatContour chainPoints, int underNoseDentPosition, out bool hasMouthDent, out int mouthDentPosition)
+        {
+            if (chain == null)
+                throw new ArgumentNullException(nameof(chain));
+
+            if (underNoseDentPosition < 0 || underNoseDentPosition > chain.Length)
+                throw new ArgumentOutOfRangeException(nameof(underNoseDentPosition));
+
+            hasMouthDent = false;
+
+            int numPointsAfterNoseDent = (int)Math.Round((chain.Length - underNoseDentPosition) * (1.0f - UpperLipEndPadding));
+
+            // We're going to transform the whole chain
+            int numPoints = chain.Length;
+
+            // First, make a copy without the first value in the chain,
+            // since the first value skews the rest of the chain and is
+            // unnecessary for our purposes here
+            double[] src = new double[numPoints - 1];
+
+            Array.Copy(chain.Data, 1, src, 0, numPoints - 1);
+
+            int nextPowOfTwo = MathHelper.NextPowerOfTwo(numPoints - 1);
+
+            // Now set up the variables needed to perform a wavelet transform on the chain
+            double[,] continuousResult = new double[UpperLipNumTransformsForMin + 1, nextPowOfTwo];
+            WIRWavelet.WL_FrwtVector(src,
+                ref continuousResult,
+                numPoints - 1,
+                UpperLipNumTransformsForMin,
+                WaveletUtil.MZLowPassFilter,
+                WaveletUtil.MZHighPassFilter);
+
+            for (int i = 1; i <= UpperLipNumTransformsForMin; i++)
+                for (int j = 0; j < numPoints - 1; j++)
+                    continuousResult[i, j] *= WaveletUtil.NormalizationCoeff(i);
+
+            double[] modMax = new double[numPoints - 1];
+
+            for (int k = 0; k < numPoints - 1; k++)
+                continuousResult[UpperLipNumTransformsForMin, k] *= WaveletUtil.NormalizationCoeff(UpperLipNumTransformsForMin);
+
+            double[] continousExtract = WaveletUtil.Extract1DArray(continuousResult, UpperLipNumTransformsForMin, numPoints - 1);
+            WaveletUtil.ModulusMaxima(continousExtract, ref modMax, numPoints - 1);
+
+            // Now, let's see if we have any mins at the top transform level.  If we do, we probably have a mouth dent. If we don't,
+            // we might not.
+            for (int k = numPointsAfterNoseDent + underNoseDentPosition; k > underNoseDentPosition; k--)
+            {
+                if (modMax[k] < 0.0)
+                {
+                    hasMouthDent = true;
+                    break;
+                }
+            }
+
+            if (hasMouthDent)
+            {
+                mouthDentPosition = FindNotch(chain, underNoseDentPosition + UpperLipTipPadding);
+
+                // Check where it found the mouth dent -- if it's too close to the end, it's likely that it's
+                // not the mouth, but something like the neck/etc.
+                if (mouthDentPosition < underNoseDentPosition + numPointsAfterNoseDent)
+                    return mouthDentPosition;
+            }
+
+            // Fake the mouth dent position
+            mouthDentPosition = underNoseDentPosition + numPointsAfterNoseDent;
+
+            float currentAngle = chainPoints[underNoseDentPosition].FindAngle(chainPoints.Points[mouthDentPosition]);
+
+            float degreesToRotate = UpperLipDesiredAngle - currentAngle;
+
+            FloatContour rotatedContour = chainPoints.Rotate(chainPoints[underNoseDentPosition], degreesToRotate);
+
+            int upperLipPosition = FindTip(chain, rotatedContour, UpperLipTipPadding, UpperLipTipPadding);
+
+            // These are fallback positions, so they're going to be off if we hit this if statement.
+            if (upperLipPosition < mouthDentPosition)
+                upperLipPosition = (int)Math.Round(mouthDentPosition + numPointsAfterNoseDent / 2.0f);
+
+            return upperLipPosition;
         }
     }
 }

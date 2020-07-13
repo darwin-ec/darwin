@@ -16,6 +16,7 @@ namespace Darwin.Features
         PointOfInflection = 5,
 
         Nasion = 6,
-        Chin = 7
+        Chin = 7,
+        UpperLip = 8
     }
 }
