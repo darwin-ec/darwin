@@ -23,6 +23,8 @@ namespace Darwin.Matching
             {
                 FeaturePointType.Nasion,
                 FeaturePointType.Tip
+                //FeaturePointType.Tip,
+                //FeaturePointType.Notch
             };
 
             var landmarkFeatures = new List<FeaturePointType>()
@@ -31,6 +33,7 @@ namespace Darwin.Matching
                 FeaturePointType.Tip,
                 FeaturePointType.Nasion,
                 FeaturePointType.Notch,
+                FeaturePointType.UpperLip,
                 FeaturePointType.PointOfInflection
             };
 
@@ -51,7 +54,7 @@ namespace Darwin.Matching
                 0.4f,
                 benchmarkFeatures,
                 landmarkFeatures,
-                3, // Number of desired ratios
+                5, // Number of desired ratios
                 database.AllFins,
                 //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance,
                 FeaturePointErrorFunctions.ComputeMahalanobisDistance,

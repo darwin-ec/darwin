@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Darwin.Matching
 {
@@ -2903,12 +2904,15 @@ namespace Darwin.Matching
             
             // The jump combinations here are combined with repetition, then used to move the control points
             // in the loop below.
-            var jumpCombinationsEnumerable = EnumerableHelper.CombinationsWithRepetition(jumpOptions, 5);
+            var jumpCombinationsEnumerable = EnumerableHelper.PermutationsWithRepetition(jumpOptions, 5);
             var jumpCombinations = jumpCombinationsEnumerable.ToList();
+
             //var blankJumpCombination = new List<int>();
             //jumpCombinations.Add(blankJumpCombination);
 
-            foreach (var jumpCombo in jumpCombinations)
+            object locker = new object();
+
+            Parallel.ForEach(jumpCombinations, jumpCombo =>
             {
                 var jumpComboList = jumpCombo.ToList();
                 int controlPoint1PosDB = dbControlPoint1 + ((jumpComboList.Count > 0) ? jumpComboList[0] : 0);
@@ -2979,14 +2983,17 @@ namespace Darwin.Matching
                         int numPointsTrimmed;
                         trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
                             mappedContour[unknownControlPoint1], out numPointsTrimmed);
+
                         unknownAdjustPosition = numPointsTrimmed;
                     }
                     else
                     {
                         trimmedUnknownContour = new FloatContour(mappedContour);
                         int numPointsTrimmed;
+
                         trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
                             floatDBContour[dbControlPoint1], out numPointsTrimmed);
+
                         dbAdjustPosition = numPointsTrimmed;
                     }
 
@@ -3004,26 +3011,26 @@ namespace Darwin.Matching
                                 dbControlPoint2 - dbAdjustPosition,
                                 dbControlPoint3 - dbAdjustPosition);
                 }
-              
-                updateOutlines?.Invoke(mappedContour, floatDBContour);
 
-                //if (jumpComboList.Count < 1)
-                //    System.Threading.Thread.Sleep(5000);
-
-                if (newError < results.Error)
+                lock (locker)
                 {
-                    //***1.0LK - delete existing mapped contour and replace with new
-                    // mapped contour and error
-                    results.Contour1 = mappedContour;
-                    results.Error = newError;
-                    // Set shifted feature point locations
-                    results.Contour1ControlPoint1 = controlPoint1PosUnk;
-                    results.Contour1ControlPoint2 = controlPoint2PosUnk;
-                    results.Contour1ControlPoint3 = controlPoint3PosUnk;
-                    results.Contour2ControlPoint1 = controlPoint1PosDB;
-                    results.Contour2ControlPoint2 = controlPoint2PosDB;
+                    if (newError < results.Error)
+                    {
+                        //***1.0LK - delete existing mapped contour and replace with new
+                        // mapped contour and error
+                        results.Contour1 = mappedContour;
+                        results.Error = newError;
+                        // Set shifted feature point locations
+                        results.Contour1ControlPoint1 = controlPoint1PosUnk;
+                        results.Contour1ControlPoint2 = controlPoint2PosUnk;
+                        results.Contour1ControlPoint3 = controlPoint3PosUnk;
+                        results.Contour2ControlPoint1 = controlPoint1PosDB;
+                        results.Contour2ControlPoint2 = controlPoint2PosDB;
+
+                        updateOutlines?.Invoke(mappedContour, floatDBContour);
+                    }
                 }
-            }
+            });
 
             return results;
         }

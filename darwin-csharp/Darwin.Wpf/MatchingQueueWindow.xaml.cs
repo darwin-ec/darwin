@@ -274,7 +274,17 @@ namespace Darwin.Wpf
 
         private void RunMatchButton_Click(object sender, RoutedEventArgs e)
         {
-            _matchingWorker.RunWorkerAsync();
+            if (!_vm.VerifyMatchSettings())
+            {
+                MessageBox.Show("Sorry, at least some individuals in your database " +
+                    "are missing feature points needed to run the current match settings." + Environment.NewLine + Environment.NewLine +
+                    "Please use Rediscover Features in Settings -> Current Catalog Schemes in the main window, " +
+                    "or recreate your database with the current feature set scheme.", "Missing Features", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                _matchingWorker.RunWorkerAsync();
+            }
         }
     }
 }

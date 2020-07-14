@@ -196,6 +196,38 @@ namespace Darwin.Wpf.ViewModel
             return MatchingQueue.GetSummary();
         }
 
+        public bool VerifyMatchSettings()
+        {
+            if (MatchingQueue.Fins.Count < 1)
+                return true;
+
+            Match testMatch = null;
+            switch (MatchingQueue.Database.CatalogScheme.FeatureSetType)
+            {
+                case Features.FeatureSetType.DorsalFin:
+                    testMatch = new Match(
+                        MatchingQueue.Fins[0],
+                        MatchingQueue.Database, null,
+                        MatchingQueue.RegistrationMethod,
+                        (MatchingQueue.RangeOfPoints == RangeOfPointsType.AllPoints) ? true : false);
+                    break;
+
+                case Features.FeatureSetType.Bear:
+                    testMatch = new Match(
+                        MatchingQueue.Fins[0],
+                        MatchingQueue.Database,
+                        null,
+                        null,
+                        true);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return testMatch.VerifyMatchSettings();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void RaisePropertyChanged(string propertyName)

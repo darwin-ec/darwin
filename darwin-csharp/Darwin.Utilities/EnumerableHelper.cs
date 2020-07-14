@@ -29,9 +29,9 @@ namespace Darwin.Utilities
             }
         }
 
-        public static IEnumerable<IEnumerable<T>> CombinationsWithRepetition<T>(IEnumerable<T> items, int count)
+        public static IEnumerable<IEnumerable<T>> PermutationsWithRepetition<T>(IEnumerable<T> items, int count)
         {
-            if (count == 0)
+            if (count <= 0)
             {
                 yield return new T[] { };
             }
@@ -45,7 +45,7 @@ namespace Darwin.Utilities
                     }
                     else
                     {
-                        foreach (var result in CombinationsWithRepetition(items, count - 1))
+                        foreach (var result in PermutationsWithRepetition(items, count - 1))
                             yield return new T[] { item }.Concat(result);
                     }
                 }
