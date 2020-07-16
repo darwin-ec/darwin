@@ -520,6 +520,26 @@ namespace Darwin
 			}
         }
 
+		public void Rotate90CW(int imageWidth, int imageHeight)
+        {
+			foreach (var p in Points)
+            {
+				int temp = p.X;
+				p.X = -1 * p.Y + imageHeight;
+				p.Y = temp;
+            }
+        }
+
+		public void Rotate90CCW(int imageWidth, int imageHeight)
+		{
+			foreach (var p in Points)
+			{
+				int temp = p.X;
+				p.X = p.Y;
+				p.Y = -1 * temp + imageWidth;
+			}
+		}
+
 		public void Crop(int xMin, int yMin, int xMax, int yMax)
         {
 			if (Points == null)

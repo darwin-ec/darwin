@@ -1550,7 +1550,49 @@ namespace Darwin.Wpf
 			}
 		}
 
-        private void BrightnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		private void RotateCWButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (_vm.Bitmap != null)
+			{
+				_vm.Bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+				_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
+				_vm.UpdateImage();
+
+				if (_vm.Contour != null && _vm.Contour.Length > 0)
+				{
+					AddContourAndImageUndo(_vm.Contour, ImageModType.IMG_rotate90cw);
+
+					_vm.Contour.Rotate90CW(_vm.Bitmap.Height, _vm.Bitmap.Width);
+				}
+				else
+				{
+					AddImageUndo(ImageModType.IMG_rotate90cw);
+				}
+			}
+		}
+
+		private void RotateCCWButton_Click(object sender, RoutedEventArgs e)
+		{
+			if (_vm.Bitmap != null)
+			{
+				_vm.Bitmap.RotateFlip(RotateFlipType.Rotate270FlipNone);
+				_vm.BaseBitmap = new Bitmap(_vm.Bitmap);
+				_vm.UpdateImage();
+
+				if (_vm.Contour != null && _vm.Contour.Length > 0)
+				{
+					AddContourAndImageUndo(_vm.Contour, ImageModType.IMG_rotate90ccw);
+
+					_vm.Contour.Rotate90CCW(_vm.Bitmap.Height, _vm.Bitmap.Width);
+				}
+				else
+				{
+					AddImageUndo(ImageModType.IMG_rotate90ccw);
+				}
+			}
+		}
+
+		private void BrightnessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
 			if (_vm?.Bitmap != null)
             {

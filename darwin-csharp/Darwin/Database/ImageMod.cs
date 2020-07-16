@@ -33,7 +33,9 @@ namespace Darwin.Database
         IMG_crop = 4,
         IMG_undo = 5,
         IMG_redo = 6,
-        IMG_contrast2 = 7
+        IMG_contrast2 = 7,
+        IMG_rotate90cw = 8,
+        IMG_rotate90ccw = 9
     }
 
     public class ImageMod
@@ -57,7 +59,12 @@ namespace Darwin.Database
         {
             // the values are used depending on the ImageModtype
             Op = op;
-            if ((ImageModType.IMG_flip == op) || (ImageModType.IMG_undo == op) || (ImageModType.IMG_redo == op) || (ImageModType.IMG_none == op))
+            if (ImageModType.IMG_flip == op
+                || ImageModType.IMG_rotate90cw == op
+                || ImageModType.IMG_rotate90ccw == op
+                || ImageModType.IMG_undo == op
+                || ImageModType.IMG_redo == op
+                || ImageModType.IMG_none == op)
             {
                 // op == IMAG_flip, IMG_undo, or IMG_redo ... then no values used
             }
@@ -96,7 +103,11 @@ namespace Darwin.Database
         {
             // the values are used depending on the ImageModtype
             Op = op;
-            if ((ImageModType.IMG_flip == op) || (ImageModType.IMG_undo == op) || (ImageModType.IMG_redo == op))
+            if (ImageModType.IMG_flip == op
+                || ImageModType.IMG_rotate90cw == op
+                || ImageModType.IMG_rotate90ccw == op
+                || ImageModType.IMG_undo == op
+                || ImageModType.IMG_redo == op)
             {
                 // op == IMAG_flip, IMG_undo, or IMG_redo ... then no values used
                 min = max = amount = xMin = yMin = xMax = yMax = 0;
@@ -140,7 +151,12 @@ namespace Darwin.Database
             val1 = val2 = val3 = val4 = 0;
             // the values are used depending on the ImageModtype
             op = Op;
-            if ((ImageModType.IMG_flip == op) || (ImageModType.IMG_undo == op) || (ImageModType.IMG_redo == op) || (ImageModType.IMG_none == op))
+            if (ImageModType.IMG_flip == op
+                || ImageModType.IMG_rotate90cw == op
+                || ImageModType.IMG_rotate90ccw == op
+                || ImageModType.IMG_undo == op
+                || ImageModType.IMG_redo == op
+                || ImageModType.IMG_none == op)
             {
                 // op == IMAG_flip, IMG_undo, or IMG_redo ... then no values used
                 val1 = val2 = val3 = val4 = 0;

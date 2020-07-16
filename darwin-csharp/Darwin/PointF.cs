@@ -125,7 +125,7 @@ namespace Darwin
             var radiansToRotate = MathHelper.DegreesToRadians(degreesToRotate);
 
             double rotatedX = Math.Cos(radiansToRotate) * (X - centerPoint.X) - Math.Sin(radiansToRotate) * (Y - centerPoint.Y) + centerPoint.X;
-            double rotatedY = Math.Sin(radiansToRotate) * (X - centerPoint.X) + Math.Cos(radiansToRotate) * (Y - centerPoint.Y) + centerPoint.Y; ;
+            double rotatedY = Math.Sin(radiansToRotate) * (X - centerPoint.X) + Math.Cos(radiansToRotate) * (Y - centerPoint.Y) + centerPoint.Y;
 
             return new PointF(rotatedX, rotatedY);
         }

@@ -57,6 +57,14 @@ namespace Darwin.Helpers
 						result.RotateFlip(RotateFlipType.RotateNoneFlipX);
 						break;
 
+					case ImageModType.IMG_rotate90cw:
+						result.RotateFlip(RotateFlipType.Rotate90FlipNone);
+						break;
+
+					case ImageModType.IMG_rotate90ccw:
+						result.RotateFlip(RotateFlipType.Rotate270FlipNone);
+						break;
+
 					case ImageModType.IMG_brighten:
 						result = result.AlterBrightness(val1);
 						break;

@@ -88,9 +88,25 @@
         </StackPanel>-->
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button x:Name="FlipHorizontalButton" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click" Visibility="{Binding TraceToolsVisibility}">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="2">
                     <Image Source="/Darwin.Wpf;component/Resources/Images/horizontal_flip.png" />
-                    <TextBlock HorizontalAlignment="Center">Flip</TextBlock>
+                    <Label HorizontalAlignment="Center" Padding="2">Flip</Label>
+                </StackPanel>
+            </Button>
+            <Button x:Name="RotateCWButton" Click="RotateCWButton_Click" ToolTip="Rotate 90° clockwise" Visibility="{Binding TraceToolsVisibility}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf021;</Label>
+                    <Label Padding="2" HorizontalAlignment="Center">Rotate CW</Label>
+                </StackPanel>
+            </Button>
+            <Button x:Name="RotateCCWButton" Click="RotateCCWButton_Click" ToolTip="Rotate 90° counter-clockwise" Visibility="{Binding TraceToolsVisibility}">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" Content="&#xf021;" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                        <Label.RenderTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </Label.RenderTransform>
+                    </Label>
+                    <Label Padding="2" HorizontalAlignment="Center">Rotate CCW</Label>
                 </StackPanel>
             </Button>
             <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
@@ -134,7 +150,8 @@
                     </RadioButton>
                     <RadioButton x:Name="CropButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}"  Visibility="{Binding TraceToolsVisibility}">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />
+                            <!--<Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />-->
+                            <Label FontFamily="{StaticResource FontAwesomeSolid}" FontSize="15" HorizontalAlignment="Center">&#xf565;</Label>
                             <Label HorizontalAlignment="Center" Padding="1">Crop</Label>
                         </StackPanel>
                     </RadioButton>
