@@ -58,6 +58,16 @@ namespace Darwin.Utilities
             return Convert.ToInt32(rdr[colIndex]);
         }
 
+        public static double? SafeGetNullableDouble(this SQLiteDataReader rdr, string columnName)
+        {
+            var colIndex = rdr.GetOrdinal(columnName);
+
+            if (rdr.IsDBNull(colIndex))
+                return null;
+
+            return Convert.ToDouble(rdr[colIndex]);
+        }
+
         // TODO: This one might not be necessary
         public static string SafeGetString(this SQLiteDataReader rdr, string columnName)
         {

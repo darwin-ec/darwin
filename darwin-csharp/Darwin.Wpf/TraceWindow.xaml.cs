@@ -398,8 +398,9 @@ namespace Darwin.Wpf
 				this.IsHitTestVisible = false;
 				Mouse.OverrideCursor = Cursors.Wait;
 
-				//trace = new IntensityContour(mNonZoomedImage,mContour); //101AT --Changed IntensityContour declaration to Contour
-				await Task.Run(() => TraceSnapToFin(useCyan, left, top, right, bottom));
+				// TODO: The multi-scale version is a port of what was in the C++ version.  Trying one without scaling.
+				//await Task.Run(() => TraceSnapToFinMultiScale(useCyan, left, top, right, bottom));
+				await Task.Run(() => TraceSnapToFinNoScale(useCyan, left, top, right, bottom));
 			}
 			finally
 			{
@@ -417,7 +418,7 @@ namespace Darwin.Wpf
 		//    up the trace, add/remove points, etc
 		//
 		//  Modified for multiscale active contour processing 01/23/06 krd
-		private void TraceSnapToFin(bool useCyan, int left, int top, int right, int bottom)
+		private void TraceSnapToFinMultiScale(bool useCyan, int left, int top, int right, int bottom)
 		{
 			if (_vm.Contour == null || _vm.TraceLocked || _vm.Contour.NumPoints < 3) //***006FC
 				return;
@@ -476,7 +477,7 @@ namespace Darwin.Wpf
 								// contour is initially spaced with larger of 1) space for 200 points or
 								// 2) at three pixels (200 points limits hi res pics from having many points)
 
-			//scale mContour to current scale of analysis (image) first time thru
+			// Scale mContour to current scale of analysis (image) first time thru
 
 			spacing = _vm.Contour.GetTotalDistanceAlongContour() / 200.0;
 			if (spacing < SpaceBetweenPoints)
@@ -533,11 +534,113 @@ namespace Darwin.Wpf
 			// Scale the contour back to "normal" and evenly space the points again
 			scaledContour = scaledContour.CreateScaledContour(100.0f / ratio, 0, 0);
 
-			// features such as glare spots may cause outline points to bunch and wrap
+			// Features such as glare spots may cause outline points to bunch and wrap
 			// during active contour process
 			Dispatcher.BeginInvoke(new Action(() =>
 			{
 				_vm.Contour = new Contour(scaledContour);
+				_vm.Contour.RemoveKnots(spacing); //***005CM
+			}), DispatcherPriority.Background);
+		}
+
+		/// <summary>
+		/// traceSnapToFin: called to perform the active contour based fit of
+		///    trace to fin outline and remove knots.  This is called after
+		///    the initial trace but before user has oportunity to clean
+		///    up the trace, add/remove points, etc
+		/// </summary>
+		/// <param name="useCyan"></param>
+		/// <param name="left"></param>
+		/// <param name="top"></param>
+		/// <param name="right"></param>
+		/// <param name="bottom"></param>
+		private void TraceSnapToFinNoScale(bool useCyan, int left, int top, int right, int bottom)
+		{
+			if (_vm.Contour == null || _vm.TraceLocked || _vm.Contour.NumPoints < 3) //***006FC
+				return;
+
+			float[] energyWeights = new float[]{
+				Options.CurrentUserOptions.SnakeEnergyContinuity,
+				Options.CurrentUserOptions.SnakeEnergyLinearity,
+				Options.CurrentUserOptions.SnakeEnergyEdge
+			};
+
+			DirectBitmap temp;
+
+			if (useCyan)
+			{
+				temp = new DirectBitmap(_vm.Bitmap);
+				temp.ToCyanIntensity(); //***1.96 - copy to cyan
+			}
+			else
+			{
+				temp = DirectBitmapHelper.ConvertToDirectBitmapGrayscale(_vm.Bitmap);
+			}
+			
+
+			DirectBitmap temp2 = DirectBitmapHelper.CropBitmap(temp, left, top, right, bottom); //***1.96 - then crop
+			DirectBitmap edgeMagImage;
+			DirectBitmap EdgeImage = EdgeDetection.CannyEdgeDetection(
+					//temp,
+					temp2, //***1.96
+					out edgeMagImage,
+					true,
+					Options.CurrentUserOptions.GaussianStdDev,
+					Options.CurrentUserOptions.CannyLowThreshold,
+					Options.CurrentUserOptions.CannyHighThreshold);
+
+
+			//***1.96 - copy edgeMagImage into area of entire temp image bounded by 
+			//          left, top, right, bottom
+			for (int r = 0; r < edgeMagImage.Height; r++)
+			{
+				for (int c = 0; c < edgeMagImage.Width; c++)
+				{
+					// set up area within *temp as the real EdgeMagImage
+					temp.SetPixel(left + c, top + r, edgeMagImage.GetPixel(c, r));
+				}
+			}
+
+			edgeMagImage = temp; //***1.96
+
+			//EdgeMagImage->save("EdgeMagImg.png");
+
+			// create initial evenly spaced contour scaled to zoomed image
+			double spacing = 3; //***005CM declaration moved ouside if() below
+								// contour is initially spaced with larger of 1) space for 200 points or
+								// 2) at three pixels (200 points limits hi res pics from having many points)
+
+			// Scale mContour to current scale of analysis (image) first time thru
+
+			spacing = _vm.Contour.GetTotalDistanceAlongContour() / 200.0;
+			if (spacing < SpaceBetweenPoints)
+				spacing = SpaceBetweenPoints;
+
+			float ratio = _vm.ZoomRatio * 100f;
+
+			Contour evenContour = _vm.Contour.EvenlySpaceContourPoints(spacing);
+
+			for (int i = 0; i < Options.CurrentUserOptions.SnakeMaximumIterations; i++)
+			{
+				// TODO: Hardcoded neighborhood of 3
+				Snake.MoveContour(ref evenContour, edgeMagImage, 3, energyWeights);
+				if (i % 5 == 0)
+				{
+					// Make yet another copy to avoid a potential concurrency issue
+					var displayContour = new Contour(evenContour);
+					// Display progress
+					Dispatcher.BeginInvoke(new Action(() =>
+					{
+						_vm.Contour = new Contour(displayContour);
+					}), DispatcherPriority.Background);
+				}
+			}
+
+			// Features such as glare spots may cause outline points to bunch and wrap
+			// during active contour process
+			Dispatcher.BeginInvoke(new Action(() =>
+			{
+				_vm.Contour = new Contour(evenContour);
 				_vm.Contour.RemoveKnots(spacing); //***005CM
 			}), DispatcherPriority.Background);
 		}
@@ -707,8 +810,6 @@ namespace Darwin.Wpf
 				_movePosition = -1;
 				return;
 			}
-
-			//_moveInit = true;
 
 			AddContourUndo(_vm.Contour);
 

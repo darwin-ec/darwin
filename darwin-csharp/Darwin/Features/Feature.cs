@@ -7,16 +7,18 @@ namespace Darwin.Features
 {
     public enum FeatureType
     {
-        LeadingEdgeAngle = 0
+        LeadingEdgeAngle = 0,
+        HasMouthDent = 1,
+        BrowCurvature = 2
     }
 
-    public class Feature : INotifyPropertyChanged
+    public class Feature : BaseEntity, INotifyPropertyChanged
     {
         public static readonly Feature Empty = new Feature { IsEmpty = true };
         private bool _isEmpty;
         private FeatureType _type;
         private string _name;
-        private double _value;
+        private double? _value;
 
         public string Name
         {
@@ -40,13 +42,14 @@ namespace Darwin.Features
             }
         }
 
-        public double Value
+        public double? Value
         {
             get => _value;
             set
             {
                 _value = value;
                 RaisePropertyChanged("Value");
+                IsEmpty = false;
             }
         }
 

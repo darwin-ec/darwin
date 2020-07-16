@@ -17,6 +17,10 @@ namespace Darwin.Features
 
         Nasion = 6,
         Chin = 7,
-        UpperLip = 8
+        UpperLip = 8,
+        Brow = 9,
+
+
+        Eye = 100
     }
 }

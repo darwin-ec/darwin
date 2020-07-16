@@ -1,9 +1,12 @@
 ﻿using Darwin.Utilities;
 using Darwin.Wavelet;
+using MathNet.Numerics.Interpolation;
+using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
+using System.Linq;
 using System.Text;
 
 namespace Darwin.Features
@@ -25,11 +28,26 @@ namespace Darwin.Features
         private const float UpperLipDesiredAngle = -2;
         private const int UpperLipTipPadding = 40;
 
+        private const int BrowBeforeMidpointPadding = 20;
+        private const int BrowBeforeNasionPadding = 20;
+
         private const int NumChinMaxesToTrack = 5;
+
+        private static Dictionary<FeatureType, string> FeatureNameMapping = new Dictionary<FeatureType, string>()
+        {
+            { FeatureType.HasMouthDent, "Has Mouth Dent" },
+            { FeatureType.BrowCurvature, "Brow Curvature" }
+        };
+
+        private static Dictionary<FeaturePointType, string> CoordinateFeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
+        {
+            { FeaturePointType.Eye, "Eye" }
+        };
 
         private static Dictionary<FeaturePointType, string> FeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
         {
             { FeaturePointType.LeadingEdgeBegin, "Beginning of Head" },
+            { FeaturePointType.Brow, "Brow" },
             { FeaturePointType.LeadingEdgeEnd, "End of Leading Edge" },
             { FeaturePointType.Nasion, "Nasion" },
             { FeaturePointType.Tip, "Tip of Nose" },
@@ -46,6 +64,7 @@ namespace Darwin.Features
             FeaturePoints = new Dictionary<FeaturePointType, OutlineFeaturePoint>()
             {
                 { FeaturePointType.LeadingEdgeBegin, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
+                { FeaturePointType.Brow, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Brow], Type = FeaturePointType.Brow, IsEmpty = true } },
                 { FeaturePointType.LeadingEdgeEnd, new OutlineFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
                 { FeaturePointType.Nasion, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
                 { FeaturePointType.Tip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
@@ -55,10 +74,19 @@ namespace Darwin.Features
                 { FeaturePointType.PointOfInflection, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
-            Features = new Dictionary<FeatureType, Feature>();
+            Features = new Dictionary<FeatureType, Feature>()
+            {
+                { FeatureType.HasMouthDent, new Feature { Name = FeatureNameMapping[FeatureType.HasMouthDent], Type = FeatureType.HasMouthDent, IsEmpty = true } },
+                { FeatureType.BrowCurvature, new Feature { Name = FeatureNameMapping[FeatureType.BrowCurvature], Type = FeatureType.BrowCurvature, IsEmpty = true } }
+            };
+
+            CoordinateFeaturePoints = new Dictionary<FeaturePointType, CoordinateFeaturePoint>()
+            {
+                { FeaturePointType.Eye, new CoordinateFeaturePoint { Name = CoordinateFeaturePointNameMapping[FeaturePointType.Eye], Type = FeaturePointType.Eye, IsEmpty = true } }
+            };
         }
 
-        public BearFeatureSet(List<OutlineFeaturePoint> featurePoints)
+        public BearFeatureSet(List<OutlineFeaturePoint> featurePoints, List<CoordinateFeaturePoint> coordinateFeaturePoints, List<Feature> features)
             : this()
         {
             if (featurePoints == null)
@@ -71,6 +99,30 @@ namespace Darwin.Features
                 {
                     fp.Name = FeaturePointNameMapping[fp.Type];
                     FeaturePoints[fp.Type] = fp;
+                }
+            }
+
+            if (coordinateFeaturePoints != null)
+            {
+                foreach (var cfp  in coordinateFeaturePoints)
+                {
+                    if (CoordinateFeaturePointNameMapping.ContainsKey(cfp.Type))
+                    {
+                        cfp.Name = CoordinateFeaturePointNameMapping[cfp.Type];
+                        CoordinateFeaturePoints[cfp.Type] = cfp;
+                    }
+                }
+            }
+
+            if (features != null)
+            {
+                foreach (var f in features)
+                {
+                    if (FeatureNameMapping.ContainsKey(f.Type))
+                    {
+                        f.Name = FeatureNameMapping[f.Type];
+                        Features[f.Type] = f;
+                    }
                 }
             }
         }
@@ -108,9 +160,11 @@ namespace Darwin.Features
                 int mouthDentPosition;
                 int upperLipPosition = FindUpperLip(chain, chainPoints, underNoseDentPosition, out hasMouthDent, out mouthDentPosition);
 
+                int browPosition = FindBrow(chain, beginLE, nasionPos);
                 //int chinPosition = FindChin(chain, tipPosition);
 
                 FeaturePoints[FeaturePointType.LeadingEdgeBegin].Position = beginLE;
+                FeaturePoints[FeaturePointType.Brow].Position = browPosition;
                 FeaturePoints[FeaturePointType.LeadingEdgeEnd].Position = endLE;
                 FeaturePoints[FeaturePointType.Nasion].Position = nasionPos;
                 FeaturePoints[FeaturePointType.Tip].Position = tipPosition;
@@ -118,6 +172,9 @@ namespace Darwin.Features
                 FeaturePoints[FeaturePointType.UpperLip].Position = upperLipPosition;
                 //FeaturePoints[FeaturePointType.Chin].Position = chinPosition;
                 FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
+
+                Features[FeatureType.HasMouthDent].Value = (hasMouthDent) ? 1.0 : 0.0;
+                Features[FeatureType.BrowCurvature].Value = FindBrowCurvature(chainPoints, beginLE, nasionPos);
             }
             catch (Exception ex)
             {
@@ -756,6 +813,64 @@ namespace Darwin.Features
                 upperLipPosition = (int)Math.Round(mouthDentPosition + numPointsAfterNoseDent / 2.0f);
 
             return upperLipPosition;
+        }
+        
+        /// <summary>
+        /// Finds the brow as the biggest max between the beginning of the leading edge and the nasion.
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="beginningOfLeadingEdge"></param>
+        /// <param name="nasionPosition"></param>
+        /// <returns></returns>
+        public int FindBrow(Chain chain, int beginningOfLeadingEdge, int nasionPosition)
+        {
+            if (chain == null)
+                throw new ArgumentNullException(nameof(chain));
+
+            if (beginningOfLeadingEdge < 0 || beginningOfLeadingEdge > nasionPosition)
+                throw new ArgumentOutOfRangeException(nameof(beginningOfLeadingEdge));
+
+            if (nasionPosition < 0 || nasionPosition >= chain.Length)
+                throw new ArgumentOutOfRangeException(nameof(nasionPosition));
+
+            int segmentLength = nasionPosition - beginningOfLeadingEdge;
+            int midPoint = (int)Math.Round(segmentLength / 2.0);
+
+            int rightPadding = nasionPosition - midPoint - BrowBeforeNasionPadding;
+
+            if (rightPadding < 0)
+                rightPadding = 50;
+
+            return FindTip(chain, midPoint, BrowBeforeMidpointPadding, rightPadding);
+        }
+
+        public double FindBrowCurvature(FloatContour chainPoints, int browPosition, int tipOfNosePosition)
+        {
+            if (chainPoints == null)
+                throw new ArgumentNullException(nameof(chainPoints));
+
+            if (browPosition < 0 || browPosition > tipOfNosePosition)
+                throw new ArgumentOutOfRangeException(nameof(browPosition));
+
+            if (tipOfNosePosition < 0 || tipOfNosePosition >= chainPoints.Length)
+                throw new ArgumentOutOfRangeException(nameof(tipOfNosePosition));
+
+            //// Fit a spline to our points
+            //var spline = CubicSpline.InterpolateNatural(
+            //    chainPoints.Points.Skip(beginningOfLeadingEdge)
+            //                      .Take(nasionPosition - beginningOfLeadingEdge)
+            //                      .Select(p => (double)p.X),
+            //    chainPoints.Points.Skip(beginningOfLeadingEdge)
+            //                      .Take(nasionPosition - beginningOfLeadingEdge)
+            //                      .Select(p => (double)p.Y));
+
+            //const int column_width = 10;
+            //for (int i = beginningOfLeadingEdge; i < nasionPosition; i++)
+            //{
+            //    double dydx = spline.Differentiate2(chainPoints[i].X);
+            //}
+
+            return 0;
         }
     }
 }

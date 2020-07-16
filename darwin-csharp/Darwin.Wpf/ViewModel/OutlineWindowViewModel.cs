@@ -201,7 +201,16 @@ namespace Darwin.Wpf.ViewModel
                 {
                     foreach (var f in DatabaseFin.FinOutline.FeatureSet.Features.Values)
                     {
-                        sb.AppendLine(f.Name + ": " + f.Value.ToString("N2"));
+                        sb.AppendLine(f.Name + ": " + f.Value?.ToString("N2"));
+                    }
+                }
+
+                if (DatabaseFin.FinOutline.FeatureSet.CoordinateFeaturePointList != null)
+                {
+                    foreach (var f in DatabaseFin.FinOutline.FeatureSet.CoordinateFeaturePointList)
+                    {
+                        if (f.Coordinate != null)
+                            sb.AppendLine(f.Name + ": (" + f.Coordinate?.X + ", " + f.Coordinate?.Y + ")");
                     }
                 }
 
@@ -251,7 +260,15 @@ namespace Darwin.Wpf.ViewModel
                 {
                     foreach (var f in ComparisonFin.FinOutline.FeatureSet.Features.Values)
                     {
-                        sb.AppendLine(f.Name + ": " + f.Value.ToString("N2"));
+                        sb.AppendLine(f.Name + ": " + f.Value?.ToString("N2"));
+                    }
+                }
+
+                if (ComparisonFin.FinOutline.FeatureSet.CoordinateFeaturePointList != null)
+                {
+                    foreach (var f in ComparisonFin.FinOutline.FeatureSet.CoordinateFeaturePointList)
+                    {
+                        sb.AppendLine(f.Name + ": (" + f.Coordinate?.X + ", " + f.Coordinate?.Y + ")");
                     }
                 }
 

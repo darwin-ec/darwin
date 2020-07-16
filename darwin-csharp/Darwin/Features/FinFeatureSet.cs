@@ -17,7 +17,14 @@ namespace Darwin.Features
             { FeaturePointType.PointOfInflection, "End of Trailing Edge" }
         };
 
-        // TODO: Valid features mapping?
+        private static Dictionary<FeatureType, string> FeatureNameMapping = new Dictionary<FeatureType, string>()
+        {
+            { FeatureType.LeadingEdgeAngle, "Angle of Leading Edge" }
+        };
+
+        private static Dictionary<FeaturePointType, string> CoordinateFeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
+        {
+        };
 
         public FinFeatureSet()
         {
@@ -38,7 +45,7 @@ namespace Darwin.Features
             };
         }
 
-        public FinFeatureSet(List<OutlineFeaturePoint> featurePoints)
+        public FinFeatureSet(List<OutlineFeaturePoint> featurePoints, List<CoordinateFeaturePoint> coordinateFeaturePoints, List<Feature> features)
             : this()
         {
             if (featurePoints == null)
@@ -51,6 +58,30 @@ namespace Darwin.Features
                 {
                     fp.Name = FeaturePointNameMapping[fp.Type];
                     FeaturePoints[fp.Type] = fp;
+                }
+            }
+
+            if (coordinateFeaturePoints != null)
+            {
+                foreach (var cfp in coordinateFeaturePoints)
+                {
+                    if (CoordinateFeaturePointNameMapping.ContainsKey(cfp.Type))
+                    {
+                        cfp.Name = CoordinateFeaturePointNameMapping[cfp.Type];
+                        CoordinateFeaturePoints[cfp.Type] = cfp;
+                    }
+                }
+            }
+
+            if (features != null)
+            {
+                foreach (var f in features)
+                {
+                    if (FeatureNameMapping.ContainsKey(f.Type))
+                    {
+                        f.Name = FeatureNameMapping[f.Type];
+                        Features[f.Type] = f;
+                    }
                 }
             }
         }

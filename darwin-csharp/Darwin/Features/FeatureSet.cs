@@ -26,7 +26,19 @@ namespace Darwin.Features
         public FeatureSetType FeatureSetType { get; set; }
 
         public Dictionary<FeatureType, Feature> Features { get; set; }
+        public Dictionary<FeaturePointType, CoordinateFeaturePoint> CoordinateFeaturePoints { get; set; }
         public Dictionary<FeaturePointType, OutlineFeaturePoint> FeaturePoints { get; set; }
+
+        public List<Feature> FeatureList
+        {
+            get
+            {
+                if (Features == null)
+                    return new List<Feature>();
+
+                return Features.Values.ToList();
+            }
+        }
 
         public List<OutlineFeaturePoint> FeaturePointList
         {
@@ -36,6 +48,17 @@ namespace Darwin.Features
                     return new List<OutlineFeaturePoint>();
 
                 return FeaturePoints.Values.ToList();
+            }
+        }
+
+        public List<CoordinateFeaturePoint> CoordinateFeaturePointList
+        {
+            get
+            {
+                if (CoordinateFeaturePoints == null)
+                    return new List<CoordinateFeaturePoint>();
+
+                return CoordinateFeaturePoints.Values.ToList();
             }
         }
 
@@ -91,7 +114,8 @@ namespace Darwin.Features
             }
         }
 
-        public static FeatureSet Load(FeatureSetType featuresType, List<OutlineFeaturePoint> featurePoints)
+        public static FeatureSet Load(FeatureSetType featuresType, List<OutlineFeaturePoint> featurePoints,
+                                      List<CoordinateFeaturePoint> coordinateFeaturePoints, List<Feature> features)
         {
             if (featurePoints == null)
                 throw new ArgumentNullException(nameof(featurePoints));
@@ -99,10 +123,10 @@ namespace Darwin.Features
             switch (featuresType)
             {
                 case FeatureSetType.DorsalFin:
-                    return new FinFeatureSet(featurePoints);
+                    return new FinFeatureSet(featurePoints, coordinateFeaturePoints, features);
 
                 case FeatureSetType.Bear:
-                    return new BearFeatureSet(featurePoints);
+                    return new BearFeatureSet(featurePoints, coordinateFeaturePoints, features);
 
                 default:
                     throw new NotImplementedException();
@@ -111,13 +135,42 @@ namespace Darwin.Features
 
         public abstract void SetFeaturePointPosition(FeaturePointType featurePointType, int position);
 
+
+        public int FindTip(Chain chain, FloatContour chainPoints, int highPointPaddingLeft = DefaultTipHighPointPadding, int highPointPaddingRight = DefaultTipHighPointPadding)
+        {
+            //***0041TIP - JHS new section below 
+            // Finding higest point on fin
+            // Remember image is upside down so high point has minimum Y value
+            int highPointId = -1;
+            float highPointY = 10000.0f;
+
+            for (int ptId = 0; ptId < chainPoints.Length; ptId++)
+            {
+                if (chainPoints[ptId].Y < highPointY)
+                {
+                    highPointY = chainPoints[ptId].Y;
+                    highPointId = ptId;
+                }
+                else if (chainPoints[ptId].Y < highPointY + 3.0)
+                {
+                    // until we drop more than 3 units back down the fin
+                    // keep advancing the highPointId.  That way, we
+                    // find the rightmost "essentially highest" point
+                    // on the outline
+                    highPointId = ptId;
+                }
+            }
+
+            return FindTip(chain, highPointId, highPointPaddingLeft, highPointPaddingRight);
+        }
+
         //*******************************************************************
         //
         // int Outline::findTip()
         //
         //    Finds the tip as the index into the chain array
         //
-        public int FindTip(Chain chain, FloatContour chainPoints, int highPointPaddingLeft = DefaultTipHighPointPadding, int highPointPaddingRight = DefaultTipHighPointPadding)
+        public int FindTip(Chain chain, int highPointId, int highPointPaddingLeft = DefaultTipHighPointPadding, int highPointPaddingRight = DefaultTipHighPointPadding)
         {
             if (chain == null)
                 throw new Exception("findTip() [*_chain]");
@@ -151,29 +204,6 @@ namespace Darwin.Features
             int
                 tipPosition = 0,
                 level = TransformLevels;
-
-            //***0041TIP - JHS new section below 
-            // finding higest point on fin
-            // remember image is upside down so high point has minimum Y value
-            int highPointId = -1;
-            float highPointY = 10000.0f;
-
-            for (int ptId = 0; ptId < numPoints; ptId++)
-            {
-                if (chainPoints[ptId].Y < highPointY)
-                {
-                    highPointY = chainPoints[ptId].Y;
-                    highPointId = ptId;
-                }
-                else if (chainPoints[ptId].Y < highPointY + 3.0)
-                {
-                    // until we drop more than 3 units back down the fin
-                    // keep advancing the highPointId.  That way, we
-                    // find the rightmost "essentially highest" point
-                    // on the outline
-                    highPointId = ptId;
-                }
-            }
 
             /*
             * while (!tipPosition && level > 0) { // Find the maxima of the
@@ -402,10 +432,10 @@ namespace Darwin.Features
         public int FindEndLE(Chain chain, int beginLE, int tipPos)
         {
             if (null == chain)
-                throw new Exception("findLEEnd() [data member *_chain]");
+                throw new ArgumentNullException(nameof(chain));
 
             if (tipPos <= 2)
-                throw new Exception("findLEEnd() [data member _tipPos <= 2]");
+                throw new ArgumentOutOfRangeException(nameof(tipPos));
 
             // TODO
             //if (_userSetEndLE)
@@ -519,6 +549,12 @@ namespace Darwin.Features
 
         public int FindPointOfInflection(Chain chain, int tipPos)
         {
+            if (chain == null)
+                throw new ArgumentNullException(nameof(chain));
+
+            if (tipPos < 0)
+                throw new ArgumentOutOfRangeException(nameof(tipPos));
+
             int numPoints = chain.Length - tipPos - 1;
 
             Chain smoothChain = new Chain(chain);
@@ -538,13 +574,13 @@ namespace Darwin.Features
             return zeroCrossings[zeroCrossings.Count - 1].Position + tipPos;
         }
 
-        public int FindNotch(Chain chain, int tipPos)
+        public int FindNotch(Chain chain, int tipPosition)
         {
             if (chain == null)
                 throw new ArgumentNullException(nameof(chain));
 
-            if (tipPos < 0 || tipPos > chain.Length)
-                throw new Exception("findNotch() [int tipPosition]");
+            if (tipPosition < 0 || tipPosition > chain.Length)
+                throw new ArgumentOutOfRangeException(nameof(tipPosition));
 
             // TODO
             //if (_userSetNotch)
@@ -553,7 +589,7 @@ namespace Darwin.Features
             // We're only going to be looking on the trailing edge
             // of the fin for the most significant notch, so we'll
             // build a source vector from that area
-            int numTrailingEdgePts = chain.Length - tipPos - 1 - 5;
+            int numTrailingEdgePts = chain.Length - tipPosition - 1 - 5;
             double[] src = new double[numTrailingEdgePts];
 
             //***1.95 - JHS
@@ -568,7 +604,7 @@ namespace Darwin.Features
             // except narrow ones opening up and forward. In effect, we have removed potential
             // discontinuities from the chain signal being sent into the wavelet code.
             //memcpy(src, &((*_chain)[_tipPos + 1]), numTrailingEdgePts * sizeof(double));
-            Array.Copy(chain.Data, tipPos + 1, src, 0, numTrailingEdgePts);
+            Array.Copy(chain.Data, tipPosition + 1, src, 0, numTrailingEdgePts);
 
             //***1.95 - code to convert negative angles
             for (int di = 0; di < numTrailingEdgePts; di++)
@@ -636,7 +672,7 @@ namespace Darwin.Features
                     notchPosition = 1;
 
                     if (0 == notchPosition)
-                        notchPosition = chain.Length - tipPos - 1;
+                        notchPosition = chain.Length - tipPosition - 1;
 
                     break;
                 }
@@ -650,7 +686,7 @@ namespace Darwin.Features
                 // all the fine transform levels and haven't found any local
                 // minima.  So, we'll just set the notch Position to the end
                 // of the chain.
-                notchPosition = chain.Length - tipPos - 1;
+                notchPosition = chain.Length - tipPosition - 1;
 
             if (notchPosition == 0)
             {
@@ -732,7 +768,7 @@ namespace Darwin.Features
                 }
 
                 if (firstRun)
-                    notchPosition = chain.Length - 1 - tipPos;
+                    notchPosition = chain.Length - 1 - tipPosition;
             }
 
             /*
@@ -757,7 +793,7 @@ namespace Darwin.Features
 			zeroCrossings.clear();
 			*/
 
-            return notchPosition + tipPos;
+            return notchPosition + tipPosition;
         }
 
         public double FindLEAngle(Chain chain, int tipPos, int endLE)

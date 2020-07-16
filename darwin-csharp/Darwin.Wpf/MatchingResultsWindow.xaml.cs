@@ -232,7 +232,10 @@ namespace Darwin.Wpf
                 var fin = _vm.FullyLoadFinByID(_vm.SelectedResult.DatabaseID);
 
                 fin.FinOutline.ChainPoints = null;
-                fin.FinImage = fin.OriginalFinImage;
+
+                if (_vm.SelectedShowOriginalImage)
+                    fin.FinImage = fin.OriginalFinImage;
+
                 var vm = new TraceWindowViewModel(fin, _vm.Database, "Viewing Selected: " + fin.IDCode, null, true);
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();
@@ -246,7 +249,10 @@ namespace Darwin.Wpf
                 var fin = new DatabaseFin(_vm.DatabaseFin);
 
                 fin.FinOutline.ChainPoints = null;
-                fin.FinImage = fin.OriginalFinImage;
+
+                if (_vm.UnknownShowOriginalImage)
+                    fin.FinImage = fin.OriginalFinImage;
+
                 var vm = new TraceWindowViewModel(fin, _vm.Database, "Viewing Unknown", null, true);
                 TraceWindow traceWindow = new TraceWindow(vm);
                 traceWindow.Show();

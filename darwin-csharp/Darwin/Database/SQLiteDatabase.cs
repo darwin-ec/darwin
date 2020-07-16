@@ -23,7 +23,7 @@ namespace Darwin.Database
         private const string SettingsCatalogSchemeName = "CatalogSchemeName";
         private const string SettingsFeatureSetType = "FeatureSetType";
 
-        public const int LatestDBVersion = 5;
+        public const int LatestDBVersion = 6;
 
         private CatalogScheme _catalogScheme;
         public override CatalogScheme CatalogScheme
@@ -135,7 +135,10 @@ namespace Darwin.Database
                 if (version < 4)
                     UpgradeToVersion4(conn);
 
-                UpgradeToVersion5(conn);
+                if (version < 5)
+                    UpgradeToVersion5(conn);
+
+                UpgradeToVersion6(conn);
             }
         }
 
@@ -225,6 +228,41 @@ namespace Darwin.Database
             catch { }
         }
 
+        private void UpgradeToVersion6(SQLiteConnection conn)
+        {
+            try
+            {
+                const string AddFeatureTables = @"CREATE TABLE IF NOT EXISTS CoordinateFeaturePoints (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        X INTEGER,
+                        Y INTEGER,
+                        UserSetPosition INTEGER,
+                        Ignore INTEGER,
+                        fkOutlineID INTEGER
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_CoordinateFeaturePoints_fkOutlineID ON CoordinateFeaturePoints (fkOutlineID);
+
+                    CREATE TABLE IF NOT EXISTS Features (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        Value REAL,
+                        Ignore INTEGER,
+                        fkOutlineID INTEGER
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_Features_fkOutlineID ON Features (fkOutlineID);";
+
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    cmd.CommandText = AddFeatureTables;
+                    cmd.ExecuteNonQuery();
+                }
+
+                SetVersion(conn, 6);
+            }
+            catch { }
+        }
+
         // *****************************************************************************
         //
         // Returns complete DatabaseFin<ColorImage>. mDataPos field will be used to map to id in 
@@ -267,7 +305,10 @@ namespace Darwin.Database
 
             if (featurePoints != null && featurePoints.Count > 0)
             {
-                var featureSet = FeatureSet.Load(CatalogScheme.FeatureSetType, featurePoints);
+                var coordinateFeaturePoints = SelectCoordinateFeaturePointsByFkOutlineID(outline.id);
+                var features = SelectFeaturesByFkOutlineID(outline.id);
+
+                var featureSet = FeatureSet.Load(CatalogScheme.FeatureSetType, featurePoints, coordinateFeaturePoints, features);
                 finOutline = new Outline(fc, CatalogScheme.FeatureSetType, featureSet);
             }
             else
@@ -397,7 +438,9 @@ namespace Darwin.Database
                     }
                     InsertPoints(conn, points);
 
+                    InsertFeatures(conn, outline.id, finOutline.FeatureSet.FeatureList);
                     InsertFeaturePoints(conn, outline.id, finOutline.FeatureSet.FeaturePointList);
+                    InsertCoordinateFeaturePoints(conn, outline.id, finOutline.FeatureSet.CoordinateFeaturePointList);
 
                     DBImage image = new DBImage();
                     image.dateofsighting = fin.DateOfSighting;
@@ -485,8 +528,14 @@ namespace Darwin.Database
 
                     InsertPoints(conn, points);
 
+                    DeleteFeaturesIndividualID(conn, outline.id);
+                    InsertFeatures(conn, outline.id, fin.FinOutline.FeatureSet.FeatureList);
+
                     DeleteOutlineFeaturePointsByOutlineID(conn, outline.id);
                     InsertFeaturePoints(conn, outline.id, fin.FinOutline.FeatureSet.FeaturePointList);
+
+                    DeleteCoordinateFeaturePointsByIndividualID(conn, outline.id);
+                    InsertCoordinateFeaturePoints(conn, outline.id, fin.FinOutline.FeatureSet.CoordinateFeaturePointList);
 
                     // query db as we don't know the image id
                     image = SelectImageByFkIndividualID(individual.id);
@@ -567,8 +616,15 @@ namespace Darwin.Database
 
                     InsertPoints(conn, points);
 
+                    DeleteFeaturesIndividualID(conn, outline.id);
+                    InsertFeatures(conn, outline.id, data.FinOutline.FeatureSet.FeatureList);
+
                     DeleteOutlineFeaturePointsByOutlineID(conn, outline.id);
                     InsertFeaturePoints(conn, outline.id, data.FinOutline.FeatureSet.FeaturePointList);
+
+                    DeleteCoordinateFeaturePointsByIndividualID(conn, outline.id);
+                    InsertCoordinateFeaturePoints(conn, outline.id, data.FinOutline.FeatureSet.CoordinateFeaturePointList);
+
                     transaction.Commit();
                 }
                 conn.Close();
@@ -1226,6 +1282,76 @@ namespace Darwin.Database
             }
         }
 
+        private List<CoordinateFeaturePoint> SelectCoordinateFeaturePointsByFkOutlineID(long fkOutlineID)
+        {
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    conn.Open();
+
+                    cmd.CommandText = "SELECT * FROM CoordinateFeaturePoints WHERE fkOutlineID = @fkOutlineID;";
+                    cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
+
+                    List<CoordinateFeaturePoint> points = new List<CoordinateFeaturePoint>();
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            var featurePoint = new CoordinateFeaturePoint
+                            {
+                                ID = rdr.SafeGetInt("ID"),
+                                Type = (FeaturePointType)rdr.SafeGetInt("Type"),
+                                Coordinate = new Point(rdr.SafeGetInt("X"), rdr.SafeGetInt("Y")),
+                                UserSetPosition = rdr.SafeGetInt("UserSetPosition") != 0,
+                                Ignore = rdr.SafeGetInt("Ignore") != 0
+                            };
+
+                            points.Add(featurePoint);
+                        }
+                    }
+
+                    conn.Close();
+
+                    return points;
+                }
+            }
+        }
+
+        private List<Feature> SelectFeaturesByFkOutlineID(long fkOutlineID)
+        {
+            using (var conn = new SQLiteConnection(_connectionString))
+            {
+                using (var cmd = new SQLiteCommand(conn))
+                {
+                    conn.Open();
+
+                    cmd.CommandText = "SELECT * FROM Features WHERE fkOutlineID = @fkOutlineID;";
+                    cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
+
+                    List<Feature> features = new List<Feature>();
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            var feature = new Feature
+                            {
+                                ID = rdr.SafeGetInt("ID"),
+                                Type = (FeatureType)rdr.SafeGetInt("Type"),
+                                Value = rdr.SafeGetNullableDouble("Value")
+                            };
+
+                            features.Add(feature);
+                        }
+                    }
+
+                    conn.Close();
+
+                    return features;
+                }
+            }
+        }
+
         // *****************************************************************************
         //
         // Populates given list<DBPoint> with all rows from Points table where
@@ -1421,6 +1547,51 @@ namespace Darwin.Database
             }
         }
 
+        private long InsertCoordinateFeaturePoint(SQLiteConnection conn, long fkOutlineID, ref CoordinateFeaturePoint point)
+        {
+            if (point.IsEmpty)
+                return 0;
+
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "INSERT INTO CoordinateFeaturePoints (ID, Type, X, Y, UserSetPosition, Ignore, fkOutlineID) " +
+                    "VALUES (NULL, @Type, @X, @Y, @UserSetPosition, @Ignore, @fkOutlineID);";
+                cmd.Parameters.AddWithValue("@Type", point.Type);
+                cmd.Parameters.AddWithValue("@X", point.Coordinate?.X);
+                cmd.Parameters.AddWithValue("@Y", point.Coordinate?.Y);
+                cmd.Parameters.AddWithValue("@UserSetPosition", (point.UserSetPosition) ? 1 : 0);
+                cmd.Parameters.AddWithValue("@Ignore", (point.Ignore) ? 1 : 0);
+                cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
+
+                cmd.ExecuteNonQuery();
+
+                point.ID = conn.LastInsertRowId;
+
+                return point.ID;
+            }
+        }
+
+        private long InsertFeature(SQLiteConnection conn, long fkOutlineID, ref Feature feature)
+        {
+            if (feature.IsEmpty)
+                return 0;
+
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "INSERT INTO Features (ID, Type, Value, fkOutlineID) " +
+                    "VALUES (NULL, @Type, @Value, @fkOutlineID);";
+                cmd.Parameters.AddWithValue("@Type", feature.Type);
+                cmd.Parameters.AddWithValue("@Value", feature?.Value);
+                cmd.Parameters.AddWithValue("@fkOutlineID", fkOutlineID);
+
+                cmd.ExecuteNonQuery();
+
+                feature.ID = conn.LastInsertRowId;
+
+                return feature.ID;
+            }
+        }
+
         // *****************************************************************************
         //
         // Inserts DBPoint into Points table
@@ -1589,13 +1760,39 @@ namespace Darwin.Database
 
         private void InsertFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<OutlineFeaturePoint> points)
         {
-            foreach (var p in points)
+            if (points != null)
             {
-                var pointCopy = p;
-                InsertFeaturePoint(conn, fkOutlineID, ref pointCopy);
+                foreach (var p in points)
+                {
+                    var pointCopy = p;
+                    InsertFeaturePoint(conn, fkOutlineID, ref pointCopy);
+                }
             }
         }
 
+        private void InsertCoordinateFeaturePoints(SQLiteConnection conn, long fkOutlineID, List<CoordinateFeaturePoint> points)
+        {
+            if (points != null)
+            {
+                foreach (var p in points)
+                {
+                    var pointCopy = p;
+                    InsertCoordinateFeaturePoint(conn, fkOutlineID, ref pointCopy);
+                }
+            }
+        }
+
+        private void InsertFeatures(SQLiteConnection conn, long fkOutlineID, List<Feature> features)
+        {
+            if (features != null)
+            {
+                foreach (var f in features)
+                {
+                    var featureCopy = f;
+                    InsertFeature(conn, fkOutlineID, ref featureCopy);
+                }
+            }
+        }
 
         // *****************************************************************************
         //
@@ -1805,6 +2002,28 @@ namespace Darwin.Database
             using (var cmd = new SQLiteCommand(conn))
             {
                 cmd.CommandText = "DELETE FROM OutlineFeaturePoints WHERE fkOutlineID = @ID";
+                cmd.Parameters.AddWithValue("@ID", fkOutlineID);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteCoordinateFeaturePointsByIndividualID(SQLiteConnection conn, long fkOutlineID)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "DELETE FROM CoordinateFeaturePoints WHERE fkOutlineID = @ID";
+                cmd.Parameters.AddWithValue("@ID", fkOutlineID);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void DeleteFeaturesIndividualID(SQLiteConnection conn, long fkOutlineID)
+        {
+            using (var cmd = new SQLiteCommand(conn))
+            {
+                cmd.CommandText = "DELETE FROM Features WHERE fkOutlineID = @ID";
                 cmd.Parameters.AddWithValue("@ID", fkOutlineID);
 
                 cmd.ExecuteNonQuery();
@@ -2041,6 +2260,26 @@ namespace Darwin.Database
                         Ignore INTEGER,
                         fkOutlineID INTEGER
                     );
+
+                    CREATE TABLE IF NOT EXISTS CoordinateFeaturePoints (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        X INTEGER,
+                        Y INTEGER,
+                        UserSetPosition INTEGER,
+                        Ignore INTEGER,
+                        fkOutlineID INTEGER
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_CoordinateFeaturePoints_fkOutlineID ON CoordinateFeaturePoints (fkOutlineID);
+
+                    CREATE TABLE IF NOT EXISTS Features (
+                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Type INTEGER,
+                        Value REAL,
+                        Ignore INTEGER,
+                        fkOutlineID INTEGER
+                    );
+                    CREATE INDEX IF NOT EXISTS IX_Features_fkOutlineID ON Features (fkOutlineID);
 
                     CREATE TABLE IF NOT EXISTS Points (
                         ID INTEGER PRIMARY KEY AUTOINCREMENT,
