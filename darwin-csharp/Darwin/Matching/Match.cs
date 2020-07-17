@@ -109,7 +109,7 @@ namespace Darwin.Matching
             CheckUnknownForRequiredFeatures();
 
             // Force rediscovery (for debugging/testing, can uncomment
-            UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
+            //UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
         }
 
         public void SetMatchOptions(
