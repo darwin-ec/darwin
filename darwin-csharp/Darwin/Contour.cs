@@ -466,7 +466,7 @@ namespace Darwin
 
 			for (int i = 0; i < NumPoints; i++)
 			{
-				// first point of new Contour is first point of old contour
+				// First point of new Contour is first point of old contour
 				x = (int)Math.Round(Points[i].X * scaleFactor) + xoffset;
 				y = (int)Math.Round(Points[i].Y * scaleFactor) + yoffset;
 				newContour.AddPoint(x, y); //005CT

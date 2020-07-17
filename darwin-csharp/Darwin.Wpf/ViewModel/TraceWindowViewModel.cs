@@ -582,6 +582,8 @@ namespace Darwin.Wpf.ViewModel
 			ZoomValues = new List<double>();
 
 			OpenImage(imageFilename);
+
+			WindowTitle = Path.GetFileName(imageFilename);
 		}
 
 		public void OpenImage(string filename)

@@ -289,7 +289,7 @@ namespace Darwin
         //********************************************************************
         // evenlySpaceContourPoints()
         //
-        private FloatContour EvenlySpaceContourPoints(int space)
+        public FloatContour EvenlySpaceContourPoints(int space)
         {
             if (space <= 0)
                 return null;

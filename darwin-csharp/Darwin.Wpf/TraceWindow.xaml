@@ -10,6 +10,16 @@
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
         Title="{Binding WindowTitle}" MinWidth="700" MinHeight="670" Height="800" Width="1200">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34" />
+    </WindowChrome.WindowChrome>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+    </Window.CommandBindings>
     <Window.Resources>
         <Cursor x:Key="AutoTraceCursor">Resources/Cursors/autotrace_cursor.cur</Cursor>
         <Cursor x:Key="ChopOutlineCursor">Resources/Cursors/chopoutline_cursor.cur</Cursor>
@@ -28,323 +38,354 @@
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
-    <Grid x:Name="TopGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition  />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="230"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="230"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Width="160">
-                <Button x:Name="UndoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}" Visibility="{Binding TraceToolsVisibility}">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</Label>
-                        <Label HorizontalAlignment="Center" Padding="1">Undo</Label>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="RedoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}" Visibility="{Binding TraceToolsVisibility}">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf01e;</Label>
-                        <Label HorizontalAlignment="Center" Padding="1">Redo</Label>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Grid.Column="1" Visibility="{Binding TopToolbarVisibility}" HorizontalAlignment="Center">
-                <StackPanel x:Name="StepPanel" Orientation="Horizontal">
-                    <RadioButton x:Name="TraceStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.TraceOutline}}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                            <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" Height="24" />
-                            <Label HorizontalAlignment="Center" Padding="0">Trace Outline</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsEnabled="{Binding IdentifyFeaturesEnabled}" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
-                            <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" Height="24" />
-                            <Label HorizontalAlignment="Center" Padding="0">Identify Features</Label>
-                        </StackPanel>
-                    </RadioButton>
-                </StackPanel>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Grid.Column="2">
-                <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center" VerticalAlignment="Center">&#xf03e;</TextBlock>
-                <Slider Grid.Column="2" Width="180" Orientation="Horizontal" VerticalAlignment="Center" Minimum="-4" Maximum="4" Value="{Binding Path=ZoomSlider, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
-                <TextBlock FontFamily="{StaticResource FontAwesome}" FontSize="22" VerticalAlignment="Center">&#xf03e;</TextBlock>
-            </StackPanel>
-        </Grid>
-
-        <!--<StackPanel Orientation="Horizontal" Grid.Row="1">
-            <TextBlock x:Name="TextBlock1" FontFamily="{StaticResource FontAwesome}" Text="&#xf004;" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="100"/>
-        </StackPanel>-->
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button x:Name="FlipHorizontalButton" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click" Visibility="{Binding TraceToolsVisibility}">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="2">
-                    <Image Source="/Darwin.Wpf;component/Resources/Images/horizontal_flip.png" />
-                    <Label HorizontalAlignment="Center" Padding="2">Flip</Label>
-                </StackPanel>
-            </Button>
-            <Button x:Name="RotateCWButton" Click="RotateCWButton_Click" ToolTip="Rotate 90° clockwise" Visibility="{Binding TraceToolsVisibility}">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                    <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf021;</Label>
-                    <Label Padding="2" HorizontalAlignment="Center">Rotate CW</Label>
-                </StackPanel>
-            </Button>
-            <Button x:Name="RotateCCWButton" Click="RotateCCWButton_Click" ToolTip="Rotate 90° counter-clockwise" Visibility="{Binding TraceToolsVisibility}">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                    <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" Content="&#xf021;" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
-                        <Label.RenderTransform>
-                            <ScaleTransform ScaleX="-1" />
-                        </Label.RenderTransform>
-                    </Label>
-                    <Label Padding="2" HorizontalAlignment="Center">Rotate CCW</Label>
-                </StackPanel>
-            </Button>
-            <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
-                <Image Source="/Darwin.Wpf;component/Resources/Images/brightness_button.png" VerticalAlignment="Center" />
-                <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" VerticalAlignment="Center" ValueChanged="BrightnessSlider_ValueChanged" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
-                <Image Source="/Darwin.Wpf;component/Resources/Images/contrast_button.png" VerticalAlignment="Center" />
-                <!--<controls:TwoThumbSlider x:Name="ContrastSlider" Width="200" Minimum="0" Maximum="255" LowerValue="0" UpperValue="255" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="ContrastSlider_ValueChanged" />-->
-                <Slider x:Name="ContrastSlider" Width="200" Minimum="-255" Maximum="255" Value="0" VerticalAlignment="Center" ValueChanged="ContrastSlider_ValueChanged" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" />
-            </StackPanel>
-        </StackPanel>
-
-        <!--<skia:SKElement PaintSurface="OnPaintSurface" Name="skiaElement" MouseLeftButtonDown="skiaElement_MouseLeftButtonDown"  MouseLeftButtonUp="skiaElement_MouseLeftButtonUp" MouseMove="skiaElement_MouseMove" Grid.Row="2" />-->
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Grid Grid.Column="0">
+    <Border x:Name="TraceWindowBorder" BorderBrush="LightSlateGray" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition  />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Height="30" Background="{StaticResource LightBackground}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <RadioButton x:Name="HandButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf256;</TextBlock>
-                            <Label HorizontalAlignment="Center" Padding="1">View</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="MagnifyingGlassButton" ToolTip="Hold Shift to Zoom Out" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/magnify.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Zoom</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="CropButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}"  Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <!--<Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />-->
-                            <Label FontFamily="{StaticResource FontAwesomeSolid}" FontSize="15" HorizontalAlignment="Center">&#xf565;</Label>
-                            <Label HorizontalAlignment="Center" Padding="1">Crop</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <Separator />
-                    <RadioButton x:Name="AutoTraceButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AutoTrace}}"  Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/autotrace.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">AutoTrace</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="PencilButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}" Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/pencil.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Pencil</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="AddPointButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AddPoint}}" Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/addpoint.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Add Point</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="AdjustButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MovePoint}}" Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <!--<TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf25a;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Adjust</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="EraserButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Eraser}}"  Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf12d;</TextBlock>-->
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/eraser.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Erase</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton x:Name="ChopButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.ChopOutline}}"  Visibility="{Binding TraceToolsVisibility}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/chopoutline_button.png" />
-                            <Label HorizontalAlignment="Center" Padding="1">Chop</Label>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton Visibility="{Binding FeatureToolsVisibility}" ToolTip="Move Feature" x:Name="MoveFeatureButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MoveFeature}}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                            <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
+                <Image Grid.Column="0" x:Name="WindowIcon" Source="/Resources/Icons/darwin.ico" Width="24" Margin="6,4,4,4"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True"
+                       MouseDown="WindowIcon_MouseDown" />
 
-                            <TextBlock HorizontalAlignment="Center" Padding="1">
-                                Feature
-                            </TextBlock>
+                <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding WindowTitle}" />
 
-                        </StackPanel>
-                    </RadioButton>
+                <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource MinimizeButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Minimize"
+                            Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
+                    <Button x:Name="RestoreButton" Visibility="Collapsed" Style="{StaticResource RestoreButtonStyle}" 
+                            Command="{x:Static SystemCommands.RestoreWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Restore"/>
+                    <Button x:Name="MaximizeButton" Visibility="Visible" Style="{StaticResource MaximizeButtonStyle}" 
+                            Command="{x:Static SystemCommands.MaximizeWindowCommand}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Maximize" />
+                    <Button Style="{StaticResource CloseButtonStyle}" WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Close"
+                            Command="{x:Static SystemCommands.CloseWindowCommand}"/>
                 </StackPanel>
-                
-                <ScrollViewer x:Name="TraceScrollViewer" Background="White"
+            </Grid>
+            <Border Grid.Row="1" BorderThickness="0 0 0 1" BorderBrush="LightGray" Padding="0 5 0 3">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="230"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Width="160">
+                        <Button x:Name="UndoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}" Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</Label>
+                                <Label HorizontalAlignment="Center" Padding="1">Undo</Label>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="RedoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}" Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf01e;</Label>
+                                <Label HorizontalAlignment="Center" Padding="1">Redo</Label>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="1" Visibility="{Binding TopToolbarVisibility}" HorizontalAlignment="Center">
+                        <StackPanel x:Name="StepPanel" Orientation="Horizontal">
+                            <RadioButton x:Name="TraceStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.TraceOutline}}">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                                    <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                                    <Image Source="/Darwin.Wpf;component/Resources/Images/trace.png" Height="24" />
+                                    <Label HorizontalAlignment="Center" Padding="0">Trace Outline</Label>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="FeaturesStepButton" Style="{StaticResource StepToggle}" GroupName="TraceStep" Checked="TraceStep_Checked" IsEnabled="{Binding IdentifyFeaturesEnabled}" IsChecked="{Binding Path=TraceStep, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceStepType.IdentifyFeatures}}">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="8">
+                                    <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                                    <Image Source="/Darwin.Wpf;component/Resources/Images/view_points.png" Height="24" />
+                                    <Label HorizontalAlignment="Center" Padding="0">Identify Features</Label>
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Grid.Column="2">
+                        <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center" VerticalAlignment="Center">&#xf03e;</TextBlock>
+                        <Slider Grid.Column="2" Width="180" Orientation="Horizontal" VerticalAlignment="Center" Minimum="-4" Maximum="4" Value="{Binding Path=ZoomSlider, Mode=TwoWay}" x:Name="ZoomSlider" ValueChanged="ZoomSlider_ValueChanged"/>
+                        <TextBlock FontFamily="{StaticResource FontAwesome}" FontSize="22" VerticalAlignment="Center">&#xf03e;</TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <!--<StackPanel Orientation="Horizontal" Grid.Row="1">
+            <TextBlock x:Name="TextBlock1" FontFamily="{StaticResource FontAwesome}" Text="&#xf004;" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="100"/>
+        </StackPanel>-->
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Button x:Name="FlipHorizontalButton" Style="{StaticResource ToolbarButton}" ToolTip="Flip the image horizontally" Click="FlipHorizontalButton_Click" Visibility="{Binding TraceToolsVisibility}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="2">
+                        <!--<Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" FontSize="15" HorizontalAlignment="Center">&#xf362;</Label>-->
+                        <Image Source="/Darwin.Wpf;component/Resources/Images/horizontal_flip.png" />
+                        <!--<Label HorizontalAlignment="Center" Padding="2">Flip</Label>-->
+                    </StackPanel>
+                </Button>
+                <Button x:Name="RotateCWButton" Style="{StaticResource ToolbarButton}" Click="RotateCWButton_Click" ToolTip="Rotate 90° clockwise" Visibility="{Binding TraceToolsVisibility}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf021;</Label>
+                        <!--<Label Padding="2" HorizontalAlignment="Center">Rotate CW</Label>-->
+                    </StackPanel>
+                </Button>
+                <Button x:Name="RotateCCWButton" Style="{StaticResource ToolbarButton}" Click="RotateCCWButton_Click" ToolTip="Rotate 90° counter-clockwise" Visibility="{Binding TraceToolsVisibility}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <Label Padding="2" FontFamily="{StaticResource FontAwesomeSolid}" Content="&#xf021;" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                            <Label.RenderTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </Label.RenderTransform>
+                        </Label>
+                        <!--<Label Padding="2" HorizontalAlignment="Center">Rotate CCW</Label>-->
+                    </StackPanel>
+                </Button>
+                <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/brightness_button.png" VerticalAlignment="Center" ToolTip="Adjust brightness" />
+                    <Slider x:Name="BrightnessSlider" Width="200" Minimum="-255" Maximum="255" Value="0" VerticalAlignment="Center" ValueChanged="BrightnessSlider_ValueChanged" TickFrequency="1" IsSnapToTickEnabled="True" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8" Visibility="{Binding TraceToolsVisibility}">
+                    <Image Source="/Darwin.Wpf;component/Resources/Images/contrast_button.png" VerticalAlignment="Center" ToolTip="Adjust contrast" />
+                    <!--<controls:TwoThumbSlider x:Name="ContrastSlider" Width="200" Minimum="0" Maximum="255" LowerValue="0" UpperValue="255" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="ContrastSlider_ValueChanged" />-->
+                    <Slider x:Name="ContrastSlider" Width="200" Minimum="-255" Maximum="255" Value="0" VerticalAlignment="Center" ValueChanged="ContrastSlider_ValueChanged" TickFrequency="1" IsSnapToTickEnabled="True" />
+                </StackPanel>
+            </StackPanel>
+
+            <!--<skia:SKElement PaintSurface="OnPaintSurface" Name="skiaElement" MouseLeftButtonDown="skiaElement_MouseLeftButtonDown"  MouseLeftButtonUp="skiaElement_MouseLeftButtonUp" MouseMove="skiaElement_MouseMove" Grid.Row="2" />-->
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                        <RadioButton x:Name="HandButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf256;</TextBlock>
+                                <Label HorizontalAlignment="Center" Padding="1">Pan</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="MagnifyingGlassButton" ToolTip="Hold Shift to Zoom Out" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/magnify.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Zoom</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="CropButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}"  Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <!--<Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />-->
+                                <Label FontFamily="{StaticResource FontAwesomeSolid}" FontSize="15" HorizontalAlignment="Center">&#xf565;</Label>
+                                <Label HorizontalAlignment="Center" Padding="1">Crop</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <Separator />
+                        <RadioButton x:Name="AutoTraceButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AutoTrace}}"  Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/autotrace.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">AutoTrace</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="PencilButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}" Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/pencil.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Pencil</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="AddPointButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.AddPoint}}" Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/addpoint.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Add Point</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="AdjustButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MovePoint}}" Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <!--<TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf25a;</TextBlock>-->
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Adjust</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="EraserButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Eraser}}"  Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf12d;</TextBlock>-->
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/eraser.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Erase</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton x:Name="ChopButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.ChopOutline}}"  Visibility="{Binding TraceToolsVisibility}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/chopoutline_button.png" />
+                                <Label HorizontalAlignment="Center" Padding="1">Chop</Label>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Visibility="{Binding FeatureToolsVisibility}" ToolTip="Move Feature" x:Name="MoveFeatureButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.MoveFeature}}">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/finger.png" />
+
+                                <TextBlock HorizontalAlignment="Center" Padding="1">
+                                Feature
+                                </TextBlock>
+
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+
+                    <ScrollViewer x:Name="TraceScrollViewer" Background="White"
                               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Column="1"
                               ScrollChanged="TraceScrollViewer_ScrollChanged" PreviewMouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown"
                               MouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp" PreviewMouseLeftButtonUp="TraceScrollViewer_MouseLeftButtonUp"
                               MouseMove="TraceScrollViewer_MouseMove" PreviewMouseWheel="TraceScrollViewer_PreviewMouseWheel" MouseLeftButtonDown="TraceScrollViewer_MouseLeftButtonDown">
-                    <Viewbox x:Name="ImageViewBox" Stretch="None">
-                        <Viewbox.LayoutTransform>
-                            <TransformGroup x:Name="ImageTransformGroup">
-                                <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
-                                <!--<TranslateTransform x:Name="imgTranslateTransform"></TranslateTransform>-->
-                            </TransformGroup>
-                        </Viewbox.LayoutTransform>
-                        <Canvas x:Name="TraceCanvas" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}" MouseLeftButtonDown="TraceCanvas_MouseLeftButtonDown" MouseLeftButtonUp="TraceCanvas_MouseLeftButtonUp" MouseMove="TraceCanvas_MouseMove">
-                            <Image x:Name="TraceImage" Source="{Binding Path=ImageSource}">
-                                <Image.LayoutTransform>
-                                    <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
-                                </Image.LayoutTransform>
-                            </Image>
-                            <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
+                        <Viewbox x:Name="ImageViewBox" Stretch="None">
+                            <Viewbox.LayoutTransform>
+                                <TransformGroup x:Name="ImageTransformGroup">
+                                    <ScaleTransform x:Name="ScaleTransform"></ScaleTransform>
+                                    <!--<TranslateTransform x:Name="imgTranslateTransform"></TranslateTransform>-->
+                                </TransformGroup>
+                            </Viewbox.LayoutTransform>
+                            <Canvas x:Name="TraceCanvas" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}" MouseLeftButtonDown="TraceCanvas_MouseLeftButtonDown" MouseLeftButtonUp="TraceCanvas_MouseLeftButtonUp" MouseMove="TraceCanvas_MouseMove">
+                                <Image x:Name="TraceImage" Source="{Binding Path=ImageSource}">
+                                    <Image.LayoutTransform>
+                                        <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
+                                    </Image.LayoutTransform>
+                                </Image>
+                                <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             Background="Transparent"
                                             PointSize="3"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding Contour.Points}"
                                             Brushes="{StaticResource brushes}" />
-                        </Canvas>
-                    </Viewbox>
-                </ScrollViewer>
-            </Grid>
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Orientation="Vertical" Margin="8">
-                        <Label Padding="0 5">ID Code:</Label>
-                        <TextBox  Text="{Binding Path=DatabaseFin.IDCode}" Margin="0,0,10,5"  />
+                            </Canvas>
+                        </Viewbox>
+                    </ScrollViewer>
+                </Grid>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Vertical" Margin="8">
+                            <Label Padding="0 5">ID Code:</Label>
+                            <TextBox  Text="{Binding Path=DatabaseFin.IDCode}" Margin="0,0,10,5"  />
 
-                        <Label Padding="0 5">Name:</Label>
-                        <TextBox Text="{Binding Path=DatabaseFin.Name}" Margin="0,0,10,5" />
+                            <Label Padding="0 5">Name:</Label>
+                            <TextBox Text="{Binding Path=DatabaseFin.Name}" Margin="0,0,10,5" />
 
-                        <Label Padding="0 5">Date of Sighting:</Label>
-                        <TextBox Text="{Binding Path=DatabaseFin.DateOfSighting}" Margin="0,0,10,5"  />
+                            <Label Padding="0 5">Date of Sighting:</Label>
+                            <TextBox Text="{Binding Path=DatabaseFin.DateOfSighting}" Margin="0,0,10,5"  />
 
-                        <Label Padding="0 5">Roll/Frame or Lat/Long:</Label>
-                        <TextBox Text="{Binding Path=DatabaseFin.RollAndFrame}" Margin="0,0,10,5"  />
+                            <Label Padding="0 5">Roll/Frame or Lat/Long:</Label>
+                            <TextBox Text="{Binding Path=DatabaseFin.RollAndFrame}" Margin="0,0,10,5"  />
 
-                        <Label Padding="0 5">Location Code:</Label>
-                        <TextBox Text="{Binding Path=DatabaseFin.LocationCode}" Margin="0,0,10,5"  />
+                            <Label Padding="0 5">Location Code:</Label>
+                            <TextBox Text="{Binding Path=DatabaseFin.LocationCode}" Margin="0,0,10,5"  />
 
-                        <Label Padding="0 5">Damage Category:</Label>
-                        <ComboBox ItemsSource="{Binding Categories, Mode=OneWay}"
+                            <Label Padding="0 5">Damage Category:</Label>
+                            <ComboBox ItemsSource="{Binding Categories, Mode=OneWay}"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Name"
                               SelectedValue="{Binding Path=DatabaseFin.DamageCategory}" Margin="0,0,10,5">
-                        </ComboBox>
+                            </ComboBox>
 
-                        <Label Padding="0 5">Short Description:</Label>
-                        <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}"
+                            <Label Padding="0 5">Short Description:</Label>
+                            <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}"
                                 TextWrapping="Wrap"
                                 AcceptsReturn="True"
                                 VerticalScrollBarVisibility="Visible"
                                 MinLines="3" Margin="0,0,10,5"  />
 
-                        <Button x:Name="ExportDataButton" Click="ExportDataButton_Click">
-                            <Button.ToolTip>
-                                <TextBlock>
+                            <Button x:Name="ExportDataButton" Click="ExportDataButton_Click">
+                                <Button.ToolTip>
+                                    <TextBlock>
                                 Export the sighting data and append it to the<LineBreak/>
                                 survey area's master data file
+                                    </TextBlock>
+                                </Button.ToolTip>
+                                Export Data
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                        <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}">
+                            <Button.ToolTip>
+                                <TextBlock>
+                                Attempt to match this <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>  against those in the database
                                 </TextBlock>
                             </Button.ToolTip>
-                            Export Data
+                            Match
                         </Button>
-                    </StackPanel>
-                </ScrollViewer>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
-                    <Button x:Name="MatchButton" Click="MatchButton_Click" Visibility="{Binding MatchVisibility}">
-                        <Button.ToolTip>
-                            <TextBlock>
-                                Attempt to match this <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/>  against those in the database
-                            </TextBlock>
-                        </Button.ToolTip>
-                        Match
-                    </Button>
-                    <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
-                        <Button.ToolTip>
-                            <TextBlock>
+                        <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
+                            <Button.ToolTip>
+                                <TextBlock>
                             Save this traced <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to a separate file<LineBreak/>
                             (NOTE: If you want to build a match queue or access this<LineBreak/>
                             traced <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> for processing at a later time, then use this<LineBreak/>
                             option BEFORE adding <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to database or attempting a match)
-                            </TextBlock>
-                        </Button.ToolTip>
-                        Save
-                    </Button>
-                    <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click" Visibility="{Binding AddToDatabaseVisibility}">
-                        <Button.ToolTip>
-                            <TextBlock>
+                                </TextBlock>
+                            </Button.ToolTip>
+                            Save
+                        </Button>
+                        <Button x:Name="AddToDatabaseButton" Click="AddToDatabaseButton_Click" Visibility="{Binding AddToDatabaseVisibility}">
+                            <Button.ToolTip>
+                                <TextBlock>
                                 Add this <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to the database without attempting to match it
-                            </TextBlock>
-                        </Button.ToolTip>
-                        Add to Database
-                    </Button>
-                </StackPanel>
+                                </TextBlock>
+                            </Button.ToolTip>
+                            Add to Database
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
             </Grid>
 
+
+            <StatusBar Grid.Row="5">
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem>
+                    <TextBlock Name="CursorPositionMessage" />
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="1">
+                    <ComboBox x:Name="ZoomComboBox" Text="{Binding Path=ZoomRatio, StringFormat=P0, Mode=OneWay}" ItemsSource="{Binding ZoomValues}" IsEditable="True" TextBoxBase.TextChanged="ZoomComboBox_TextChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding StringFormat=P0}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StatusBarItem>
+                <Separator Grid.Column="2" />
+                <StatusBarItem Grid.Column="3">
+                    <TextBlock Name="StatusBarMessage" />
+                </StatusBarItem>
+            </StatusBar>
         </Grid>
-
-
-        <StatusBar Grid.Row="4">
-            <StatusBar.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80" />
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </StatusBar.ItemsPanel>
-            <StatusBarItem>
-                <TextBlock Name="CursorPositionMessage" />
-            </StatusBarItem>
-            <StatusBarItem Grid.Column="1">
-                <ComboBox x:Name="ZoomComboBox" Text="{Binding Path=ZoomRatio, StringFormat=P0, Mode=OneWay}" ItemsSource="{Binding ZoomValues}" IsEditable="True" TextBoxBase.TextChanged="ZoomComboBox_TextChanged">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding StringFormat=P0}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </StatusBarItem>
-            <Separator Grid.Column="2" />
-            <StatusBarItem Grid.Column="3">
-                <TextBlock Name="StatusBarMessage" />
-            </StatusBarItem>
-        </StatusBar>
-    </Grid>
+    </Border>
 </Window>

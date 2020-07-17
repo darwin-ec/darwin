@@ -61,7 +61,7 @@
         </x:Array>
         <converters:NullConverter x:Key="NullConverter" />
     </Window.Resources>
-    <Border x:Name="MainWindowBorder" BorderBrush="LightGray" BorderThickness="1">
+    <Border x:Name="MainWindowBorder" BorderBrush="LightSlateGray" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

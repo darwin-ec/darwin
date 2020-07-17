@@ -118,8 +118,54 @@ namespace Darwin.Wpf
 					}
 				}
 			};
-
+			StateChanged += TraceWindowStateChangeRaised;
 			this.DataContext = _vm;
+		}
+
+		private void TraceWindowStateChangeRaised(object sender, EventArgs e)
+		{
+			if (WindowState == WindowState.Maximized)
+			{
+				TraceWindowBorder.BorderThickness = new Thickness(8);
+				RestoreButton.Visibility = Visibility.Visible;
+				MaximizeButton.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				TraceWindowBorder.BorderThickness = new Thickness(0);
+				RestoreButton.Visibility = Visibility.Collapsed;
+				MaximizeButton.Visibility = Visibility.Visible;
+			}
+		}
+
+		private void WindowIcon_MouseDown(object sender, RoutedEventArgs e)
+		{
+			SystemCommands.ShowSystemMenu(this, WindowIcon.PointToScreen(new System.Windows.Point(0, WindowIcon.ActualHeight)));
+		}
+
+		private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
+		{
+			SystemCommands.MinimizeWindow(this);
+		}
+
+		private void CommandBinding_Executed_Maximize(object sender, ExecutedRoutedEventArgs e)
+		{
+			SystemCommands.MaximizeWindow(this);
+		}
+
+		private void CommandBinding_Executed_Restore(object sender, ExecutedRoutedEventArgs e)
+		{
+			SystemCommands.RestoreWindow(this);
+		}
+
+		private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
+		{
+			SystemCommands.CloseWindow(this);
 		}
 
 		private Darwin.Point MapWindowsPointToDarwinPoint(System.Windows.Point point)

@@ -33,6 +33,10 @@ namespace Darwin.Features
 
         private const int NumChinMaxesToTrack = 5;
 
+        private const float CurvatureLengthNormalizationLength = 250;
+        private const int CurvatureEvenSpace = 3;
+        private const int CurvatureTipPadding = 70;
+
         private static Dictionary<FeatureType, string> FeatureNameMapping = new Dictionary<FeatureType, string>()
         {
             { FeatureType.HasMouthDent, "Has Mouth Dent" },
@@ -174,7 +178,18 @@ namespace Darwin.Features
                 FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
 
                 Features[FeatureType.HasMouthDent].Value = (hasMouthDent) ? 1.0 : 0.0;
-                Features[FeatureType.BrowCurvature].Value = FindBrowCurvature(chainPoints, beginLE, nasionPos);
+
+                // Find the curvature between the brow and a spot near the nose. The reason for the padding is to try
+                // to avoid taking the upturned noses some bears have into account.
+                int curvatureTipPosition = tipPosition - CurvatureTipPadding;
+
+                // Fallback to prevent an error.  We're going to get an error of 0 or close to it if we fall to this.
+                if (curvatureTipPosition <= browPosition)
+                {
+                    curvatureTipPosition = browPosition + 1;
+                    Trace.WriteLine("Fallback tip position to find curvature.");
+                }
+                Features[FeatureType.BrowCurvature].Value = FindCurvature(chainPoints, browPosition, curvatureTipPosition);
             }
             catch (Exception ex)
             {
@@ -844,16 +859,26 @@ namespace Darwin.Features
             return FindTip(chain, midPoint, BrowBeforeMidpointPadding, rightPadding);
         }
 
-        public double FindBrowCurvature(FloatContour chainPoints, int browPosition, int tipOfNosePosition)
+        /// <summary>
+        /// Find a rough approximation of the curvature of a FloatContour.
+        /// Scales the contour length for the first and second positions to a benchmark
+        /// and then finds the mean squared error between that contour and a line fit
+        /// between the first and second points.
+        /// </summary>
+        /// <param name="chainPoints"></param>
+        /// <param name="firstPosition"></param>
+        /// <param name="secondPosition"></param>
+        /// <returns></returns>
+        public double FindCurvature(FloatContour chainPoints, int firstPosition, int secondPosition)
         {
             if (chainPoints == null)
                 throw new ArgumentNullException(nameof(chainPoints));
 
-            if (browPosition < 0 || browPosition > tipOfNosePosition)
-                throw new ArgumentOutOfRangeException(nameof(browPosition));
+            if (firstPosition < 0 || firstPosition > secondPosition)
+                throw new ArgumentOutOfRangeException(nameof(firstPosition));
 
-            if (tipOfNosePosition < 0 || tipOfNosePosition >= chainPoints.Length)
-                throw new ArgumentOutOfRangeException(nameof(tipOfNosePosition));
+            if (secondPosition < 0 || secondPosition >= chainPoints.Length)
+                throw new ArgumentOutOfRangeException(nameof(secondPosition));
 
             //// Fit a spline to our points
             //var spline = CubicSpline.InterpolateNatural(
@@ -870,7 +895,42 @@ namespace Darwin.Features
             //    double dydx = spline.Differentiate2(chainPoints[i].X);
             //}
 
-            return 0;
+            //CurvatureLengthNormalizationLength
+
+            double currentPositionDistance = MathHelper.GetDistance(chainPoints[firstPosition].X,
+                chainPoints[firstPosition].Y, chainPoints[secondPosition].X, chainPoints[secondPosition].Y);
+
+            float ratio = (float)(CurvatureLengthNormalizationLength / currentPositionDistance);
+
+            FloatContour scaledContour = new FloatContour();
+
+            for (int i = firstPosition; i <= secondPosition; i++)
+            {
+                scaledContour.AddPoint(chainPoints[i].X * ratio, chainPoints[i].Y * ratio);
+            }
+
+            scaledContour = scaledContour.EvenlySpaceContourPoints(CurvatureEvenSpace);
+
+            //double checkDistance = MathHelper.GetDistance(scaledContour[0].X, scaledContour[0].Y,
+            //    scaledContour[scaledContour.Length - 1].X, scaledContour[scaledContour.Length - 1].Y);
+
+            // Now we're going to fit a simple line to our start and end points
+            float slope = (scaledContour[scaledContour.Length - 1].Y - scaledContour[0].Y) / (scaledContour[scaledContour.Length - 1].X - scaledContour[0].X);
+            float intercept = scaledContour[0].Y - slope * scaledContour[0].X;
+
+            double squaredError = 0f;
+
+            // And find the mean squared error of the Y distance between the line and the contour
+            foreach (var p in scaledContour.Points)
+            {
+                squaredError += Math.Pow(p.Y - (p.X * slope + intercept), 2);
+            }
+
+            double meanSquaredError = squaredError / scaledContour.Length;
+
+            Trace.WriteLine("Curvature MSE: " + meanSquaredError.ToString("N2"));
+
+            return meanSquaredError;
         }
     }
 }
