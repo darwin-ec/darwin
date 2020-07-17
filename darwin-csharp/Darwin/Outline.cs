@@ -163,6 +163,23 @@ namespace Darwin
         {
             FeatureSet = FeatureSet.Create(featuresType, _chain, _chainPoints);
         }
+        
+        public bool ContainsAllFeatureTypes(List<FeatureType> featureTypes)
+        {
+            if (featureTypes == null || featureTypes.Count < 1)
+                return true;
+
+            if (FeatureSet == null || FeatureSet.Features == null)
+                return false;
+
+            foreach (var type in featureTypes)
+            {
+                if (!FeatureSet.Features.ContainsKey(type))
+                    return false;
+            }
+
+            return true;
+        }
 
         public bool ContainsAllFeaturePointTypes(List<FeaturePointType> featurePointTypes)
         {

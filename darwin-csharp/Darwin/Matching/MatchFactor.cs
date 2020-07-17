@@ -16,6 +16,11 @@ namespace Darwin.Matching
         MatchOptions options);
 
     public delegate MatchError ErrorBetweenIndividualFeaturesDelegate(
+        DatabaseFin unknownFin,
+        DatabaseFin databaseFin,
+        MatchOptions options);
+
+    public delegate MatchError ErrorBetweenIndividualFeatureRatiosDelegate(
             RatioComparison ratioComparison,
             DatabaseFin unknownFin,
             DatabaseFin databaseFin,
@@ -44,19 +49,31 @@ namespace Darwin.Matching
     public enum MatchFactorType
     {
         Outline = 0,
-        FeaturePoint = 1
+        FeaturePoint = 1,
+        Feature = 2
     }
 
     public class MatchFactor : INotifyPropertyChanged
     {
-        private List<FeaturePointType> _dependentFeatures;
-        public List<FeaturePointType> DependentFeatures
+        private List<FeatureType> _dependentFeatures;
+        public List<FeatureType> DependentFeatures
         {
             get => _dependentFeatures;
             set
             {
                 _dependentFeatures = value;
                 RaisePropertyChanged("DependentFeatures");
+            }
+        }
+
+        private List<FeaturePointType> _dependentFeaturePoints;
+        public List<FeaturePointType> DependentFeaturePoints
+        {
+            get => _dependentFeaturePoints;
+            set
+            {
+                _dependentFeaturePoints = value;
+                RaisePropertyChanged("DependentFeaturePoints");
             }
         }
 
@@ -89,6 +106,17 @@ namespace Darwin.Matching
             {
                 _errorBetweenIndividualFeatures = value;
                 RaisePropertyChanged("ErrorBetweenIndividualFeatures");
+            }
+        }
+
+        private ErrorBetweenIndividualFeatureRatiosDelegate _errorBetweenIndividualFeatureRatios;
+        public ErrorBetweenIndividualFeatureRatiosDelegate ErrorBetweenIndividualFeatureRatios
+        {
+            get => _errorBetweenIndividualFeatureRatios;
+            set
+            {
+                _errorBetweenIndividualFeatureRatios = value;
+                RaisePropertyChanged("ErrorBetweenIndividualFeatureRatios");
             }
         }
 
@@ -171,7 +199,7 @@ namespace Darwin.Matching
                 ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
                 UpdateOutlines = null,
                 MatchOptions = options,
-                DependentFeatures = new List<FeaturePointType>(contourControlPoints)
+                DependentFeaturePoints = new List<FeaturePointType>(contourControlPoints)
             };
         }
 
@@ -192,7 +220,7 @@ namespace Darwin.Matching
                 ErrorBetweenIndividualOutlines = errorBetweenIndividuals,
                 UpdateOutlines = updateOutlines,
                 MatchOptions = options,
-                DependentFeatures = new List<FeaturePointType>(contourControlPoints)
+                DependentFeaturePoints = new List<FeaturePointType>(contourControlPoints)
             };
         }
 
@@ -202,7 +230,7 @@ namespace Darwin.Matching
             List<FeaturePointType> landmarkFeatures,
             int numberOfDesiredRatios,
             List<DatabaseFin> allDatabaseIndividuals,
-            ErrorBetweenIndividualFeaturesDelegate errorBetweenIndividualFeatures,
+            ErrorBetweenIndividualFeatureRatiosDelegate errorBetweenIndividualFeatures,
             MatchOptions options = null)
         {
             var ratioComparison = FeaturePointErrorFunctions.ComputeInitialEigenRatios(
@@ -220,9 +248,25 @@ namespace Darwin.Matching
                 _ratioComparison = ratioComparison,
                 MatchFactorType = MatchFactorType.FeaturePoint,
                 Weight = weight,
-                ErrorBetweenIndividualFeatures = errorBetweenIndividualFeatures,
+                ErrorBetweenIndividualFeatureRatios = errorBetweenIndividualFeatures,
                 MatchOptions = options,
-                DependentFeatures = dependentFeatures
+                DependentFeaturePoints = dependentFeatures
+            };
+        }
+
+        public static MatchFactor CreateFeatureFactor(
+            float weight,
+            ErrorBetweenIndividualFeaturesDelegate errorBetweenIndividualFeatures,
+            FeatureType dependentFeature,
+            MatchOptions options = null)
+        {
+            return new MatchFactor
+            {
+                MatchFactorType = MatchFactorType.Feature,
+                Weight = weight,
+                ErrorBetweenIndividualFeatures = errorBetweenIndividualFeatures,
+                DependentFeatures = new List<FeatureType> { dependentFeature },
+                MatchOptions = options
             };
         }
 
@@ -232,7 +276,10 @@ namespace Darwin.Matching
                 return ErrorBetweenIndividualOutlines(ContourControlPoints, ErrorBetweenOutlines, UpdateOutlines, unknownFin, databaseFin, MatchOptions);
 
             if (MatchFactorType == MatchFactorType.FeaturePoint)
-                return ErrorBetweenIndividualFeatures(_ratioComparison, unknownFin, databaseFin, MatchOptions);
+                return ErrorBetweenIndividualFeatureRatios(_ratioComparison, unknownFin, databaseFin, MatchOptions);
+
+            if (MatchFactorType == MatchFactorType.Feature)
+                return ErrorBetweenIndividualFeatures(unknownFin, databaseFin, MatchOptions);
 
             throw new NotImplementedException();
         }

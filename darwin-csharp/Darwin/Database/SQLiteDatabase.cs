@@ -650,6 +650,31 @@ namespace Darwin.Database
                 conn.Close();
             }
         }
+        public override bool ContainsAllFeatureTypes(List<FeatureType> featureTypes)
+        {
+            if (featureTypes == null || featureTypes.Count < 1)
+                return true;
+
+            if (AllFins == null || AllFins.Count < 1)
+                return true;
+
+            foreach (var individual in AllFins)
+            {
+                if (individual.FinOutline == null || individual.FinOutline.FeatureSet.Features == null)
+                    return false;
+
+                foreach (var type in featureTypes)
+                {
+                    if (!individual.FinOutline.FeatureSet.Features.ContainsKey(type)
+                        || individual.FinOutline.FeatureSet.Features[type].IsEmpty)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
 
         public override bool ContainsAllFeaturePointTypes(List<FeaturePointType> featurePointTypes)
         {

@@ -800,6 +800,7 @@ namespace Darwin.Features
         {
             if (chain == null)
                 throw new ArgumentNullException(nameof(chain));
+
             if (tipPos <= 1)
                 throw new Exception("findLEAngle() [data member _tipPos <= 1]");
 
@@ -810,6 +811,10 @@ namespace Darwin.Features
             //int startPos = (int) round((_tipPos - 1) * LE_TRIM_AMOUNT);
             // new code 7/25/2005
             int numPoints = (int)Math.Round((endLE - 1) * (1.0 - 2.0 * LETrimAmount));
+
+            if (numPoints < 1)
+                return 0;
+
             int startPos = (int)Math.Round((endLE - 1) * LETrimAmount);
 
             Chain smoothChain = new Chain(chain);

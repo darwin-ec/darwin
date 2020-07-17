@@ -60,6 +60,7 @@ namespace Darwin.Database
         public abstract void UpdateOutline(DatabaseFin data, bool preventInvalidate = false);
         public abstract void Delete(DatabaseFin fin);
 
+        public abstract bool ContainsAllFeatureTypes(List<FeatureType> featureTypes);
         public abstract bool ContainsAllFeaturePointTypes(List<FeaturePointType> featurePointTypes);
 
         public abstract void InvalidateCache();

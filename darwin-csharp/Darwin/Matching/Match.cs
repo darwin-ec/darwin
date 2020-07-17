@@ -230,21 +230,26 @@ namespace Darwin.Matching
                 return false;
 
             var featurePointTypes = new List<FeaturePointType>();
+            var featureTypes = new List<FeatureType>();
 
             foreach (var factor in MatchFactors)
             {
+                if (factor.DependentFeaturePoints != null)
+                    featurePointTypes.AddRange(factor.DependentFeaturePoints);
+
                 if (factor.DependentFeatures != null)
-                    featurePointTypes.AddRange(factor.DependentFeatures);
+                    featureTypes.AddRange(factor.DependentFeatures);
             }
 
-            var distinctFeatureList = featurePointTypes.Distinct().ToList();
+            var distinctFeaturePointList = featurePointTypes.Distinct().ToList();
+            var distinctFeatureList = featureTypes.Distinct().ToList();
 
             // If the current unknown is missing any feature points, rediscover them
             // algorithmically
-            if (UnknownFin.FinOutline != null && !UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
+            if (UnknownFin.FinOutline != null && (!UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeaturePointList) || !UnknownFin.FinOutline.ContainsAllFeatureTypes(distinctFeatureList)))
                 UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
 
-            return Database.ContainsAllFeaturePointTypes(distinctFeatureList);
+            return Database.ContainsAllFeaturePointTypes(distinctFeaturePointList) && Database.ContainsAllFeatureTypes(distinctFeatureList);
         }
 
         //*******************************************************************
@@ -473,8 +478,8 @@ namespace Darwin.Matching
 
             foreach (var factor in MatchFactors)
             {
-                if (factor.DependentFeatures != null)
-                    featurePointTypes.AddRange(factor.DependentFeatures);
+                if (factor.DependentFeaturePoints != null)
+                    featurePointTypes.AddRange(factor.DependentFeaturePoints);
             }
 
             var distinctFeatureList = featurePointTypes.Distinct().ToList();
