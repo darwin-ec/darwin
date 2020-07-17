@@ -107,6 +107,9 @@ namespace Darwin.Matching
             }
 
             CheckUnknownForRequiredFeatures();
+
+            // Force rediscovery (for debugging/testing, can uncomment
+            UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
         }
 
         public void SetMatchOptions(
@@ -473,20 +476,24 @@ namespace Darwin.Matching
             if (UnknownFin == null || MatchFactors == null || MatchFactors.Count < 1)
                 return;
 
-            // Check whether our unknown has our latest features, and add them if not
             var featurePointTypes = new List<FeaturePointType>();
+            var featureTypes = new List<FeatureType>();
 
             foreach (var factor in MatchFactors)
             {
                 if (factor.DependentFeaturePoints != null)
                     featurePointTypes.AddRange(factor.DependentFeaturePoints);
+
+                if (factor.DependentFeatures != null)
+                    featureTypes.AddRange(factor.DependentFeatures);
             }
 
-            var distinctFeatureList = featurePointTypes.Distinct().ToList();
+            var distinctFeaturePointList = featurePointTypes.Distinct().ToList();
+            var distinctFeatureList = featureTypes.Distinct().ToList();
 
             // If the current unknown is missing any feature points, rediscover them
             // algorithmically
-            if (Database.CatalogScheme != null && UnknownFin.FinOutline != null && !UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeatureList))
+            if (Database.CatalogScheme != null && UnknownFin.FinOutline != null && (!UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeaturePointList) || !UnknownFin.FinOutline.ContainsAllFeatureTypes(distinctFeatureList)))
                 UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
         }
     }

@@ -634,17 +634,22 @@ namespace Darwin.Wpf.ViewModel
 			DatabaseFin.FinOutline = Outline;
 			DatabaseFin.FinImage = new Bitmap(Bitmap);
 
-			if (UndoItems == null)
-			{
+			if (DatabaseFin.ImageMods == null)
 				DatabaseFin.ImageMods = new List<ImageMod>();
-			}
-			else
-            {
-				DatabaseFin.ImageMods = UndoItems
+
+			var addedMods = new List<ImageMod>();
+
+			if (UndoItems != null)
+			{
+				addedMods = UndoItems
 					.Where(u => u.ImageMod != null && (u.ModificationType == ModificationType.Image || u.ModificationType == ModificationType.Both))
 					.Select(u => u.ImageMod)
 					.ToList();
             }
+
+			// We're adding mods in case we opened up an old Finz file/etc.  So we don't blow away previous
+			// mods done to the image.
+			DatabaseFin.ImageMods.Concat(addedMods);
 		}
 
 		private void LoadFin(DatabaseFin fin)

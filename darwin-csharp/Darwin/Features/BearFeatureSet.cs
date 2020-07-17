@@ -815,16 +815,10 @@ namespace Darwin.Features
             // Fake the mouth dent position
             mouthDentPosition = underNoseDentPosition + numPointsAfterNoseDent;
 
-            float currentAngle = chainPoints[underNoseDentPosition].FindAngle(chainPoints.Points[mouthDentPosition]);
-
-            float degreesToRotate = UpperLipDesiredAngle - currentAngle;
-
-            FloatContour rotatedContour = chainPoints.Rotate(chainPoints[underNoseDentPosition], degreesToRotate);
-
-            int upperLipPosition = FindTip(chain, rotatedContour, UpperLipTipPadding, UpperLipTipPadding);
+            int upperLipPosition = FindTip(chain, mouthDentPosition, mouthDentPosition - underNoseDentPosition - UpperLipTipPadding, UpperLipTipPadding);
 
             // These are fallback positions, so they're going to be off if we hit this if statement.
-            if (upperLipPosition < mouthDentPosition)
+            if (upperLipPosition < underNoseDentPosition)
                 upperLipPosition = (int)Math.Round(mouthDentPosition + numPointsAfterNoseDent / 2.0f);
 
             return upperLipPosition;
