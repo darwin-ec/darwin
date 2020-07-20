@@ -9,7 +9,8 @@ namespace Darwin.Features
     {
         LeadingEdgeAngle = 0,
         HasMouthDent = 1,
-        BrowCurvature = 2
+        BrowCurvature = 2,
+        NasionDepth = 3
     }
 
     public class Feature : BaseEntity, INotifyPropertyChanged

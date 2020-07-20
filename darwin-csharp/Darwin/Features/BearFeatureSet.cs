@@ -40,7 +40,8 @@ namespace Darwin.Features
         private static Dictionary<FeatureType, string> FeatureNameMapping = new Dictionary<FeatureType, string>()
         {
             { FeatureType.HasMouthDent, "Has Mouth Dent" },
-            { FeatureType.BrowCurvature, "Brow Curvature" }
+            { FeatureType.BrowCurvature, "Brow Curvature" },
+            { FeatureType.NasionDepth, "Nasion Depth" }
         };
 
         private static Dictionary<FeaturePointType, string> CoordinateFeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
@@ -81,7 +82,8 @@ namespace Darwin.Features
             Features = new Dictionary<FeatureType, Feature>()
             {
                 { FeatureType.HasMouthDent, new Feature { Name = FeatureNameMapping[FeatureType.HasMouthDent], Type = FeatureType.HasMouthDent, IsEmpty = true } },
-                { FeatureType.BrowCurvature, new Feature { Name = FeatureNameMapping[FeatureType.BrowCurvature], Type = FeatureType.BrowCurvature, IsEmpty = true } }
+                { FeatureType.BrowCurvature, new Feature { Name = FeatureNameMapping[FeatureType.BrowCurvature], Type = FeatureType.BrowCurvature, IsEmpty = true } },
+                { FeatureType.NasionDepth, new Feature { Name = FeatureNameMapping[FeatureType.NasionDepth], Type = FeatureType.NasionDepth, IsEmpty = true } }
             };
 
             CoordinateFeaturePoints = new Dictionary<FeaturePointType, CoordinateFeaturePoint>()
@@ -190,6 +192,7 @@ namespace Darwin.Features
                     Trace.WriteLine("Fallback tip position to find curvature.");
                 }
                 Features[FeatureType.BrowCurvature].Value = FindCurvature(chainPoints, browPosition, curvatureTipPosition);
+                Features[FeatureType.NasionDepth].Value = FindDepthOfNasion(chainPoints, browPosition, nasionPos, curvatureTipPosition);
             }
             catch (Exception ex)
             {
@@ -851,6 +854,57 @@ namespace Darwin.Features
                 rightPadding = 50;
 
             return FindTip(chain, midPoint, BrowBeforeMidpointPadding, rightPadding);
+        }
+
+        /// <summary>
+        /// Finds the depth of the nasion, or the distance from the nasion to the line
+        /// created by the brow and the offset nose position.  The contour is scaled to
+        /// a magic number first so that these distances are hopefully comparable between
+        /// samples.
+        /// </summary>
+        /// <param name="chainPoints"></param>
+        /// <param name="browPosition"></param>
+        /// <param name="nasionPosition"></param>
+        /// <param name="offsetTipOfNose"></param>
+        /// <returns></returns>
+        public double FindDepthOfNasion(FloatContour chainPoints, int browPosition, int nasionPosition, int offsetTipOfNose)
+        {
+            if (chainPoints == null)
+                throw new ArgumentNullException(nameof(chainPoints));
+
+            if (browPosition < 0 || browPosition > nasionPosition)
+                throw new ArgumentOutOfRangeException(nameof(browPosition));
+
+            if (nasionPosition < 0 || nasionPosition > offsetTipOfNose)
+                throw new ArgumentOutOfRangeException(nameof(nasionPosition));
+
+            if (offsetTipOfNose < 0 || offsetTipOfNose >= chainPoints.Length)
+                throw new ArgumentOutOfRangeException(nameof(offsetTipOfNose));
+
+            double currentPositionDistance = MathHelper.GetDistance(chainPoints[browPosition].X,
+                chainPoints[browPosition].Y, chainPoints[offsetTipOfNose].X, chainPoints[offsetTipOfNose].Y);
+
+            float ratio = (float)(CurvatureLengthNormalizationLength / currentPositionDistance);
+
+            PointF scaledNasionPosition = new PointF(chainPoints[nasionPosition].X * ratio, chainPoints[nasionPosition].Y * ratio);
+
+            FloatContour scaledContour = new FloatContour();
+            for (int i = browPosition; i <= offsetTipOfNose; i++)
+                scaledContour.AddPoint(chainPoints[i].X * ratio, chainPoints[i].Y * ratio);
+
+            scaledContour = scaledContour.EvenlySpaceContourPoints(CurvatureEvenSpace);
+
+            // Now we're going to fit a simple line to our start and end points
+            float slope = (scaledContour[scaledContour.Length - 1].Y - scaledContour[0].Y) / (scaledContour[scaledContour.Length - 1].X - scaledContour[0].X);
+            float intercept = scaledContour[0].Y - slope * scaledContour[0].X;
+
+            // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+            var nasionDistance = Math.Abs(slope * scaledNasionPosition.X - scaledNasionPosition.Y + intercept) /
+                Math.Sqrt(Math.Pow(slope, 2) + 1 /* (-1 squared) */);
+
+            Trace.WriteLine("Nasion depth: " + nasionDistance);
+
+            return nasionDistance;
         }
 
         /// <summary>
