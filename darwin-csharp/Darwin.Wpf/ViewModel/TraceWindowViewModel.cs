@@ -644,6 +644,7 @@ namespace Darwin.Wpf.ViewModel
 				addedMods = UndoItems
 					.Where(u => u.ImageMod != null && (u.ModificationType == ModificationType.Image || u.ModificationType == ModificationType.Both))
 					.Select(u => u.ImageMod)
+					.Reverse() // Very important -- these are stored backwards in UndoItems!
 					.ToList();
             }
 
