@@ -2033,10 +2033,15 @@ namespace Darwin.Wpf
 						this.IsHitTestVisible = true;
 					}
 				}
+                else
+                {
+					if (_vm.TraceStep == TraceStepType.TraceOutline)
+						TraceStep_Checked(null, null);
+				}
 			}
 		}
 
-        private void AddToDatabaseButton_Click(object sender, RoutedEventArgs e)
+        private async void AddToDatabaseButton_Click(object sender, RoutedEventArgs e)
         {
 			try
 			{
@@ -2054,19 +2059,34 @@ namespace Darwin.Wpf
 				}
 				else
 				{
-					if (_vm.Outline == null)
+					try
 					{
-						_vm.TraceLocked = true;
-						TraceFinalize();
+						this.IsHitTestVisible = false;
+						Mouse.OverrideCursor = Cursors.Wait;
+
+						if (_vm.Outline == null)
+						{
+							_vm.TraceLocked = true;
+							TraceFinalize();
+						}
+
+						await Task.Run(() => _vm.SaveToDatabase());
+						StatusBarMessage.Text = "Finz file saved.";
+
+						if (_vm.TraceStep == TraceStepType.TraceOutline)
+							TraceStep_Checked(null, null);
+
+						// Refresh main window
+						var mainWindow = Application.Current.MainWindow as MainWindow;
+
+						if (mainWindow != null)
+							mainWindow.RefreshDatabaseAfterAdd();
 					}
-
-					_vm.SaveToDatabase();
-
-					// Refresh main window
-					var mainWindow = Application.Current.MainWindow as MainWindow;
-
-                    if (mainWindow != null)
-                        mainWindow.RefreshDatabaseAfterAdd();
+					finally
+					{
+						Mouse.OverrideCursor = null;
+						this.IsHitTestVisible = true;
+					}
 
 					Close();
 				}

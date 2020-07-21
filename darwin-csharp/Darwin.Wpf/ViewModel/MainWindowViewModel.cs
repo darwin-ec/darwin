@@ -229,7 +229,8 @@ namespace Darwin.Wpf.ViewModel
 
                     SelectedContour = new Contour(SelectedFin.FinOutline.ChainPoints, SelectedFin.Scale);
 
-                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, SelectedFin.ImageFilename);
+                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath,
+                        (string.IsNullOrEmpty(SelectedFin.OriginalImageFilename)) ? SelectedFin.ImageFilename : SelectedFin.OriginalImageFilename);
 
                     if (File.Exists(fullImageFilename))
                     {

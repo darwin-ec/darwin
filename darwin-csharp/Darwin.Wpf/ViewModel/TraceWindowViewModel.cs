@@ -646,6 +646,9 @@ namespace Darwin.Wpf.ViewModel
 					.Select(u => u.ImageMod)
 					.Reverse() // Very important -- these are stored backwards in UndoItems!
 					.ToList();
+
+				UndoItems.Clear();
+				RedoItems.Clear();
             }
 
 			// We're adding mods in case we opened up an old Finz file/etc.  So we don't blow away previous
@@ -658,7 +661,7 @@ namespace Darwin.Wpf.ViewModel
 			WindowTitle = fin.IDCode;
 
 			if (!string.IsNullOrEmpty(fin.FinFilename))
-				WindowTitle += " - " + fin.FinFilename;
+				WindowTitle += " - " + Path.GetFileName(fin.FinFilename);
 
 			// TODO: Hack for HiDPI
 			fin.FinImage.SetResolution(96, 96);

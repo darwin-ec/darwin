@@ -291,9 +291,13 @@ namespace Darwin.Database
 
             // Strip path info
             image.imagefilename = Path.GetFileName(image.imagefilename);
-
             // Add current path info
-            image.imagefilename = Path.Combine(new string[] { "catalog", image.imagefilename });
+            image.imagefilename = Path.Combine(new string[] { Options.CatalogFolderName, image.imagefilename });
+
+            if (!string.IsNullOrEmpty(image.original_imagefilename))
+            {
+                image.original_imagefilename = Path.Combine(new string[] { Options.CatalogFolderName, Path.GetFileName(image.original_imagefilename) });
+            }
 
             // assumes list is returned as FIFO (queue)... should be due to use of ORDER BY OrderID
             foreach (var p in points)
@@ -338,6 +342,7 @@ namespace Darwin.Database
 
             // TODO: Move/look at constructors
             fin.Scale = outline.scale;
+
             fin.OriginalImageFilename = image.original_imagefilename;
 
             if (image != null)
