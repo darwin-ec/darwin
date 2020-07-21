@@ -389,7 +389,8 @@ namespace Darwin.Matching
                     matchErrorResult.Contour1, //***005CM
                     matchErrorResult.Contour2, //***005CM
                     thisDBFin.ID,
-                    thisDBFin.ImageFilename,  //***001DB
+                    // TODO - This image filename stuff is a little ugly.
+                    (string.IsNullOrEmpty(thisDBFin.OriginalImageFilename)) ? thisDBFin.ImageFilename : thisDBFin.OriginalImageFilename,
                     thisDBFin.ThumbnailFilenameUri,
                     CurrentFinIndex,
                     rawError,

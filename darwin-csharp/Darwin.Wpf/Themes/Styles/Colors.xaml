@@ -26,6 +26,8 @@
 
     <SolidColorBrush x:Key="ToggleButton.Pressed.Border" Color="#FF245A83"/>
 
+    <SolidColorBrush x:Key="Label.Static.Form" Color="#212529" />
+
     <!-- ListView -->
     <SolidColorBrush x:Key="ListViewItem.SelectedRow" Color="{StaticResource SelectedRowColor}"/>
     <SolidColorBrush x:Key="ListViewItem.SelectedRow.Border" Color="{StaticResource SelectedRowBorderColor}"/>

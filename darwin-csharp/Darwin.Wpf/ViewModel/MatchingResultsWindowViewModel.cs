@@ -361,72 +361,14 @@ namespace Darwin.Wpf.ViewModel
             {
                 UpdateOutlines(SelectedResult.unknownContour, SelectedResult.dbContour);
 
+                DatabaseFin selectedFin = FullyLoadFinByID(SelectedResult.DatabaseID);
+
                 // TODO: Cache images?
-                if (!string.IsNullOrEmpty(SelectedResult.ImageFilename))
-                {
-                    //CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentDataPath, SelectedFin);
 
-                    //SelectedContour = new Contour(SelectedResult.dbContour, SelectedResult..Scale);
-
-                    string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, SelectedResult.ImageFilename);
-
-                    if (File.Exists(fullImageFilename))
-                    {
-                        try
-                        {
-                            var selectedIndex = MatchResults.Results.IndexOf(SelectedResult);
-
-                            // We're relying on the indices being the same, which might be a little risky
-                            DatabaseFin tempFin;
-
-                            if (SelectedResult.DatabaseID > 0)
-                            {
-                                tempFin = Database.GetFin(SelectedResult.DatabaseID);
-                            }
-                            else
-                            {
-                                tempFin = new DatabaseFin()
-                                {
-                                    ImageFilename = SelectedResult.ImageFilename
-                                };
-                            }
-
-                            CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, tempFin);
-
-                            var realOriginalImageFilename = string.Empty;
-                            if (tempFin != null && !string.IsNullOrEmpty(tempFin.ImageFilename))
-                            {
-                                realOriginalImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, tempFin.ImageFilename);
-                            }
-
-                            System.Drawing.Image img;
-                            if (!string.IsNullOrEmpty(realOriginalImageFilename) && File.Exists(realOriginalImageFilename))
-                                img = System.Drawing.Image.FromFile(realOriginalImageFilename);
-                            else
-                                img = System.Drawing.Image.FromFile(fullImageFilename);
-
-                            var bitmap = new Bitmap(img);
-
-                            // TODO: Hack for HiDPI -- this should be more intelligent.
-                            bitmap.SetResolution(96, 96);
-
-                            if (!SelectedShowOriginalImage)
-                            {
-                                // TODO: Refactor this so we're not doing it every time, which seems like it could be a little crazy
-                                if (tempFin.ImageMods != null && tempFin.ImageMods.Count > 0)
-                                    bitmap = ModificationHelper.ApplyImageModificationsToOriginal(bitmap, tempFin.ImageMods);
-                            }
-
-                            // We're directly changing the source, not the bitmap property on DatabaseFin
-                            SelectedImageSource = bitmap.ToImageSource();
-                        }
-                        catch (Exception ex)
-                        {
-                            // TODO
-                            MessageBox.Show(ex.ToString());
-                        }
-                    }
-                }
+                if (SelectedShowOriginalImage)
+                    SelectedImageSource = selectedFin.OriginalFinImage.ToImageSource();
+                else
+                    SelectedImageSource = selectedFin.FinImage.ToImageSource();
             }
         }
 

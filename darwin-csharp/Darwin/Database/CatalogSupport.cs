@@ -508,7 +508,8 @@ namespace Darwin.Database
 			{
 				CatalogSupport.UpdateFinFieldsFromImage(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy);
 
-				string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath, finCopy.ImageFilename);
+				string fullImageFilename = Path.Combine(Options.CurrentUserOptions.CurrentSurveyAreaPath,
+					(string.IsNullOrEmpty(finCopy.OriginalImageFilename)) ? finCopy.ImageFilename : finCopy.OriginalImageFilename);
 
 				if (File.Exists(fullImageFilename))
 				{

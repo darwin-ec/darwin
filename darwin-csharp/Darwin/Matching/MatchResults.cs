@@ -369,7 +369,8 @@ namespace Darwin.Matching
                         mappedUnknownContour,                      //***1.3 - Mem Leak - constructor make copy now
                         thisDBFin.FinOutline.ChainPoints, //***1.3 - Mem Leak - constructor make copy now
                         thisDBFin.ID,
-                        thisDBFin.ImageFilename,
+                        // TODO - This image filename stuff is a little ugly.
+                        (string.IsNullOrEmpty(thisDBFin.OriginalImageFilename)) ? thisDBFin.ImageFilename : thisDBFin.OriginalImageFilename,
                         thisDBFin.ThumbnailFilenameUri,
                         dbFinPosition - 1, // position of fin in database
                         double.Parse(error),

@@ -287,29 +287,29 @@
                     </Grid.RowDefinitions>
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                         <StackPanel Orientation="Vertical" Margin="8">
-                            <Label Padding="0 5">ID Code:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">ID Code:</Label>
                             <TextBox  Text="{Binding Path=DatabaseFin.IDCode}" Margin="0,0,10,5"  />
 
-                            <Label Padding="0 5">Name:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Name:</Label>
                             <TextBox Text="{Binding Path=DatabaseFin.Name}" Margin="0,0,10,5" />
 
-                            <Label Padding="0 5">Date of Sighting:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Date of Sighting:</Label>
                             <TextBox Text="{Binding Path=DatabaseFin.DateOfSighting}" Margin="0,0,10,5"  />
 
-                            <Label Padding="0 5">Roll/Frame or Lat/Long:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Roll/Frame or Lat/Long:</Label>
                             <TextBox Text="{Binding Path=DatabaseFin.RollAndFrame}" Margin="0,0,10,5"  />
 
-                            <Label Padding="0 5">Location Code:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Location Code:</Label>
                             <TextBox Text="{Binding Path=DatabaseFin.LocationCode}" Margin="0,0,10,5"  />
 
-                            <Label Padding="0 5">Damage Category:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Damage Category:</Label>
                             <ComboBox ItemsSource="{Binding Categories, Mode=OneWay}"
                               DisplayMemberPath="Name"
                               SelectedValuePath="Name"
                               SelectedValue="{Binding Path=DatabaseFin.DamageCategory}" Margin="0,0,10,5">
                             </ComboBox>
 
-                            <Label Padding="0 5">Short Description:</Label>
+                            <Label Padding="0 5" Style="{StaticResource FormLabel}">Short Description:</Label>
                             <TextBox Text="{Binding Path=DatabaseFin.ShortDescription}"
                                 TextWrapping="Wrap"
                                 AcceptsReturn="True"

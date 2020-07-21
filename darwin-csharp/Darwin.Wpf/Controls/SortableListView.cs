@@ -65,6 +65,16 @@ namespace Darwin.Wpf.Controls
             }
         }
 
+        public void Sort(string sortBy, ListSortDirection direction)
+        {
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items);
+
+            dataView.SortDescriptions.Clear();
+            SortDescription sD = new SortDescription(sortBy, direction);
+            dataView.SortDescriptions.Add(sD);
+            dataView.Refresh();
+        }
+
         public void SetFilter(Predicate<object> filter)
         {
             ICollectionView dataView = CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items);
@@ -74,16 +84,6 @@ namespace Darwin.Wpf.Controls
         public void RefreshFilter()
         {
             CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items).Refresh();
-        }
-
-        private void Sort(string sortBy, ListSortDirection direction)
-        {
-            ICollectionView dataView = CollectionViewSource.GetDefaultView(this.ItemsSource != null ? this.ItemsSource : this.Items);
-
-            dataView.SortDescriptions.Clear();
-            SortDescription sD = new SortDescription(sortBy, direction);
-            dataView.SortDescriptions.Add(sD);
-            dataView.Refresh();
         }
     }
 }

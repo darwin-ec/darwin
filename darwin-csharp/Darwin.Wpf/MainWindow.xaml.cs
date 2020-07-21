@@ -59,6 +59,10 @@ namespace Darwin.Wpf
             StateChanged += MainWindowStateChangeRaised;
 
             this.DataContext = _vm;
+
+            // Sort by ID code when the window first opens
+            if (_vm.DarwinDatabase != null)
+                DatabaseGrid.Sort("IDCode", ListSortDirection.Ascending);
         }
 
         private void GridHeader_Click(object sender, RoutedEventArgs e)
