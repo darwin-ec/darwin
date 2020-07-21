@@ -1737,7 +1737,16 @@ namespace Darwin.Wpf
 
 		#region Undo and Redo
 
-		private void RedoButton_Click(object sender, RoutedEventArgs e)
+
+		private void RedoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			if (_vm == null)
+				e.CanExecute = false;
+			else
+				e.CanExecute = _vm.RedoEnabled;
+		}
+
+		private void RedoCommand_Executed(object sender, RoutedEventArgs e)
         {
 			if (_vm.RedoItems.Count > 0)
 			{
@@ -1784,7 +1793,15 @@ namespace Darwin.Wpf
 			}
 		}
 
-        private void UndoButton_Click(object sender, RoutedEventArgs e)
+		private void UndoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			if (_vm == null)
+				e.CanExecute = false;
+			else
+				e.CanExecute = _vm.UndoEnabled;
+		}
+
+		private void UndoCommand_Executed(object sender, RoutedEventArgs e)
         {
 			if (_vm.UndoItems.Count > 0)
             {
@@ -1951,8 +1968,13 @@ namespace Darwin.Wpf
 			}
         }
 
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
-        {
+		private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+		{
+			e.CanExecute = true;
+		}
+
+		private async void SaveCommand_Executed(object sender, RoutedEventArgs e)
+		{
 			if (_vm.Contour == null && _vm.Outline == null)
 			{
 				MessageBox.Show("You must trace your image before it can be saved.", "Not Traced", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -1993,6 +2015,9 @@ namespace Darwin.Wpf
 						
 						await Task.Run(() => _vm.SaveFinz(dlg.FileName));
 						StatusBarMessage.Text = "Finz file saved.";
+
+						if (_vm.TraceStep == TraceStepType.TraceOutline)
+							TraceStep_Checked(null, null);
 					}
 					catch (Exception ex)
                     {

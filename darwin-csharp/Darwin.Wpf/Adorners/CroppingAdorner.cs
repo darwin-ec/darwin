@@ -220,43 +220,6 @@ namespace Darwin.Wpf.Adorners
             return finalSize;
         }
 
-        //protected override void OnRender(DrawingContext drawingContext)
-        //{
-        //    var brush2 = new SolidColorBrush
-        //    {
-        //        Color = Colors.Black,
-        //        Opacity = 0.5
-        //    };
-        //    drawingContext.DrawRectangle(brush2, null, new Rect(0, 0, _thumbsCanvas.ActualWidth, _thumbsCanvas.ActualHeight));
-        //    if (Rubberband != null && Rubberband.Visibility == Visibility.Visible)
-        //    {
-        //        var brush = new SolidColorBrush
-        //        {
-        //            Color = Colors.Black,
-        //            Opacity = 0.5
-        //        };
-        //        drawingContext.DrawRectangle(brush, null, new Rect(0, 0, _thumbsCanvas.ActualWidth, _thumbsCanvas.ActualHeight));
-        //    }
-        //    base.OnRender(drawingContext);
-        //}
-
-        //protected override Geometry GetLayoutClip(Size layoutSlotSize)
-        //{
-        //    //_adornedElement.
-        //   // var adornedRect = _adornedElement.TransformToVisual(Application.Current.MainWindow).TransformBounds(LayoutInformation.GetLayoutSlot(_adornedElement);
-        //    // Add a group that includes the whole window except the adorned control
-        //    GeometryGroup grp = new GeometryGroup();
-        //    //grp.Children.Add(new RectangleGeometry(_adornedElement.GetBou));
-        //    //grp.Children.Add(new RectangleGeometry(new Rect(layoutSlotSize)));
-        //    //grp.Children.Add(new RectangleGeometry(new Rect(0, 0, _thumbsCanvas.ActualWidth, _thumbsCanvas.ActualHeight)));
-
-        //    grp.Children.Add(new RectangleGeometry(new Rect(0, 0, 200, 200)));
-        //    if (_selectRect != null)
-        //        grp.Children.Add(new RectangleGeometry(_selectRect));
-
-        //    return grp;
-        //}
-
         public void StartSelection(System.Windows.Point anchorPoint)
         {
             if (CropEnabled && _selectRect != null && _selectRect.Contains(anchorPoint))
@@ -287,20 +250,48 @@ namespace Darwin.Wpf.Adorners
             _cropMask.Visibility = visibility;
         }
 
+        private double ClipXToBounds(double x)
+        {
+            if (x < 0)
+                return 0;
+
+            if (x > _adornedElement.RenderSize.Width)
+                return _adornedElement.RenderSize.Width;
+
+            return x;
+        }
+
+        private double ClipYToBounds(double y)
+        {
+            if (y < 0)
+                return 0;
+
+            if (y > _adornedElement.RenderSize.Height)
+                return _adornedElement.RenderSize.Height;
+
+            return y;
+        }
+
         private void DrawSelection(object sender, MouseEventArgs e)
         {
             if (_drawingSelection && e.LeftButton == MouseButtonState.Pressed)
             {
                 var mousePosition = e.GetPosition(_adornedElement);
-                _selectRect.X = mousePosition.X < _anchorPoint.X ? mousePosition.X : _anchorPoint.X;
-                _selectRect.Y = mousePosition.Y < _anchorPoint.Y ? mousePosition.Y : _anchorPoint.Y;
-                _selectRect.Width = Math.Abs(mousePosition.X - _anchorPoint.X);
-                _selectRect.Height = Math.Abs(mousePosition.Y - _anchorPoint.Y);
+
+                double clippedMousePositionX = ClipXToBounds(mousePosition.X);
+                double clippedMousePositionY = ClipYToBounds(mousePosition.Y);
+
+                _selectRect.X = clippedMousePositionX < _anchorPoint.X ? clippedMousePositionX : _anchorPoint.X;
+                _selectRect.Y = clippedMousePositionY < _anchorPoint.Y ? clippedMousePositionY : _anchorPoint.Y;
+                _selectRect.Width = Math.Abs(clippedMousePositionX - _anchorPoint.X);
+                _selectRect.Height = Math.Abs(clippedMousePositionY - _anchorPoint.Y);
                 _geometry.Rect = _selectRect;
 
                 _cropMask.RectInterior = _selectRect;
 
                 SetThumbPositions();
+                
+                Trace.WriteLine("Crop selected rect: (" + _selectRect.X + ", " + _selectRect.Y + ") Width: " + SelectRect.Width + " Height: " + _selectRect.Height);
 
                 var layer = AdornerLayer.GetAdornerLayer(_adornedElement);
                 layer.InvalidateArrange();
@@ -345,9 +336,12 @@ namespace Darwin.Wpf.Adorners
         {
             args.Handled = true;
 
+            double moveX = ClipXToBounds(ThumbBottomLeftPoint.X + args.HorizontalChange);
+            double moveY = ClipYToBounds(ThumbBottomLeftPoint.Y + args.VerticalChange);
+
             ThumbBottomLeftPoint = new System.Windows.Point(
-                ThumbBottomLeftPoint.X + args.HorizontalChange,
-                ThumbBottomLeftPoint.Y + args.VerticalChange);
+                moveX,
+                moveY);
 
             ThumbTopLeftPoint = new System.Windows.Point(
                 ThumbBottomLeftPoint.X,
@@ -365,9 +359,12 @@ namespace Darwin.Wpf.Adorners
         {
             args.Handled = true;
 
+            double moveX = ClipXToBounds(ThumbBottomRightPoint.X + args.HorizontalChange);
+            double moveY = ClipYToBounds(ThumbBottomRightPoint.Y + args.VerticalChange);
+
             ThumbBottomRightPoint = new System.Windows.Point(
-                ThumbBottomRightPoint.X + args.HorizontalChange,
-                ThumbBottomRightPoint.Y + args.VerticalChange);
+                moveX,
+                moveY);
 
             ThumbBottomLeftPoint = new System.Windows.Point(
                 ThumbBottomLeftPoint.X,
@@ -385,9 +382,12 @@ namespace Darwin.Wpf.Adorners
         {
             args.Handled = true;
 
+            double moveX = ClipXToBounds(ThumbTopRightPoint.X + args.HorizontalChange);
+            double moveY = ClipYToBounds(ThumbTopRightPoint.Y + args.VerticalChange);
+
             ThumbTopRightPoint = new System.Windows.Point(
-                ThumbTopRightPoint.X + args.HorizontalChange,
-                ThumbTopRightPoint.Y + args.VerticalChange);
+                moveX,
+                moveY);
 
             ThumbBottomRightPoint = new System.Windows.Point(
                 ThumbTopRightPoint.X,
@@ -405,9 +405,12 @@ namespace Darwin.Wpf.Adorners
         {
             args.Handled = true;
 
+            double moveX = ClipXToBounds(ThumbTopLeftPoint.X + args.HorizontalChange);
+            double moveY = ClipYToBounds(ThumbTopLeftPoint.Y + args.VerticalChange);
+
             ThumbTopLeftPoint = new System.Windows.Point(
-                ThumbTopLeftPoint.X + args.HorizontalChange,
-                ThumbTopLeftPoint.Y + args.VerticalChange);
+                moveX,
+                moveY);
 
             ThumbTopRightPoint = new System.Windows.Point(
                 ThumbTopRightPoint.X,
@@ -428,7 +431,6 @@ namespace Darwin.Wpf.Adorners
                 return;
 
             cornerThumb = new Thumb { Cursor = customizedCursor };
-
             cornerThumb.Height = _thumbSize.Height;
             cornerThumb.Width = _thumbSize.Width;
             cornerThumb.Background = Brushes.Transparent;

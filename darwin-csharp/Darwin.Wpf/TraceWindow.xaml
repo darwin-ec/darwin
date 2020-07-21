@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         xmlns:controls="clr-namespace:Darwin.Wpf.Controls"
+        xmlns:commands="clr-namespace:Darwin.Wpf.Commands"
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
@@ -19,6 +20,10 @@
         <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
         <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Minimize" />
         <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
+
+        <CommandBinding Command="commands:CustomCommands.Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.Undo" CanExecute="UndoCommand_CanExecute" Executed="UndoCommand_Executed" />
+        <CommandBinding Command="commands:CustomCommands.Redo" CanExecute="RedoCommand_CanExecute" Executed="RedoCommand_Executed" />
     </Window.CommandBindings>
     <Window.Resources>
         <Cursor x:Key="AutoTraceCursor">Resources/Cursors/autotrace_cursor.cur</Cursor>
@@ -82,13 +87,13 @@
                         <ColumnDefinition Width="230"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Width="160">
-                        <Button x:Name="UndoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="UndoButton_Click" IsEnabled="{Binding Path=UndoEnabled}" Visibility="{Binding TraceToolsVisibility}">
+                        <Button x:Name="UndoButton" Width="60" Style="{StaticResource ToolbarButton}" Command="commands:CustomCommands.Undo" Visibility="{Binding TraceToolsVisibility}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                 <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf0e2;</Label>
                                 <Label HorizontalAlignment="Center" Padding="1">Undo</Label>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="RedoButton" Width="60" Style="{StaticResource ToolbarButton}" Click="RedoButton_Click" IsEnabled="{Binding Path=RedoEnabled}" Visibility="{Binding TraceToolsVisibility}">
+                        <Button x:Name="RedoButton" Width="60" Style="{StaticResource ToolbarButton}" Command="commands:CustomCommands.Redo" Visibility="{Binding TraceToolsVisibility}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                 <Label FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf01e;</Label>
                                 <Label HorizontalAlignment="Center" Padding="1">Redo</Label>
@@ -331,7 +336,7 @@
                             </Button.ToolTip>
                             Match
                         </Button>
-                        <Button x:Name="SaveButton" Click="SaveButton_Click" Visibility="{Binding SaveVisibility}">
+                        <Button x:Name="SaveButton" Command="commands:CustomCommands.Save" Visibility="{Binding SaveVisibility}">
                             <Button.ToolTip>
                                 <TextBlock>
                             Save this traced <Run Text="{Binding IndividualTerminology,Mode=OneWay}"/> to a separate file<LineBreak/>

@@ -649,12 +649,15 @@ namespace Darwin.Wpf.ViewModel
 
 			// We're adding mods in case we opened up an old Finz file/etc.  So we don't blow away previous
 			// mods done to the image.
-			DatabaseFin.ImageMods.Concat(addedMods);
+			DatabaseFin.ImageMods = DatabaseFin.ImageMods.Concat(addedMods).ToList();
 		}
 
 		private void LoadFin(DatabaseFin fin)
 		{
 			WindowTitle = fin.IDCode;
+
+			if (!string.IsNullOrEmpty(fin.FinFilename))
+				WindowTitle += " - " + fin.FinFilename;
 
 			// TODO: Hack for HiDPI
 			fin.FinImage.SetResolution(96, 96);

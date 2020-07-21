@@ -171,5 +171,35 @@ namespace Darwin.Wpf.Commands
             "Documentation",
             typeof(CustomCommands)
         );
+
+        public static readonly RoutedUICommand Save = new RoutedUICommand(
+            "Save",
+            "Save",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                        new KeyGesture(Key.S, ModifierKeys.Control)
+            }
+        );
+
+        public static readonly RoutedUICommand Undo = new RoutedUICommand(
+            "Undo",
+            "Undo",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                new KeyGesture(Key.Z, ModifierKeys.Control)
+            }
+        );
+
+        public static readonly RoutedUICommand Redo = new RoutedUICommand(
+            "Redo",
+            "Redo",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                        new KeyGesture(Key.Z, ModifierKeys.Control)
+            }
+        );
     }
 }
