@@ -1139,7 +1139,8 @@ namespace Darwin.Wpf
 						break;
 
 					case TraceToolType.Hand:
-						TraceCanvas.Cursor = Cursors.Hand;
+						TraceCanvas.Cursor = Cursors.Arrow;
+						//TraceCanvas.Cursor = Cursors.Hand;
 						break;
 
 					case TraceToolType.Magnify:

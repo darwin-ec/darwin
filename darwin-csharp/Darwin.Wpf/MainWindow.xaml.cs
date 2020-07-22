@@ -45,7 +45,7 @@ namespace Darwin.Wpf
             try
             {
                 if (!string.IsNullOrEmpty(Options.CurrentUserOptions.DatabaseFileName))
-                    OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false);
+                    OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false, true);
             }
             catch (Exception ex)
             {
@@ -63,6 +63,11 @@ namespace Darwin.Wpf
             // Sort by ID code when the window first opens
             if (_vm.DarwinDatabase != null)
                 DatabaseGrid.Sort("IDCode", ListSortDirection.Ascending);
+
+            Loaded += delegate
+            {
+                SelectFirstFin();
+            };
         }
 
         private void GridHeader_Click(object sender, RoutedEventArgs e)
@@ -215,7 +220,26 @@ namespace Darwin.Wpf
             CheckNextPreviousEnabled();
         }
 
-        public void OpenDatabase(string filename, bool saveOptions = false)
+        private void SelectFirstFin()
+        {
+            if (DatabaseGrid.Items != null && DatabaseGrid.Items.Count > 0)
+            {
+                DatabaseGrid.SelectedIndex = 0;
+
+                if (_vm.SelectedFin != null)
+                    DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
+            }
+            else if (_vm.Fins?.Count > 0)
+            {
+                _vm.SelectedFin = _vm.Fins[0];
+            }
+            else
+            {
+                _vm.SelectedFin = null;
+            }
+        }
+
+        public void OpenDatabase(string filename, bool saveOptions = false, bool initialLoad = false)
         {
             var db = CatalogSupport.OpenDatabase(filename, Options.CurrentUserOptions.DefaultCatalogScheme, false);
 
@@ -236,10 +260,8 @@ namespace Darwin.Wpf
                 .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
                 .ToList());
 
-            if (_vm.Fins?.Count > 0)
-                _vm.SelectedFin = _vm.Fins[0];
-            else
-                _vm.SelectedFin = null;
+            if (!initialLoad)
+                SelectFirstFin();
         }
 
         public void RefreshDatabase()
@@ -252,10 +274,7 @@ namespace Darwin.Wpf
                 .Select(x => { x.ThumbnailFilename = x.ImageFilename; return x; })
                 .ToList());
 
-            if (_vm.Fins?.Count > 0)
-                _vm.SelectedFin = _vm.Fins[0];
-            else
-                _vm.SelectedFin = null;
+            SelectFirstFin();
         }
 
         public void RefreshDatabaseAfterAdd()

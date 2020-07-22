@@ -76,27 +76,52 @@ namespace Darwin.Wpf
         {
             var openDialog = new OpenFileDialog();
             openDialog.InitialDirectory = Options.CurrentUserOptions.CurrentTracedFinsPath;
-
+            openDialog.Title = "Select Fiz File(s) To Queue";
+            openDialog.Multiselect = true;
             openDialog.Filter = CustomCommands.TracedFinFilter;
             if (openDialog.ShowDialog() == true)
             {
-                var fin = CatalogSupport.OpenFinz(openDialog.FileName);
+                if (openDialog.FileNames != null && openDialog.FileNames.Length > 0)
+                {
+                    try
+                    {
+                        // We're not doing anything async below, so the display may not update with 
+                        // the wait cursor nicely.  Should probably change the add finz stuff to be 
+                        // async
+                        this.IsHitTestVisible = false;
+                        Mouse.OverrideCursor = Cursors.Wait;
 
-                // TODO: Better error messages?
-                if (fin == null)
-                {
-                    MessageBox.Show(this, "Problem opening finz file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else
-                {
-                    if (_vm.MatchingQueue.Fins.Where(f => f.FinFilename == fin.FinFilename).Any())
-                    {
-                        MessageBox.Show("This finz file was previously added to the queue.", "Already Added", MessageBoxButton.OK, MessageBoxImage.Information);
+                        foreach (var filename in openDialog.FileNames)
+                        {
+                            if (string.IsNullOrEmpty(filename))
+                                continue;
+
+                            var fin = CatalogSupport.OpenFinz(filename);
+
+                            if (fin == null)
+                            {
+                                MessageBox.Show(this, "Problem opening finz file: " + System.IO.Path.GetFileName(filename), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                            else
+                            {
+                                if (_vm.MatchingQueue.Fins.Where(f => f.FinFilename == fin.FinFilename).Any())
+                                {
+                                    MessageBox.Show("The finz file "
+                                                    + System.IO.Path.GetFileName(filename)
+                                                    + " was previously added to the queue.", "Already Added", MessageBoxButton.OK, MessageBoxImage.Information);
+                                }
+                                else
+                                {
+                                    _vm.MatchingQueue.Fins.Add(fin);
+                                    _vm.SelectedFin = _vm.MatchingQueue.Fins.Last();
+                                }
+                            }
+                        }
                     }
-                    else
+                    finally
                     {
-                        _vm.MatchingQueue.Fins.Add(fin);
-                        _vm.SelectedFin = _vm.MatchingQueue.Fins.Last();
+                        Mouse.OverrideCursor = null;
+                        this.IsHitTestVisible = true;
                     }
                 }
             }
@@ -228,7 +253,19 @@ namespace Darwin.Wpf
 
             if (openQueueDialog.ShowDialog() == true)
             {
-                _vm.LoadQueue(openQueueDialog.FileName);
+                try
+                {
+                    this.IsHitTestVisible = false;
+                    Mouse.OverrideCursor = Cursors.Wait;
+
+                    // TODO: Load should really be async
+                    _vm.LoadQueue(openQueueDialog.FileName);
+                }
+                finally
+                {
+                    Mouse.OverrideCursor = null;
+                    this.IsHitTestVisible = true;
+                }
             }
         }
 

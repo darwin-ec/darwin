@@ -363,8 +363,6 @@ namespace Darwin.Wpf.ViewModel
 
                 DatabaseFin selectedFin = FullyLoadFinByID(SelectedResult.DatabaseID);
 
-                // TODO: Cache images?
-
                 if (SelectedShowOriginalImage)
                     SelectedImageSource = selectedFin.OriginalFinImage.ToImageSource();
                 else
