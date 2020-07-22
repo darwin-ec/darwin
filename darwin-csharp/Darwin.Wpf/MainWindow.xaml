@@ -9,7 +9,7 @@
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="Darwin" Height="750" Width="1200" MinWidth="615" MinHeight="500">
+        Title="Darwin" Height="780" Width="1200" MinWidth="615" MinHeight="500">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" />

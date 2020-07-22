@@ -10,6 +10,8 @@ namespace Darwin.Collections
     public class ObservableNotifiableCollection<T> :
                 ObservableCollection<T> where T : INotifyPropertyChanged
     {
+        private bool _disableEvents = false;
+
         public ItemPropertyChangedEventHandler ItemPropertyChanged;
         public EventHandler CollectionCleared;
 
@@ -27,6 +29,9 @@ namespace Darwin.Collections
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
+            if (_disableEvents)
+                return;
+
             base.OnCollectionChanged(args);
 
             if (args.NewItems != null)
@@ -38,9 +43,17 @@ namespace Darwin.Collections
                     item.PropertyChanged -= OnItemPropertyChanged;
         }
 
-        void OnItemPropertyChanged(object sender, PropertyChangedEventArgs args)
+        protected void OnItemPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
+            if (_disableEvents)
+                return;
+
             ItemPropertyChanged?.Invoke(this, new ItemPropertyChangedEventArgs(sender, args.PropertyName));
+        }
+
+        public void DisableEvents()
+        {
+            _disableEvents = true;
         }
 
         protected override void ClearItems()

@@ -1139,12 +1139,12 @@ namespace Darwin.Wpf
 						break;
 
 					case TraceToolType.Hand:
-						TraceCanvas.Cursor = Cursors.Arrow;
+						TraceCanvas.Cursor = Resources["OpenHand"] as Cursor;
 						//TraceCanvas.Cursor = Cursors.Hand;
 						break;
 
 					case TraceToolType.Magnify:
-						TraceCanvas.Cursor = Resources["MagnifyCursor"] as Cursor;
+						TraceCanvas.Cursor = Resources["Magnify2Cursor"] as Cursor;
 						break;
 
 					case TraceToolType.MovePoint:
@@ -1152,7 +1152,7 @@ namespace Darwin.Wpf
 						break;
 
 					case TraceToolType.Pencil:
-						TraceCanvas.Cursor = Resources["PencilCursor"] as Cursor;
+						TraceCanvas.Cursor = Resources["Pencil2Cursor"] as Cursor;
 						break;
 
 					default:
@@ -1172,6 +1172,9 @@ namespace Darwin.Wpf
 				newValue = ZoomSlider.Maximum;
 
 			_vm.ZoomSlider = (float)newValue;
+
+			ScaleTransform.ScaleX = _vm.ZoomRatio;
+			ScaleTransform.ScaleY = _vm.ZoomRatio;
 		}
 
 		private void ZoomOut(System.Windows.Point point)
@@ -1184,6 +1187,9 @@ namespace Darwin.Wpf
 				newValue = ZoomSlider.Minimum;
 
 			_vm.ZoomSlider = (float)newValue;
+
+			ScaleTransform.ScaleX = _vm.ZoomRatio;
+			ScaleTransform.ScaleY = _vm.ZoomRatio;
 		}
 
 		private void TraceScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -1267,9 +1273,6 @@ namespace Darwin.Wpf
 				ZoomIn(e.GetPosition(ImageViewBox));
 			else if (e.Delta < 0)
 				ZoomOut(e.GetPosition(ImageViewBox));
-
-			ScaleTransform.ScaleX = _vm.ZoomRatio;
-			ScaleTransform.ScaleY = _vm.ZoomRatio;
 
 			e.Handled = true;
 		}

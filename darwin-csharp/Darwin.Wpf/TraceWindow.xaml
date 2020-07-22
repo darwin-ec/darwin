@@ -30,7 +30,10 @@
         <Cursor x:Key="ChopOutlineCursor">Resources/Cursors/chopoutline_cursor.cur</Cursor>
         <Cursor x:Key="EraserCursor">Resources/Cursors/eraser_cursor.cur</Cursor>
         <Cursor x:Key="MagnifyCursor">Resources/Cursors/magnify_cursor.cur</Cursor>
+        <Cursor x:Key="Magnify2Cursor">Resources/Cursors/magnify2.cur</Cursor>
         <Cursor x:Key="PencilCursor">Resources/Cursors/pencil_cursor.cur</Cursor>
+        <Cursor x:Key="Pencil2Cursor">Resources/Cursors/pencil2.cur</Cursor>
+        <Cursor x:Key="OpenHand">Resources/Cursors/open_hand.cur</Cursor>
         
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Lime" />
@@ -182,14 +185,15 @@
                     <StackPanel Grid.Column="0" Orientation="Vertical">
                         <RadioButton x:Name="HandButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Hand}}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf256;</TextBlock>
+                                <!--<TextBlock FontFamily="{StaticResource FontAwesome}" HorizontalAlignment="Center">&#xf256;</TextBlock>-->
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/open_hand2.png" Width="25" />
                                 <Label HorizontalAlignment="Center" Padding="1">Pan</Label>
                             </StackPanel>
                         </RadioButton>
                         <RadioButton x:Name="MagnifyingGlassButton" ToolTip="Hold Shift to Zoom Out" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                 <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                                <Image Source="/Darwin.Wpf;component/Resources/Images/magnify.png" />
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/magnify2.png" Width="22" />
                                 <Label HorizontalAlignment="Center" Padding="1">Zoom</Label>
                             </StackPanel>
                         </RadioButton>
@@ -209,7 +213,7 @@
                         </RadioButton>
                         <RadioButton x:Name="PencilButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Pencil}}" Visibility="{Binding TraceToolsVisibility}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <Image Source="/Darwin.Wpf;component/Resources/Images/pencil.png" />
+                                <Image Source="/Darwin.Wpf;component/Resources/Images/pencil2.png" Width="22" />
                                 <Label HorizontalAlignment="Center" Padding="1">Pencil</Label>
                             </StackPanel>
                         </RadioButton>

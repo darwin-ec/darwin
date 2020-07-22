@@ -268,7 +268,8 @@ namespace Darwin.Wpf.ViewModel
                 {
                     foreach (var f in ComparisonFin.FinOutline.FeatureSet.CoordinateFeaturePointList)
                     {
-                        sb.AppendLine(f.Name + ": (" + f.Coordinate?.X + ", " + f.Coordinate?.Y + ")");
+                        if (f.Coordinate != null)
+                            sb.AppendLine(f.Name + ": (" + f.Coordinate?.X + ", " + f.Coordinate?.Y + ")");
                     }
                 }
 

@@ -11,7 +11,7 @@
 	<Copyright>Copyright 1993 - 2020</Copyright>
 	<PackageProjectUrl>http://darwin.eckerd.edu</PackageProjectUrl>
 	<Version>3.0.0</Version>
-	<FileVersion>3.0.0.1</FileVersion>
+	<FileVersion>3.0.0.0</FileVersion>
 	<Company>Eckerd College</Company>
 	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -20,7 +20,10 @@
     <None Remove="Resources\Cursors\autotrace_cursor.cur" />
     <None Remove="Resources\Cursors\chopoutline_cursor.cur" />
     <None Remove="Resources\Cursors\eraser_cursor.cur" />
+    <None Remove="Resources\Cursors\magnify2.cur" />
     <None Remove="Resources\Cursors\magnify_cursor.cur" />
+    <None Remove="Resources\Cursors\open_hand.cur" />
+    <None Remove="Resources\Cursors\pencil2.cur" />
     <None Remove="Resources\Cursors\pencil_cursor.cur" />
     <None Remove="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf" />
     <None Remove="Resources\Fonts\Font Awesome 5 Free-Regular-400.otf" />
@@ -38,10 +41,13 @@
     <None Remove="Resources\Images\horizontal_flip.png" />
     <None Remove="Resources\Images\logo.png" />
     <None Remove="Resources\Images\magnify.png" />
+    <None Remove="Resources\Images\magnify2.png" />
     <None Remove="Resources\Images\matching_queue.png" />
+    <None Remove="Resources\Images\open_hand2.png" />
     <None Remove="Resources\Images\open_image.png" />
     <None Remove="Resources\Images\open_trace.png" />
     <None Remove="Resources\Images\pencil.png" />
+    <None Remove="Resources\Images\pencil2.png" />
     <None Remove="Resources\Images\rotate_button.png" />
     <None Remove="Resources\Images\trace.png" />
     <None Remove="Resources\Images\view_points.png" />
@@ -55,7 +61,10 @@
     <Resource Include="Resources\Cursors\autotrace_cursor.cur" />
     <Resource Include="Resources\Cursors\chopoutline_cursor.cur" />
     <Resource Include="Resources\Cursors\eraser_cursor.cur" />
+    <Resource Include="Resources\Cursors\magnify2.cur" />
     <Resource Include="Resources\Cursors\magnify_cursor.cur" />
+    <Resource Include="Resources\Cursors\open_hand.cur" />
+    <Resource Include="Resources\Cursors\pencil2.cur" />
     <Resource Include="Resources\Cursors\pencil_cursor.cur" />
     <Resource Include="Resources\Fonts\Font Awesome 5 Brands-Regular-400.otf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -79,10 +88,13 @@
     <Resource Include="Resources\Images\horizontal_flip.png" />
     <Resource Include="Resources\Images\logo.png" />
     <Resource Include="Resources\Images\magnify.png" />
+    <Resource Include="Resources\Images\magnify2.png" />
     <Resource Include="Resources\Images\matching_queue.png" />
+    <Resource Include="Resources\Images\open_hand2.png" />
     <Resource Include="Resources\Images\open_image.png" />
     <Resource Include="Resources\Images\open_trace.png" />
     <Resource Include="Resources\Images\pencil.png" />
+    <Resource Include="Resources\Images\pencil2.png" />
     <Resource Include="Resources\Images\rotate_button.png" />
     <Resource Include="Resources\Images\trace.png" />
     <Resource Include="Resources\Images\view_points.png" />

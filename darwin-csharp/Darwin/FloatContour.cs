@@ -94,6 +94,16 @@ namespace Darwin
             return position;
         }
 
+        /// <summary>
+        /// This disables collection and item change notifications.  This is
+        /// for performance on FloatContours that aren't used in the UI/etc.
+        /// </summary>
+        public void DisableNotificationEvents()
+        {
+            if (Points != null)
+                Points.DisableEvents();
+        }
+
         //***005FC next 5 functions are new
         //********************************************************************
         // popFront()
@@ -125,9 +135,12 @@ namespace Darwin
             return result;
         }
 
-        public FloatContour TrimBeginningToDistanceFromPoint(double distance, PointF referencePoint, out int numPointsTrimmed)
+        public FloatContour TrimBeginningToDistanceFromPoint(double distance, PointF referencePoint, out int numPointsTrimmed, bool disableEvents = false)
         {
             FloatContour result = new FloatContour();
+
+            if (disableEvents)
+                result.DisableNotificationEvents();
 
             result.Points = new ObservableNotifiableCollection<PointF>();
 
@@ -406,7 +419,8 @@ namespace Darwin
             PointF p3,
             PointF desP1,
             PointF desP2,
-            PointF desP3
+            PointF desP3,
+            bool disableNotificationEvents = false
         )
         {
             // Well, we're basically trying to solve two systems of linear
@@ -501,6 +515,9 @@ namespace Darwin
             // Now that we have all the required coefficients, we'll transform
             // the points in the original Contour, and store them in a new one
             FloatContour dstContour = new FloatContour(); //***008OL
+
+            if (disableNotificationEvents)
+                dstContour.DisableNotificationEvents();
 
             for (int i = 0; i < Length; i++)
             {

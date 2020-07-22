@@ -97,7 +97,7 @@ namespace Darwin.Matching
             results.Contour2ControlPoint2 = dbTipPosition;
             results.Contour2ControlPoint3 = dbFin.FinOutline.GetFeaturePoint(FeaturePointType.PointOfInflection);
 
-            // both evenly spaced contours are returned as part of results
+            // Both evenly spaced contours are returned as part of results
             return results; //***005C
         }
 
@@ -2267,9 +2267,10 @@ namespace Darwin.Matching
                 double dx = c1[k].X - c1[k - 1].X;
                 double dy = c1[k].Y - c1[k - 1].Y;
                 segLen1.Add(Math.Sqrt(dx * dx + dy * dy));
-                if ((begin1 < k) && (k <= mid1))    // leading edge
+
+                if (begin1 < k && k <= mid1)    // leading edge
                     unkArcLength[0] += segLen1[k];
-                else if ((mid1 < k) && (k <= end1)) //***1.982a - trailing edge
+                else if (mid1 < k && k <= end1) //***1.982a - trailing edge
                     unkArcLength[1] += segLen1[k];
             }
 
@@ -2277,14 +2278,15 @@ namespace Darwin.Matching
             dbArcLength[0] = 0.0;
             dbArcLength[1] = 0.0; //***1.982a
             segLen2.Add(0.0); // no segment entering first point
+
             for (k = 1; k < c2.Length; k++)
             {
                 double dx = c2[k].X - c2[k - 1].X;
                 double dy = c2[k].Y - c2[k - 1].Y;
                 segLen2.Add(Math.Sqrt(dx * dx + dy * dy));
-                if ((begin2 < k) && (k <= mid2))    // leading edge
+                if (begin2 < k && k <= mid2)    // leading edge
                     dbArcLength[0] += segLen2[k];
-                else if ((mid2 < k) && (k <= end2)) //***1.982a - trailing edge
+                else if (mid2 < k && k <= end2) //***1.982a - trailing edge
                     dbArcLength[1] += segLen2[k];
             }
 
@@ -2308,6 +2310,7 @@ namespace Darwin.Matching
                 // 3.0 unit intervals
 
                 FloatContour midPt = new FloatContour();
+                midPt.DisableNotificationEvents();
 
                 int start1, limit1, start2, limit2; //***1.982a
 
@@ -2382,7 +2385,7 @@ namespace Darwin.Matching
                 ////////////////////////// end changes ////////////////////////////
 
                 bool done = false;
-                int backI = 0, backJ = 0; //***1.75 - how much we are backing up
+                int backI, backJ; //***1.75 - how much we are backing up
 
                 for (k = 1; (k + 1 < midPt.Length) && (!done); k++)
                 {
@@ -2400,7 +2403,7 @@ namespace Darwin.Matching
                     backI = 0; //***1.75
                     backJ = 0; //***1.75
 
-                    while ((!foundUnk) && (!done))
+                    while (!foundUnk && !done)
                     {
                         double
                             dot1 = (c1[j - 1].X - midPt[k].X) * mdx
@@ -2409,7 +2412,7 @@ namespace Darwin.Matching
                                  + (c1[j].Y - midPt[k].Y) * mdy;
                         if (((dot1 <= 0.0) && (0.0 <= dot2)) || ((dot2 <= 0.0) && (0.0 <= dot1)))
                         {
-                            // this segment contains a point of intersection with the perpendicular from
+                            // This segment contains a point of intersection with the perpendicular from
                             // the medial axis at point k
                             // slope of unknown fin outline segment between points j-1 and j 
                             double
@@ -2456,14 +2459,15 @@ namespace Darwin.Matching
                             Trace.WriteLine("Error in medial axis code UNK2");
                     }
 
-                    while ((!foundDB) && (!done))
+                    while (!foundDB && !done)
                     {
                         double
                             dot1 = (c2[i - 1].X - midPt[k].X) * mdx
                                  + (c2[i - 1].Y - midPt[k].Y) * mdy,
                             dot2 = (c2[i].X - midPt[k].X) * mdx
                                  + (c2[i].Y - midPt[k].Y) * mdy;
-                        if (((dot1 <= 0.0) && (0.0 <= dot2)) || ((dot2 <= 0.0) && (0.0 <= dot1)))
+
+                        if ((dot1 <= 0.0 && 0.0 <= dot2) || (dot2 <= 0.0 && 0.0 <= dot1))
                         {
                             // this segment contains a point of intersection with the perpendicular from
                             // the medial axis at point k
@@ -2488,7 +2492,7 @@ namespace Darwin.Matching
                             else
                                 Trace.WriteLine("Error in medial axis code DB");
                         }
-                        else if ((dot1 < 0.0) && (dot2 < 0.0))
+                        else if (dot1 < 0.0 && dot2 < 0.0)
                         {
                             // move forward along database
                             i++;
@@ -2496,7 +2500,7 @@ namespace Darwin.Matching
                             if (i > limit2) //***1.982a
                                 done = true;
                         }
-                        else if ((dot1 > 0.0) && (dot2 > 0.0))
+                        else if (dot1 > 0.0 && dot2 > 0.0)
                         {
                             // back up on database
                             if (backI < 50) //***1.75 - new constraint
@@ -2934,15 +2938,19 @@ namespace Darwin.Matching
                 var shiftedUnknownControlPoint2Coords = preMapUnknown[controlPoint2PosUnk];
                 var shiftedUnknownControlPoint3Coords = preMapUnknown[controlPoint3PosUnk];
 
-                FloatContour mappedContour = null;
-
-                mappedContour = preMapUnknown.MapContour(
+                FloatContour mappedContour = preMapUnknown.MapContour(
                     shiftedUnknownControlPoint2Coords,
                     shiftedUnknownControlPoint1Coords,
                     shiftedUnknownControlPoint3Coords,
                     shiftedDBControlPoint2Coords,
                     shiftedDBControlPoint1Coords,
-                    dbControlPoint3Coord);
+                    dbControlPoint3Coord,
+                    true);
+
+                if ((mappedContour[controlPoint3PosUnk].X - floatDBContour[dbControlPoint3].X) > 30)
+                {
+                    string s = "hi";
+                }
 
                 //// Just a 2D mapping with the first two control points. We're doing this
                 //// to try without the end of the trailing edge/end of the jaw, since that point
@@ -2982,7 +2990,7 @@ namespace Darwin.Matching
                         trimmedDBContour = new FloatContour(floatDBContour);
                         int numPointsTrimmed;
                         trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
-                            mappedContour[unknownControlPoint1], out numPointsTrimmed);
+                            mappedContour[unknownControlPoint1], out numPointsTrimmed, true);
 
                         unknownAdjustPosition = numPointsTrimmed;
                     }
@@ -2992,7 +3000,7 @@ namespace Darwin.Matching
                         int numPointsTrimmed;
 
                         trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
-                            floatDBContour[dbControlPoint1], out numPointsTrimmed);
+                            floatDBContour[dbControlPoint1], out numPointsTrimmed, true);
 
                         dbAdjustPosition = numPointsTrimmed;
                     }

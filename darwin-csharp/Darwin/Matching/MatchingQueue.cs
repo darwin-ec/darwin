@@ -223,10 +223,6 @@ namespace Darwin.Matching
             if (!Directory.Exists(directoryName))
                 throw new Exception("Couldn't find directory " + directoryName);
 
-            string summary = GetSummary();
-            string summaryFilename = Path.Combine(directoryName, "results-summary");
-            File.WriteAllText(summaryFilename, summary);
-
             var currentFiles = Directory.GetFiles(directoryName);
 
             if (currentFiles != null && currentFiles.Length > 0)
@@ -251,6 +247,10 @@ namespace Darwin.Matching
                     match.MatchResults.Save(filenameWithPath);
                 }
             }
+
+            string summary = GetSummary();
+            string summaryFilename = Path.Combine(directoryName, "results-summary");
+            File.WriteAllText(summaryFilename, summary);
         }
 
         public string GetSummary()
