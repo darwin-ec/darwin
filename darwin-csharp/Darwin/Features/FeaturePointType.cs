@@ -19,7 +19,7 @@ namespace Darwin.Features
         Chin = 7,
         UpperLip = 8,
         Brow = 9,
-
+        BottomLipProtrusion = 10,
 
         Eye = 100
     }

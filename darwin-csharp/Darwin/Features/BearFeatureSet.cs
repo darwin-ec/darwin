@@ -58,6 +58,7 @@ namespace Darwin.Features
             { FeaturePointType.Tip, "Tip of Nose" },
             { FeaturePointType.Notch, "Under Nose Dent" },
             { FeaturePointType.UpperLip, "Upper Lip" },
+            { FeaturePointType.BottomLipProtrusion, "Bottom Lip Protrusion" },
             //{ FeaturePointType.Chin, "Chin" },
             { FeaturePointType.PointOfInflection, "End of Jaw" }
         };
@@ -70,12 +71,14 @@ namespace Darwin.Features
             {
                 { FeaturePointType.LeadingEdgeBegin, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeBegin], Type = FeaturePointType.LeadingEdgeBegin, IsEmpty = true } },
                 { FeaturePointType.Brow, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Brow], Type = FeaturePointType.Brow, IsEmpty = true } },
+                // Note the following item has Ignore = true
                 { FeaturePointType.LeadingEdgeEnd, new OutlineFeaturePoint { Ignore = true, Name = FeaturePointNameMapping[FeaturePointType.LeadingEdgeEnd], Type = FeaturePointType.LeadingEdgeEnd, IsEmpty = true } },
                 { FeaturePointType.Nasion, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Nasion], Type = FeaturePointType.Nasion, IsEmpty = true } },
                 { FeaturePointType.Tip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Tip], Type = FeaturePointType.Tip, IsEmpty = true } },
                 { FeaturePointType.Notch, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Notch], Type = FeaturePointType.Notch, IsEmpty = true } },
                 //{ FeaturePointType.Chin, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.Chin], Type = FeaturePointType.Chin, IsEmpty = true } },
                 { FeaturePointType.UpperLip, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.UpperLip], Type = FeaturePointType.UpperLip, IsEmpty = true } },
+                { FeaturePointType.BottomLipProtrusion, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.BottomLipProtrusion], Type = FeaturePointType.BottomLipProtrusion, IsEmpty = true } },
                 { FeaturePointType.PointOfInflection, new OutlineFeaturePoint { Name = FeaturePointNameMapping[FeaturePointType.PointOfInflection], Type = FeaturePointType.PointOfInflection, IsEmpty = true } }
             };
 
@@ -163,8 +166,8 @@ namespace Darwin.Features
                 int endTE = FindPointOfInflection(chain, tipPosition);
 
                 bool hasMouthDent;
-                int mouthDentPosition;
-                int upperLipPosition = FindUpperLip(chain, chainPoints, underNoseDentPosition, out hasMouthDent, out mouthDentPosition);
+                int bottomLipProtrusion;
+                int upperLipPosition = FindUpperLip(chain, chainPoints, underNoseDentPosition, out hasMouthDent, out bottomLipProtrusion);
 
                 int browPosition = FindBrow(chain, beginLE, nasionPos);
                 //int chinPosition = FindChin(chain, tipPosition);
@@ -176,6 +179,7 @@ namespace Darwin.Features
                 FeaturePoints[FeaturePointType.Tip].Position = tipPosition;
                 FeaturePoints[FeaturePointType.Notch].Position = underNoseDentPosition;
                 FeaturePoints[FeaturePointType.UpperLip].Position = upperLipPosition;
+                FeaturePoints[FeaturePointType.BottomLipProtrusion].Position = bottomLipProtrusion;
                 //FeaturePoints[FeaturePointType.Chin].Position = chinPosition;
                 FeaturePoints[FeaturePointType.PointOfInflection].Position = endTE;
 
@@ -749,7 +753,7 @@ namespace Darwin.Features
         /// <param name="hasMouthDent"></param>
         /// <param name="mouthDentPosition"></param>
         /// <returns></returns>
-        public int FindUpperLip(Chain chain, FloatContour chainPoints, int underNoseDentPosition, out bool hasMouthDent, out int mouthDentPosition)
+        public int FindUpperLip(Chain chain, FloatContour chainPoints, int underNoseDentPosition, out bool hasMouthDent, out int bottomLipProtrusion)
         {
             if (chain == null)
                 throw new ArgumentNullException(nameof(chain));
@@ -805,6 +809,8 @@ namespace Darwin.Features
                 }
             }
 
+            int mouthDentPosition = 0;
+
             if (hasMouthDent)
             {
                 mouthDentPosition = FindNotch(chain, underNoseDentPosition + UpperLipTipPadding);
@@ -812,10 +818,13 @@ namespace Darwin.Features
                 // Check where it found the mouth dent -- if it's too close to the end, it's likely that it's
                 // not the mouth, but something like the neck/etc.
                 if (mouthDentPosition < underNoseDentPosition + numPointsAfterNoseDent)
+                {
+                    bottomLipProtrusion = FindTip(chain, mouthDentPosition + 20, mouthDentPosition - underNoseDentPosition - UpperLipTipPadding, UpperLipTipPadding);
                     return mouthDentPosition;
+                }
             }
 
-            // Fake the mouth dent position
+            // Fake the mouth dent position as a starting point for finding the biggest max in the area
             mouthDentPosition = underNoseDentPosition + numPointsAfterNoseDent;
 
             int upperLipPosition = FindTip(chain, mouthDentPosition, mouthDentPosition - underNoseDentPosition - UpperLipTipPadding, UpperLipTipPadding);
@@ -823,6 +832,8 @@ namespace Darwin.Features
             // These are fallback positions, so they're going to be off if we hit this if statement.
             if (upperLipPosition < underNoseDentPosition)
                 upperLipPosition = (int)Math.Round(mouthDentPosition + numPointsAfterNoseDent / 2.0f);
+
+            bottomLipProtrusion = upperLipPosition;
 
             return upperLipPosition;
         }

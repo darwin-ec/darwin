@@ -254,6 +254,38 @@ namespace Darwin.Matching
             };
         }
 
+        public static MatchFactor CreateFeaturePointFactor(
+            float weight,
+            List<FeaturePointType> benchmarkFeatures,
+            List<FeaturePointType> landmarkFeatures,
+            List<IEnumerable<FeaturePointType>> ratioPermutations,
+            int numberOfDesiredRatios,
+            List<DatabaseFin> allDatabaseIndividuals,
+            ErrorBetweenIndividualFeatureRatiosDelegate errorBetweenIndividualFeatures,
+            MatchOptions options = null)
+        {
+            var ratioComparison = FeaturePointErrorFunctions.ComputeInitialEigenRatios(
+                benchmarkFeatures,
+                landmarkFeatures,
+                numberOfDesiredRatios,
+                allDatabaseIndividuals,
+                ratioPermutations);
+
+            var dependentFeatures = new List<FeaturePointType>();
+            dependentFeatures.AddRange(benchmarkFeatures);
+            dependentFeatures.AddRange(landmarkFeatures);
+
+            return new MatchFactor
+            {
+                _ratioComparison = ratioComparison,
+                MatchFactorType = MatchFactorType.FeaturePoint,
+                Weight = weight,
+                ErrorBetweenIndividualFeatureRatios = errorBetweenIndividualFeatures,
+                MatchOptions = options,
+                DependentFeaturePoints = dependentFeatures
+            };
+        }
+
         public static MatchFactor CreateFeatureFactor(
             float weight,
             ErrorBetweenIndividualFeaturesDelegate errorBetweenIndividualFeatures,

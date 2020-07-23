@@ -182,6 +182,7 @@ namespace Darwin.Wpf
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
                             _vm.SelectedFin = _vm.MatchingQueue.Fins[currentIndex];
+                            DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
                         }), DispatcherPriority.Background);
                     }
 

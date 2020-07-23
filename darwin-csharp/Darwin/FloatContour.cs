@@ -149,6 +149,20 @@ namespace Darwin
             return numPoints;
         }
 
+        public int GetEndNumPointsDistanceFromPoint(double distance, PointF referencePoint)
+        {
+            int numPoints = 0;
+            for (var i = Points.Count - 1; i >= 0; i--)
+            {
+                if (MathHelper.GetDistance(Points[i].X, Points[i].Y, referencePoint.X, referencePoint.Y) < distance)
+                    break;
+
+                numPoints += 1;
+            }
+
+            return numPoints;
+        }
+
         public FloatContour TrimBeginningToDistanceFromPoint(double distance, PointF referencePoint, out int numPointsTrimmed, bool disableEvents = false)
         {
             FloatContour result = new FloatContour();

@@ -252,7 +252,10 @@ namespace Darwin.Matching
             // If the current unknown is missing any feature points, rediscover them
             // algorithmically
             if (UnknownFin.FinOutline != null && (!UnknownFin.FinOutline.ContainsAllFeaturePointTypes(distinctFeaturePointList) || !UnknownFin.FinOutline.ContainsAllFeatureTypes(distinctFeatureList)))
+            {
+                Trace.WriteLine("Unknown " + UnknownFin.IDCode + " is missing features needed for matching.  Rediscovering..");
                 UnknownFin.FinOutline.RediscoverFeaturePoints(Database.CatalogScheme.FeatureSetType);
+            }
 
             return Database.ContainsAllFeaturePointTypes(distinctFeaturePointList) && Database.ContainsAllFeatureTypes(distinctFeatureList);
         }

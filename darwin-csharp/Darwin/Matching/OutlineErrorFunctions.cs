@@ -2309,9 +2309,7 @@ namespace Darwin.Matching
                 // unknown.  The database fin outline should be evenly spaced at approx.
                 // 3.0 unit intervals
 
-                FloatContour midPt = new FloatContour();
-                midPt.DisableNotificationEvents();
-
+                List<PointF> midPt = new List<PointF>();
                 int start1, limit1, start2, limit2; //***1.982a
 
                 if (part == 0) // Leading edge
@@ -2362,7 +2360,7 @@ namespace Darwin.Matching
                     double y = c1[j - 1].Y + s * dy;
 
                     // Save midpoint (part of medial axis) for use later
-                    midPt.AddPoint((float)(0.5 * (c2[i].X + x)), (float)(0.5 * (c2[i].Y + y)));
+                    midPt.Add(new PointF((float)(0.5 * (c2[i].X + x)), (float)(0.5 * (c2[i].Y + y))));
 
                     i++;
                 }
@@ -2386,7 +2384,7 @@ namespace Darwin.Matching
                 bool done = false;
                 int backI, backJ; //***1.75 - how much we are backing up
 
-                for (k = 1; k + 1 < midPt.Length && !done; k++)
+                for (k = 1; k + 1 < midPt.Count && !done; k++)
                 {
                     double
                         unkX = 0, unkY = 0,
@@ -2577,7 +2575,7 @@ namespace Darwin.Matching
 
             // If no points found, the error stays the default
             if (ptsFound > 0)
-                error = (sum / (double)ptsFound);
+                error = sum / (double)ptsFound;
 
             //string traceOutput = string.Format("pair matched (medial): {0} points {1} error", ptsFound, error);
             //Trace.WriteLine(traceOutput);
@@ -2892,10 +2890,8 @@ namespace Darwin.Matching
             if (controlPoints.Count < 3)
                 throw new ArgumentOutOfRangeException(nameof(controlPoints));
 
-            //FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
-            //FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
-
-            // Use references instead of copies
+            // Use references instead of copies.  Might be a cause for bugs if there
+            // are problems with contours in match results/etc.
             FloatContour floatDBContour = dbFin.FinOutline.ChainPoints;
             FloatContour preMapUnknown = unknownFin.FinOutline.ChainPoints;
 
@@ -2945,8 +2941,15 @@ namespace Darwin.Matching
             var jumpCombinationsEnumerable = EnumerableHelper.PermutationsWithRepetition(jumpOptions, 5);
             var jumpCombinations = jumpCombinationsEnumerable.ToList();
 
-            //var blankJumpCombination = new List<int>();
-            //jumpCombinations.Add(blankJumpCombination);
+            int dbControlPoint4 = 0;
+            int unknownControlPoint4 = 0;
+            if (outlineMatchOptions != null && outlineMatchOptions.TryAlternateControlPoint3 && controlPoints.Count >= 4)
+            {
+                var blankJumpCombination = new List<int>();
+                jumpCombinations.Add(blankJumpCombination);
+                dbControlPoint4 = dbFin.FinOutline.GetFeaturePoint(controlPoints[3]);
+                unknownControlPoint4 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[3]);
+            }
 
             // An object to lock on for our critical section, since
             // we're going to run the matching loop in parallel.
@@ -2955,14 +2958,26 @@ namespace Darwin.Matching
             Parallel.ForEach(jumpCombinations, jumpCombo =>
             {
                 var jumpComboList = jumpCombo.ToList();
+
                 int controlPoint1PosDB = dbControlPoint1 + ((jumpComboList.Count > 0) ? jumpComboList[0] : 0);
                 int controlPoint1PosUnk = unknownControlPoint1 + ((jumpComboList.Count > 0) ? jumpComboList[1] : 0);
                 int controlPoint2PosDB = dbControlPoint2 + ((jumpComboList.Count > 0) ? jumpComboList[2] : 0);
                 int controlPoint2PosUnk = unknownControlPoint2 + ((jumpComboList.Count > 0) ? jumpComboList[3] : 0);
-                int controlPoint3PosUnk = unknownControlPoint3 + ((jumpComboList.Count > 0) ? jumpComboList[4] : 0);
+                int controlPoint3PosDB = dbControlPoint3;
+
+                // We're offsetting this particular control point by an extra jumpDistance, and then subtracting to push
+                // it earlier in the outline.  TODO: the 2 is a magic number right now
+                int controlPoint3PosUnk = unknownControlPoint3 - 2 * (jumpDistance + ((jumpComboList.Count > 0) ? jumpComboList[4] : 0));
+
+                if (jumpComboList.Count == 0 && dbControlPoint4 > 0 && unknownControlPoint4 > 0)
+                {
+                    controlPoint3PosUnk = unknownControlPoint4;
+                    controlPoint3PosDB = dbControlPoint4;
+                }
 
                 ConstraintHelper.ConstrainInt(ref controlPoint1PosDB, 0, floatDBContour.Length - 1);
                 ConstraintHelper.ConstrainInt(ref controlPoint2PosDB, 0, floatDBContour.Length - 1);
+                ConstraintHelper.ConstrainInt(ref controlPoint3PosDB, 0, floatDBContour.Length - 1);
 
                 ConstraintHelper.ConstrainInt(ref controlPoint1PosUnk, 0, preMapUnknown.Length - 1);
                 ConstraintHelper.ConstrainInt(ref controlPoint2PosUnk, 0, preMapUnknown.Length - 1);
@@ -2970,6 +2985,7 @@ namespace Darwin.Matching
 
                 var shiftedDBControlPoint1Coords = floatDBContour[controlPoint1PosDB];
                 var shiftedDBControlPoint2Coords = floatDBContour[controlPoint2PosDB];
+                var shiftedDBControlPoint3Coords = floatDBContour[controlPoint3PosDB];
                 var shiftedUnknownControlPoint1Coords = preMapUnknown[controlPoint1PosUnk];
                 var shiftedUnknownControlPoint2Coords = preMapUnknown[controlPoint2PosUnk];
                 var shiftedUnknownControlPoint3Coords = preMapUnknown[controlPoint3PosUnk];
@@ -2989,7 +3005,7 @@ namespace Darwin.Matching
                     shiftedUnknownControlPoint3Coords,
                     shiftedDBControlPoint2Coords,
                     shiftedDBControlPoint1Coords,
-                    dbControlPoint3Coord);
+                    shiftedDBControlPoint3Coords);
 
                 double newError;
 
@@ -3034,7 +3050,7 @@ namespace Darwin.Matching
                     int dbAdjustPosition = 0;
                     int unknownAdjustPosition = 0;
 
-                    // TODO: Moving transform down into the error between outlines would probably let this run faster
+                    // TODO: Moving transform down into the error between outlines and not creating a mapped copy might let this run faster
                     mappedContour = preMapUnknown.TransformContour(transform, true);
 
                     if (dbBeginningDistance < unknownBeginningDistance)
@@ -3042,15 +3058,66 @@ namespace Darwin.Matching
                     else
                         dbAdjustPosition = floatDBContour.GetNumPointsDistanceFromPoint(unknownBeginningDistance, floatDBContour[dbControlPoint1]);
 
-                    newError = errorBetweenOutlines(
-                        mappedContour,
-                        unknownAdjustPosition,
-                        unknownControlPoint2,
-                        unknownControlPoint3,
-                        floatDBContour,
-                        dbAdjustPosition,
-                        dbControlPoint2,
-                        dbControlPoint3);
+                    if (jumpComboList.Count == 0 && dbControlPoint4 > 0 && unknownControlPoint4 > 0)
+                    {
+                        newError = errorBetweenOutlines(
+                            mappedContour,
+                            unknownControlPoint1,
+                            unknownControlPoint2,
+                            unknownControlPoint4,
+                            floatDBContour,
+                            dbControlPoint1,
+                            dbControlPoint2,
+                            dbControlPoint4);
+
+                        // Below commented approach doesn't seem to work well, since if we need to do this, the outline before the nasion and after the mouth
+                        // goes all crazy.
+                        //int unknownEndAdjustPosition = 0;
+                        //int dbEndAdjustPosition = 0;
+                        // If we're trying another control point, let's clip off the end of the longer contour (e.g., assuming that the trace may
+                        // be too long on one of them)
+                        //var dbEndDistance = MathHelper.GetDistance(floatDBContour[dbControlPoint4].X, floatDBContour[dbControlPoint4].Y,
+                        //    floatDBContour[floatDBContour.Length - 1].X, floatDBContour[floatDBContour.Length - 1].Y);
+                        //var unknownEndDistance = MathHelper.GetDistance(mappedContour[unknownControlPoint4].X, mappedContour[unknownControlPoint4].Y,
+                        //    mappedContour[mappedContour.Length - 1].X, mappedContour[mappedContour.Length - 1].Y);
+
+                        //if (dbEndDistance < unknownEndDistance)
+                        //    unknownEndAdjustPosition = mappedContour.GetEndNumPointsDistanceFromPoint(dbEndDistance, mappedContour[unknownControlPoint4]);
+                        //else
+                        //    dbEndAdjustPosition = floatDBContour.GetEndNumPointsDistanceFromPoint(unknownEndDistance, floatDBContour[dbControlPoint4]);
+
+                        //newError = errorBetweenOutlines(
+                        //mappedContour,
+                        //unknownAdjustPosition,
+                        //unknownControlPoint2,
+                        //unknownControlPoint3 - unknownEndAdjustPosition,
+                        //floatDBContour,
+                        //dbAdjustPosition,
+                        //dbControlPoint2,
+                        //dbControlPoint3 - dbEndAdjustPosition);
+                    }
+                    else
+                    {
+                        newError = errorBetweenOutlines(
+                            mappedContour,
+                            unknownAdjustPosition,
+                            controlPoint2PosUnk,
+                            controlPoint3PosUnk,
+                            floatDBContour,
+                            dbAdjustPosition,
+                            controlPoint2PosDB,
+                            controlPoint3PosDB);
+
+                        //newError = errorBetweenOutlines(
+                        //    mappedContour,
+                        //    unknownAdjustPosition,
+                        //    unknownControlPoint2,
+                        //    unknownControlPoint3,
+                        //    floatDBContour,
+                        //    dbAdjustPosition,
+                        //    dbControlPoint2,
+                        //    dbControlPoint3);
+                    }
 
                     // Note that we're matching from the beginning of the outline, not from
                     // the 1st control point.
@@ -3084,6 +3151,7 @@ namespace Darwin.Matching
                         results.Contour1ControlPoint3 = controlPoint3PosUnk;
                         results.Contour2ControlPoint1 = controlPoint1PosDB;
                         results.Contour2ControlPoint2 = controlPoint2PosDB;
+                        results.Contour2ControlPoint3 = controlPoint3PosDB;
 
                         updateOutlines?.Invoke(mappedContour, floatDBContour);
                     }

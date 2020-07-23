@@ -174,7 +174,7 @@ namespace Darwin
 
             foreach (var type in featureTypes)
             {
-                if (!FeatureSet.Features.ContainsKey(type))
+                if (!FeatureSet.Features.ContainsKey(type) || FeatureSet.Features[type].IsEmpty)
                     return false;
             }
 
@@ -191,7 +191,7 @@ namespace Darwin
 
             foreach (var type in featurePointTypes)
             {
-                if (!FeatureSet.FeaturePoints.ContainsKey(type))
+                if (!FeatureSet.FeaturePoints.ContainsKey(type) || FeatureSet.FeaturePoints[type].IsEmpty)
                     return false;
             }
 

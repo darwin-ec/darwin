@@ -176,9 +176,15 @@ namespace Darwin.Matching
             List<FeaturePointType> benchmarkFeatures,
             List<FeaturePointType> landmarkFeatures,
             int numberOfDesiredRatios,
-            List<DatabaseFin> allDatabaseIndividuals)
+            List<DatabaseFin> allDatabaseIndividuals,
+            List<IEnumerable<FeaturePointType>> suppliedRatioPermutations = null)
         {
-            var ratioPermutations = EnumerableHelper.GetUniquePermutations(landmarkFeatures, 2).ToList();
+            List<IEnumerable<FeaturePointType>> ratioPermutations;
+
+            if (suppliedRatioPermutations != null)
+                ratioPermutations = suppliedRatioPermutations;
+            else
+                ratioPermutations = EnumerableHelper.GetUniquePermutations(landmarkFeatures, 2).ToList();
 
             // Desired number of ratios needs to be <= the number of permutations.  We're going to set
             // it at that max if it's too large

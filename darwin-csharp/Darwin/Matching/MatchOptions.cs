@@ -15,6 +15,7 @@ namespace Darwin.Matching
         public bool UseFullFinError { get; set; }
         public bool TrimBeginLeadingEdge { get; set; }
         public float JumpDistancePercentage { get; set; }
+        public bool TryAlternateControlPoint3 { get; set; }
     }
 
     public class FeatureSetMatchOptions : MatchOptions
