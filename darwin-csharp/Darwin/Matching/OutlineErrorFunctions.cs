@@ -3031,44 +3031,24 @@ namespace Darwin.Matching
                     var unknownBeginningDistance = MathHelper.GetDistance(mappedXStart, mappedYStart,
                         mappedXEnd, mappedYEnd);
 
-                    //FloatContour trimmedUnknownContour;
-                    //FloatContour trimmedDBContour;
                     int dbAdjustPosition = 0;
                     int unknownAdjustPosition = 0;
 
+                    // TODO: Moving transform down into the error between outlines would probably let this run faster
                     mappedContour = preMapUnknown.TransformContour(transform, true);
+
                     if (dbBeginningDistance < unknownBeginningDistance)
-                    {
-                        //trimmedDBContour = floatDBContour;
-                        int numPointsTrimmed = mappedContour.GetNumPointsDistanceFromPoint(dbBeginningDistance, new PointF(mappedXEnd, mappedYEnd));
-
-                        //int numPointsTrimmed2;
-                        //var trimmedUnknownContour = preMapUnknown.TransformTrimBeginningToDistanceFromPoint(transform, dbBeginningDistance,
-                        //    new PointF(mappedXEnd, mappedYEnd), out numPointsTrimmed2, true);
-
-                        unknownAdjustPosition = numPointsTrimmed;
-                    }
+                        unknownAdjustPosition = mappedContour.GetNumPointsDistanceFromPoint(dbBeginningDistance, new PointF(mappedXEnd, mappedYEnd));
                     else
-                    {
-                        //trimmedUnknownContour = mappedContour = preMapUnknown.TransformContour(transform, true);
-                        int numPointsTrimmed = floatDBContour.GetNumPointsDistanceFromPoint(unknownBeginningDistance, floatDBContour[dbControlPoint1]);
-                        //int numPointsTrimmed2;
-                        //var trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
-                        //                                                                   floatDBContour[dbControlPoint1],
-                        //                                                                   out numPointsTrimmed2, true);
-
-                        dbAdjustPosition = numPointsTrimmed;
-                    }
+                        dbAdjustPosition = floatDBContour.GetNumPointsDistanceFromPoint(unknownBeginningDistance, floatDBContour[dbControlPoint1]);
 
                     newError = errorBetweenOutlines(
                         mappedContour,
                         unknownAdjustPosition,
-                        //unknownControlPoint1 - unknownAdjustPosition,
                         unknownControlPoint2,
                         unknownControlPoint3,
                         floatDBContour,
                         dbAdjustPosition,
-                        //dbControlPoint1 - dbAdjustPosition,
                         dbControlPoint2,
                         dbControlPoint3);
 

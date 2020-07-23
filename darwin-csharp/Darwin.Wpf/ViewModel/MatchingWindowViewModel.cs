@@ -179,27 +179,27 @@ namespace Darwin.Wpf.ViewModel
             }
         }
 
-        private double _contourXOffset;
-        public double ContourXOffset
-        {
-            get => _contourXOffset;
-            set
-            {
-                _contourXOffset = value;
-                RaisePropertyChanged("ContourXOffset");
-            }
-        }
+        //private double _contourXOffset;
+        //public double ContourXOffset
+        //{
+        //    get => _contourXOffset;
+        //    set
+        //    {
+        //        _contourXOffset = value;
+        //        RaisePropertyChanged("ContourXOffset");
+        //    }
+        //}
 
-        private double _contourYOffset;
-        public double ContourYOffset
-        {
-            get => _contourYOffset;
-            set
-            {
-                _contourYOffset = value;
-                RaisePropertyChanged("ContourYOffset");
-            }
-        }
+        //private double _contourYOffset;
+        //public double ContourYOffset
+        //{
+        //    get => _contourYOffset;
+        //    set
+        //    {
+        //        _contourYOffset = value;
+        //        RaisePropertyChanged("ContourYOffset");
+        //    }
+        //}
 
         private double _contourWidth;
         public double ContourWidth
@@ -233,6 +233,7 @@ namespace Darwin.Wpf.ViewModel
             RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
             RangeOfPoints = RangeOfPointsType.AllPoints;
             Database = database;
+            ShowRegistration = true;
 
             // TODO: These should really come from the window
             ContourWidth = 250;
@@ -264,15 +265,25 @@ namespace Darwin.Wpf.ViewModel
 
         private void UpdateOutlines(FloatContour unknownContour, FloatContour dbContour)
         {
-            if (unknownContour == null && dbContour == null)
+            if (!ShowRegistration || (unknownContour == null && dbContour == null))
                 return;
 
             Contour unk, db;
             double xOffset, yOffset;
             FloatContour.FitContoursToSize(ContourWidth, ContourHeight, unknownContour, dbContour, out unk, out db, out xOffset, out yOffset);
 
-            ContourXOffset = xOffset;
-            ContourYOffset = yOffset;
+            if (unk != null)
+            {
+                unk.XOffset = xOffset;
+                unk.YOffset = yOffset;
+            }
+
+            if (db != null)
+            {
+                db.XOffset = xOffset;
+                db.YOffset = yOffset;
+            }
+
             UnknownContour = unk;
             DBContour = db;
         }

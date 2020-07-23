@@ -82,6 +82,28 @@ namespace Darwin
 			}
 		}
 
+		private double _xoffset;
+		public double XOffset
+        {
+			get => _xoffset;
+			set
+            {
+				_xoffset = value;
+				RaisePropertyChanged("XOffset");
+            }
+        }
+
+		private double _yoffset;
+		public double YOffset
+		{
+			get => _yoffset;
+			set
+			{
+				_yoffset = value;
+				RaisePropertyChanged("YOffset");
+			}
+		}
+
 		public int XMin
         {
 			get
