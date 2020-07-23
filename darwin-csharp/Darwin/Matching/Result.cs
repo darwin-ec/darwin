@@ -23,9 +23,9 @@ namespace Darwin.Matching
         public List<MatchFactorError> RawError { get; set; }
         public string IDCode { get; set; }
         public string Name { get; set; }
-        public string Damage { get; set; }
-        public string Date { get; set; }
-        public string Location { get; set; }
+        public string DamageCategory { get; set; }
+        public string DateOfSighting { get; set; }
+        public string LocationCode { get; set; }
         public int Rank { get; set; } //  1.5
 
         //  1.1 - new members to track three point correspondences for final mapping in match
@@ -71,9 +71,9 @@ namespace Darwin.Matching
             }
             IDCode = idcode;
             Name = name;
-            Damage = damage;
-            Date = date;
-            Location = location;
+            DamageCategory = damage;
+            DateOfSighting = date;
+            LocationCode = location;
             Rank = 0; //  1.5
             UnkShiftedLEBegin = 0; //  1.1 - following indices set to defaults by constructor
             UnkShiftedTip = 0;
@@ -126,8 +126,8 @@ namespace Darwin.Matching
             Confidence = r.Confidence;
             IDCode = r.IDCode;
             Name = r.Name;
-            Damage = r.Damage;
-            Location = r.Location;
+            DamageCategory = r.DamageCategory;
+            LocationCode = r.LocationCode;
             Rank = r.Rank; //  1.5
             unknownContour = new FloatContour(r.unknownContour);
             dbContour = new FloatContour(r.dbContour);

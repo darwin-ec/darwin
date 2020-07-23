@@ -135,14 +135,28 @@ namespace Darwin
             return result;
         }
 
+        public int GetNumPointsDistanceFromPoint(double distance, PointF referencePoint)
+        {
+            int numPoints = 0;
+            foreach (var p in this.Points)
+            {
+                if (MathHelper.GetDistance(p.X, p.Y, referencePoint.X, referencePoint.Y) < distance)
+                    break;
+
+                numPoints += 1;
+            }
+
+            return numPoints;
+        }
+
         public FloatContour TrimBeginningToDistanceFromPoint(double distance, PointF referencePoint, out int numPointsTrimmed, bool disableEvents = false)
         {
             FloatContour result = new FloatContour();
 
+            result.Points = new ObservableNotifiableCollection<PointF>();
+
             if (disableEvents)
                 result.DisableNotificationEvents();
-
-            result.Points = new ObservableNotifiableCollection<PointF>();
 
             bool foundBeginning = false;
             numPointsTrimmed = 0;
@@ -156,6 +170,44 @@ namespace Darwin
                     result.Points.Add(p);
                 else
                     numPointsTrimmed += 1;
+            }
+
+            return result;
+        }
+
+        public FloatContour TransformTrimBeginningToDistanceFromPoint(float[,] transform, double distance, PointF referencePoint, out int numPointsTrimmed, bool disableEvents = false)
+        {
+            FloatContour result = new FloatContour();
+
+            if (disableEvents)
+                result.DisableNotificationEvents();
+
+            result.Points = new ObservableNotifiableCollection<PointF>();
+
+            bool foundBeginning = false;
+            numPointsTrimmed = 0;
+
+            foreach (var p in this.Points)
+            {
+                float newX = transform[0, 0] * p.X
+                        + transform[0, 1] * p.Y
+                        + transform[0, 2];
+
+                float newY = transform[1, 0] * p.X
+                        + transform[1, 1] * p.Y
+                        + transform[1, 2];
+
+                if (!foundBeginning && MathHelper.GetDistance(newX, newY, referencePoint.X, referencePoint.Y) < distance)
+                    foundBeginning = true;
+
+                if (foundBeginning)
+                {
+                    result.Points.Add(new PointF(newX, newY));
+                }
+                else
+                {
+                    numPointsTrimmed += 1;
+                }
             }
 
             return result;
@@ -413,15 +465,13 @@ namespace Darwin
             return transformedContour;
         }
 
-        public FloatContour MapContour(
+        public float[,] GetMappingTransform(
             PointF p1,
             PointF p2,
             PointF p3,
             PointF desP1,
             PointF desP2,
-            PointF desP3,
-            bool disableNotificationEvents = false
-        )
+            PointF desP3)
         {
             // Well, we're basically trying to solve two systems of linear
             // equations here.  They are:
@@ -512,6 +562,11 @@ namespace Darwin
             for (int i = 0; i < 3; i++)
                 transformCoeff[1, i] = b[i, 3];
 
+            return transformCoeff;
+        }
+
+        public FloatContour TransformContour(float[,] transform, bool disableNotificationEvents = false)
+        {
             // Now that we have all the required coefficients, we'll transform
             // the points in the original Contour, and store them in a new one
             FloatContour dstContour = new FloatContour(); //***008OL
@@ -524,18 +579,33 @@ namespace Darwin
                 float cx = this[i].X;
                 float cy = this[i].Y;
 
-                float x = transformCoeff[0, 0] * cx
-                    + transformCoeff[0, 1] * cy
-                    + transformCoeff[0, 2];
+                float x = transform[0, 0] * cx
+                    + transform[0, 1] * cy
+                    + transform[0, 2];
 
-                float y = transformCoeff[1, 0] * cx
-                    + transformCoeff[1, 1] * cy
-                    + transformCoeff[1, 2];
+                float y = transform[1, 0] * cx
+                    + transform[1, 1] * cy
+                    + transform[1, 2];
 
                 dstContour.AddPoint(x, y);
             }
 
             return dstContour;
+        }
+
+        public FloatContour MapContour(
+            PointF p1,
+            PointF p2,
+            PointF p3,
+            PointF desP1,
+            PointF desP2,
+            PointF desP3,
+            bool disableNotificationEvents = false
+        )
+        {
+            float[,] transformCoeff = GetMappingTransform(p1, p2, p3, desP1, desP2, desP3);
+
+            return TransformContour(transformCoeff, disableNotificationEvents);
         }
 
         public static void FitContoursToSize(double drawingWidth, double drawingHeight, FloatContour unknownContour, FloatContour dbContour,

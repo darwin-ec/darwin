@@ -1951,24 +1951,35 @@ namespace Darwin.Wpf
 			}
 			else
 			{
-				if (_vm.Outline == null)
-                {
-					_vm.TraceLocked = true;
-					TraceFinalize();
-                }
+				try
+				{
+					this.IsHitTestVisible = false;
+					Mouse.OverrideCursor = Cursors.Wait;
 
-				_vm.UpdateDatabaseFin();
+					if (_vm.Outline == null)
+					{
+						_vm.TraceLocked = true;
+						TraceFinalize();
+					}
 
-				var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database);
-				var matchingWindow = new MatchingWindow(matchingWindowVM);
+					_vm.UpdateDatabaseFin();
 
-				var mainWindow = Application.Current.MainWindow as MainWindow;
+					var matchingWindowVM = new MatchingWindowViewModel(_vm.DatabaseFin, _vm.Database);
+					var matchingWindow = new MatchingWindow(matchingWindowVM);
 
-				if (mainWindow != null)
-					matchingWindow.Owner = mainWindow;
+					var mainWindow = Application.Current.MainWindow as MainWindow;
 
-				this.Close();
-				matchingWindow.Show();
+					if (mainWindow != null)
+						matchingWindow.Owner = mainWindow;
+
+					this.Close();
+					matchingWindow.Show();
+				}
+				finally
+				{
+					Mouse.OverrideCursor = null;
+					this.IsHitTestVisible = true;
+				}
 			}
         }
 

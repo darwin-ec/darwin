@@ -142,6 +142,49 @@ namespace Darwin.Wpf
                     }
                 }
             } while (!done);
+
+            // Below is a try at running MatchSingleIndividual in a Parallel For.  Note that the cancel and pause aren't done correctly,
+            // but currently not pursuing this, since as of the writing of this comment, the processing was IO bound, so parallelizing
+            // didn't help.  Leaving it below in case we need to come back to it. MatchSingleIndividual should be set up to run in multiple
+            // threads.
+            //
+            //_vm.MatchRunning = true;
+            //object locker = new object();
+
+            //var selectedCategories = _vm.SelectableCategories.Where(c => c.IsSelected).ToList();
+
+            //Parallel.For(0, _vm.Database.AllFins.Count, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (index, state) =>
+            //{
+            //    if (_matchingWorker.CancellationPending)
+            //    {
+            //        e.Cancel = true;
+            //        state.Stop();
+            //    }
+            //    else if (_vm.PauseMatching)
+            //    {
+            //        // Sleep for a small amount of time
+            //        Thread.Sleep(100);
+            //    }
+            //    else
+            //    {
+            //        // Do Work
+            //        float percentComplete = _vm.Match.MatchSingleIndividual(selectedCategories);
+
+            //        lock (locker)
+            //        {
+            //            int roundedProgress = (int)Math.Round(percentComplete * 100);
+
+            //            _vm.MatchProgressPercent = roundedProgress;
+            //            _matchingWorker.ReportProgress(roundedProgress);
+
+            //            if (percentComplete >= 1.0)
+            //            {
+            //                //***1.5 - sort the results here, ONCE, rather than as list is built
+            //                _vm.Match.MatchResults.Sort();
+            //            }
+            //        }
+            //    }
+            //});
         }
 
         private void MatchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -29,7 +29,9 @@ namespace Darwin.Matching
                 {
                     MoveTip = true,
                     MoveEndsInAndOut = false,
-                    UseFullFinError = true
+                    UseFullFinError = true,
+                    JumpDistancePercentage = 0.01f,
+                    TrimBeginLeadingEdge = true
                 }));
 
             matchFactors.Add(MatchFactor.CreateFeatureFactor(

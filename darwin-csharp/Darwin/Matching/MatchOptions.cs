@@ -13,6 +13,8 @@ namespace Darwin.Matching
         public bool MoveTip { get; set; }
         public bool MoveEndsInAndOut { get; set; }
         public bool UseFullFinError { get; set; }
+        public bool TrimBeginLeadingEdge { get; set; }
+        public float JumpDistancePercentage { get; set; }
     }
 
     public class FeatureSetMatchOptions : MatchOptions

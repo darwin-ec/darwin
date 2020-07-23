@@ -169,7 +169,7 @@ namespace Darwin.Matching
                         + "\t" + dbBegin
                         + "\t" + dbTip
                         + "\t" + dbEnd
-                        + "\t" + Results[i].Damage);
+                        + "\t" + Results[i].DamageCategory);
                 }
             }
         }

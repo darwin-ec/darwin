@@ -2277,8 +2277,8 @@ namespace Darwin.Matching
             // Find length of database fin outline
             dbArcLength[0] = 0.0;
             dbArcLength[1] = 0.0; //***1.982a
-            segLen2.Add(0.0); // no segment entering first point
 
+            segLen2.Add(0.0); // no segment entering first point
             for (k = 1; k < c2.Length; k++)
             {
                 double dx = c2[k].X - c2[k - 1].X;
@@ -2293,7 +2293,7 @@ namespace Darwin.Matching
             double sum = 0.0;
             int i, j, ptsFound = 0;
 
-            //***1.982a - do the determination of correspoiding point pairs and error
+            //***1.982a - do the determination of corresponding point pairs and error
             // calculation in two parts (leading edge and trailing edge) so that the
             // two mid points (TIPS) are known to be the same
             for (int part = 0; part < 2; part++)
@@ -2314,14 +2314,14 @@ namespace Darwin.Matching
 
                 int start1, limit1, start2, limit2; //***1.982a
 
-                if (part == 0) // leading edge
+                if (part == 0) // Leading edge
                 {
                     start1 = begin1;
                     limit1 = mid1;
                     start2 = begin2;
                     limit2 = mid2;
                 }
-                else // part == 1 trailing edge
+                else // Part == 1 trailing edge
                 {
                     start1 = mid1;
                     limit1 = end1;
@@ -2339,13 +2339,13 @@ namespace Darwin.Matching
                 double segLenUsed = 0.0;
 
                 //while (i < end2)
-                while (i < limit2 && i < segLen2.Count) //***1.982a
+                while (i < limit2 && i < segLen2.Count && j < c1.Length && i < c2.Length) //***1.982a
                 {
                     // find dist to next point on database fin, and scaled distance to
                     // corresponding point on unknown
                     double howFar = ratio * segLen2[i] + segLenUsed;
 
-                    while (segLen1[j] < howFar)
+                    while (segLen1[j] < howFar && j < c1.Length - 1)
                     {
                         howFar -= segLen1[j];
                         j++;
@@ -2361,8 +2361,7 @@ namespace Darwin.Matching
                     double x = c1[j - 1].X + s * dx;
                     double y = c1[j - 1].Y + s * dy;
 
-                    // save midpoint (part of medial axis) for use later
-
+                    // Save midpoint (part of medial axis) for use later
                     midPt.AddPoint((float)(0.5 * (c2[i].X + x)), (float)(0.5 * (c2[i].Y + y)));
 
                     i++;
@@ -2387,7 +2386,7 @@ namespace Darwin.Matching
                 bool done = false;
                 int backI, backJ; //***1.75 - how much we are backing up
 
-                for (k = 1; (k + 1 < midPt.Length) && (!done); k++)
+                for (k = 1; k + 1 < midPt.Length && !done; k++)
                 {
                     double
                         unkX = 0, unkY = 0,
@@ -2405,35 +2404,49 @@ namespace Darwin.Matching
 
                     while (!foundUnk && !done)
                     {
-                        double
-                            dot1 = (c1[j - 1].X - midPt[k].X) * mdx
-                                 + (c1[j - 1].Y - midPt[k].Y) * mdy,
-                            dot2 = (c1[j].X - midPt[k].X) * mdx
-                                 + (c1[j].Y - midPt[k].Y) * mdy;
-                        if (((dot1 <= 0.0) && (0.0 <= dot2)) || ((dot2 <= 0.0) && (0.0 <= dot1)))
+                        if (j >= c1.Length)
                         {
-                            // This segment contains a point of intersection with the perpendicular from
-                            // the medial axis at point k
-                            // slope of unknown fin outline segment between points j-1 and j 
-                            double
-                                dx1 = c1[j].X - c1[j - 1].X,
-                                dy1 = c1[j].Y - c1[j - 1].Y;
+                            done = true;
+                            break;
+                        }
 
-                            double beta = 0.0;
+                        double dot1 = (c1[j - 1].X - midPt[k].X) * mdx
+                                 + (c1[j - 1].Y - midPt[k].Y) * mdy;
 
-                            if ((mdx * dx1 + mdy * dy1) != 0.0)
-                                beta = -(mdx * (c1[j - 1].X - midPt[k].X) + mdy * (c1[j - 1].Y - midPt[k].Y))
-                                       / (mdx * dx1 + mdy * dy1);
+                        double dot2 = (c1[j].X - midPt[k].X) * mdx
+                                 + (c1[j].Y - midPt[k].Y) * mdy;
 
-                            if ((0.0 <= beta) && (beta <= 1.0))
+                        if ((dot1 <= 0.0 && 0.0 <= dot2) || (dot2 <= 0.0 && 0.0 <= dot1))
+                        {
+                            if (j >= c1.Length)
                             {
-                                // found the point on this unknown segment
-                                unkX = beta * dx1 + c1[j - 1].X;
-                                unkY = beta * dy1 + c1[j - 1].Y;
-                                foundUnk = true;
+                                done = true;
                             }
                             else
-                                Trace.WriteLine("Error in medial axis code UNK");
+                            {
+                                // This segment contains a point of intersection with the perpendicular from
+                                // the medial axis at point k
+                                // slope of unknown fin outline segment between points j-1 and j 
+                                double
+                                    dx1 = c1[j].X - c1[j - 1].X,
+                                    dy1 = c1[j].Y - c1[j - 1].Y;
+
+                                double beta = 0.0;
+
+                                if ((mdx * dx1 + mdy * dy1) != 0.0)
+                                    beta = -(mdx * (c1[j - 1].X - midPt[k].X) + mdy * (c1[j - 1].Y - midPt[k].Y))
+                                           / (mdx * dx1 + mdy * dy1);
+
+                                if ((0.0 <= beta) && (beta <= 1.0))
+                                {
+                                    // found the point on this unknown segment
+                                    unkX = beta * dx1 + c1[j - 1].X;
+                                    unkY = beta * dy1 + c1[j - 1].Y;
+                                    foundUnk = true;
+                                }
+                                else
+                                    Trace.WriteLine("Error in medial axis code UNK");
+                            }
                         }
                         else if ((dot1 < 0.0) && (dot2 < 0.0))
                         {
@@ -2461,6 +2474,12 @@ namespace Darwin.Matching
 
                     while (!foundDB && !done)
                     {
+                        if (i >= c2.Length)
+                        {
+                            done = true;
+                            break;
+                        }
+
                         double
                             dot1 = (c2[i - 1].X - midPt[k].X) * mdx
                                  + (c2[i - 1].Y - midPt[k].Y) * mdy,
@@ -2469,40 +2488,48 @@ namespace Darwin.Matching
 
                         if ((dot1 <= 0.0 && 0.0 <= dot2) || (dot2 <= 0.0 && 0.0 <= dot1))
                         {
-                            // this segment contains a point of intersection with the perpendicular from
-                            // the medial axis at point k
-                            // slope of database fin outline segment between points i-1 and i 
-                            double
-                                dx2 = c2[i].X - c2[i - 1].X,
-                                dy2 = c2[i].Y - c2[i - 1].Y;
-
-                            double beta = 0.0;
-
-                            if ((mdx * dx2 + mdy * dy2) != 0.0)
-                                beta = -(mdx * (c2[i - 1].X - midPt[k].X) + mdy * (c2[i - 1].Y - midPt[k].Y))
-                                       / (mdx * dx2 + mdy * dy2);
-
-                            if ((0.0 <= beta) && (beta <= 1.0))
+                            if (i >= c2.Length)
                             {
-                                // found the point on this database segment
-                                dbX = beta * dx2 + c2[i - 1].X;
-                                dbY = beta * dy2 + c2[i - 1].Y;
-                                foundDB = true;
+                                done = true;
                             }
                             else
-                                Trace.WriteLine("Error in medial axis code DB");
+                            {
+                                // this segment contains a point of intersection with the perpendicular from
+                                // the medial axis at point k
+                                // slope of database fin outline segment between points i-1 and i 
+                                double
+                                    dx2 = c2[i].X - c2[i - 1].X,
+                                    dy2 = c2[i].Y - c2[i - 1].Y;
+
+                                double beta = 0.0;
+
+                                if ((mdx * dx2 + mdy * dy2) != 0.0)
+                                    beta = -(mdx * (c2[i - 1].X - midPt[k].X) + mdy * (c2[i - 1].Y - midPt[k].Y))
+                                           / (mdx * dx2 + mdy * dy2);
+
+                                if ((0.0 <= beta) && (beta <= 1.0))
+                                {
+                                    // found the point on this database segment
+                                    dbX = beta * dx2 + c2[i - 1].X;
+                                    dbY = beta * dy2 + c2[i - 1].Y;
+                                    foundDB = true;
+                                }
+                                else
+                                    Trace.WriteLine("Error in medial axis code DB");
+                            }
                         }
                         else if (dot1 < 0.0 && dot2 < 0.0)
                         {
                             // move forward along database
                             i++;
+
                             //if (i > end2)
                             if (i > limit2) //***1.982a
                                 done = true;
                         }
                         else if (dot1 > 0.0 && dot2 > 0.0)
                         {
-                            // back up on database
+                            // Back up on database
                             if (backI < 50) //***1.75 - new constraint
                             {
                                 i--;
@@ -2548,7 +2575,7 @@ namespace Darwin.Matching
 
             } //***1.982a - end of for (part) loop
 
-            // if no points found, the error stays the default
+            // If no points found, the error stays the default
             if (ptsFound > 0)
                 error = (sum / (double)ptsFound);
 
@@ -2865,16 +2892,29 @@ namespace Darwin.Matching
             if (controlPoints.Count < 3)
                 throw new ArgumentOutOfRangeException(nameof(controlPoints));
 
+            //FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
+            //FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
+
+            // Use references instead of copies
+            FloatContour floatDBContour = dbFin.FinOutline.ChainPoints;
+            FloatContour preMapUnknown = unknownFin.FinOutline.ChainPoints;
+
+            bool trimBeginLeadingEdge = true;
+            // 1% of the length of the db contour by default
+            int jumpDistance = (int)Math.Round(0.01f * floatDBContour.Length);
+
+            var outlineMatchOptions = options as OutlineMatchOptions;
+            if (outlineMatchOptions != null)
+            {
+                trimBeginLeadingEdge = outlineMatchOptions.TrimBeginLeadingEdge;
+                jumpDistance = (int)Math.Round(outlineMatchOptions.JumpDistancePercentage * floatDBContour.Length);
+            }
+
             int dbControlPoint1 = dbFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             int dbControlPoint2 = dbFin.FinOutline.GetFeaturePoint(controlPoints[1]);
             int dbControlPoint3 = dbFin.FinOutline.GetFeaturePoint(controlPoints[2]);
 
             PointF dbControlPoint3Coord = dbFin.FinOutline.GetFeaturePointCoords(controlPoints[2]);
-
-            FloatContour floatDBContour = new FloatContour(dbFin.FinOutline.ChainPoints); //***006CM, 008OL
-            FloatContour preMapUnknown = new FloatContour(unknownFin.FinOutline.ChainPoints);
-
-            double newError;
 
             var unknownControlPoint1 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[0]);
             var unknownControlPoint2 = unknownFin.FinOutline.GetFeaturePoint(controlPoints[1]);
@@ -2896,14 +2936,8 @@ namespace Darwin.Matching
             results.Contour2ControlPoint2 = dbControlPoint2;
             results.Contour2ControlPoint3 = dbControlPoint3;
 
-            Trace.WriteLine("matching unk " + unknownFin.IDCode + " to DB " + dbFin.IDCode);
+            Trace.WriteLine("Matching unknown: " + unknownFin.IDCode + " to database id: " + dbFin.IDCode);
 
-            // TODO: Put in options?
-            bool trimBeginLeadingEdge = true;
-
-            // TODO: Put in options?
-            // 1% of the length of the db contour
-            int jumpDistance = (int)Math.Round(0.01f * floatDBContour.Length);
             List<int> jumpOptions = new List<int>() { -1 * jumpDistance, 0, jumpDistance };
             
             // The jump combinations here are combined with repetition, then used to move the control points
@@ -2914,6 +2948,8 @@ namespace Darwin.Matching
             //var blankJumpCombination = new List<int>();
             //jumpCombinations.Add(blankJumpCombination);
 
+            // An object to lock on for our critical section, since
+            // we're going to run the matching loop in parallel.
             object locker = new object();
 
             Parallel.ForEach(jumpCombinations, jumpCombo =>
@@ -2938,31 +2974,29 @@ namespace Darwin.Matching
                 var shiftedUnknownControlPoint2Coords = preMapUnknown[controlPoint2PosUnk];
                 var shiftedUnknownControlPoint3Coords = preMapUnknown[controlPoint3PosUnk];
 
-                FloatContour mappedContour = preMapUnknown.MapContour(
+                //FloatContour mappedContour = preMapUnknown.MapContour(
+                //    shiftedUnknownControlPoint2Coords,
+                //    shiftedUnknownControlPoint1Coords,
+                //    shiftedUnknownControlPoint3Coords,
+                //    shiftedDBControlPoint2Coords,
+                //    shiftedDBControlPoint1Coords,
+                //    dbControlPoint3Coord,
+                //    true);
+
+                var transform = preMapUnknown.GetMappingTransform(
                     shiftedUnknownControlPoint2Coords,
                     shiftedUnknownControlPoint1Coords,
                     shiftedUnknownControlPoint3Coords,
                     shiftedDBControlPoint2Coords,
                     shiftedDBControlPoint1Coords,
-                    dbControlPoint3Coord,
-                    true);
+                    dbControlPoint3Coord);
 
-                if ((mappedContour[controlPoint3PosUnk].X - floatDBContour[dbControlPoint3].X) > 30)
-                {
-                    string s = "hi";
-                }
+                double newError;
 
-                //// Just a 2D mapping with the first two control points. We're doing this
-                //// to try without the end of the trailing edge/end of the jaw, since that point
-                //// can move at times.
-                //mappedContour = preMapUnknown.MapContour2D(
-                //        shiftedUnknownControlPoint1Coords,
-                //        shiftedUnknownControlPoint2Coords,
-                //        shiftedDBControlPoint1Coords,
-                //        shiftedDBControlPoint2Coords);
-
+                FloatContour mappedContour = null;
                 if (!trimBeginLeadingEdge)
                 {
+                    mappedContour = preMapUnknown.TransformContour(transform, true);
                     newError = errorBetweenOutlines(
                         mappedContour,
                         unknownControlPoint1,
@@ -2977,57 +3011,93 @@ namespace Darwin.Matching
                 {
                     var dbBeginningDistance = MathHelper.GetDistance(floatDBContour[0].X, floatDBContour[0].Y,
                         floatDBContour[dbControlPoint1].X, floatDBContour[dbControlPoint1].Y);
-                    var unknownBeginningDistance = MathHelper.GetDistance(mappedContour[0].X, mappedContour[0].Y,
-                        mappedContour[unknownControlPoint1].X, mappedContour[unknownControlPoint1].Y);
 
-                    FloatContour trimmedUnknownContour;
-                    FloatContour trimmedDBContour;
+                    double mappedXStart = transform[0, 0] * preMapUnknown[0].X
+                        + transform[0, 1] * preMapUnknown[0].Y
+                        + transform[0, 2];
+
+                    double mappedYStart = transform[1, 0] * preMapUnknown[0].X
+                        + transform[1, 1] * preMapUnknown[0].Y
+                        + transform[1, 2];
+
+                    double mappedXEnd = transform[0, 0] * preMapUnknown[unknownControlPoint1].X
+                        + transform[0, 1] * preMapUnknown[unknownControlPoint1].Y
+                        + transform[0, 2];
+
+                    double mappedYEnd = transform[1, 0] * preMapUnknown[unknownControlPoint1].X
+                        + transform[1, 1] * preMapUnknown[unknownControlPoint1].Y
+                        + transform[1, 2];
+
+                    var unknownBeginningDistance = MathHelper.GetDistance(mappedXStart, mappedYStart,
+                        mappedXEnd, mappedYEnd);
+
+                    //FloatContour trimmedUnknownContour;
+                    //FloatContour trimmedDBContour;
                     int dbAdjustPosition = 0;
                     int unknownAdjustPosition = 0;
 
+                    mappedContour = preMapUnknown.TransformContour(transform, true);
                     if (dbBeginningDistance < unknownBeginningDistance)
                     {
-                        trimmedDBContour = new FloatContour(floatDBContour);
-                        int numPointsTrimmed;
-                        trimmedUnknownContour = mappedContour.TrimBeginningToDistanceFromPoint(dbBeginningDistance,
-                            mappedContour[unknownControlPoint1], out numPointsTrimmed, true);
+                        //trimmedDBContour = floatDBContour;
+                        int numPointsTrimmed = mappedContour.GetNumPointsDistanceFromPoint(dbBeginningDistance, new PointF(mappedXEnd, mappedYEnd));
+
+                        //int numPointsTrimmed2;
+                        //var trimmedUnknownContour = preMapUnknown.TransformTrimBeginningToDistanceFromPoint(transform, dbBeginningDistance,
+                        //    new PointF(mappedXEnd, mappedYEnd), out numPointsTrimmed2, true);
 
                         unknownAdjustPosition = numPointsTrimmed;
                     }
                     else
                     {
-                        trimmedUnknownContour = new FloatContour(mappedContour);
-                        int numPointsTrimmed;
-
-                        trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
-                            floatDBContour[dbControlPoint1], out numPointsTrimmed, true);
+                        //trimmedUnknownContour = mappedContour = preMapUnknown.TransformContour(transform, true);
+                        int numPointsTrimmed = floatDBContour.GetNumPointsDistanceFromPoint(unknownBeginningDistance, floatDBContour[dbControlPoint1]);
+                        //int numPointsTrimmed2;
+                        //var trimmedDBContour = floatDBContour.TrimBeginningToDistanceFromPoint(unknownBeginningDistance,
+                        //                                                                   floatDBContour[dbControlPoint1],
+                        //                                                                   out numPointsTrimmed2, true);
 
                         dbAdjustPosition = numPointsTrimmed;
                     }
 
+                    newError = errorBetweenOutlines(
+                        mappedContour,
+                        unknownAdjustPosition,
+                        //unknownControlPoint1 - unknownAdjustPosition,
+                        unknownControlPoint2,
+                        unknownControlPoint3,
+                        floatDBContour,
+                        dbAdjustPosition,
+                        //dbControlPoint1 - dbAdjustPosition,
+                        dbControlPoint2,
+                        dbControlPoint3);
+
                     // Note that we're matching from the beginning of the outline, not from
                     // the 1st control point.
-                    newError = errorBetweenOutlines(
-                                trimmedUnknownContour,
-                                0,
-                                //unknownControlPoint1 - unknownAdjustPosition,
-                                unknownControlPoint2 - unknownAdjustPosition,
-                                unknownControlPoint3 - unknownAdjustPosition,
-                                trimmedDBContour,
-                                0,
-                                //dbControlPoint1 - dbAdjustPosition,
-                                dbControlPoint2 - dbAdjustPosition,
-                                dbControlPoint3 - dbAdjustPosition);
+                    //newError = errorBetweenOutlines(
+                    //    trimmedUnknownContour,
+                    //    0,
+                    //    //unknownControlPoint1 - unknownAdjustPosition,
+                    //    unknownControlPoint2 - unknownAdjustPosition,
+                    //    unknownControlPoint3 - unknownAdjustPosition,
+                    //    trimmedDBContour,
+                    //    0,
+                    //    //dbControlPoint1 - dbAdjustPosition,
+                    //    dbControlPoint2 - dbAdjustPosition,
+                    //    dbControlPoint3 - dbAdjustPosition);
                 }
 
                 lock (locker)
                 {
                     if (newError < results.Error)
                     {
-                        //***1.0LK - delete existing mapped contour and replace with new
-                        // mapped contour and error
+                        if (mappedContour == null)
+                            mappedContour = preMapUnknown.TransformContour(transform, true);
+
+                        // Mapped contour and error
                         results.Contour1 = mappedContour;
                         results.Error = newError;
+
                         // Set shifted feature point locations
                         results.Contour1ControlPoint1 = controlPoint1PosUnk;
                         results.Contour1ControlPoint2 = controlPoint2PosUnk;

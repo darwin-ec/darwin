@@ -15,42 +15,42 @@ namespace Darwin
         public static readonly PointF Empty = new PointF { IsEmpty = true };
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private float x;
-        private float y;
-        private float z;
+        private float _x;
+        private float _y;
+        private float _z;
         private PointType type;
 
         public bool IsEmpty { get; set; }
 
         public float X
         {
-            get => x;
+            get => _x;
             set
             {
                 IsEmpty = false;
-                x = value;
+                _x = value;
                 RaisePropertyChanged("X");
             }
         }
 
         public float Y
         {
-            get => y;
+            get => _y;
             set
             {
                 IsEmpty = false;
-                y = value;
+                _y = value;
                 RaisePropertyChanged("Y");
             }
         }
 
         public float Z
         {
-            get => z;
+            get => _z;
             set
             {
                 IsEmpty = false;
-                z = value;
+                _z = value;
                 RaisePropertyChanged("Z");
             }
         }
@@ -76,21 +76,24 @@ namespace Darwin
 
         public PointF(float x, float y)
         {
-            X = x;
-            Y = y;
+            _x = x;
+            _y = y;
+            IsEmpty = false;
         }
 
         public PointF(double x, double y)
         {
-            X = (float)x;
-            Y = (float)y;
+            _x = (float)x;
+            _y = (float)y;
+            IsEmpty = false;
         }
 
         public PointF(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            _x = x;
+            _y = y;
+            _z = z;
+            IsEmpty = false;
         }
 
         public double Dot2D(PointF point2)

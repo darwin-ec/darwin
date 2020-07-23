@@ -24,6 +24,8 @@ namespace Darwin.Matching
 {
     public class Match
     {
+        private object locker = new object();
+
         public DatabaseFin UnknownFin { get; set; }
         DarwinDatabase Database { get; set; }
         protected int CurrentFinIndex { get; set; }
@@ -293,20 +295,29 @@ namespace Darwin.Matching
 
             var stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
-            // If we have any factors missing updateOutlines, but we know what
-            // the delegate should be, fill them in
-            if (_updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+            int matchIndex = 0;
+
+            lock (locker)
             {
-                foreach (var matchFactor in MatchFactors.Where(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+                // If we have any factors missing updateOutlines, but we know what
+                // the delegate should be, fill them in
+                if (CurrentFinIndex == 0 && _updateOutlines != null && MatchFactors.Any(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
                 {
-                    matchFactor.UpdateOutlines = _updateOutlines;
+                    foreach (var matchFactor in MatchFactors.Where(mf => mf.MatchFactorType == MatchFactorType.Outline && mf.UpdateOutlines == null))
+                    {
+                        matchFactor.UpdateOutlines = _updateOutlines;
+                    }
                 }
+
+                // TODO?
+                //if (CurrentFinIndex >= Database.AllFins.Count)
+                //    return 100.0f;
+
+                matchIndex = CurrentFinIndex;
+                CurrentFinIndex += 1;
             }
 
-            if (CurrentFinIndex >= Database.AllFins.Count)
-                return 100.0f;
-
-            DatabaseFin thisDBFin = Database.AllFins[CurrentFinIndex];
+            DatabaseFin thisDBFin = Database.AllFins[matchIndex];
 
             bool tryMatch = categoriesToMatch.Exists(c => c.Name.ToLower() == thisDBFin.DamageCategory.ToLower());
 
@@ -373,8 +384,13 @@ namespace Darwin.Matching
                             Error = factorResult.Error,
                             Weight = factor.Weight
                         };
+
                         rawError.Add(matchFactorError);
-                        RawErrorTracking.Add(matchFactorError);
+
+                        lock (locker)
+                        {
+                            RawErrorTracking.Add(matchFactorError);
+                        }
 
                         factorIndex += 1;
                     }
@@ -392,7 +408,7 @@ namespace Darwin.Matching
                     // TODO - This image filename stuff is a little ugly.
                     (string.IsNullOrEmpty(thisDBFin.OriginalImageFilename)) ? thisDBFin.ImageFilename : thisDBFin.OriginalImageFilename,
                     thisDBFin.ThumbnailFilenameUri,
-                    CurrentFinIndex,
+                    matchIndex,
                     rawError,
                     errorBetweenFins,
                     thisDBFin.IDCode,
@@ -417,59 +433,65 @@ namespace Darwin.Matching
                 r.SetMappingControlPoints(
                     matchErrorResult.Contour1ControlPoint1, matchErrorResult.Contour1ControlPoint2, matchErrorResult.Contour1ControlPoint3,  // beginning, tip & end of unknown fin
                     matchErrorResult.Contour2ControlPoint1, matchErrorResult.Contour2ControlPoint2, matchErrorResult.Contour2ControlPoint3); // beginning, tip & end of database fin
-              
-                MatchResults.AddResult(r);
-
+                
                 stopWatch.Stop();
-                MatchResults.TimeTaken += stopWatch.ElapsedMilliseconds;
+
+                lock (locker)
+                {
+                    MatchResults.AddResult(r);
+                    MatchResults.TimeTaken += stopWatch.ElapsedMilliseconds;
+                }
             }
 
-            CurrentFinIndex += 1;
-
-            if (CurrentFinIndex >= Database.AllFins.Count)
+            lock (locker)
             {
-                if (RawErrorTracking != null && RawErrorTracking.Count > 0)
+                int numberDone = MatchResults.Count;
+
+                if (numberDone >= Database.AllFins.Count)
                 {
-                    // Now that we're through matching, let's rescale the errors
-                    Dictionary<int, float> scaleFactors = new Dictionary<int, float>();
-                    
-                    foreach (var idx in RawErrorTracking.Select(r => r.FactorIndex).Distinct())
+                    if (RawErrorTracking != null && RawErrorTracking.Count > 0)
                     {
-                        double minError = RawErrorTracking.Where(r => r.FactorIndex == idx).Min(r => r.Error);
-                        double maxError = RawErrorTracking.Where(r => r.FactorIndex == idx).Max(r => r.Error);
+                        // Now that we're through matching, let's rescale the errors
+                        Dictionary<int, float> scaleFactors = new Dictionary<int, float>();
 
-                        // Force minError to 0 if it's not <= already
-                        if (minError > 0)
-                            minError = 0;
-
-                        scaleFactors[idx] = (float)(1 / (maxError - minError));
-                    }
-
-                    foreach (var result in MatchResults.Results)
-                    {
-                        if (result.RawError != null && result.RawError.Count > 0)
+                        foreach (var idx in RawErrorTracking.Select(r => r.FactorIndex).Distinct())
                         {
-                            double scaledError = 0.0;
+                            double minError = RawErrorTracking.Where(r => r.FactorIndex == idx).Min(r => r.Error);
+                            double maxError = RawErrorTracking.Where(r => r.FactorIndex == idx).Max(r => r.Error);
 
-                            foreach (var raw in result.RawError)
+                            // Force minError to 0 if it's not <= already
+                            if (minError > 0)
+                                minError = 0;
+
+                            scaleFactors[idx] = (float)(1 / (maxError - minError));
+                        }
+
+                        foreach (var result in MatchResults.Results)
+                        {
+                            if (result.RawError != null && result.RawError.Count > 0)
                             {
-                                scaledError += scaleFactors[raw.FactorIndex] * raw.Error * raw.Weight;
+                                double scaledError = 0.0;
+
+                                foreach (var raw in result.RawError)
+                                {
+                                    scaledError += scaleFactors[raw.FactorIndex] * raw.Error * raw.Weight;
+                                }
+
+                                result.Error = scaledError;
+                                result.Confidence = 1.0f - scaledError;
+
+                                // For rounding issues so we prevent seeing "-0" in the UI
+                                if (result.Confidence < 0)
+                                    result.Confidence = 0;
                             }
-
-                            result.Error = scaledError;
-                            result.Confidence = 1.0f - scaledError;
-
-                            // For rounding issues so we prevent seeing "-0" in the UI
-                            if (result.Confidence < 0)
-                                result.Confidence = 0;
                         }
                     }
+
+                    return 1.0f;
                 }
 
-                return 1.0f;
+                return (float)numberDone / Database.AllFins.Count;
             }
-
-            return (float)CurrentFinIndex / Database.AllFins.Count;
         }
 
         private void CheckUnknownForRequiredFeatures()
