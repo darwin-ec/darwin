@@ -8,9 +8,9 @@ namespace Darwin.Matching
 {
     public static class MatchFactorPresets
     {
-        private static List<List<FeaturePointType>> GetVerticalFeaturePointCombinations()
+        private static List<IEnumerable<FeaturePointType>> GetVerticalFeaturePointCombinations()
         {
-            var result = new List<List<FeaturePointType>>()
+            var result = new List<IEnumerable<FeaturePointType>>()
             {
                 new List<FeaturePointType>() { FeaturePointType.Tip, FeaturePointType.Notch },
                 new List<FeaturePointType>() { FeaturePointType.Nasion, FeaturePointType.PointOfInflection },
@@ -85,10 +85,19 @@ namespace Darwin.Matching
                 0.35f,
                 benchmarkFeatures,
                 landmarkFeatures,
+                
+                // Pass in a specific set of ratios.  If not passed, it'll automatically
+                // compute the ratio permutations of all the landmarks we pass in.
+                //GetVerticalFeaturePointCombinations(),
+
                 5, // Number of desired ratios
                 database.AllFins,
                 //FeaturePointErrorFunctions.ComputeEigenValueWeightedCosineDistance,
                 FeaturePointErrorFunctions.ComputeMahalanobisDistance,
+
+                // The option below will compare after using the lowest error mapping
+                // from the outline error function above, assuming there's an outline error
+                // function before this.
                 new FeatureSetMatchOptions
                 {
                     UseRemappedOutline = false

@@ -342,7 +342,7 @@ namespace Darwin.Matching
                 else if (numTop10 == 1)
 			        sb.AppendLine("\t1 " + Database.CatalogScheme.IndividualTerminology + " (" + ((float)1 / numFinsWithID * 100.0).ToString("N2") + "%) ranked in the top ten.");
                  else
-			        sb.AppendLine("\t" + numTop10 + " fins (" + ((float)numTop10 / numFinsWithID * 100.0).ToString("N2") + "%) ranked in the top ten.");
+			        sb.AppendLine("\t" + numTop10 + " " + Database.CatalogScheme.IndividualTerminology + "s (" + ((float)numTop10 / numFinsWithID * 100.0).ToString("N2") + "%) ranked in the top ten.");
 
                 sb.AppendLine();
 
