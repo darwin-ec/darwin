@@ -527,6 +527,19 @@ namespace Darwin.Wpf
             catalogSchemesWindow.ShowDialog();
         }
 
+        private void DeveloperToolsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void DeveloperToolsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var vm = new DeveloperToolsViewModel();
+            var window = new DeveloperToolsWindow(vm);
+            window.Owner = this;
+            window.ShowDialog();
+        }
+
         private void AboutCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;

@@ -47,6 +47,8 @@
         <CommandBinding Command="commands:CustomCommands.CurrentCatalogScheme" CanExecute="CurrentCatalogSchemeCommand_CanExecute" Executed="CurrentCatalogSchemeCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.CatalogSchemes" CanExecute="CatalogSchemesCommand_CanExecute" Executed="CatalogSchemesCommand_Executed" />
 
+        <CommandBinding Command="commands:CustomCommands.DeveloperTools" CanExecute="DeveloperToolsCommand_CanExecute" Executed="DeveloperToolsCommand_Executed" />
+        
         <CommandBinding Command="commands:CustomCommands.Documentation" CanExecute="DocumentationCommand_CanExecute" Executed="DocumentationCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
@@ -112,6 +114,8 @@
                         <MenuItem Command="commands:CustomCommands.Options" />
                         <MenuItem Command="commands:CustomCommands.CurrentCatalogScheme" />
                         <MenuItem Command="commands:CustomCommands.CatalogSchemes" />
+                        <Separator/>
+                        <MenuItem Command="commands:CustomCommands.DeveloperTools" />
                     </MenuItem>
                     <MenuItem Header="Help">
                         <MenuItem Command="commands:CustomCommands.Documentation" />

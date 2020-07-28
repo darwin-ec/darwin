@@ -136,7 +136,7 @@ namespace Darwin.Wpf.Commands
             typeof(CustomCommands),
             new InputGestureCollection()
             {
-                        new KeyGesture(Key.D1, ModifierKeys.Control)
+                new KeyGesture(Key.D1, ModifierKeys.Control)
             }
         );
 
@@ -160,6 +160,16 @@ namespace Darwin.Wpf.Commands
             }
         );
 
+        public static readonly RoutedUICommand DeveloperTools = new RoutedUICommand(
+            "Developer Tools...",
+            "Developer Tools",
+            typeof(CustomCommands),
+            new InputGestureCollection()
+            {
+                new KeyGesture(Key.F12)
+            }
+        );
+
         public static readonly RoutedUICommand About = new RoutedUICommand(
             "About Darwin",
             "About Darwin",
@@ -178,7 +188,7 @@ namespace Darwin.Wpf.Commands
             typeof(CustomCommands),
             new InputGestureCollection()
             {
-                        new KeyGesture(Key.S, ModifierKeys.Control)
+                new KeyGesture(Key.S, ModifierKeys.Control)
             }
         );
 
@@ -198,7 +208,7 @@ namespace Darwin.Wpf.Commands
             typeof(CustomCommands),
             new InputGestureCollection()
             {
-                        new KeyGesture(Key.Z, ModifierKeys.Control)
+                new KeyGesture(Key.Y, ModifierKeys.Control)
             }
         );
     }
