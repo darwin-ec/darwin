@@ -53,26 +53,63 @@ namespace Darwin.ML
                 int maxY = (int)Math.Ceiling(fin.FinOutline.ChainPoints.MaxY() / fin.Scale);
 
                 // Figure out the ratio
-                var resizeRatioX = ImageWidth / (maxX - minX);
-                var resizeRatioY = ImageHeight / (maxY - minY);
+                var resizeRatioX = (float)ImageWidth / (maxX - minX);
+                var resizeRatioY = (float)ImageHeight / (maxY - minY);
 
-                if (resizeRatioX < resizeRatioY)
+                if (resizeRatioX > resizeRatioY)
                 {
                     // We're X constrained, so expand the X
+                    var extra = ((maxY - minY) - (maxX - minX)) * ((float)ImageWidth / ImageHeight);
+                    minX -= (int)Math.Round(extra / 2);
+                    maxX += (int)Math.Round(extra / 2);
 
-                    var extra = 
+                    if (minX < 0)
+                    {
+                        maxX += (0 - minX);
+                        minX = 0;
+                    }
+                    
+                    if (maxX > fin.FinImage.Width)
+                    {
+                        minX -= maxX - fin.FinImage.Width;
+                        maxX = fin.FinImage.Width;
+                    }
+
+                    if (minX < 0)
+                        minX = 0;
+                    if (maxX > fin.FinImage.Width)
+                        maxX = fin.FinImage.Width;
                 }
                 else
                 {
                     // We're Y constrained, so expand the Y
+                    var extra = ((maxX - minX) - (maxY - minY)) * ((float)ImageHeight / ImageWidth);
+                    minY -= (int)Math.Round(extra / 2);
+                    maxY += (int)Math.Round(extra / 2);
 
-                    
+                    if (minY < 0)
+                    {
+                        maxY += (0 - minY);
+                        minY = 0;
+                    }
+
+                    if (maxY > fin.FinImage.Height)
+                    {
+                        minY -= maxY - fin.FinImage.Height;
+                        maxY = fin.FinImage.Height;
+                    }
+
+                    if (minY < 0)
+                        minY = 0;
+                    if (maxY > fin.FinImage.Height)
+                        maxY = fin.FinImage.Height;
                 }
 
                 var workingImage = BitmapHelper.CropBitmap(fin.FinImage,
                     minX, minY,
                     maxX, maxY);
 
+                // We've hopefully already corrected for the aspect ratio above
                 workingImage = BitmapHelper.ResizeBitmap(workingImage, ImageWidth, ImageHeight);
 
                 float xRatio = (float)ImageWidth / (maxX - minX);
