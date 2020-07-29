@@ -15,16 +15,17 @@ using Darwin.Wpf.Model;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.IO;
+using Darwin.Features;
 
 namespace Darwin.Wpf.ViewModel
 {
-    public class TraceWindowViewModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
+	public class TraceWindowViewModel : INotifyPropertyChanged
+	{
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		private string _windowTitle;
 		public string WindowTitle
-        {
+		{
 			get
 			{
 				if (!string.IsNullOrEmpty(_windowTitle))
@@ -33,11 +34,11 @@ namespace Darwin.Wpf.ViewModel
 				return "Trace";
 			}
 			set
-            {
+			{
 				_windowTitle = value;
 				RaisePropertyChanged("WindowTitle");
-            }
-        }
+			}
+		}
 
 		private Bitmap _bitmap;
 		public Bitmap Bitmap
@@ -60,9 +61,9 @@ namespace Darwin.Wpf.ViewModel
 					ImageSource = _bitmap.ToImageSource();
 				}
 				else if (ImageSource != null)
-                {
+				{
 					ImageSource = null;
-                }
+				}
 			}
 		}
 
@@ -78,9 +79,9 @@ namespace Darwin.Wpf.ViewModel
 		}
 
 		public void UpdateImage()
-        {
+		{
 			ImageSource = _bitmap.ToImageSource();
-        }
+		}
 
 		private Bitmap _baseBitmap;
 		/// <summary>
@@ -127,17 +128,6 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
-		private bool _identifyFeaturesEnabled;
-		public bool IdentifyFeaturesEnabled
-        {
-			get => _identifyFeaturesEnabled;
-			set
-            {
-				_identifyFeaturesEnabled = value;
-				RaisePropertyChanged("IdentifyFeaturesEnabled");
-            }
-        }
-
 		private Contour _backupContour;
 		public Contour BackupContour
 		{
@@ -160,9 +150,27 @@ namespace Darwin.Wpf.ViewModel
 			}
 		}
 
+		private ObservableNotifiableCollection<CoordinateFeaturePoint> _coordinateFeaturePoints;
+		public ObservableNotifiableCollection<CoordinateFeaturePoint> CoordinateFeaturePoints
+        {
+			get
+			{
+				if (_coordinateFeaturePoints == null)
+					_coordinateFeaturePoints = new ObservableNotifiableCollection<CoordinateFeaturePoint>();
+
+				return _coordinateFeaturePoints;
+			}
+			set
+            {
+				_coordinateFeaturePoints = value;
+				RaisePropertyChanged("CoordinateFeaturePoints");
+            }
+        }
+
+
 		private DatabaseFin _databaseFin;
 		public DatabaseFin DatabaseFin
-        {
+		{
 			get => _databaseFin;
 			set
 			{
@@ -212,6 +220,17 @@ namespace Darwin.Wpf.ViewModel
 			{
 				_traceLocked = value;
 				RaisePropertyChanged("TraceLocked");
+			}
+		}
+
+		private bool _identifyFeaturesEnabled;
+		public bool IdentifyFeaturesEnabled
+		{
+			get => _identifyFeaturesEnabled;
+			set
+			{
+				_identifyFeaturesEnabled = value;
+				RaisePropertyChanged("IdentifyFeaturesEnabled");
 			}
 		}
 
@@ -628,6 +647,22 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
+		public void LoadCoordinateFeaturePoints()
+        {
+			// We're directly bound to _vm.CoordinateFeaturePoints, so we want to add to it rather than
+			// replace it entirely, if possible.
+			if (CoordinateFeaturePoints == null)
+				CoordinateFeaturePoints = new ObservableNotifiableCollection<CoordinateFeaturePoint>();
+
+			CoordinateFeaturePoints.Clear();
+
+			if (Outline?.FeatureSet?.CoordinateFeaturePointList != null)
+			{
+				foreach (var coordFeature in Outline.FeatureSet.CoordinateFeaturePointList)
+					CoordinateFeaturePoints.Add(coordFeature);
+			}
+		}
+
 		public void UpdateDatabaseFin()
         {
 			DatabaseFin.Scale = NormScale;
@@ -676,6 +711,8 @@ namespace Darwin.Wpf.ViewModel
 				Contour = new Contour(fin.FinOutline, fin.Scale);
 
 			Outline = fin.FinOutline;
+
+			LoadCoordinateFeaturePoints();
 
 			if (Categories == null)
 				Categories = new ObservableCollection<Category>();

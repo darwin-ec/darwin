@@ -273,11 +273,20 @@
                                         <RotateTransform x:Name="imgRotateTransform"></RotateTransform>
                                     </Image.LayoutTransform>
                                 </Image>
+                                
+                                <!-- This is for the contour/outline feature points -->
                                 <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             Background="Transparent"
                                             PointSize="3"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding Contour.Points}"
+                                            Brushes="{StaticResource brushes}" />
+                                
+                                <!-- This control is for independent x/y feature points like the eye -->
+                                <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
+                                            PointSize="3" FeaturePointSize="3"
+                                            ContourScale="{Binding Contour.Scale}"
+                                            ItemsSource="{Binding CoordinateFeaturePoints}"
                                             Brushes="{StaticResource brushes}" />
                             </Canvas>
                         </Viewbox>

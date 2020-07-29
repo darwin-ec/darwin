@@ -25,8 +25,8 @@ namespace Darwin.ML
                 throw new ArgumentOutOfRangeException(nameof(datasetDirectory));
 
             const string ImagesDirectoryName = "images";
-            const int ImageWidth = 96;
-            const int ImageHeight = 96;
+            const int ImageWidth = 400;
+            const int ImageHeight = 400;
             const string CsvFilename = "darwin_coordinates.csv";
 
             string fullImagesDirectory = Path.Combine(datasetDirectory, ImagesDirectoryName);
@@ -47,12 +47,36 @@ namespace Darwin.ML
                     // If we don't have the features we need, skip to the next one
                     continue;
                 }
-                var workingImage = BitmapHelper.CropBitmap(fin.FinImage,
-                    (int)Math.Floor(fin.FinOutline.ChainPoints.MinX()), (int)Math.Floor(fin.FinOutline.ChainPoints.MinY()),
-                    (int)Math.Ceiling(fin.FinOutline.ChainPoints.MaxX()), (int)Math.Ceiling(fin.FinOutline.ChainPoints.MaxY()));
+                int minX = (int)Math.Floor(fin.FinOutline.ChainPoints.MinX() / fin.Scale);
+                int minY = (int)Math.Floor(fin.FinOutline.ChainPoints.MinY() / fin.Scale);
+                int maxX = (int)Math.Ceiling(fin.FinOutline.ChainPoints.MaxX() / fin.Scale);
+                int maxY = (int)Math.Ceiling(fin.FinOutline.ChainPoints.MaxY() / fin.Scale);
 
-                // Note that we do not want to maintain aspect ratio
+                // Figure out the ratio
+                var resizeRatioX = ImageWidth / (maxX - minX);
+                var resizeRatioY = ImageHeight / (maxY - minY);
+
+                if (resizeRatioX < resizeRatioY)
+                {
+                    // We're X constrained, so expand the X
+
+                    var extra = 
+                }
+                else
+                {
+                    // We're Y constrained, so expand the Y
+
+                    
+                }
+
+                var workingImage = BitmapHelper.CropBitmap(fin.FinImage,
+                    minX, minY,
+                    maxX, maxY);
+
                 workingImage = BitmapHelper.ResizeBitmap(workingImage, ImageWidth, ImageHeight);
+
+                float xRatio = (float)ImageWidth / (maxX - minX);
+                float yRatio = (float)ImageHeight / (maxY - minY);
 
                 string imageFilename = individualNum.ToString().PadLeft(6, '0') + ".jpg";
 
@@ -61,8 +85,10 @@ namespace Darwin.ML
                 csvRecords.Add(new MLCsvRecord
                 {
                     image = imageFilename,
-                    eye_x = (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.Eye].Coordinate.X - Math.Floor(fin.FinOutline.ChainPoints.MinX())),
-                    eye_y = (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.Eye].Coordinate.Y - Math.Floor(fin.FinOutline.ChainPoints.MinY()))
+                    eye_x = xRatio * (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.Eye].Coordinate.X / fin.Scale - minX),
+                    eye_y = yRatio * (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.Eye].Coordinate.Y / fin.Scale - minY),
+                    nasalfold_x = xRatio * (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.NasalLateralCommissure].Coordinate.X / fin.Scale - minX),
+                    nasalfold_y = yRatio * (float)(fin.FinOutline.FeatureSet.CoordinateFeaturePoints[Features.FeaturePointType.NasalLateralCommissure].Coordinate.Y / fin.Scale - minY)
                 });
 
                 individualNum += 1;

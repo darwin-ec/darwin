@@ -73,7 +73,16 @@ namespace Darwin.Features
             IsEmpty = true;
         }
 
-        protected virtual void RaisePropertyChanged(string propertyName)
+        public FeaturePoint(FeaturePoint featurePoint)
+        {
+            _name = featurePoint._name;
+            _type = featurePoint._type;
+            _userSetPosition = featurePoint._userSetPosition;
+            _isEmpty = featurePoint._isEmpty;
+            _ignore = featurePoint._ignore;
+        }
+
+        protected void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

@@ -60,6 +60,13 @@
                                              FeaturePointSize="{Binding FeaturePointSize}"
                                              ItemsSource="{Binding DisplayContour.Points}"     
                                              Brushes="{StaticResource brushes}" />
+                        <!-- This control is for independent x/y feature points like the eye -->
+                        <fe:CoordinatePointVisuals Width="{Binding XMax}" Height="{Binding YMax}"
+                                            PointSize="3" FeaturePointSize="10"
+                                            TextSize="40"
+                                            ContourScale="{Binding Contour.Scale}"
+                                            ItemsSource="{Binding CoordinateFeaturePoints}"
+                                            Brushes="{StaticResource brushes}" />
                     </Grid>
                 </Viewbox>
             </Grid>

@@ -11,6 +11,14 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button x:Name="ExportDatasetButton" Click="ExportDatasetButton_Click">Export Training Dataset</Button>
+            </StackPanel>
+        </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,10,10,10">
             <Button x:Name="CloseButton" IsDefault="True" IsCancel="True" Click="CloseButton_Click">Close</Button>
         </StackPanel>

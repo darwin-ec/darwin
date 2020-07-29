@@ -15,5 +15,11 @@ namespace Darwin.ML
 
         [Index(2)]
         public float eye_y { get; set; }
+
+        [Index(3)]
+        public float nasalfold_x { get; set; }
+
+        [Index(4)]
+        public float nasalfold_y { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Darwin.Database;
+﻿using Darwin.Collections;
+using Darwin.Database;
+using Darwin.Features;
 using Darwin.Matching;
 using System;
 using System.Collections.Generic;
@@ -174,6 +176,23 @@ namespace Darwin.Wpf.ViewModel
             {
                 _comparisonTextVisiblility = value;
                 RaisePropertyChanged("ComparisonTextVisibility");
+            }
+        }
+
+        private ObservableNotifiableCollection<CoordinateFeaturePoint> _coordinateFeaturePoints;
+        public ObservableNotifiableCollection<CoordinateFeaturePoint> CoordinateFeaturePoints
+        {
+            get
+            {
+                if (_coordinateFeaturePoints == null)
+                    _coordinateFeaturePoints = new ObservableNotifiableCollection<CoordinateFeaturePoint>();
+
+                return _coordinateFeaturePoints;
+            }
+            set
+            {
+                _coordinateFeaturePoints = value;
+                RaisePropertyChanged("CoordinateFeaturePoints");
             }
         }
 
@@ -373,8 +392,25 @@ namespace Darwin.Wpf.ViewModel
 
             var clippedContour = new Contour(DatabaseFin.FinOutline.ChainPoints);
 
+            if (CoordinateFeaturePoints == null)
+                CoordinateFeaturePoints = new ObservableNotifiableCollection<CoordinateFeaturePoint>();
+            CoordinateFeaturePoints.Clear();
+
             if (ComparisonFin == null)
             {
+                if (DatabaseFin.FinOutline != null &&
+                    DatabaseFin.FinOutline.FeatureSet != null &&
+                    DatabaseFin.FinOutline.FeatureSet.CoordinateFeaturePointList != null)
+                {
+                    foreach (var coordFeature in DatabaseFin.FinOutline.FeatureSet.CoordinateFeaturePointList)
+                    {
+                        var featureCopy = new CoordinateFeaturePoint(coordFeature);
+                        featureCopy.Coordinate.X -= clippedContour.XMin;
+                        featureCopy.Coordinate.Y -= clippedContour.YMin;
+                        CoordinateFeaturePoints.Add(featureCopy);
+                    }
+                }
+
                 clippedContour?.ClipToBounds();
             }
             else

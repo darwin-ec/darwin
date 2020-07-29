@@ -46,7 +46,8 @@ namespace Darwin.Features
 
         private static Dictionary<FeaturePointType, string> CoordinateFeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
         {
-            { FeaturePointType.Eye, "Eye" }
+            { FeaturePointType.Eye, "Eye" },
+            { FeaturePointType.NasalLateralCommissure, "Nasal Lateral Commissure" }
         };
 
         private static Dictionary<FeaturePointType, string> FeaturePointNameMapping = new Dictionary<FeaturePointType, string>()
@@ -91,7 +92,8 @@ namespace Darwin.Features
 
             CoordinateFeaturePoints = new Dictionary<FeaturePointType, CoordinateFeaturePoint>()
             {
-                { FeaturePointType.Eye, new CoordinateFeaturePoint { Name = CoordinateFeaturePointNameMapping[FeaturePointType.Eye], Type = FeaturePointType.Eye, IsEmpty = true } }
+                { FeaturePointType.Eye, new CoordinateFeaturePoint { Name = CoordinateFeaturePointNameMapping[FeaturePointType.Eye], Type = FeaturePointType.Eye, IsEmpty = true } },
+                { FeaturePointType.NasalLateralCommissure, new CoordinateFeaturePoint { Name = CoordinateFeaturePointNameMapping[FeaturePointType.NasalLateralCommissure], Type = FeaturePointType.NasalLateralCommissure, IsEmpty = true } }
             };
         }
 
@@ -197,6 +199,10 @@ namespace Darwin.Features
                 }
                 Features[FeatureType.BrowCurvature].Value = FindCurvature(chainPoints, browPosition, curvatureTipPosition);
                 Features[FeatureType.NasionDepth].Value = FindDepthOfNasion(chainPoints, browPosition, nasionPos, curvatureTipPosition);
+
+                // Fake the eye & nasal fold for right now
+                CoordinateFeaturePoints[FeaturePointType.Eye].Coordinate = new Point((int)chainPoints[nasionPos].X - 60, (int)chainPoints[nasionPos].Y + 20);
+                CoordinateFeaturePoints[FeaturePointType.NasalLateralCommissure].Coordinate = new Point((int)chainPoints[tipPosition].X - 60, (int)chainPoints[tipPosition].Y + 60);
             }
             catch (Exception ex)
             {

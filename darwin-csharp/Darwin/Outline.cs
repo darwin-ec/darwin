@@ -59,14 +59,14 @@ namespace Darwin
         }
 
         //***008OL following two functions moved here from Chain class
-        PointF GetSavedPoint(int pointNum)
-        {
-            //if (pointNum < 0 || pointNum >= mNumPoints) 008OL removed
-            if (pointNum < 0 || pointNum >= _chain.Length) //***008OL
-                throw new ArgumentOutOfRangeException(nameof(pointNum));
+        //PointF GetSavedPoint(int pointNum)
+        //{
+        //    //if (pointNum < 0 || pointNum >= mNumPoints) 008OL removed
+        //    if (pointNum < 0 || pointNum >= _chain.Length) //***008OL
+        //        throw new ArgumentOutOfRangeException(nameof(pointNum));
 
-            return _chainPoints[pointNum];
-        }
+        //    return _chainPoints[pointNum];
+        //}
 
         //////////////////////////////////////////////////////////////
         // Outline(Contour* c, double radius)
@@ -230,10 +230,15 @@ namespace Darwin
             return _chainPoints[FeatureSet.FeaturePoints[type].Position];
         }
 
+        public OutlineFeaturePoint FindClosestFeaturePointWithDistance(PointF p, out float distance)
+        {
+            return FindClosestFeaturePointWithDistance(p.X, p.Y, out distance);
+        }
+
         // returns the type of feature point closest to the given point
         public OutlineFeaturePoint FindClosestFeaturePoint(PointF p)
         {
-            return FindClosestFeaturePoint(p.X, p.Y);
+            return FindClosestFeaturePointWithDistance(p, out _);
         }
 
         public OutlineFeaturePoint FindClosestFeaturePoint(System.Drawing.Point p)
@@ -268,10 +273,11 @@ namespace Darwin
                 next = Length - 1;
         }
 
-        public OutlineFeaturePoint FindClosestFeaturePoint(float X, float Y)
+        public OutlineFeaturePoint FindClosestFeaturePointWithDistance(float X, float Y, out float distance)
         {
             var minFeature = OutlineFeaturePoint.Empty;
             double? minDist = null;
+            distance = 5000f;
 
             foreach (var f in FeatureSet.FeaturePoints.Values.Where(fp => !fp.Ignore))
             {
@@ -281,11 +287,17 @@ namespace Darwin
                 if (minDist == null || distToFeature < minDist)
                 {
                     minDist = distToFeature;
+                    distance = (float)distToFeature;
                     minFeature = f;
                 }
             }
 
             return minFeature;
+        }
+
+        public OutlineFeaturePoint FindClosestFeaturePoint(float X, float Y)
+        {
+            return FindClosestFeaturePointWithDistance(X, Y, out _);
         }
 
         // mutators for feature points

@@ -48,11 +48,11 @@ namespace Darwin.Wpf
 		System.Windows.Point? lastMousePositionOnTarget;
 		System.Windows.Point? lastDragPoint;
 
-		private const int PointSize = 2;
+		//private const int PointSize = 2;
 		private const int SpaceBetweenPoints = 3;
 		private const int EraserBrushSize = 9; // krd 10/28/05
-		private const int MaxZoom = 1600;
-		private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
+		//private const int MaxZoom = 1600;
+		//private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
 
 		private int _movePosition;
 		private bool _drawingWithPencil;
@@ -65,6 +65,8 @@ namespace Darwin.Wpf
 		private string _previousStatusBarMessage;
 
 		private FeaturePointType _moveFeature;
+        private bool _moveFeatureUseCoordinate;
+		private CoordinateFeaturePoint _moveCoordinateFeature;
 
 		private TraceWindowViewModel _vm;
 
@@ -190,6 +192,12 @@ namespace Darwin.Wpf
 			// Note we are using the scaling here!
 			return new PointF(point.X * _vm.NormScale, point.Y * _vm.NormScale);
         }
+
+		private PointF MapDarwinPointToPointF(Darwin.Point point)
+		{
+			// Note we are using the scaling here!
+			return new PointF(point.X * _vm.NormScale, point.Y * _vm.NormScale);
+		}
 
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
@@ -924,92 +932,125 @@ namespace Darwin.Wpf
 				return;
 
 			//_moveInit = true;
-			var feature = _vm.Outline.FindClosestFeaturePoint(MapWindowsPointToPointF(point));
+			float featureDistance;
+			var feature = _vm.Outline.FindClosestFeaturePointWithDistance(MapWindowsPointToPointF(point), out featureDistance);
 
-			if (feature.IsEmpty)
+
+			float coordinateFeatureDistance;
+			var coordinateFeature = CoordinateFeaturePoint.FindClosestCoordinateFeaturePointWithDistance(_vm.CoordinateFeaturePoints,
+																								MapWindowsPointToPointF(point),
+                                                                                                out coordinateFeatureDistance);
+			if (feature.IsEmpty && coordinateFeature.IsEmpty)
 				return;
 
-			_moveFeature = feature.Type;
+			string displayName;
+			if (feature.IsEmpty || coordinateFeatureDistance < featureDistance)
+            {
+				// We're going to move the coordinate point rather than a feature point on the outline
+				_moveFeatureUseCoordinate = true;
 
-			if (FeaturePointType.NoFeature == _moveFeature)
-				return;
+				displayName = coordinateFeature.Name;
 
-			//***054 - indicate which point is being moved
+				_movePosition = (int)coordinateFeature.Type;
+                _moveCoordinateFeature = coordinateFeature;
+				_moveCoordinateFeature.Coordinate.Type = PointType.FeatureMoving;
+				Trace.WriteLine("Moving coordinate feature point");
+			}
+			else
+            {
+				// We're going to move a feature point on the outline
+				_moveFeatureUseCoordinate = false;
 
-			_previousStatusBarMessage = StatusBarMessage.Text; // now we have a copy of the label string
+				_moveFeature = feature.Type;
 
-			StatusBarMessage.Text = "Moving " + feature.Name + " -- Drag into position and release mouse button.";
+				if (FeaturePointType.NoFeature == _moveFeature)
+					return;
 
-			_movePosition = feature.Position;
-			Trace.WriteLine("Moving from position: " + _movePosition);
+				displayName = feature.Name;
 
-			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
+				_movePosition = feature.Position;
+
+				Trace.WriteLine("Moving from position: " + _movePosition);
+
+				_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
+			}
+
+			if (!string.IsNullOrEmpty(displayName))
+			{
+				// ***054 - indicate which point is being moved
+				_previousStatusBarMessage = StatusBarMessage.Text; // now we have a copy of the label string
+
+				StatusBarMessage.Text = "Moving " + displayName + " -- Drag into position and release mouse button.";
+			}
 		}
 
-		//*******************************************************************
-		//
-		// void TraceWindow::traceMoveFeaturePointUpdate(int x, int y)
-		//
-		//
-		//
 		private void TraceMoveFeaturePointUpdate(Darwin.Point point)
 		{
-			if (_vm.Contour == null || FeaturePointType.NoFeature == _moveFeature || _movePosition == -1)
+			if (_vm.Contour == null || _movePosition == -1)
 				return;
 
 			if (point.IsEmpty)
 				return;
 
-			//zoomMapPointsToOriginal(x, y);
-			//ensurePointInBounds(x, y);
+			if (_moveFeatureUseCoordinate)
+			{
+				//_moveCoordinateFeature.Coordinate.SetPosition(point.X, point.Y);
+				//Trace.WriteLine("Updating coordinate feature point");
+				var mappedPoint = MapDarwinPointToPointF(point);
+				_moveCoordinateFeature.Coordinate.SetPosition((int)Math.Round(mappedPoint.X), (int)Math.Round(mappedPoint.Y));
+			}
+			else
+			{
+				if (FeaturePointType.NoFeature == _moveFeature)
+					return;
 
-			//x = (int)Math.Round(x * mNormScale);
-			//y = (int)Math.Round(y * mNormScale);
+				// Find location of closest contour point
+				int posit = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
 
-			// find location of closest contour point
+				if (posit < -1)
+					return;
 
-			int posit = _vm.Contour.FindPositionOfClosestPoint(point.X, point.Y);
+				// Set the previous point to normal
+				_vm.Contour[_movePosition].Type = PointType.Normal;
+				
+				int previous, next;
+				_vm.Outline.GetNeighboringFeaturePositions(_moveFeature, out previous, out next);
 
-			if (posit < -1)
-				return;
+				// Enforce constraints on feature movement so their order cannot be changed
+				if (posit > previous && posit < next)
+					_movePosition = posit;
 
-			// enforce constraints on feature movement so their order cannot be changed
+				_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
 
-			// Set the previous point to normal
-			_vm.Contour[_movePosition].Type = PointType.Normal;
-
-			int previous;
-			int next;
-			_vm.Outline.GetNeighboringFeaturePositions(_moveFeature, out previous, out next);
-
-			if (posit > previous && posit < next)
-				_movePosition = posit;
-
-			Trace.WriteLine("Moving position: " + _movePosition);
-
-			_vm.Contour[_movePosition].Type = PointType.FeatureMoving;
+				Trace.WriteLine("Moving position: " + _movePosition);
+			}
 		}
 
-		//*******************************************************************
-		//
-		// void TraceWindow::traceMoveFeaturePointFinalize(int x, int y)
-		//
-		//
-		//
 		private void TraceMoveFeaturePointFinalize(Darwin.Point point)
 		{
-			if (_vm.Contour == null || (int)FeaturePointType.NoFeature == _movePosition)
+			if (_vm.Contour == null)
 				return;
 
 			// TODO: Shouldn't this do something with point on mouse up in case it's different than move?
+			if (_moveFeatureUseCoordinate)
+			{
+				_moveCoordinateFeature.Coordinate.Type = PointType.Normal;
+			}
+			else
+			{
+				if ((int)FeaturePointType.NoFeature == _movePosition)
+					return;
 
-			// set new location of feature
-			_vm.Outline.SetFeaturePoint(_moveFeature, _movePosition);
+				// set new location of feature
+				_vm.Outline.SetFeaturePoint(_moveFeature, _movePosition);
 
-			_vm.Contour[_movePosition].Type = PointType.Feature;
+				_vm.Contour[_movePosition].Type = PointType.Feature;
 
-			Trace.WriteLine("Final moving position: " + _movePosition);
+				Trace.WriteLine("Final moving position: " + _movePosition);
+			}
 
+			_moveFeatureUseCoordinate = false;
+			_moveCoordinateFeature = null;
 			_moveFeature = FeaturePointType.NoFeature;
 			_movePosition = -1;
 
@@ -1023,7 +1064,6 @@ namespace Darwin.Wpf
 			int y = (int)Math.Round(_cropSelector.SelectRect.Y);
 			int width = (int)Math.Round(_cropSelector.SelectRect.Width);
 			int height = (int)Math.Round(_cropSelector.SelectRect.Height);
-
 
 			if (_vm.Contour == null || _vm.Contour.Length < 1)
 			{
@@ -1426,8 +1466,7 @@ namespace Darwin.Wpf
 
 			if (e.LeftButton == MouseButtonState.Pressed)
 			{
-				Trace.WriteLine(clickedPoint);
-
+				//Trace.WriteLine(clickedPoint);
 				switch (_vm.TraceTool)
 				{
 					case TraceToolType.Pencil:
@@ -1682,20 +1721,19 @@ namespace Darwin.Wpf
 
 			_vm.BackupContour = new Contour(_vm.Contour);
 
-			// after even spacing and normalization fin height will be approx 600 units
-
+			// After even spacing and normalization fin height will be approx 600 units
 			_vm.NormScale = _vm.Contour.NormalizeContour(); //***006CN
 			_vm.Contour.RemoveKnots(3.0);       //***006CN
-			Contour evenContour = _vm.Contour.EvenlySpaceContourPoints(3.0); //***006CN
 
-			_vm.Contour = evenContour;
+			_vm.Contour = _vm.Contour.EvenlySpaceContourPoints(3.0); //***006CN
 
-			_vm.Outline = new Outline(_vm.Contour, _vm.Database.CatalogScheme.FeatureSetType); // ***008OL
+			_vm.Outline = new Outline(_vm.Contour, _vm.Database.CatalogScheme.FeatureSetType); //***008OL
+
+			_vm.LoadCoordinateFeaturePoints();
 
 			_vm.TraceFinalized = true; //***006PD moved from beginning of function
 
 			_vm.TraceTool = TraceToolType.MoveFeature;
-			//this->refreshImage();
 		}
 
 		private void TraceStep_Checked(object sender, RoutedEventArgs e)
@@ -1740,7 +1778,6 @@ namespace Darwin.Wpf
 		}
 
 		#region Undo and Redo
-
 
 		private void RedoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
 		{
@@ -1935,6 +1972,7 @@ namespace Darwin.Wpf
 
         #endregion
 
+        #region Command Buttons
         private void MatchButton_Click(object sender, RoutedEventArgs e)
         {
 			if (_vm.Contour == null && _vm.Outline == null)
@@ -2121,5 +2159,7 @@ namespace Darwin.Wpf
 				StatusBarMessage.Text = "Sighting data exported.";
             }
         }
+
+        #endregion
     }
 }

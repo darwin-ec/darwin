@@ -21,6 +21,7 @@ namespace Darwin.Features
         Brow = 9,
         BottomLipProtrusion = 10,
 
-        Eye = 100
+        Eye = 100,
+        NasalLateralCommissure = 101
     }
 }

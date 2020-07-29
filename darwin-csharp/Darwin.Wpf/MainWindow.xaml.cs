@@ -534,7 +534,7 @@ namespace Darwin.Wpf
 
         private void DeveloperToolsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var vm = new DeveloperToolsViewModel();
+            var vm = new DeveloperToolsViewModel(_vm.DarwinDatabase);
             var window = new DeveloperToolsWindow(vm);
             window.Owner = this;
             window.ShowDialog();
