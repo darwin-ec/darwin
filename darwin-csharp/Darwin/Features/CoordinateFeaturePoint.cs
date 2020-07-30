@@ -60,8 +60,11 @@ namespace Darwin.Features
 
             double? minDist = null;
 
-            foreach (var f in points.Where(fp => !fp.Ignore))
+            foreach (var f in points.Where(fp => !fp.Ignore && !fp.IsEmpty))
             {
+                if (f.Coordinate == null)
+                    continue;
+
                 var distToFeature = MathHelper.GetDistance(X, Y, f.Coordinate.X, f.Coordinate.Y);
 
                 if (minDist == null || distToFeature < minDist)
