@@ -4,6 +4,7 @@ using Darwin.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
@@ -24,9 +25,11 @@ namespace Darwin.ML
             if (!Directory.Exists(datasetDirectory))
                 throw new ArgumentOutOfRangeException(nameof(datasetDirectory));
 
+            Trace.WriteLine("Starting dataset export...");
+
             const string ImagesDirectoryName = "images";
-            const int ImageWidth = 400;
-            const int ImageHeight = 400;
+            const int ImageWidth = 224;
+            const int ImageHeight = 224;
             const string CsvFilename = "darwin_coordinates.csv";
 
             string fullImagesDirectory = Path.Combine(datasetDirectory, ImagesDirectoryName);
@@ -37,8 +40,11 @@ namespace Darwin.ML
 
             int individualNum = 1;
             foreach (var dbFin in database.AllFins)
-            {
+            { 
                 var fin = CatalogSupport.FullyLoadFin(dbFin);
+
+                if (!string.IsNullOrEmpty(fin?.IDCode))
+                    Trace.WriteLine("Exporting " + fin.IDCode);
 
                 if (fin.FinOutline.FeatureSet.CoordinateFeaturePoints == null ||
                     fin.FinOutline.FeatureSet.CoordinateFeaturePoints.Count < 1 ||
@@ -136,6 +142,8 @@ namespace Darwin.ML
             {
                 csv.WriteRecords(csvRecords);
             }
+
+            Trace.WriteLine("done.");
         }
     }
 }

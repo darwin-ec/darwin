@@ -279,6 +279,7 @@ namespace Darwin.Wpf
 
         public void RefreshDatabaseAfterAdd()
         {
+            Trace.WriteLine("Start database refresh after add...");
             _vm.Fins = new ObservableNotifiableCollection<DatabaseFin>(
                 _vm.DarwinDatabase
                 .GetAllFins()
@@ -288,9 +289,13 @@ namespace Darwin.Wpf
             // Select the last fin, and scroll to it so the user can see it
             if (_vm.Fins != null)
             {
+                Trace.WriteLine("Selecting added individual...");
+
                 _vm.SelectedFin = _vm.Fins[_vm.Fins.Count - 1];
                 DatabaseGrid.ScrollIntoView(_vm.SelectedFin);
             }
+
+            Trace.WriteLine("Refresh complete.");
         }
 
         private void MatchingQueueCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
