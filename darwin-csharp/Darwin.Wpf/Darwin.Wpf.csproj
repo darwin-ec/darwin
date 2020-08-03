@@ -40,6 +40,7 @@
     <None Remove="Resources\Images\finger.png" />
     <None Remove="Resources\Images\horizontal_flip.png" />
     <None Remove="Resources\Images\logo.png" />
+    <None Remove="Resources\Images\logo_small.png" />
     <None Remove="Resources\Images\magnify.png" />
     <None Remove="Resources\Images\magnify2.png" />
     <None Remove="Resources\Images\matching_queue.png" />
@@ -87,6 +88,7 @@
     <Resource Include="Resources\Images\finger.png" />
     <Resource Include="Resources\Images\horizontal_flip.png" />
     <Resource Include="Resources\Images\logo.png" />
+    <Resource Include="Resources\Images\logo_small.png" />
     <Resource Include="Resources\Images\magnify.png" />
     <Resource Include="Resources\Images\magnify2.png" />
     <Resource Include="Resources\Images\matching_queue.png" />

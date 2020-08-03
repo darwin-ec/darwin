@@ -42,10 +42,17 @@ namespace Darwin.Wpf
 
             _vm = new MainWindowViewModel();
 
+            bool openFirstRunWindow = false;
             try
             {
                 if (!string.IsNullOrEmpty(Options.CurrentUserOptions.DatabaseFileName))
+                {
                     OpenDatabase(Options.CurrentUserOptions.DatabaseFileName, false, true);
+                }
+                else
+                {
+                    openFirstRunWindow = true;
+                }
             }
             catch (Exception ex)
             {
@@ -68,6 +75,18 @@ namespace Darwin.Wpf
             {
                 SelectFirstFin();
             };
+
+            if (openFirstRunWindow)
+            {
+                ContentRendered += delegate
+                {
+                    var firstRunVM = new FirstRunViewModel();
+                    var firstRunWindow = new FirstRunWindow(firstRunVM);
+                    firstRunWindow.Owner = this;
+                    firstRunWindow.ShowDialog();
+
+                };
+            }
         }
 
         private void GridHeader_Click(object sender, RoutedEventArgs e)
@@ -132,7 +151,7 @@ namespace Darwin.Wpf
             e.CanExecute = true;
         }
 
-        private void NewDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        public void NewDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var newDatabaseVM = new NewDatabaseViewModel();
 
@@ -196,7 +215,7 @@ namespace Darwin.Wpf
             e.CanExecute = true;
         }
 
-        private void OpenDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        public void OpenDatabaseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var openDatabaseDialog = new OpenFileDialog();
             openDatabaseDialog.Title = "Open Database";

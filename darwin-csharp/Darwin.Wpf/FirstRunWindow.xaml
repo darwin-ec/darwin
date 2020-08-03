@@ -1,0 +1,40 @@
+﻿<Window x:Class="Darwin.Wpf.FirstRunWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Darwin.Wpf"
+        mc:Ignorable="d" Background="{StaticResource LightBackground}"
+        Title="{Binding WindowTitle}" Height="300" Width="600" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Image Grid.Column="0" Source="/Darwin.Wpf;component/Resources/Images/logo_small.png" />
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" FontWeight="Bold" FontSize="26" Margin="5">Welcome to DARWIN!</Label>
+            <Border Grid.Row="1" Margin="10" BorderBrush="LightGray" BorderThickness="1">
+                <TextBlock TextWrapping="WrapWithOverflow" Background="White" Padding="10">
+                    The first thing you need is a database.<LineBreak/><LineBreak/>
+                    
+                    A database holds a collection of your images, their details, and traces.  You can match new, or unknown,
+                    covariates against your database.<LineBreak/><LineBreak/>
+                    You need to select an existing database or create a new database to work with DARWIN.
+                </TextBlock>
+            </Border>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                <Button x:Name="NewDatabaseButton" Click="NewDatabaseButton_Click">Create New Database</Button>
+                <Button x:Name="OpenDatabaseButton" Click="OpenDatabaseButton_Click"
+>Open Existing Database</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
