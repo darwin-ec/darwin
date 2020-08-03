@@ -43,6 +43,7 @@ namespace Darwin.ML
             _interpreter = new Interpreter(_model);
 
             Status allocateTensorStatus = _interpreter.AllocateTensors();
+
             if (allocateTensorStatus == Status.Error)
                 throw new Exception("Failed to allocate tensor");
 

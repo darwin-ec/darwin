@@ -1,5 +1,6 @@
 ﻿using Darwin.Utilities;
 using Darwin.Wpf.Controls;
+using Darwin.Wpf.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -64,6 +65,14 @@ namespace Darwin.Wpf
         {
             if (e.Key == Key.Escape)
                 Close();
+        }
+
+        private void LegalHyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            var vm = new LegalViewModel();
+            var window = new LegalWindow(vm);
+            window.Owner = this;
+            window.ShowDialog();
         }
     }
 }

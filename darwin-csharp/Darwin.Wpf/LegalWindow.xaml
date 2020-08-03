@@ -1,0 +1,50 @@
+﻿<Window x:Class="Darwin.Wpf.LegalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Darwin.Wpf"
+        mc:Ignorable="d" Background="{StaticResource LightBackground}"
+        Title="{Binding WindowTitle}" Height="450" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" Margin="10">
+            <TextBox Background="White" TextWrapping="Wrap" Foreground="DarkSlateGray" IsReadOnly="True" xml:space="preserve">Contains code derived from Microsoft WPF examples of RubberbandAdorner and CroppingAdorner.
+    Original copyright and license from https://github.com/microsoft/WPF-Samples
+    Copyright (c) Microsoft. All rights reserved.
+    Originally licensed under the MIT license: https://github.com/microsoft/WPF-Samples/blob/master/LICENSE
+                
+Contains code based on project by darrellp at https://www.codeproject.com/Articles/23158/A-Photoshop-like-Cropping-Adorner-for-WPF 
+    Original license Code Project Open License: https://www.codeproject.com/info/cpol10.aspx
+
+Contains code derived from project by R.A.Dain at https://www.codeproject.com/Articles/5255192/Use-WindowChrome-to-Customize-the-Title-Bar-in-WPF
+    Original license Code Project Open License: https://www.codeproject.com/info/cpol10.aspx
+
+Contains code derived and/or inspired from several StackOverflow posts:
+    Original License CC BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
+        * Daniel Hilgarth at https://stackoverflow.com/questions/12249051/unique-combinations-of-list
+        * kulin at https://stackoverflow.com/questions/26225373/edit-png-metadata-add-itxt-value
+        * Joel Harkes at https://stackoverflow.com/questions/4580263/how-to-open-in-default-browser-in-c-sharp
+        * Peter Duniho at https://stackoverflow.com/questions/5395957/wpf-slider-with-two-thumbs
+        * Multiple answers at https://stackoverflow.com/questions/994148/best-way-to-make-wpf-listview-gridview-sort-on-column-header-clicking
+
+    Original Licence CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
+         * Ernie S at https://stackoverflow.com/questions/3127136/observable-stack-and-queue
+                
+Contains code adapted from Emgu.TF.Lite examples source code. Those portions are Copyright (C) 2004-2020 by EMGU Corporation. All rights reserved.
+    Original license GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
+                
+Contains code derived from https://github.com/damieng/DamienGKit/blob/master/CSharp/DamienG.Library/Security/Cryptography/Crc32.cs
+    Copyright (c) Damien Guard.  All rights reserved.
+    Originally licensed under the Apache License, Version 2.0
+    You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+            </TextBox>
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="CloseButton" IsDefault="true" IsCancel="true" Click="CloseButton_Click">Close</Button>
+        </StackPanel>
+    </Grid>
+</Window>

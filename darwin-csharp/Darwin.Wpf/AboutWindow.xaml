@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="" Height="540" Width="600" ResizeMode="NoResize"
+        Title="" Height="550" Width="600" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" PreviewKeyDown="AboutWindow_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -47,6 +47,8 @@ Financial Support from:
         Grants: IIS-9980031 &amp; DBI-0445126
     National Marine Fisheries Service
     Eckerd College</TextBlock>
+
+                <TextBlock FontSize="12" HorizontalAlignment="Center"><Hyperlink x:Name="LegalHyperlink" Click="LegalHyperlink_Click">Legal</Hyperlink></TextBlock>
                 <Button x:Name="OKButton" IsCancel="True" Click="OKButton_Click" Visibility="Collapsed">OK</Button>
             </StackPanel>
         </StackPanel>
