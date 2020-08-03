@@ -2864,7 +2864,9 @@ namespace Darwin.Matching
         }
 
         /// <summary>
-        /// New try initially for bears
+        /// Developed for bear matching, this tries mapping the outlines with the first three control points,
+        /// then optionally the fourth.  When trying to map the outlines, it tries different combinations of
+        /// moving the feature points slightly, and takes the best error from those combinations.
         /// </summary>
         /// <param name="controlPoints"></param>
         /// <param name="errorBetweenOutlines"></param>

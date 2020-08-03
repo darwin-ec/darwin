@@ -8,12 +8,14 @@
 //
 //*******************************************************************
 
+using Darwin.Database;
 using Darwin.Features;
 using Darwin.Utilities;
 using Darwin.Wavelet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 
 namespace Darwin
@@ -77,14 +79,14 @@ namespace Darwin
         //       without knots
         // POST: all members are initialized
         //
-        public Outline(Contour c, FeatureSetType featuresType)
+        public Outline(Contour c, FeatureSetType featuresType, Bitmap image, double scale)
         {
             _remappedChainPoints = null;
             _chainPoints = new FloatContour(); // ***008OL
             _chainPoints.ContourToFloatContour(c); //***008OL
             _chain = new Chain(_chainPoints);
 
-            FeatureSet = FeatureSet.Create(featuresType, _chain, _chainPoints);
+            FeatureSet = FeatureSet.Create(featuresType, image, scale, _chain, _chainPoints);
 
             c.SetFeaturePointPositions(FeaturePointPositions);
         }
@@ -159,9 +161,9 @@ namespace Darwin
             _remappedChainPoints = mappedContour;
         }
 
-        public void RediscoverFeaturePoints(FeatureSetType featuresType)
+        public void RediscoverFeaturePoints(FeatureSetType featuresType, DatabaseFin fin)
         {
-            FeatureSet = FeatureSet.Create(featuresType, _chain, _chainPoints);
+            FeatureSet = FeatureSet.Create(featuresType, fin.FinImage, fin.Scale, _chain, _chainPoints);
         }
         
         public bool ContainsAllFeatureTypes(List<FeatureType> featureTypes)

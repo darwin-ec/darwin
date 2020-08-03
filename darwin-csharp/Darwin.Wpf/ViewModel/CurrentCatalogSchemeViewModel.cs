@@ -114,7 +114,7 @@ namespace Darwin.Wpf.ViewModel
                 foreach (var individual in Database.AllFins)
                 {
                     var newFeatureOutline = new Outline(individual.FinOutline.ChainPoints, SelectedScheme.FeatureSetType);
-                    newFeatureOutline.RediscoverFeaturePoints(SelectedScheme.FeatureSetType);
+                    newFeatureOutline.RediscoverFeaturePoints(SelectedScheme.FeatureSetType, individual);
                     individual.FinOutline = newFeatureOutline;
                     Database.UpdateOutline(individual, true);
                 }

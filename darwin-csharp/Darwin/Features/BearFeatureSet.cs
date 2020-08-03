@@ -1,12 +1,18 @@
-﻿using Darwin.Utilities;
+﻿using Darwin.Database;
+using Darwin.Helpers;
+using Darwin.ML;
+using Darwin.Utilities;
 using Darwin.Wavelet;
 using MathNet.Numerics.Interpolation;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Darwin.Features
@@ -138,7 +144,7 @@ namespace Darwin.Features
             }
         }
 
-        public BearFeatureSet(Chain chain, FloatContour chainPoints)
+        public BearFeatureSet(Bitmap image, double scale, Chain chain, FloatContour chainPoints)
             : this()
         {
             if (chain == null)
@@ -200,9 +206,17 @@ namespace Darwin.Features
                 Features[FeatureType.BrowCurvature].Value = FindCurvature(chainPoints, browPosition, curvatureTipPosition);
                 Features[FeatureType.NasionDepth].Value = FindDepthOfNasion(chainPoints, browPosition, nasionPos, curvatureTipPosition);
 
-                // Fake the eye & nasal fold for right now
-                CoordinateFeaturePoints[FeaturePointType.Eye].Coordinate = new Point((int)chainPoints[nasionPos].X - 60, (int)chainPoints[nasionPos].Y + 20);
-                CoordinateFeaturePoints[FeaturePointType.NasalLateralCommissure].Coordinate = new Point((int)chainPoints[tipPosition].X - 60, (int)chainPoints[tipPosition].Y + 60);
+                if (Options.CurrentUserOptions.FindCoordinateFeatures)
+                {
+                    var coordinates = MLSupport.PredictCoordinates(image, chainPoints, scale);
+
+                    CoordinateFeaturePoints[FeaturePointType.Eye].Coordinate = new Point((int)Math.Round(coordinates[0]), (int)Math.Round(coordinates[1]));
+                    CoordinateFeaturePoints[FeaturePointType.NasalLateralCommissure].Coordinate = new Point((int)Math.Round(coordinates[2]), (int)Math.Round(coordinates[3]));
+                }
+
+                // Fake the eye & nasal fold for right now (this at least gets the features on the display so we can move them)
+                //CoordinateFeaturePoints[FeaturePointType.Eye].Coordinate = new Point((int)chainPoints[nasionPos].X - 60, (int)chainPoints[nasionPos].Y + 20);
+                //CoordinateFeaturePoints[FeaturePointType.NasalLateralCommissure].Coordinate = new Point((int)chainPoints[tipPosition].X - 60, (int)chainPoints[tipPosition].Y + 60);
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="{Binding WindowTitle}" Height="450" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="{Binding WindowTitle}" Height="250" Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -14,8 +14,12 @@
         <Grid Grid.Row="0" Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Label Grid.Row="0" FontWeight="Bold">Machine Learning</Label>
+            <TextBlock TextWrapping="Wrap" Grid.Row="1" Margin="5">(Currently only for Bears) Export a coordinate and image dataset to train against.  Eye and nasal lateral commissure need to be labeled on database individuals for a usable dataset.</TextBlock>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
                 <Button x:Name="ExportDatasetButton" Click="ExportDatasetButton_Click">Export Training Dataset</Button>
             </StackPanel>
         </Grid>

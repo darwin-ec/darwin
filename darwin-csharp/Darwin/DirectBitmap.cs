@@ -231,6 +231,46 @@ namespace Darwin
                 _pixelData[i] = color.B;
             }
         }
+        
+        public float[] ToScaledRGBFloatArray()
+        {
+            float[] result = new float[Width * Height * 3];
+
+            int idx = 0;
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var pixel = GetPixel(x, y);
+                    result[idx++] = pixel.R / 255.0f;
+                    result[idx++] = pixel.G / 255.0f;
+                    result[idx++] = pixel.B / 255.0f;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a scaled float array, as if this is a grayscale image with each byte
+        /// divided by 255.0f
+        /// </summary>
+        /// <returns></returns>
+        public float[] ToScaledGrayFloatArray()
+        {
+            float[] result = new float[Width * Height];
+
+            int idx = 0;
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    result[idx++] = GetIntensity(x, y) / 255.0f;
+                }
+            }
+
+            return result;
+        }
 
         private void LockBits()
         {

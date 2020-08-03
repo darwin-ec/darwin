@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 namespace Darwin
 {
     // TODO: Move the image processing stuff out of this
+    // Put this in a settings file or something
     public static class AppSettings
     {
+        public static string MLModelFilename = "bear_coordinates_regular_noscale_flip.tflite";
+
         public static string DocumentationUrl
         {
             get

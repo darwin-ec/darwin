@@ -373,7 +373,7 @@ namespace Darwin.Wpf.ViewModel
             if (Database != null)
             {
                 var newContour = new Contour(DatabaseFin.FinOutline.ChainPoints);
-                DatabaseFin.FinOutline = new Outline(newContour, Database.CatalogScheme.FeatureSetType);
+                DatabaseFin.FinOutline = new Outline(newContour, Database.CatalogScheme.FeatureSetType, DatabaseFin.FinImage, DatabaseFin.Scale);
 
                 newContour?.ClipToBounds();
 

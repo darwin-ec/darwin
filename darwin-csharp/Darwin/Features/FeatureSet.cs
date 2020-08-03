@@ -1,9 +1,11 @@
-﻿using Darwin.Utilities;
+﻿using Darwin.Database;
+using Darwin.Utilities;
 using Darwin.Wavelet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -93,7 +95,7 @@ namespace Darwin.Features
             }
         }
 
-        public static FeatureSet Create(FeatureSetType featuresType, Chain chain, FloatContour chainPoints)
+        public static FeatureSet Create(FeatureSetType featuresType, Bitmap image, double scale, Chain chain, FloatContour chainPoints)
         {
             switch (featuresType)
             {
@@ -107,7 +109,7 @@ namespace Darwin.Features
                     if (chain == null || chainPoints == null)
                         return new BearFeatureSet();
 
-                    return new BearFeatureSet(chain, chainPoints);
+                    return new BearFeatureSet(image, scale, chain, chainPoints);
 
                 default:
                     throw new NotImplementedException();

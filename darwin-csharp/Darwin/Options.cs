@@ -151,6 +151,9 @@ namespace Darwin
             }
         }
 
+        [DefaultValue(false)]
+        public bool FindCoordinateFeatures { get; set; } = false;
+
         [DefaultValue(50)]
         public int SnakeMaximumIterations { get; set; } = 50;
         [DefaultValue(9.0f)]
@@ -250,6 +253,8 @@ namespace Darwin
             SnakeEnergyEdge = options.SnakeEnergyEdge;
             SnakeEnergyLinearity = options.SnakeEnergyLinearity;
             SnakeMaximumIterations = options.SnakeMaximumIterations;
+
+            FindCoordinateFeatures = options.FindCoordinateFeatures;
 
             //DefaultCatalogScheme = options.DefaultCatalogScheme;
 

@@ -1727,7 +1727,7 @@ namespace Darwin.Wpf
 
 			_vm.Contour = _vm.Contour.EvenlySpaceContourPoints(3.0); //***006CN
 
-			_vm.Outline = new Outline(_vm.Contour, _vm.Database.CatalogScheme.FeatureSetType); //***008OL
+			_vm.Outline = new Outline(_vm.Contour, _vm.Database.CatalogScheme.FeatureSetType, _vm.Bitmap, _vm.NormScale); //***008OL
 
 			_vm.LoadCoordinateFeaturePoints();
 
@@ -1769,9 +1769,20 @@ namespace Darwin.Wpf
 				case TraceStepType.IdentifyFeatures:
 					if (!_vm.TraceFinalized)
 					{
-						_vm.TraceLocked = true;
-						TraceFinalize();
-						_vm.TraceTool = TraceToolType.MoveFeature;
+						try
+						{
+							this.IsHitTestVisible = false;
+							Mouse.OverrideCursor = Cursors.Wait;
+
+							_vm.TraceLocked = true;
+							TraceFinalize();
+							_vm.TraceTool = TraceToolType.MoveFeature;
+						}
+						finally
+						{
+							Mouse.OverrideCursor = null;
+							this.IsHitTestVisible = true;
+						}
 					}
 					break;
             }

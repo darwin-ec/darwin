@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Darwin.ML\Darwin.ML.csproj" />
     <ProjectReference Include="..\Darwin.Utilities\Darwin.Utilities.csproj" />
     <ProjectReference Include="..\Darwin.Wavelet\Darwin.Wavelet.csproj" />
   </ItemGroup>
