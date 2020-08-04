@@ -176,9 +176,12 @@ namespace Darwin.Helpers
             var mlImage = ConvertDatabaseFinToMLImage(image, chainPoints, scale);
             var directBmp = new DirectBitmap(mlImage.Image);
 
-            var grayFloatArray = directBmp.ToScaledRGBFloatArray();
+            //var floatArray = directBmp.ToScaledRGBFloatArray();
 
-            var coordinates = model.Run(grayFloatArray);
+            // This must match what the model expects. E.g., this is what Keras on TF for Resnet uses:
+            var floatArray = directBmp.ToScaledTensorFlowRGBPreprocessInput();
+            
+            var coordinates = model.Run(floatArray);
 
             Trace.WriteLine("Raw predicted coordinates:");
 

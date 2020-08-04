@@ -251,6 +251,25 @@ namespace Darwin
             return result;
         }
 
+        public float[] ToScaledTensorFlowRGBPreprocessInput()
+        {
+            float[] result = new float[Width * Height * 3];
+
+            int idx = 0;
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var pixel = GetPixel(x, y);
+                    result[idx++] = pixel.R / 127.5f - 1;
+                    result[idx++] = pixel.G / 127.5f - 1;
+                    result[idx++] = pixel.B / 127.5f - 1;
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Returns a scaled float array, as if this is a grayscale image with each byte
         /// divided by 255.0f
