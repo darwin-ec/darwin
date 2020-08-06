@@ -1541,7 +1541,7 @@ namespace Darwin.Wpf
             }
 		}
 
-		private async void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		private void TraceCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			Trace.WriteLine("left mouse button up");
 

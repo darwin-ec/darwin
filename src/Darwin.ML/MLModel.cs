@@ -39,7 +39,6 @@ namespace Darwin.ML
     {
         private Interpreter _interpreter;
         private FlatBufferModel _model = null;
-        private string[] _labels = null;
         private Tensor _inputTensor;
         private Tensor _outputTensor;
 
