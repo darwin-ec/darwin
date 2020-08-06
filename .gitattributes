@@ -1,7 +1,7 @@
-cpp-version/archive* linguist-vendored
-cpp-version/gtk* linguist-vendored
-gtk-2.22
-jpeg-6b
-m4
-oldGTK+-2.4binaries4Win32
+cpp-version/archive/* linguist-vendored
+cpp-version/gtk/* linguist-vendored
+cpp-version/gtk-2.22/* linguist-vendored
+cpp-version/jpeg-6b/* linguist-vendored
+cpp-version/m4/* linguist-vendored
+cpp-version/oldGTK+-2.4binaries4Win32/* linguist-vendored
 *.ipynb linguist-vendored
