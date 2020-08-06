@@ -17,3 +17,17 @@ The previous version of DARWIN can be found under the cpp-version folder.  The p
 ## License
 
 DARWIN is licensed under the [GNU General Public License, Version 3](https://www.gnu.org/licenses/gpl-3.0.html).
+
+## Screenshots
+
+DARWIN Main Window:
+<img src="https://github.com/darwin-group/darwin/raw/master/screenshots/DARWIN_MainWindow.jpg" alt="DARWIN Main Window">
+
+Tracing a fin outline:
+<img src="https://github.com/darwin-group/darwin/raw/master/screenshots/DARWIN_TraceWindow.jpg" alt="DARWIN Tracing">
+
+Match results:
+<img src="https://github.com/darwin-group/darwin/raw/master/screenshots/DARWIN_MatchResults.jpg" alt="DARWIN Match Results">
+
+Keypoint example:
+<img src="https://github.com/darwin-group/darwin/raw/master/screenshots/DARWIN_Bear_Keypoints.jpg" alt="DARWIN Match Results">
