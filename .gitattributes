@@ -1,7 +1,11 @@
-cpp-version/archive/* linguist-vendored
-cpp-version/gtk/* linguist-vendored
-cpp-version/gtk-2.22/* linguist-vendored
-cpp-version/jpeg-6b/* linguist-vendored
-cpp-version/m4/* linguist-vendored
-cpp-version/oldGTK+-2.4binaries4Win32/* linguist-vendored
+cpp-version/darwin/archive/* linguist-vendored
+cpp-version/darwin/gtk/* linguist-vendored
+cpp-version/darwin/gtk-2.22/* linguist-vendored
+cpp-version/darwin/intl/* linguist-vendored
+cpp-version/darwin/m4/* linguist-vendored
+cpp-version/darwin/jpeg-6b/* linguist-vendored
+cpp-version/darwin/m4/* linguist-vendored
+cpp-version/darwin/oldGTK+-2.4binaries4Win32/* linguist-vendored
+cpp-version/darwin/png/* linguist-vendored
+cpp-version/darwin/po/* linguist-vendored
 *.ipynb linguist-vendored
