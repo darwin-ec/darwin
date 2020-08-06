@@ -1,0 +1,27 @@
+This file exists until the first time DARWIN is run after installation.
+
+If it is found, then DARWIN checks to see if the data path folder specified 
+by the gOptions->mCurrentDataPath exits.  If not it is created and the 
+surveyAreas ("default" and "sample") are MOVED from within the application 
+folder hierarchy to the gOptions->mCurrentDataPath folder.  If so, then these survey areas are DELETED 
+from within the application.
+
+This file is then deleted, so that this test/move is not performed again.
+
+Here is the series of actions to be performed on first run of DARWIN after
+installation.
+
+datapath = gOptions->mCurrentDataPath;
+if (path does not exist)
+  create path
+if (path/surveyAreas doe not exist)
+  create path/surveyAreas
+if (path/backups does not exist)
+  create path/backups
+if (path/syrveyAreas/sample does not exist)
+  move it from inside application
+if (path/surveyAreas/default does not exist)
+  move it from inside application
+set current survey area to path/surveyAreas/default
+remove this file
+

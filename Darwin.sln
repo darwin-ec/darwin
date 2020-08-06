@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin.Wavelet", "src\Darwin.Wavelet\Darwin.Wavelet.csproj", "{44036798-DDBF-4639-8554-7DC32727FD1C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin.Utilities", "src\Darwin.Utilities\Darwin.Utilities.csproj", "{DD083746-B214-47BE-AC31-02AA30A2C4DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin.Wpf", "src\Darwin.Wpf\Darwin.Wpf.csproj", "{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin", "src\Darwin\Darwin.csproj", "{4A2C5A76-9BEE-4198-A857-9BE54FA81FD5}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Darwin.Wpf.Setup", "src\Darwin.Wpf.Setup\Darwin.Wpf.Setup.vdproj", "{B30EF446-8956-4DE2-8DC7-F5AC06C55C66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darwin.ML", "src\Darwin.ML\Darwin.ML.csproj", "{0C2BF656-F946-4785-BA90-409838C0EA2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44036798-DDBF-4639-8554-7DC32727FD1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44036798-DDBF-4639-8554-7DC32727FD1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44036798-DDBF-4639-8554-7DC32727FD1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44036798-DDBF-4639-8554-7DC32727FD1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD083746-B214-47BE-AC31-02AA30A2C4DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD083746-B214-47BE-AC31-02AA30A2C4DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD083746-B214-47BE-AC31-02AA30A2C4DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD083746-B214-47BE-AC31-02AA30A2C4DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A2C5A76-9BEE-4198-A857-9BE54FA81FD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A2C5A76-9BEE-4198-A857-9BE54FA81FD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A2C5A76-9BEE-4198-A857-9BE54FA81FD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A2C5A76-9BEE-4198-A857-9BE54FA81FD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B30EF446-8956-4DE2-8DC7-F5AC06C55C66}.Debug|Any CPU.ActiveCfg = Debug
+		{B30EF446-8956-4DE2-8DC7-F5AC06C55C66}.Release|Any CPU.ActiveCfg = Release
+		{B30EF446-8956-4DE2-8DC7-F5AC06C55C66}.Release|Any CPU.Build.0 = Release
+		{0C2BF656-F946-4785-BA90-409838C0EA2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C2BF656-F946-4785-BA90-409838C0EA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C2BF656-F946-4785-BA90-409838C0EA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C2BF656-F946-4785-BA90-409838C0EA2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6819735-6E1A-4B04-A197-7AF1068F3FC1}
+	EndGlobalSection
+EndGlobal
