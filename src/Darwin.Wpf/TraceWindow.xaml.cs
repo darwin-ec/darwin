@@ -390,7 +390,7 @@ namespace Darwin.Wpf
 						// TODO
 						//select pencil
 						_vm.TraceTool = TraceToolType.Pencil;
-						StatusBarMessage.Text = "Please hand trace the fin outline above";
+						_vm.StatusBarMessage = "Please hand trace the fin outline above";
 
 						return;
 					}//102AT
@@ -399,7 +399,7 @@ namespace Darwin.Wpf
 				// Successful trace
 				_vm.TraceTool = TraceToolType.Eraser;
 
-				StatusBarMessage.Text = "Make any Needed Corrections to Outline Trace using Tools Above";
+				_vm.StatusBarMessage = "Make any Needed Corrections to Outline Trace using Tools Above";
 
 			} //102AT
 		}
@@ -994,9 +994,9 @@ namespace Darwin.Wpf
 			if (!string.IsNullOrEmpty(displayName))
 			{
 				// ***054 - indicate which point is being moved
-				_previousStatusBarMessage = StatusBarMessage.Text; // now we have a copy of the label string
+				_previousStatusBarMessage = _vm.StatusBarMessage; // now we have a copy of the label string
 
-				StatusBarMessage.Text = "Moving " + displayName + " -- Drag into position and release mouse button.";
+				_vm.StatusBarMessage = "Moving " + displayName + " -- Drag into position and release mouse button.";
 			}
 		}
 
@@ -1071,7 +1071,7 @@ namespace Darwin.Wpf
 			_movePosition = -1;
 
 			// Reset message label
-			StatusBarMessage.Text = _previousStatusBarMessage;
+			_vm.StatusBarMessage = _previousStatusBarMessage;
 		}
 
 		private void CropApply(Object sender, RoutedEventArgs args)
@@ -2094,7 +2094,7 @@ namespace Darwin.Wpf
 						Mouse.OverrideCursor = Cursors.Wait;
 						
 						await Task.Run(() => _vm.SaveFinz(dlg.FileName));
-						StatusBarMessage.Text = "Finz file saved.";
+						_vm.StatusBarMessage = "Finz file saved.";
 
 						if (_vm.TraceStep == TraceStepType.TraceOutline)
 							TraceStep_Checked(null, null);
@@ -2151,7 +2151,7 @@ namespace Darwin.Wpf
 						}
 
 						await Task.Run(() => _vm.SaveToDatabase());
-						StatusBarMessage.Text = "Finz file saved.";
+						_vm.StatusBarMessage = "Finz file saved.";
 
 						if (_vm.TraceStep == TraceStepType.TraceOutline)
 							TraceStep_Checked(null, null);
@@ -2183,7 +2183,7 @@ namespace Darwin.Wpf
 			if (_vm.DatabaseFin != null)
             {
 				_vm.SaveSightingData();
-				StatusBarMessage.Text = "Sighting data exported.";
+				_vm.StatusBarMessage = "Sighting data exported.";
             }
         }
 

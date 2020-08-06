@@ -89,6 +89,23 @@ namespace Darwin.Database
         }
 
         [JsonIgnore]
+        public string TraceInstructionsTerminology
+        {
+            get
+            {
+                switch (FeatureSetType)
+                {
+                    case FeatureSetType.Bear:
+                        return "Note: Bear MUST be facing your RIGHT!";
+
+                    case FeatureSetType.DorsalFin:
+                    default:
+                        return "Note: Dolphin MUST swim to your LEFT!";
+                }
+            }
+        }
+
+        [JsonIgnore]
         public string IndividualTerminologyInitialCaps
         {
             get

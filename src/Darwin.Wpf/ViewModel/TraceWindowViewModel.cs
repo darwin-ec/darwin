@@ -496,6 +496,17 @@ namespace Darwin.Wpf.ViewModel
 			}
         }
 
+		private string _statusBarMessage;
+		public string StatusBarMessage
+		{
+			get => _statusBarMessage;
+			set
+			{
+				_statusBarMessage = value;
+				RaisePropertyChanged("StatusBarMessage");
+			}
+		}
+
 		public string IndividualTerminology
 		{
 			get
@@ -553,6 +564,8 @@ namespace Darwin.Wpf.ViewModel
         {
 			Database = db;
 			Categories = db.Categories;
+
+			StatusBarMessage = Database?.CatalogScheme?.TraceInstructionsTerminology;
 		}
 
 		// Little hacky, keeping a reference to the MatchResultsWindow, so we can close it when adding to the DB
@@ -619,6 +632,8 @@ namespace Darwin.Wpf.ViewModel
 			OpenImage(imageFilename);
 
 			WindowTitle = Path.GetFileName(imageFilename);
+
+			StatusBarMessage = Database?.CatalogScheme?.TraceInstructionsTerminology;
 		}
 
 		public void OpenImage(string filename)

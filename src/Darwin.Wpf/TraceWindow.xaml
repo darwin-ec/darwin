@@ -401,7 +401,7 @@
                 </StatusBarItem>
                 <Separator Grid.Column="2" />
                 <StatusBarItem Grid.Column="3">
-                    <TextBlock Name="StatusBarMessage" />
+                    <TextBlock Name="StatusBarMessage" Text="{Binding StatusBarMessage}" />
                 </StatusBarItem>
             </StatusBar>
         </Grid>

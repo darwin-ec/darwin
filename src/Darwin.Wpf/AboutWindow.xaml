@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="" Height="550" Width="600" ResizeMode="NoResize"
+        Title="" Height="570" Width="600" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" PreviewKeyDown="AboutWindow_PreviewKeyDown">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -41,6 +41,7 @@ Research &amp; Programming by:
     Scott Hale (2005-2008)
     Joshua Gregory (2006)
     RJ Nowling (2007-2008)
+    Adam Russell (2020)
 
 Financial Support from:
     National Science Foundation
