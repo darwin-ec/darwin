@@ -9,3 +9,4 @@ cpp-version/darwin/oldGTK+-2.4binaries4Win32/* linguist-vendored
 cpp-version/darwin/pixmaps/* linguist-vendored
 cpp-version/darwin/png/* linguist-vendored
 cpp-version/darwin/po/* linguist-vendored
+*.ipynb linguist-vendored
