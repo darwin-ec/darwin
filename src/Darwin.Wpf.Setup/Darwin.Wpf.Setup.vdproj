@@ -83,7 +83,7 @@
         "InstallerBootstrapper" = "3:2"
             "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
             {
-            "Enabled" = "11:TRUE"
+            "Enabled" = "11:FALSE"
             "PromptEnabled" = "11:TRUE"
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
@@ -248,11 +248,11 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Darwin"
         "ProductCode" = "8:{E1067A84-2C1A-4BB9-B153-CF27B3D148B3}"
-        "PackageCode" = "8:{5E7FAC3B-3267-494B-A7BA-509191D6EC3B}"
+        "PackageCode" = "8:{18619AA6-B02A-42A0-851C-3DDA102C0FEA}"
         "UpgradeCode" = "8:{2E7364F9-EC5A-4DA0-BB40-24D058490A55}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:3.0.0"
@@ -797,7 +797,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C74B68B49C5C488F814BFEA5A47D65CE"
             {
-            "SourcePath" = "8:..\\Darwin.Wpf\\obj\\Debug\\netcoreapp3.1\\Darwin.Wpf.exe"
+            "SourcePath" = "8:..\\Darwin.Wpf\\obj\\Release\\netcoreapp3.1\\Darwin.Wpf.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_574E4EFC9FA04C0793C3E9E618C5846C"
@@ -819,6 +819,7 @@
             "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{77DAF2CC-7DA3-4D2E-AF1D-E2C93B8FB8BD}"
             "ShowKeyOutput" = "11:TRUE"
+            "PublishProfilePath" = "8:Properties\\PublishProfiles\\FolderProfile.pubxml"
                 "ExcludeFilters"
                 {
                 }
