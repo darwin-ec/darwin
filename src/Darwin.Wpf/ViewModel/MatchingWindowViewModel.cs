@@ -249,7 +249,7 @@ namespace Darwin.Wpf.ViewModel
             RegistrationMethod = RegistrationMethodType.TrimOptimalTip;
             RangeOfPoints = RangeOfPointsType.AllPoints;
             Database = database;
-            ShowRegistration = true;
+            ShowRegistration = false;
 
             // TODO: These should really come from the window
             ContourWidth = 250;
