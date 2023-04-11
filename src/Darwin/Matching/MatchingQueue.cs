@@ -317,16 +317,24 @@ namespace Darwin.Matching
             foreach (var finWithID in finsWithID)
             {
                 int index = Fins.IndexOf(finWithID);
-
+           
                 var firstSameIDMatch = Matches[index]?.MatchResults?.Results?
-                    .Where(r => !string.IsNullOrEmpty(r.IDCode) && r.IDCode.ToLower().Trim() == finWithID.IDCode.ToLower().Trim())
+                    .Where(r => !string.IsNullOrEmpty(r.IDCode) && r.IDCode.ToLower().Trim() == finWithID.IDCode.ToLower().Trim() && r.Error >= 0.005)   // Error !=0 added
+                    .FirstOrDefault();
+
+                var maybeSameImageSameIDMatch = Matches[index]?.MatchResults?.Results?
+                    .Where(r => !string.IsNullOrEmpty(r.IDCode) && r.IDCode.ToLower().Trim() == finWithID.IDCode.ToLower().Trim())   // may match to same image
                     .FirstOrDefault();
 
                 if (firstSameIDMatch != null)
                 {
                     numFinsWithID += 1;
                     // Our index is 0 based, but we want rank to start at 1, so we add 1
-                    int rank = Matches[index].MatchResults.Results.IndexOf(firstSameIDMatch) + 1;
+                    int rank = Matches[index].MatchResults.Results.IndexOf(firstSameIDMatch);
+                    // if DB and query are exact same image, same trace, add 1 (This really only happens in testing.)  
+                    if (firstSameIDMatch == maybeSameImageSameIDMatch)
+                        rank += 1;
+
                     sb.Append(Path.GetFileName(finWithID.FinFilename));
                     sb.Append(": The ID is ranked ");
                     sb.AppendLine(rank.ToString());
