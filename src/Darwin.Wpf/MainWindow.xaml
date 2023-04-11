@@ -26,7 +26,8 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         xmlns:converters="clr-namespace:Darwin.Wpf.ValueConverters"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d"
-        Title="Darwin" Height="780" Width="1200" MinWidth="615" MinHeight="500">
+        Title="Darwin" Height="720" Width="1280" MinWidth="615" MinHeight="500"
+        WindowStartupLocation="Manual" Left="20" Top="0">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" />

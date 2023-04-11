@@ -28,7 +28,8 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         xmlns:model="clr-namespace:Darwin.Wpf.Model"
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="{Binding WindowTitle}" MinWidth="700" MinHeight="670" Height="800" Width="1200">
+        Title="{Binding WindowTitle}" MinWidth="700" MinHeight="670" Height="720" Width="1280"
+        WindowStartupLocation="Manual" Left="20" Top="0">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" />
@@ -64,7 +65,8 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
-    <Border x:Name="TraceWindowBorder" BorderBrush="LightSlateGray" BorderThickness="1">
+  <!-- Border Thickness was 1 -->
+    <Border x:Name="TraceWindowBorder" BorderBrush="LightSlateGray" BorderThickness="8"> 
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

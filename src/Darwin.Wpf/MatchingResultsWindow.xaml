@@ -25,7 +25,8 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         xmlns:fe="clr-namespace:Darwin.Wpf.FrameworkElements"
         xmlns:local="clr-namespace:Darwin.Wpf"
         mc:Ignorable="d" Background="{StaticResource LightBackground}"
-        Title="Matching Results" Height="850" Width="1050" MinHeight="550" MinWidth="600">
+        Title="Matching Results" Height="850" Width="1050" MinHeight="550" MinWidth="600"
+        WindowStartupLocation="Manual" Left="20" Top="0"> 
     <Window.Resources>
         <x:Array Type="Brush" x:Key="brushes">
             <x:Static Member="Brushes.Crimson" />
