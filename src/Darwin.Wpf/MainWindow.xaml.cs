@@ -683,7 +683,7 @@ namespace Darwin.Wpf
             if (_vm.SelectedFin != null)
             {
                 var fin = _vm.FullyLoadFin();
-                //TODO: Finish this form
+           
             }
         }
 
