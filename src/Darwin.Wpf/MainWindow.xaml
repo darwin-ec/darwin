@@ -300,7 +300,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                         </TabItem>
                         <TabItem Header="Fin Data" Height="20" VerticalAlignment="Top">
                             <Button x:Name="FinDataButton" Click="FinDataButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
-                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Background="Transparent" Height="591" Width="749">
+                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" Background="Transparent" Height="591" Width="749">
                                     <Grid Grid.Row="2" Margin="10,5,5,5" MinWidth="330" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -323,7 +323,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="120"/>
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
@@ -347,10 +347,10 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                         <TextBox Grid.Row="8" Grid.Column="0" Text="{Binding Path=SelectedFin.RollAndFrame, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
                                         <Label Grid.Row="13" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Short Description:</Label>
-                                        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3"
+                                        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="1"
                                 TextWrapping="Wrap"
-                                AcceptsReturn="True" MinLines="2"
-                                VerticalScrollBarVisibility="Auto"
+                                AcceptsReturn="True" MinLines="2" MaxLines="8"
+                                VerticalScrollBarVisibility="Visible"
                                 Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
                                         <StackPanel Orientation="Horizontal" Grid.Row="23" Grid.ColumnSpan="2" Margin="0,0,0,5">
                                             <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}" Margin="0,2,2,2">Save Changes</Button>
