@@ -677,6 +677,16 @@ namespace Darwin.Wpf
             }
         }
 
+        private void FinDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Little hacky
+            if (_vm.SelectedFin != null)
+            {
+                var fin = _vm.FullyLoadFin();
+                //TODO: Finish this form
+            }
+        }
+
         private void CheckNextPreviousEnabled()
         {
             if (DatabaseGrid.SelectedIndex <= 0)
