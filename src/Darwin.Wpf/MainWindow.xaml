@@ -32,7 +32,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="34" />
     </WindowChrome.WindowChrome>
-    
+
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Close" />
         <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Maximize" />
@@ -40,12 +40,12 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed_Restore" />
 
         <CommandBinding Command="commands:CustomCommands.NewDatabase" CanExecute="NewDatabaseCommand_CanExecute" Executed="NewDatabaseCommand_Executed" />
-        
+
         <CommandBinding Command="commands:CustomCommands.OpenImage" CanExecute="OpenImageCommand_CanExecute" Executed="OpenImageCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenTracedFin" CanExecute="OpenTracedFinCommand_CanExecute" Executed="OpenTracedFinCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.OpenDatabase" CanExecute="OpenDatabaseCommand_CanExecute" Executed="OpenDatabaseCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.CloseDatabase" CanExecute="CloseDatabaseCommand_CanExecute" Executed="CloseDatabaseCommand_Executed" />
-        
+
         <CommandBinding Command="commands:CustomCommands.MatchingQueue" CanExecute="MatchingQueueCommand_CanExecute" Executed="MatchingQueueCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Backup" CanExecute="BackupCommand_CanExecute" Executed="BackupCommand_Executed" />
@@ -53,11 +53,11 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
 
         <CommandBinding Command="commands:CustomCommands.ImportCatalog" />
         <CommandBinding Command="commands:CustomCommands.ImportFin" CanExecute="ImportFinCommand_CanExecute" Executed="ImportFinCommand_Executed" />
-        
+
         <CommandBinding Command="commands:CustomCommands.ExportCatalog" />
         <CommandBinding Command="commands:CustomCommands.ExportFin" CanExecute="ExportFinCommand_CanExecute" Executed="ExportFinCommand_Executed"  />
         <CommandBinding Command="commands:CustomCommands.ExportImages" />
-        
+
         <CommandBinding Command="commands:CustomCommands.Exit" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.Options" CanExecute="OptionsCommand_CanExecute" Executed="OptionsCommand_Executed" />
@@ -66,7 +66,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
         <CommandBinding Command="commands:CustomCommands.CatalogSchemes" CanExecute="CatalogSchemesCommand_CanExecute" Executed="CatalogSchemesCommand_Executed" />
 
         <CommandBinding Command="commands:CustomCommands.DeveloperTools" CanExecute="DeveloperToolsCommand_CanExecute" Executed="DeveloperToolsCommand_Executed" />
-        
+
         <CommandBinding Command="commands:CustomCommands.Documentation" CanExecute="DocumentationCommand_CanExecute" Executed="DocumentationCommand_Executed" />
         <CommandBinding Command="commands:CustomCommands.About" CanExecute="AboutCommand_CanExecute" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
@@ -316,35 +316,43 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
                                         <Label Grid.Row="1" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">ID Code:</Label>
                                         <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                                        <Label Grid.Row="1" Grid.Column="1" Padding="1" Style="{StaticResource FormLabel}">Name:</Label>
-                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Path=SelectedFin.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5" />
+                                        <Label Grid.Row="3" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Name:</Label>
+                                        <TextBox Grid.Row="4" Grid.Column="0" Text="{Binding Path=SelectedFin.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5" />
 
-                                        <Label Grid.Row="1" Grid.Column="2" Padding="1" Style="{StaticResource FormLabel}">Date of Sighting:</Label>
-                                        <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding Path=SelectedFin.DateOfSighting, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                                        <Label Grid.Row="5" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Date of Sighting:</Label>
+                                        <TextBox Grid.Row="6" Grid.Column="0" Text="{Binding Path=SelectedFin.DateOfSighting, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                                        <Label Grid.Row="3" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Damage Category:</Label>
-                                        <ComboBox Grid.Row="4" Grid.Column="0" ItemsSource="{Binding Path=DarwinDatabase.Categories}" DisplayMemberPath="Name" SelectedValuePath="Name"
+                                        <Label Grid.Row="11" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Damage Category:</Label>
+                                        <ComboBox Grid.Row="12" Grid.Column="0" ItemsSource="{Binding Path=DarwinDatabase.Categories}" DisplayMemberPath="Name" SelectedValuePath="Name"
                               SelectedValue="{Binding Path=SelectedFin.DamageCategory}" Margin="0,5,10,5" />
 
-                                        <Label Grid.Row="3" Grid.Column="1" Padding="1" Style="{StaticResource FormLabel}">Location Code:</Label>
-                                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Path=SelectedFin.LocationCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                                        <Label Grid.Row="9" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Location Code:</Label>
+                                        <TextBox Grid.Row="10" Grid.Column="0" Text="{Binding Path=SelectedFin.LocationCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                                        <Label Grid.Row="3" Grid.Column="2" Padding="1" Style="{StaticResource FormLabel}">Roll/Frame or Lat/Long:</Label>
-                                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding Path=SelectedFin.RollAndFrame, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
+                                        <Label Grid.Row="7" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Roll/Frame or Lat/Long:</Label>
+                                        <TextBox Grid.Row="8" Grid.Column="0" Text="{Binding Path=SelectedFin.RollAndFrame, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
-                                        <Label Grid.Row="5" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Short Description:</Label>
-                                        <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+                                        <Label Grid.Row="13" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">Short Description:</Label>
+                                        <TextBox Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3"
                                 TextWrapping="Wrap"
                                 AcceptsReturn="True" MinLines="2"
                                 VerticalScrollBarVisibility="Auto"
                                 Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
-                                        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.ColumnSpan="2" Margin="0,0,0,5">
+                                        <StackPanel Orientation="Horizontal" Grid.Row="23" Grid.ColumnSpan="2" Margin="0,0,0,5">
                                             <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}" Margin="0,2,2,2">Save Changes</Button>
                                             <Button x:Name="DeleteFin" Click="DeleteFin_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Delete</Button>
                                         </StackPanel>
@@ -353,7 +361,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                             </Button>
                         </TabItem>
                     </TabControl>
-                    
+
                 </Grid>
             </Grid>
         </Grid>
