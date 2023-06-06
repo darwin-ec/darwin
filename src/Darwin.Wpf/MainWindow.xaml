@@ -266,9 +266,9 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                     </Grid>
                 </Grid>
 
-                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource LightBackground}"/>
 
-                <Grid Grid.Column="2">
+                <Grid Grid.Column="2" Background="{StaticResource LightBackground}">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition Height="5" />
