@@ -40,7 +40,7 @@ namespace Darwin.Wpf.ViewModel
                 if (DarwinDatabase == null)
                     return "DARWIN";
 
-                return Path.GetFileName(DarwinDatabase.Filename) + " - DARWIN";
+                return Path.GetFullPath(DarwinDatabase.Filename) + " - DARWIN";
             }
         }
 
