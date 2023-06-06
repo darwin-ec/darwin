@@ -319,11 +319,6 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5">
-                                        <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}" Margin="0,2,2,2">Save Changes</Button>
-                                        <Button x:Name="DeleteFin" Click="DeleteFin_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Delete</Button>
-                                    </StackPanel>
-
                                     <Label Grid.Row="1" Grid.Column="0" Padding="1" Style="{StaticResource FormLabel}">ID Code:</Label>
                                     <TextBox Grid.Row="2" Grid.Column="0" Text="{Binding Path=SelectedFin.IDCode, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
 
@@ -349,7 +344,11 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                 AcceptsReturn="True" MinLines="2"
                                 VerticalScrollBarVisibility="Visible"
                                 Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
-                                </Grid>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.ColumnSpan="2" Margin="0,0,0,5">
+                                            <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}" Margin="0,2,2,2">Save Changes</Button>
+                                            <Button x:Name="DeleteFin" Click="DeleteFin_Click" IsEnabled="{Binding Path=SelectedFin, Converter={StaticResource NullConverter}}">Delete</Button>
+                                        </StackPanel>
+                                    </Grid>
                                 </ScrollViewer>
                             </Button>
                         </TabItem>
