@@ -342,7 +342,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                         <TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
                                 TextWrapping="Wrap"
                                 AcceptsReturn="True" MinLines="2"
-                                VerticalScrollBarVisibility="Visible"
+                                VerticalScrollBarVisibility="Auto"
                                 Text="{Binding Path=SelectedFin.ShortDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,10,5"  />
                                         <StackPanel Orientation="Horizontal" Grid.Row="7" Grid.ColumnSpan="2" Margin="0,0,0,5">
                                             <Button x:Name="SaveFinData" Click="SaveFinData_Click" IsEnabled="{Binding Path=SelectedFin.FieldsChanged}" Margin="0,2,2,2">Save Changes</Button>
