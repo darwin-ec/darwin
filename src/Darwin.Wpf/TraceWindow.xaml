@@ -304,7 +304,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                             Brushes="{StaticResource brushes}" />
                                 
                                 <!-- This control is for independent x/y feature points like the eye -->
-                                <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=Width, ElementName=TraceImage}" Height="{Binding Path=Height, ElementName=TraceImage}"
+                                <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             PointSize="3" FeaturePointSize="3"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding CoordinateFeaturePoints}"
