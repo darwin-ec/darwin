@@ -115,7 +115,7 @@ namespace Darwin.Wpf.FrameworkElements
         public double PointSize
         {
             set { SetValue(PointSizeProperty, value); }
-            get { return (double)GetValue(PointSizeProperty); }
+            get { return 1.5/(double)GetValue(PointSizeProperty); }
         }
 
         public double FeaturePointSize

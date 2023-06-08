@@ -294,16 +294,17 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                     </Image.LayoutTransform>
                                 </Image>
                                 
-                                <!-- This is for the contour/outline feature points -->
-                                <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
+                                <!-- This is for the contour/outline points -->
+                                <!-- PointSize is determined by dividing a constant by ZoomRatio -->
+                                <fe:PointVisuals Width="{Binding Path=Width, ElementName=TraceImage}" Height="{Binding Path=Height, ElementName=TraceImage}"
                                             Background="Transparent"
-                                            PointSize="3"
+                                            PointSize="{Binding Path=ZoomRatio}"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding Contour.Points}"
                                             Brushes="{StaticResource brushes}" />
                                 
                                 <!-- This control is for independent x/y feature points like the eye -->
-                                <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
+                                <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=Width, ElementName=TraceImage}" Height="{Binding Path=Height, ElementName=TraceImage}"
                                             PointSize="3" FeaturePointSize="3"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding CoordinateFeaturePoints}"

@@ -404,6 +404,7 @@ namespace Darwin.Wpf
 			} //102AT
 		}
 
+
 		// TODO: Do we really need this, or is this not ported correctly?
 		private void GetViewedImageBoundsNonZoomed(out int left, out int top, out int right, out int bottom)
 		{
