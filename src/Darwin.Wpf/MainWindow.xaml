@@ -300,7 +300,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                         </TabItem>
                         <TabItem Header="Fin Data" Height="20" VerticalAlignment="Top">
                             <Button x:Name="FinDataButton" Click="FinDataButton_Click" IsEnabled="{Binding Path=SelectedContour, Converter={StaticResource NullConverter}}" Cursor="Hand" Background="Transparent" BorderThickness="0">
-                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" Background="Transparent" Height="591" Width="749">
+                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" Background="{StaticResource LightBackground}" Height="591" Width="749">
                                     <Grid Grid.Row="2" Margin="10,5,5,5" MinWidth="330" IsEnabled="{Binding Path=DarwinDatabase, Converter={StaticResource NullConverter}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
