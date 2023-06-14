@@ -49,11 +49,11 @@ using System.Xml.Schema;
 
 namespace Darwin.Wpf
 {
-    /// <summary>
-    /// Interaction logic for TraceWindow.xaml
-    /// </summary>
-    public partial class TraceWindow : Window
-    {
+	/// <summary>
+	/// Interaction logic for TraceWindow.xaml
+	/// </summary>
+	public partial class TraceWindow : Window
+	{
 		private const int ImagePadding = 20;
 		private const string NoTraceErrorMessageDatabase = "You must trace your image before it can be added to the database.";
 		private const string NoIDErrorMessage = "You must enter an ID Code before\nyou can add a {0} to the database.";
@@ -81,7 +81,7 @@ namespace Darwin.Wpf
 		private string _previousStatusBarMessage;
 
 		private FeaturePointType _moveFeature;
-        private bool _moveFeatureUseCoordinate;
+		private bool _moveFeatureUseCoordinate;
 		private CoordinateFeaturePoint _moveCoordinateFeature;
 
 		private TraceWindowViewModel _vm;
@@ -96,15 +96,15 @@ namespace Darwin.Wpf
 			_vm = vm;
 
 			if (_vm.TraceLocked)
-            {
-                _vm.TraceTool = TraceToolType.MoveFeature;
-                _vm.TraceStep = TraceStepType.IdentifyFeatures;
-            }
+			{
+				_vm.TraceTool = TraceToolType.MoveFeature;
+				_vm.TraceStep = TraceStepType.IdentifyFeatures;
+			}
 
 			if (_vm.ViewerMode)
-            {
+			{
 				_vm.TraceTool = TraceToolType.Hand;
-            }
+			}
 
 			_vm.ZoomValues.Add(16);
 			_vm.ZoomValues.Add(8);
@@ -402,6 +402,29 @@ namespace Darwin.Wpf
 				_vm.StatusBarMessage = "Make any Needed Corrections to Outline Trace using Tools Above";
 
 			} //102AT
+		}
+
+
+		private double _originalZoomRatio()
+        {
+			double
+				widthRatio = TraceScrollViewer.ActualWidth / (_vm.OriginalBitmap.Width + ImagePadding),
+				heightRatio = TraceScrollViewer.ActualHeight / (_vm.OriginalBitmap.Height + ImagePadding);
+			if (widthRatio < heightRatio)
+            {
+				// the width is the restrictive dimension
+				return (double)Math.Round(widthRatio, 2);
+            }
+			else
+            {
+				return (double)Math.Round(heightRatio, 2);
+            }
+        }
+
+
+		public double OriginalZoomRatio
+		{
+			get { return _originalZoomRatio(); }
 		}
 
 

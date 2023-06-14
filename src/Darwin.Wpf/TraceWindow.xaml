@@ -299,7 +299,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                 <!-- PointSize is determined by dividing a constant by ZoomRatio -->
                                 <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             Background="Transparent"
-                                            PointSize="{Binding Path=ZoomRatio}"
+                                            PointSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=OriginalZoomRatio}"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding Contour.Points}"
                                             Brushes="{StaticResource brushes}" />
