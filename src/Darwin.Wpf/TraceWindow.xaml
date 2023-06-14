@@ -296,7 +296,7 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                 </Image>
                                 
                                 <!-- This is for the contour/outline points -->
-                                <!-- PointSize is determined by dividing a constant by ZoomRatio -->
+                                <!-- PointSize is determined by dividing a constant by OriginalZoomRatio from TraceWindow.xaml.cs-->
                                 <fe:PointVisuals Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
                                             Background="Transparent"
                                             PointSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=OriginalZoomRatio}"
