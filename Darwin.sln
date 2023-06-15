@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin", "src\Darwin\Darwin
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Darwin.Wpf.Setup", "src\Darwin.Wpf.Setup\Darwin.Wpf.Setup.vdproj", "{B30EF446-8956-4DE2-8DC7-F5AC06C55C66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darwin.ML", "src\Darwin.ML\Darwin.ML.csproj", "{0C2BF656-F946-4785-BA90-409838C0EA2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Darwin.ML", "src\Darwin.ML\Darwin.ML.csproj", "{0C2BF656-F946-4785-BA90-409838C0EA2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6016D55-A6FB-4DEB-9E3D-BF385D9A05E7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

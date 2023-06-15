@@ -115,7 +115,8 @@ namespace Darwin.Wpf.FrameworkElements
         public double PointSize
         {
             set { SetValue(PointSizeProperty, value); }
-            get { return (double)GetValue(PointSizeProperty); }
+            //GetValue(PointSizeProperty) returns OriginalZoomRatio and uses it as a scale factor for a consistent point size across varied image resolutions and zoom factors
+            get { return 1.5 / (double)GetValue(PointSizeProperty); }
         }
 
         public double FeaturePointSize

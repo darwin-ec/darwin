@@ -40,6 +40,7 @@ namespace Darwin.Wpf.ViewModel
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private string _windowTitle;
+
 		public string WindowTitle
 		{
 			get
