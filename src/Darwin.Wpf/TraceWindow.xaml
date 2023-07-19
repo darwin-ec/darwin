@@ -211,13 +211,6 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                 <Label HorizontalAlignment="Center" Padding="1">Pan</Label>
                             </StackPanel>
                         </RadioButton>
-                        <RadioButton x:Name="MagnifyingGlassButton" ToolTip="Hold Shift to Zoom Out" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Magnify}}">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <!--<TextBlock FontFamily="{StaticResource FontAwesomeSolid}" HorizontalAlignment="Center">&#xf002;</TextBlock>-->
-                                <Image Source="/Darwin.Wpf;component/Resources/Images/magnify2.png" Width="22" />
-                                <Label HorizontalAlignment="Center" Padding="1">Zoom</Label>
-                            </StackPanel>
-                        </RadioButton>
                         <RadioButton x:Name="CropButton" Style="{StaticResource ToolbarToggle}" GroupName="TraceTool" Checked="TraceTool_Checked" IsChecked="{Binding Path=TraceTool, Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static model:TraceToolType.Crop}}"  Visibility="{Binding TraceToolsVisibility}">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                 <!--<Image Source="/Darwin.Wpf;component/Resources/Images/crop_button.png" />-->
