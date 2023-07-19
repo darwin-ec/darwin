@@ -66,7 +66,7 @@ namespace Darwin.Wpf
 
 		//private const int PointSize = 2;
 		private const int SpaceBetweenPoints = 3;
-		private const int EraserBrushSize = 9; // krd 10/28/05
+		private const int EraserBrushSize = 2; // krd 10/28/05
 		//private const int MaxZoom = 1600;
 		//private const int MinZoom = 6; //***1.95 - minimum is now 6% of original size
 
