@@ -68,13 +68,13 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                     <Grid>
                         <fe:PointVisuals IsHitTestVisible="False" Width="{Binding XMax}" Height="{Binding YMax}"
                                              Background="Transparent"
-                                             PointSize="{Binding ContourPointSize}"
+                                             PointSize="0.5"
                                              FeaturePointSize="{Binding ComparisonFeaturePointSize}"
                                              ItemsSource="{Binding DisplayComparisonContour.Points}"     
                                              Brushes="{StaticResource comparisonBrushes}" />
                         <fe:PointVisuals IsHitTestVisible="False" Width="{Binding XMax}" Height="{Binding YMax}"
                                              Background="Transparent"
-                                             PointSize="{Binding ContourPointSize}"
+                                             PointSize="0.5"
                                              FeaturePointSize="{Binding FeaturePointSize}"
                                              ItemsSource="{Binding DisplayContour.Points}"     
                                              Brushes="{StaticResource brushes}" />
