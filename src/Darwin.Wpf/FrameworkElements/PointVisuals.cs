@@ -122,7 +122,7 @@ namespace Darwin.Wpf.FrameworkElements
         public double FeaturePointSize
         {
             set { SetValue(FeaturePointSizeProperty, value); }
-            get { return (double)GetValue(FeaturePointSizeProperty); }
+            get { return 4 / (double)GetValue(PointSizeProperty); }
         }
 
         public double ContourScale
