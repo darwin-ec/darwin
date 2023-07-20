@@ -38,7 +38,7 @@ namespace Darwin.Wpf
     /// </summary>
     public partial class MatchingResultsWindow : Window
     {
-        private const int AutoScrollSeconds = 4;
+        private const int AutoScrollSeconds = 1;
 
         private MatchingResultsWindowViewModel _vm;
         private List<GridViewColumn> _allColumns;
