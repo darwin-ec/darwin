@@ -299,7 +299,8 @@ along with DARWIN.  If not, see https://www.gnu.org/licenses/
                                 
                                 <!-- This control is for independent x/y feature points like the eye -->
                                 <fe:CoordinatePointVisuals Visibility="{Binding FeatureToolsVisibility}" Width="{Binding Path=ActualWidth, ElementName=TraceImage}" Height="{Binding Path=ActualHeight, ElementName=TraceImage}"
-                                            PointSize="3" FeaturePointSize="3"
+                                            PointSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=OriginalZoomRatio}"
+                                            FeaturePointSize="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=OriginalZoomRatio}"
                                             ContourScale="{Binding Contour.Scale}"
                                             ItemsSource="{Binding CoordinateFeaturePoints}"
                                             Brushes="{StaticResource brushes}" />
